@@ -14,5 +14,5 @@ select = [
 ]
 
 [tool.ruff.format]
-quote-style = "double"
+quote-style = "single"
 indent-style = "tab"
