@@ -22,5 +22,5 @@ jobs:
           python-version: '3.11'
 
       - run: pip install -r requirements-dev.txt
-      - run: ruff check ${{ inputs.directory }}
-      - run: ruff format --check ${{ inputs.directory }}
+      - run: ruff check --verbose --statistics --output-format=github ${{ inputs.directory }}
+      - run: ruff format --check --diff --verbose ${{ inputs.directory }}
