@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./infrastructure/docker/backend.Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./apps/backend:/app
+      - ./data:/app/data
+    env_file:
+      - .env
+    devices:
+      - "/dev/video0:/dev/video0"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./infrastructure/docker/frontend.Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
