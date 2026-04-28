@@ -1,0 +1,1 @@
+# /services/cv-pipeline/drone-control/command/translator.py
