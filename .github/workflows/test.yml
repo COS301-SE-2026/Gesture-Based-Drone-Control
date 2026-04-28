@@ -5,9 +5,8 @@ on:
     inputs:
       directory:
         description: 'Active directory for test'
-        required: false
+        required: true
         type: string
-        default: '.'
       
       coverage:
         description: 'Minimum coverage required to pass'
