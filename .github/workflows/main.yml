@@ -23,7 +23,7 @@ jobs:
         needs: lint
         uses: ./.github/workflows/test.yml
         with:
-            directory: app
+            directory: apps
 
     test-services:
         name: Test Services
@@ -34,7 +34,7 @@ jobs:
 
     test-integration: 
         name: Test Integration
-        needs: [lint, test-services, test-services]
+        needs: [lint, test-services, test-apps]
         uses: ./.github/workflows/test.yml
         with:
             directory: services
