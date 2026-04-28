@@ -1,0 +1,10 @@
+#kinda obvious isnt it
+fastapi
+#asgi for use with fastapi
+uvicorn
+#computer vision
+opencv-python
+#hand tracking
+mediapipe
+#numerical processing
+numpy
