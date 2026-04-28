@@ -1,0 +1,32 @@
+name: test
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        description: 'Active directory for test'
+        required: true
+        type: string
+      
+      coverage:
+        description: 'Minimum coverage required to pass'
+        required: false
+        type: number
+        default: 80
+        
+      
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - run: pip install -r requirements-dev.txt
+      - run: pytest -v ${{ inputs.directory }} --cov=${{ inputs.directory }} --cov-fail-under=${{ inputs.coverage }} --cov-report=term-missing

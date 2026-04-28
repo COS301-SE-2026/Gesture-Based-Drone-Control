@@ -1,0 +1,26 @@
+name: lint
+
+on: 
+  workflow_call:
+    inputs: 
+      directory: 
+        description: 'Active directory for linting'
+        required: false
+        type: string
+        default: '.'
+
+
+jobs:
+  lint: 
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with: 
+          python-version: '3.11'
+
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check --verbose --statistics --output-format=github ${{ inputs.directory }}
+      - run: ruff format --check --diff --verbose ${{ inputs.directory }}
