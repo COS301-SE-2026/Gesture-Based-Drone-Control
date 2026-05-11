@@ -1,6 +1,4 @@
 .env
-__pycache__/
 node_modules/
 dist/
 data/*.db
-.ruff_cache

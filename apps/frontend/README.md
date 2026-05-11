@@ -1,0 +1,1 @@
+frontend runs on port 3000 (vite.config)
