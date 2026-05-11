@@ -1,0 +1,41 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+    "fastapi[standard]>=0.136.1",
+    "mediapipe>=0.10.35",
+    "numpy>=2.4.4",
+    "opencv-python>=4.13.0.92",
+    "websockets>=16.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.12",
+]
+
+
+[tool.ruff]
+
+target-version = "py311"
+
+line-length = 100
+
+[tool.ruff.lint]
+
+select = [
+    "E",   # bugs + certain code breaks
+    "F",   # logical errors + unused code
+    "I",   # import ordering
+    "N",   # python naming conventions
+]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "tab"
