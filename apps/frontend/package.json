@@ -7,10 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "playwright test" 
   },
   "dependencies": {
     "electron": "^36.3.0",
+    "install-deps": "^1.1.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },

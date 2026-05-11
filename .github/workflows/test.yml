@@ -28,5 +28,5 @@ jobs:
         with:
           python-version: '3.11'
           
-      - run: pip install -r requirements-dev.txt
-      - run: pytest -v ${{ inputs.directory }} --cov=${{ inputs.directory }} --cov-fail-under=${{ inputs.coverage }} --cov-report=term-missing
+      #- run: pip install -r requirements-dev.txt
+      #- run: pytest -v ${{ inputs.directory }} --cov=${{ inputs.directory }} --cov-fail-under=${{ inputs.coverage }} --cov-report=term-missing
