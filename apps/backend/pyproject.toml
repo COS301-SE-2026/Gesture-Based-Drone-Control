@@ -41,3 +41,6 @@ select = [
 [tool.ruff.format]
 quote-style = "single"
 indent-style = "tab"
+
+[tool.uv.extra-build-dependencies]
+airsim = ["setuptools", "wheel", "numpy"]
