@@ -7,7 +7,9 @@ requires-python = ">=3.11"
 
 dependencies = [
     "fastapi[standard]>=0.136.1",
+    "keyboard>=0.13.5",
     "mediapipe>=0.10.35",
+    "msgpack-rpc-python>=0.4.1",
     "numpy>=2.4.4",
     "opencv-python>=4.13.0.92",
     "websockets>=16.0",
