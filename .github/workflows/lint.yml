@@ -10,6 +10,7 @@ on:
 jobs:
   lint-backend:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults: 
       run: 
         working-directory: apps/backend
@@ -33,6 +34,7 @@ jobs:
 
   lint-frontend:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults: 
       run: 
         working-directory: apps/frontend

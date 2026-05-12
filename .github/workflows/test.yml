@@ -10,6 +10,7 @@ on:
 jobs:
   test-backend:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults: 
       run: 
         working-directory: apps/backend
@@ -33,6 +34,7 @@ jobs:
 
   test-frontend:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults: 
       run: 
         working-directory: apps/frontend
@@ -48,7 +50,17 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/frontend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
       - name: Run Playwright testing
