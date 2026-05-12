@@ -22,7 +22,6 @@ test:
 lint:
 	$(MAKE) -C $(BACKEND_DIR) lint
 	cd $(FRONTEND_DIR) && yarn lint
-
-format:
 	cd $(FRONTEND_DIR) && yarn format
+	
 

@@ -10,14 +10,16 @@ on:
 jobs:
   lint-backend:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults: 
       run: 
         working-directory: apps/backend
 
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v3
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b        
         with: 
+          version: "0.11.13"
           enable-cache: true
       - uses: actions/setup-python@v5
         with: 
@@ -32,6 +34,7 @@ jobs:
 
   lint-frontend:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults: 
       run: 
         working-directory: apps/frontend
@@ -42,6 +45,7 @@ jobs:
         with:
           node-version: '22.22.0'
           cache: 'yarn'
+          cache-dependency-path: 'apps/frontend/yarn.lock'
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
