@@ -1,32 +1,67 @@
-name: test
+name: Test
 
-on:
-  workflow_call:
-    inputs:
-      directory:
-        description: 'Active directory for test'
-        required: true
-        type: string
-      
-      coverage:
-        description: 'Minimum coverage required to pass'
-        required: false
-        type: number
-        default: 80
-        
-      
+on: 
+  push:
+    branches: [dev,main]   
+  pull_request:
+    branches: [dev,main]
+
 
 jobs:
-
-  test:
+  test-backend:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    
+    timeout-minutes: 20
+    defaults: 
+      run: 
+        working-directory: apps/backend
+
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b        
+        with: 
+          version: "0.11.13"
+          enable-cache: true
       - uses: actions/setup-python@v5
+        with: 
+          python-version: 3.11
+
+      - name: Install Dependencies
+        run: make install
+
+      - name: PyTest Testing
+        run: make test
+
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults: 
+      run: 
+        working-directory: apps/frontend
+
+    steps: 
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          python-version: '3.11'
-          
-      - run: pip install -r requirements-dev.txt
-      - run: pytest -v ${{ inputs.directory }} --cov=${{ inputs.directory }} --cov-fail-under=${{ inputs.coverage }} --cov-report=term-missing
+          node-version: '22.22.0'
+          cache: 'yarn'
+          cache-dependency-path: 'apps/frontend/yarn.lock'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/frontend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright testing
+        run: yarn test

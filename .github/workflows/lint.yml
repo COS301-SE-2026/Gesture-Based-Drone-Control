@@ -1,26 +1,57 @@
-name: lint
+name: Lint
 
 on: 
-  workflow_call:
-    inputs: 
-      directory: 
-        description: 'Active directory for linting'
-        required: false
-        type: string
-        default: '.'
+  push:
+    branches: ['**']   
+  pull_request:
+    branches: ['**'] 
 
 
 jobs:
-  lint: 
+  lint-backend:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    defaults: 
+      run: 
+        working-directory: apps/backend
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b        
+        with: 
+          version: "0.11.13"
+          enable-cache: true
       - uses: actions/setup-python@v5
         with: 
-          python-version: '3.11'
+          python-version: 3.11
 
-      - run: pip install -r requirements-dev.txt
-      - run: ruff check --verbose --statistics --output-format=github ${{ inputs.directory }}
-      - run: ruff format --check --diff --verbose ${{ inputs.directory }}
+      - name: Install Dependencies
+        run: make install
+
+      - name: Ruff Linter
+        run: make lint
+
+
+  lint-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults: 
+      run: 
+        working-directory: apps/frontend
+
+    steps: 
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.0'
+          cache: 'yarn'
+          cache-dependency-path: 'apps/frontend/yarn.lock'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run ESLint
+        run: yarn lint
+
+      - name: Check Prettier formatting
+        run: yarn format:check
