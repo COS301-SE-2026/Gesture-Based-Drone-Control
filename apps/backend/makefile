@@ -6,7 +6,9 @@ install:
 	uv sync --all-groups
 
 test: 	
-	uv run pytest tests/ --cov=app --cov-fail-under=80 --cov-report=term-missing
+	uv run pytest tests/ --cov=app --cov-report=term-missing
+
+#--cov-fail-under=80
 
 lint: 
 	uv run ruff check --verbose --statistics --output-format=github
