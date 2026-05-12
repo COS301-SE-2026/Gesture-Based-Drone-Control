@@ -1,32 +1,53 @@
-name: test
+name: Test
 
-on:
-  workflow_call:
-    inputs:
-      directory:
-        description: 'Active directory for test'
-        required: true
-        type: string
-      
-      coverage:
-        description: 'Minimum coverage required to pass'
-        required: false
-        type: number
-        default: 80
-        
-      
+on: 
+  push:
+    branches: [dev,main]   
+  pull_request:
+    branches: [dev,main]
+
 
 jobs:
-
-  test:
+  test-backend:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    
+    defaults: 
+      run: 
+        working-directory: apps/backend
+
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with: 
+          enable-cache: true
       - uses: actions/setup-python@v5
+        with: 
+          python-version: 3.11
+
+      - name: Install Dependencies
+        run: make install
+
+      - name: PyTest Testing
+        run: make test
+
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    defaults: 
+      run: 
+        working-directory: apps/frontend
+
+    steps: 
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          python-version: '3.11'
-          
-      #- run: pip install -r requirements-dev.txt
-      #- run: pytest -v ${{ inputs.directory }} --cov=${{ inputs.directory }} --cov-fail-under=${{ inputs.coverage }} --cov-report=term-missing
+          node-version: '22.22.0'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright testing
+        run: yarn test
