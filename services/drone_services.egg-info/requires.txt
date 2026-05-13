@@ -1,0 +1,14 @@
+opencv-python>=4.8
+mediapipe>=0.10
+tornado==4.5.3
+numpy>=1.26
+msgpack-rpc-python
+backports.ssl-match-hostname
+
+[airsim]
+airsim
+
+[dev]
+pytest>=8.0
+pytest-asyncio>=0.23
+ruff
