@@ -4,21 +4,44 @@
 The DroneAdepter abstract base class and TelemetryData dataclass
 - Interface that every drone adapter must implement
 
+DroneAdapter:
+    The main point of interation is execute(command).
+    Adapter design pattern used so that callers do not
+    need to know the gory details of whatever drone sim
+    or drone sdk they are interacting with
+
+TelemetryData:
+    A basic dataclass returned by get_telemetry(). All
+    concrete adapters must return at lease these fields.
+    A sentinel value may be used for unsupported values,
+    such as 100% for airsim.
 
 """
 
 import logging
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from services.commands import Command, CommandType
 
 logger = logging.getLogger(__name__)
 
-
-@dataclass
 class TelemetryData:
-	""" """
+    """ 
+    All drone adapters return this shape from get_telemetry()
+    extra : dict
+        Escape hatch for adapter-specific values that don't belong in
+        the standard fields. Use sparingly. Consumers must not depend
+        on keys in this dict being present.
+    """
+
+    altitude_m:   float = 0.0
+    speed_ms:     float = 0.0
+    battery_pct:  float = 100.0
+    heading_deg:  float = 0.0
+    is_flying:    bool  = False
+    source:       str   = "unknown"
+    extra:        dict  = field(default_factory=dict)
 
 
 class DroneAdapter(ABC):
