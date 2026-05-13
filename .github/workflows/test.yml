@@ -1,16 +1,14 @@
 name: Test
 
-on: 
-  push:
-    branches: [dev,main]   
+on:  
   pull_request:
-    branches: [dev,main]
+    branches: [dev,main,'Use-Case**']
 
 
 jobs:
   test-backend:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     defaults: 
       run: 
         working-directory: apps/backend
@@ -34,7 +32,7 @@ jobs:
 
   test-frontend:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     defaults: 
       run: 
         working-directory: apps/frontend
