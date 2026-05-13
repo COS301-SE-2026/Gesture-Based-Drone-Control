@@ -15,6 +15,7 @@ build:
 	$(MAKE) -C $(BACKEND_DIR) build &
 	cd $(FRONTEND_DIR) && yarn build
 
+
 test:
 	$(MAKE) -C $(BACKEND_DIR) test
 	cd $(FRONTEND_DIR) && yarn test
@@ -22,6 +23,11 @@ test:
 lint:
 	$(MAKE) -C $(BACKEND_DIR) lint
 	cd $(FRONTEND_DIR) && yarn lint
+
+fix:
+	$(MAKE) -C $(BACKEND_DIR) fix
 	cd $(FRONTEND_DIR) && yarn format
+
+
 	
 
