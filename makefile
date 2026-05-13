@@ -17,6 +17,7 @@ build:
 	$(MAKE) -C $(BACKEND_DIR) build &
 	cd $(FRONTEND_DIR) && yarn build
 
+
 test:
 	$(MAKE) -C $(BACKEND_DIR) test
 	cd $(FRONTEND_DIR) && yarn test
@@ -24,6 +25,9 @@ test:
 lint:
 	$(MAKE) -C $(BACKEND_DIR) lint
 	cd $(FRONTEND_DIR) && yarn lint
+
+fix:
+	$(MAKE) -C $(BACKEND_DIR) fix
 	cd $(FRONTEND_DIR) && yarn format
 
 #keeping services in its own corner as we're mocking everything for now
@@ -33,4 +37,6 @@ services-install:
 
 services-test:
 	cd $(SERVICES_DIR) && pytest
+
+	
 

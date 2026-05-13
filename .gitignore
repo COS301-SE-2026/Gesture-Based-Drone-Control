@@ -7,3 +7,5 @@ data/*.db
 drone_services.egg-info
 __pycache__/
 .pytest_cache
+__pycache__
+
