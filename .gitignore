@@ -3,3 +3,4 @@ node_modules/
 dist/
 data/*.db
 .venv
+__pycache__
