@@ -3,3 +3,5 @@ node_modules/
 dist/
 data/*.db
 .venv
+.egg-info
+drone_services.egg-info
