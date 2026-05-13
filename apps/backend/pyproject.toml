@@ -13,6 +13,8 @@ dependencies = [
     "numpy>=2.4.4",
     "opencv-python>=4.13.0.92",
     "websockets>=16.0",
+    # all files from services will be needed at some point, just not yet
+    # "drone-services @ file://../../services"
 ]
 
 [dependency-groups]

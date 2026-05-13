@@ -2,8 +2,10 @@
 
 FRONTEND_DIR := apps/frontend
 BACKEND_DIR := apps/backend
+SERVICES_DIR := services
 
 install:
+	$(MAKE) -C $(SERVICES_DIR) install
 	$(MAKE) -C $(BACKEND_DIR) install
 	cd $(FRONTEND_DIR) && yarn install
 
@@ -28,6 +30,13 @@ fix:
 	$(MAKE) -C $(BACKEND_DIR) fix
 	cd $(FRONTEND_DIR) && yarn format
 
+#keeping services in its own corner as we're mocking everything for now
+
+services-install:
+	pip install -e $(SERVICES_DIR)[dev] --break-system-packages
+
+services-test:
+	cd $(SERVICES_DIR) && pytest
 
 	
 
