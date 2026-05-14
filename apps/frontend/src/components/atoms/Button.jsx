@@ -14,7 +14,7 @@ const Button = ({
     }) => {
         const base = [
             "inline-flex items-center justify-center gap-2",
-            "font-sans font-semibold",
+            "font-inter font-semibold",
             "rounded-lg transition-all duration-200",
             "focus:outline-none focus-visible:outline-none",
             "select-none cursor-pointer",
