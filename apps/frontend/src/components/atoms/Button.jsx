@@ -9,7 +9,7 @@ const Button = ({
     disabled = false ,
     fullWidth = false ,
     onClick ,
-    classNaME = "",
+    className = "",
     ...props 
     }) => {
         const base = [
@@ -21,8 +21,8 @@ const Button = ({
         ].join(" ");
         const variants={//so the buttons in the page will have three varinats 
             primary:[//should basically be a red button for primary actions
-                "bg-Red hover:bg-LightRed active bg-DarkRed",
-                "test-offWhite",
+                "bg-Red hover:bg-LightRed active:bg-DarkRed",
+                "test-OffWhite",
                 "shadow-md",
             ].join(" "),
             secondary:[
@@ -30,7 +30,7 @@ const Button = ({
                 "text-OffWhite",
             ].join(" "),
             ghost:[//will be a button without backgrounds especially for like icons.
-                "bg-transperant hover:bg-OffWhite/10",
+                "bg-transparent hover:bg-OffWhite/10",
                 "text-DarkGrey hover:text-OffWhite",
             ].join(" "),
             danger:[
@@ -45,10 +45,24 @@ const Button = ({
             lg:"text-base px-lg py-sm rounded-xl",
         };
 
-        const iconSize = {sm:12,md:14,lg:18}[size],
+        const iconSize = {sm:12,md:14,lg:18}[size];
 
         return(
-            <button>
+            <button
+            onClick={onClick}
+            disabled={disabled}
+            className={[
+                base,
+                variants[variant],
+                disabled ?"opacity-40 cursor-not-allowed pointer-events-none" :"",
+                fullWidth?"w-full":"",
+                className,
+            ].filter(Boolean).join(" ")}
+            {...props}
+            >
+            {Icon && iconPosition === "left" && <Icon size={iconSize}/>}
+            {children}
+            {Icon && iconPosition === "right" && <Icon size={iconSize}/>}
             </button>
             
         );
