@@ -18,30 +18,33 @@ TelemetryData:
 
 """
 
+from __future__ import annotations
+
 import logging
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from services.commands import Command, CommandType
 
 logger = logging.getLogger(__name__)
 
-class TelemetryData:
-    """ 
-    All drone adapters return this shape from get_telemetry()
-    extra : dict
-        Escape hatch for adapter-specific values that don't belong in
-        the standard fields. Use sparingly. Consumers must not depend
-        on keys in this dict being present.
-    """
 
-    altitude_m:   float = 0.0
-    speed_ms:     float = 0.0
-    battery_pct:  float = 100.0
-    heading_deg:  float = 0.0
-    is_flying:    bool  = False
-    source:       str   = "unknown"
-    extra:        dict  = field(default_factory=dict)
+class TelemetryData:
+	"""
+	All drone adapters return this shape from get_telemetry()
+	extra : dict
+	    Escape hatch for adapter-specific values that don't belong in
+	    the standard fields. Use sparingly. Consumers must not depend
+	    on keys in this dict being present.
+	"""
+
+	altitude_m: float = 0.0
+	speed_ms: float = 0.0
+	battery_pct: float = 100.0
+	heading_deg: float = 0.0
+	is_flying: bool = False
+	source: str = 'unknown'
+	extra: dict = field(default_factory=dict)
 
 
 class DroneAdapter(ABC):

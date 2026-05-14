@@ -11,3 +11,7 @@ lint:
 
 dev:
 	uv run python -m services.main
+
+fix-services:
+	uv run ruff check --fix /
+	uv run ruff format /

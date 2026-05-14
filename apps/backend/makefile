@@ -16,8 +16,8 @@ lint:
 	uv run ruff check app tests ../../services/tests/ --output-format=github
 
 fix:
-	uv run ruff check --fix app/ tests/ ../../services/tests/
-	uv run ruff format app/ tests/ ../../services/tests/
+	uv run ruff check --fix app/ tests/ ../../services/
+	uv run ruff format app/ tests/ ../../services/
 
 dev:
 	uv run fastapi dev app/main.py --port $(PORT)
