@@ -14,4 +14,8 @@ export default defineConfig({
     port: 3000,           // desired port
     strictPort: false,    // falls back to next available if 3000 is taken
   },
+    watch: {
+      usePolling: true,
+      interval: 100,   // milliseconds between polls (optional)
+    },
 })
