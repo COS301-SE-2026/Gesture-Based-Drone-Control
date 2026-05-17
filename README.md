@@ -92,81 +92,68 @@ The system is structured across six integrated tiers, from raw hardware input th
 
 ```
 gesture-drone-control/
-
- apps/ # Deployable application targets
- backend/ # FastAPI backend (REST + WebSocket)
- app/
- api/ # Route handlers & WebSocket gateway
- core/ # Config, startup, app factory
- dependencies/ # Dependency injection (auth, db, etc.)
- tests/ # Backend unit & integration tests (Pytest)
-
- desktop/ # Electron desktop wrapper (Win/Linux/macOS)
-
- frontend/ # React + TypeScript dashboard
- public/ # Static assets (favicon, icons)
- src/ # App source (components, pages, hooks)
- tests/ # Frontend E2E tests (Playwright)
-
- mobile/ # Capacitor mobile shell (iOS + Android)
- android/
- ios/
-
- services/ # Core Python service layer (shared logic)
- cv_pipeline/ # Computer vision & gesture recognition
- camera/ # Camera feed capture (OpenCV)
- gestures/ # Gesture engine & recognizers
- recognizers/ # Rule-based & ML-based recognizers
- hand-detection/ # MediaPipe hand landmark detection
- processing/ # Async queue & pipeline orchestration
-
- drone_control/ # Drone adapter & flight controller
- adapters/ # AirSim, Gazebo, xFly adapters
-
- input/ # Input source abstraction
- sources/ # Gesture, keyboard & generic adapters
-
- commands/ # Command model & dispatch logic
-
- telemetry/ # Telemetry observer, manager & storage
- storage/ # SQLite & PostgreSQL repositories
-
- tests/ # Service-layer tests
- cv_pipeline_testing/
-
- packages/ # Shared code across apps & services
- contracts/ # Shared schema definitions
- python/ # Pydantic schemas (schemas.py)
- typescript/ # TypeScript type definitions (types.ts)
- domain/ # Domain models (e.g. gesture.py)
- utils/ # Shared utility helpers
-
- infrastructure/ # Infrastructure & deployment config
- docker/ # Per-service Dockerfiles
- airsim/
- backend.Dockerfile
- frontend.Dockerfile
- scripts/ # Setup & utility shell scripts
-
- docs/ # All project documentation
- api/ # API reference docs
- assets/ # Diagrams, UI mockups, sequence diagrams
- Sequence Diagrams/
- UC Diagrams/
- UI/
- demo/ # Deployment & demo guides
- diagrams/ # DrawIO architecture diagrams
- reports/ # Tender & formal reports
- testing/ # Testing strategy documentation
-
- sandbox/ # Throwaway scripts & manual testing tools
-
- tests/ # Top-level integration tests
- integration/
-
- docker-compose.yml # Full-stack local orchestration
- makefile # Top-level dev shortcuts
- README.md
+├── apps/
+│   ├── backend/                   # FastAPI backend (REST + WebSocket)
+│   │   ├── app/
+│   │   │   ├── api/               # Route handlers & WebSocket gateway
+│   │   │   ├── core/              # Config, startup, app factory
+│   │   │   └── dependencies/      # Dependency injection (auth, db, etc.)
+│   │   └── tests/                 # Pytest unit & integration tests
+│   ├── desktop/                   # Electron wrapper (Win/Linux/macOS)
+│   ├── frontend/                  # React + TypeScript dashboard
+│   │   ├── public/                # Static assets (favicon, icons)
+│   │   ├── src/                   # Components, pages, hooks
+│   │   └── tests/                 # Playwright E2E tests
+│   └── mobile/                    # Capacitor shell (iOS + Android)
+│       ├── android/
+│       └── ios/
+│
+├── services/                      # Core Python service layer
+│   ├── cv_pipeline/               # Computer vision & gesture recognition
+│   │   ├── camera/                # Camera feed capture (OpenCV)
+│   │   ├── gestures/              # Gesture engine
+│   │   │   └── recognizers/       # Rule-based & ML recognizers
+│   │   ├── hand-detection/        # MediaPipe landmark detection
+│   │   └── processing/            # Async queue & pipeline
+│   ├── drone_control/             # Flight controller
+│   │   └── adapters/              # AirSim, Gazebo, xFly adapters
+│   ├── input/                     # Input source abstraction
+│   │   └── sources/               # Gesture, keyboard & generic adapters
+│   ├── commands/                  # Command model & dispatch logic
+│   ├── telemetry/                 # Observer, manager & storage
+│   │   └── storage/               # SQLite & PostgreSQL repos
+│   └── tests/
+│       └── cv_pipeline_testing/
+│
+├── packages/                      # Shared code across apps & services
+│   ├── contracts/
+│   │   ├── python/                # Pydantic schemas
+│   │   └── typescript/            # Shared type definitions
+│   ├── domain/                    # Domain models
+│   └── utils/                     # Shared utility helpers
+│
+├── infrastructure/
+│   ├── docker/                    # Per-service Dockerfiles
+│   │   └── airsim/
+│   └── scripts/                   # Setup & utility scripts
+│
+├── docs/                          # All project documentation
+│   ├── api/
+│   ├── assets/
+│   │   ├── Sequence Diagrams/
+│   │   ├── UC Diagrams/
+│   │   └── UI/
+│   ├── demo/
+│   ├── diagrams/
+│   ├── reports/
+│   └── testing/
+│
+├── sandbox/                       # Manual testing & throwaway scripts
+├── tests/
+│   └── integration/
+├── docker-compose.yml
+├── makefile
+└── README.md
 ```
 
 ---
