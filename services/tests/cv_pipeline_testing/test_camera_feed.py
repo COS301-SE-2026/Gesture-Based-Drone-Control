@@ -213,6 +213,80 @@ class TestCaptureImage:
         assert f2.frame_index == 2
         assert f3.frame_index == 3
         
+#preporcess testing
+class TestPreprocess:
+    def _make_open_feed(self, config=None):
+        """Returns a feed with a mocked-open capture device."""
+        with patch("camera_feed.cv2.VideoCapture") as mock_cap_cls:
+            mock_cap = MagicMock()
+            mock_cap.isOpened.return_value = True
+            mock_cap_cls.return_value = mock_cap
+            feed = make_feed(config)
+            feed.open()
+            return feed
+
+    def test_bgr_and_rgb_frames_returned(self):
+        feed = self._make_open_feed()
+        raw = make_blank_frame()
+        result = feed._preprocess(raw)
+
+        assert result.bgr_frame is not None
+        assert result.rgb_frame is not None
+
+    def test_output_resolution_matches_config(self):
+        config = CameraConfig(frame_width=320, frame_height=240)
+        feed = self._make_open_feed(config)
+
+        # Deliberately pass a frame with different dimensions
+        oversized = np.zeros((720, 1280, 3), dtype=np.uint8)
+        result = feed._preprocess(oversized)
+
+        h, w = result.bgr_frame.shape[:2]
+        assert w == 320
+        assert h == 240
+
+    def test_no_resize_when_dimensions_match(self):
+        """If the frame is already the right size, resize should not be called."""
+        config = CameraConfig(frame_width=640, frame_height=480)
+        feed = self._make_open_feed(config)
+
+        raw = make_blank_frame(640, 480)
+        with patch("camera_feed.cv2.resize") as mock_resize:
+            feed._preprocess(raw)
+            mock_resize.assert_not_called()
+
+    def test_flip_applied_when_enabled(self):
+        config = CameraConfig(flip_horizontal=True)
+        feed = self._make_open_feed(config)
+        raw = make_blank_frame()
+
+        with patch("camera_feed.cv2.flip", wraps=__import__("cv2").flip) as mock_flip:
+            feed._preprocess(raw)
+            mock_flip.assert_called_once_with(raw, 1)
+
+    def test_flip_skipped_when_disabled(self):
+        config = CameraConfig(flip_horizontal=False)
+        feed = self._make_open_feed(config)
+        raw = make_blank_frame()
+
+        with patch("camera_feed.cv2.flip") as mock_flip:
+            feed._preprocess(raw)
+            mock_flip.assert_not_called()
+
+    def test_rgb_frame_has_correct_channel_order(self):
+        """BGR→RGB: channel 0 of bgr should equal channel 2 of rgb."""
+        feed = self._make_open_feed()
+
+        # Create a frame with a known colour in BGR
+        raw = np.zeros((480, 640, 3), dtype=np.uint8)
+        raw[:, :, 0] = 255   # Blue channel in BGR
+
+        result = feed._preprocess(raw)
+
+        # After BGR→RGB, the blue value should be in channel 2
+        assert result.rgb_frame[0, 0, 2] == 255
+        assert result.rgb_frame[0, 0, 0] == 0
+        
 #helpers 
 def make_blank_frame(w: int = 640, h: int = 480) -> np.ndarray:
     """Returns a blank BGR frame of the given dimensions."""
