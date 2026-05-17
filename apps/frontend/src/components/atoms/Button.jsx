@@ -1,71 +1,60 @@
-import React from "react";
+import { Loader2 } from 'lucide-react';
 
-const Button = ({
+
+export default function Button({
+    variant = 'default',
+    isLoading = false,
+    icon: Icon = null,
+    size = 'md',
+    className = '',
+    disabled = false,
+    onClick,
     children,
-    variant = "primary",
-    size = "md",
-    icon:Icon,
-    iconPosition = "false",
-    disabled = false ,
-    fullWidth = false ,
-    onClick ,
-    className = "",
-    ...props 
-    }) => {
-        const base = [
-            "inline-flex items-center justify-center gap-2",
-            "font-inter font-semibold",
-            "rounded-lg transition-all duration-200",
-            "focus:outline-none focus-visible:outline-none",
-            "select-none cursor-pointer",
-        ].join(" ");
-        const variants={//so the buttons in the page will have three varinats 
-            primary:[//should basically be a red button for primary actions
-                "bg-Red hover:bg-LightRed active:bg-DarkRed",
-                "test-OffWhite",
-                "shadow-md",
-            ].join(" "),
-            secondary:[
-                "bg-transperant hover:bg-OffWhite/10",
-                "text-OffWhite",
-            ].join(" "),
-            ghost:[//will be a button without backgrounds especially for like icons.
-                "bg-transparent hover:bg-OffWhite/10",
-                "text-DarkGrey hover:text-OffWhite",
-            ].join(" "),
-            danger:[
-                "bg-DarkRed/60 hover:bg-DarkRed active:bg-DarkRed/80",
-                "text-OffWhite/80",
-                "border border-Red/50",
-            ].join(" "),
-        };
-        const sizes = {//3 basic ones 
-            sm:"text-xs px-sm py-xs rounded-md",
-            md:"text-sm px-md py-xs",
-            lg:"text-base px-lg py-sm rounded-xl",
-        };
+    ...props
+}) {
 
-        const iconSize = {sm:12,md:14,lg:18}[size];
-
-        return(
-            <button
-            onClick={onClick}
-            disabled={disabled}
-            className={[
-                base,
-                variants[variant],
-                disabled ?"opacity-40 cursor-not-allowed pointer-events-none" :"",
-                fullWidth?"w-full":"",
-                className,
-            ].filter(Boolean).join(" ")}
-            {...props}
-            >
-            {Icon && iconPosition === "left" && <Icon size={iconSize}/>}
-            {children}
-            {Icon && iconPosition === "right" && <Icon size={iconSize}/>}
-            </button>
-            
-        );
-
+    // size prop
+    const sizeClasses = {
+        sm: 'h-8 px-3 text-xs',
+        md: 'h-10 px-4 text-sm',
+        lg: 'h-12 px-6 text-base',
     };
-    export default Button;
+
+    //variants of the button prop
+    const variantClasses = {
+        default: 'bg-Red text-OffWhite hover:bg-LightRed active:bg-DarkRed',
+        secondary: 'bg-DarkGrey text-OffWhite hover:bg-Grey active:bg-DarkGrey',
+        //can add more if we need them
+    };
+
+    return (
+        <button
+            variant={variant === 'default' ? 'default' : 'secondary'}
+            disabled={disabled || isLoading}
+            onClick={onClick}
+            className={`
+                ${sizeClasses[size]}
+                ${variantClasses[variant]}
+                ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}
+                ${className}
+                font-medium
+                rounded-lg
+                transition-colors
+                duration-200
+                flex
+                items-center
+                justify-center
+                gap-5
+            `}
+            {...props}
+        >
+            {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+            ) : Icon ? (
+                <Icon className="w-4 h-4" />
+            ) : null }
+            {children}
+        </button>
+    );
+}
+
