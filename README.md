@@ -4,10 +4,11 @@
 
 <br/>
 
-[![Build](https://img.shields.io/github/actions/workflow/status/codex-merchants/gesture-drone-control/ci.yml?style=for-the-badge&logo=github-actions&logoColor=white&label=BUILD&color=0ea5e9&labelColor=0d1117)](https://github.com/codex-merchants/gesture-drone-control/actions)
-[![Coverage](https://img.shields.io/coveralls/github/codex-merchants/gesture-drone-control?style=for-the-badge&logo=coveralls&logoColor=white&label=COVERAGE&color=22d3a5&labelColor=0d1117)](https://coveralls.io)
-[![Issues](https://img.shields.io/github/issues/codex-merchants/gesture-drone-control?style=for-the-badge&logo=github&logoColor=white&label=ISSUES&color=f43f5e&labelColor=0d1117)](https://github.com/codex-merchants/gesture-drone-control/issues)
-[![Uptime](https://img.shields.io/uptimerobot/status/m000000000-xxxxxxxxxxxx?style=for-the-badge&logo=statuspage&logoColor=white&label=UPTIME&color=22d3a5&labelColor=0d1117)](https://uptimerobot.com)
+[![Test](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/test.yml?style=for-the-badge&logo=github-actions&logoColor=white&label=TEST&color=22c55e&labelColor=0d1117)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/test.yml)
+[![Lint](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/lint.yml?style=for-the-badge&logo=github-actions&logoColor=white&label=LINT&color=f59e0b&labelColor=0d1117)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/lint.yml)
+[![Issues](https://img.shields.io/github/issues/COS301-SE-2026/Gesture-Based-Drone-Control?style=for-the-badge&logo=github&logoColor=white&label=ISSUES&color=f43f5e&labelColor=0d1117)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/issues)
+<!--[![Uptime](https://img.shields.io/uptimerobot/status/m000000000-xxxxxxxxxxxx?style=for-the-badge&logo=statuspage&logoColor=white&label=UPTIME&color=22d3a5&labelColor=0d1117)](https://uptimerobot.com) -->
+<!--[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=COS301-SE-2026_Gesture-Based-Drone-Control&metric=coverage)](https://sonarcloud.io/summary/new_code?id=COS301-SE-2026_Gesture-Based-Drone-Control)-->
 
 <br/>
 
