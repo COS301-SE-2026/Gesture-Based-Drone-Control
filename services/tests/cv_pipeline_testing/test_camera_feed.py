@@ -2,14 +2,14 @@
 # Run from services/ with: pytest tests/cv_pipeline_testing/test_camera_feed.py -v
 
 #finds file if not in same directory
-import sys
-# file sys tools
 import os
+# file sys tools
+import sys
 #mock camera to make "fake" cam 
 from unittest.mock import MagicMock, patch
 
-import numpy as np
 import pytest
+import numpy as np
 import cv2
 
 # find camera_feed.py file
