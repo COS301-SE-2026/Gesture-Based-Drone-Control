@@ -41,9 +41,9 @@ class CapturedFrame:
     # processes frame one by one
 
     # openCV display
-    bgr_frame: np.ndarray         
+    bgr_frame: np.ndarray
     # conversion for mediapipe
-    rgb_frame: np.ndarray          
+    rgb_frame: np.ndarray
     # monotonic counter
     frame_index: int
 
@@ -57,13 +57,13 @@ class CameraFeed:
         self._frame_idx = 0
 
     # lifecycle
-    def open(self) -> None:                            
+    def open(self) -> None:
         if self._config.source == CameraSource.FILE:
             if not self._config.video_path:
                 raise ValueError(
                     "CameraConfig.video_path must be set when source=FILE."
                 )
-            self._cap = cv2.VideoCapture(self._config.video_path) 
+            self._cap = cv2.VideoCapture(self._config.video_path)
         else:
             self._cap = cv2.VideoCapture(self._config.device_index)
 
@@ -86,30 +86,33 @@ class CameraFeed:
             self._config.target_fps,
         )
 
-    def close(self) -> None:                           
+    def close(self) -> None:
         """Release camera device"""
         if self._cap and self._cap.isOpened():
             self._cap.release()
             self._cap = None
             logger.info("Camera closed.")
 
+    def is_open(self) -> bool:
+        return self._cap is not None and self._cap.isOpened()
+
     # context manager
-    def __enter__(self) -> "CameraFeed":               
+    def __enter__(self) -> "CameraFeed":
         self.open()
         return self
 
-    def __exit__(self, *_) -> None:                    
+    def __exit__(self, *_) -> None:
         self.close()
 
     # frame capture
     # its been 2 hours and only 100 lines RAHHHHHHHHHH
     # read and preprocess single frame from camera
-    def capture_image(self) -> Optional[CapturedFrame]: 
-        if self._cap is None or not self._cap.isOpened(): 
+    def capture_image(self) -> Optional[CapturedFrame]:
+        if self._cap is None or not self._cap.isOpened():
             logger.error("capture_image() called before open()")
             return None
 
-        ret, raw = self._cap.read()                    
+        ret, raw = self._cap.read()
 
         if not ret:
             logger.warning("Cam returned no frame")
@@ -118,7 +121,7 @@ class CameraFeed:
         return self._preprocess(raw)
 
     # preprocessing
-    def _preprocess(self, raw: np.ndarray) -> CapturedFrame: 
+    def _preprocess(self, raw: np.ndarray) -> CapturedFrame:
         """Resize then flip then BGR TO RGB"""
         h, w = raw.shape[:2]
         if (w, h) != (self._config.frame_width, self._config.frame_height):
@@ -131,12 +134,12 @@ class CameraFeed:
         if self._config.flip_horizontal:
             raw = cv2.flip(raw, 1)
 
-        rgb = cv2.cvtColor(raw, cv2.COLOR_BGR2RGB)     
+        rgb = cv2.cvtColor(raw, cv2.COLOR_BGR2RGB)
 
-        self._frame_idx += 1                           
+        self._frame_idx += 1
         return CapturedFrame(
             bgr_frame=raw,
-            rgb_frame=rgb,                            
+            rgb_frame=rgb,
             frame_index=self._frame_idx,
         )
 
