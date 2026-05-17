@@ -123,6 +123,96 @@ class TestCameraFeedOpen:
         assert calls[cv2.CAP_PROP_FRAME_HEIGHT] == 720
         assert calls[cv2.CAP_PROP_FPS] == 60
         
+# closed cam feed testing
+class TestCameraFeedClose:
+    @patch("camera_feed.cv2.VideoCapture")
+    def test_close_releases_capture(self, mock_cap_cls):
+        mock_cap = MagicMock()
+        mock_cap.isOpened.return_value = True
+        mock_cap_cls.return_value = mock_cap
+
+        feed = make_feed()
+        feed.open()
+        feed.close()
+
+        mock_cap.release.assert_called_once()
+        assert not feed.is_open()
+
+    def test_close_before_open_does_not_crash(self):
+        feed = make_feed()
+        feed.close()  # should be a no-op
+
+
+#cam manager testing
+class TestCameraFeedContextManager:
+    @patch("camera_feed.cv2.VideoCapture")
+    def test_context_manager_opens_and_closes(self, mock_cap_cls):
+        mock_cap = MagicMock()
+        mock_cap.isOpened.return_value = True
+        mock_cap_cls.return_value = mock_cap
+
+        with CameraFeed(CameraConfig()) as feed:
+            assert feed.is_open()
+
+        mock_cap.release.assert_called_once()
+ 
+ 
+#capture img testing
+class TestCaptureImage:
+    @patch("camera_feed.cv2.VideoCapture")
+    def test_returns_none_before_open(self, mock_cap_cls):
+        feed = make_feed()
+        # _cap is None — should return None without crashing
+        result = feed.capture_image()
+        assert result is None
+
+    @patch("camera_feed.cv2.VideoCapture")
+    def test_returns_captured_frame_on_success(self, mock_cap_cls):
+        raw = make_blank_frame()
+        mock_cap = MagicMock()
+        mock_cap.isOpened.return_value = True
+        mock_cap.read.return_value = (True, raw)
+        mock_cap_cls.return_value = mock_cap
+
+        feed = make_feed()
+        feed.open()
+        result = feed.capture_image()
+
+        assert isinstance(result, CapturedFrame)
+        assert result.frame_index == 1
+
+    @patch("camera_feed.cv2.VideoCapture")
+    def test_returns_none_when_read_fails(self, mock_cap_cls):
+        mock_cap = MagicMock()
+        mock_cap.isOpened.return_value = True
+        mock_cap.read.return_value = (False, None)
+        mock_cap_cls.return_value = mock_cap
+
+        feed = make_feed()
+        feed.open()
+        result = feed.capture_image()
+
+        assert result is None
+
+    @patch("camera_feed.cv2.VideoCapture")
+    def test_frame_index_increments(self, mock_cap_cls):
+        raw = make_blank_frame()
+        mock_cap = MagicMock()
+        mock_cap.isOpened.return_value = True
+        mock_cap.read.return_value = (True, raw)
+        mock_cap_cls.return_value = mock_cap
+
+        feed = make_feed()
+        feed.open()
+
+        f1 = feed.capture_image()
+        f2 = feed.capture_image()
+        f3 = feed.capture_image()
+
+        assert f1.frame_index == 1
+        assert f2.frame_index == 2
+        assert f3.frame_index == 3
+        
 #helpers 
 def make_blank_frame(w: int = 640, h: int = 480) -> np.ndarray:
     """Returns a blank BGR frame of the given dimensions."""
