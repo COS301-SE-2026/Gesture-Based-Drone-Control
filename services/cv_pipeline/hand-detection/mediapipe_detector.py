@@ -16,7 +16,7 @@ import mediapipe as mp
 import numpy as np
 
 # camera_feed.py imports -> 1st in chain then this file
-from camera_feed import CaptureFrame
+from camera_feed import CapturedFrame
 
 logger = logging.getLogger(__name__)
 
@@ -75,17 +75,15 @@ class HandDetectionResult:
         Result returned with HandDetectionPipeline.detect_hands()
         hands = empty when no hands in camera view (never none)
     """
-    hands: list[DetectedHand] = field(default_factory = list)
+    hands: list[DetectedHand] = field(default_factory=list)
     frame_index: int = 0
     
     @property
     def has_hands(self) -> bool:
         return len(self.hands) > 0
     
-    @property
-    def has_hands(self) -> bool:
-        return len(self.hands) > 0
-    
+
+
     @property
     def hand_count(self) -> int:
         return len(self.hands)
@@ -95,7 +93,7 @@ class HandDetectionResult:
 class DetectorConfig:
     #confidence threshholds - lower = more detections but can also make more false positives
     min_detection_confidence: float = 0.7
-    mon_tracking_confidence: float = 0.5
+    min_tracking_confidence: float = 0.5
     #static_image_mode = F -> mediapipe tracks acrosss frames
     static_image_mode: bool = False
     
@@ -119,11 +117,11 @@ class HandDetectionPipeline:
         """
             Initiate mp hands model
         """
-        self.hands = _mp_hands.Hands(
-            static_image_mode = self._config.static_image_mode,
-            max_num_hands = MAX_HANDS,
-            min_detection_confidence = self._config.min_detection_confidence,
-            min_tracking_confidence = self._config.min_tracking_confidence,
+        self._hands = _mp_hands.Hands(
+            static_image_mode=self._config.static_image_mode,
+            max_num_hands=MAX_HANDS,
+            min_detection_confidence=self._config.min_detection_confidence,
+            min_tracking_confidence=self._config.min_tracking_confidence,
         )
         
         logger.info(
@@ -151,40 +149,38 @@ class HandDetectionPipeline:
 
     def __exit__(self, *_) -> None:
         self.close()
-    
-#detection
 
-def detect_hands(self, frame: CapturedFrame) -> HanddetectionResult:
-    """
-        Run mp hand detection on a captured frame
-        Retrun = hand detection result (once again never none)
-        no hands found = result is empty list
-    """
-    if self._hands is None:
-        logger.error("detect_hands() called before open()")
-        return HandsDetectionResult(frame_index = frame.frame.frame_index)
-    
-    #mp expects rgb (done in camera_feed.py)
-    mp_result = self._hands.process(frame.rgb_frame)
-    
-    if not mp_result.multi_hand_landmarks:
-        # no hands found = empty result
-        logger.debug("No hands found in frame %d", frame.frame_index)
-        return HandDetectionResult(frame_index = frame.frame_index)
-    
-    detected = []
-    for hand_landmarks, handedness_info in zip(
-        mp_result.mult_hand_landmarks,
-        mp_result.multi_handedness,
-    ):
+    #detection
+    def detect_hands(self, frame: CapturedFrame) -> HandDetectionResult:
+        """
+            Run mp hand detection on a captured frame
+            Retrun = hand detection result (once again never none)
+            no hands found = result is empty list
+        """
+        if self._hands is None:
+            logger.error("detect_hands() called before open()")
+            return HandDetectionResult(frame_index=frame.frame_index)
         
-        detected.append(self._extract_landmarks(hand_landmarks, handedness_info))
+        #mp expects rgb (done in camera_feed.py)
+        mp_result = self._hands.process(frame.rgb_frame)
         
-    logger.debug(
-        "Frame %d - detected %d hand(s)", frame.frame_index, len(detected)
-    )
-    
-    return HandDetectionResult(hands=detected, frame_index = frame.frame_index)
+        if not mp_result.multi_hand_landmarks:
+            # no hands found = empty result
+            logger.debug("No hands found in frame %d", frame.frame_index)
+            return HandDetectionResult(frame_index=frame.frame_index)
+        
+        detected = []
+        for hand_landmarks, handedness_info in zip(
+            mp_result.multi_hand_landmarks,
+            mp_result.multi_handedness,
+        ):
+            detected.append(self._extract_landmarks(hand_landmarks, handedness_info))
+            
+        logger.debug(
+            "Frame %d - detected %d hand(s)", frame.frame_index, len(detected)
+        )
+        
+        return HandDetectionResult(hands=detected, frame_index=frame.frame_index)
 
     def _extract_landmarks(
         self,
@@ -197,7 +193,7 @@ def detect_hands(self, frame: CapturedFrame) -> HanddetectionResult:
         """
         
         landmarks = [
-            HandLandmark(x = lm.x, y = lm.y, z = lm.z)
+            HandLandmark(x=lm.x, y=lm.y, z=lm.z)
             for lm in hand_landmarks.landmark
         ]
         
@@ -212,13 +208,13 @@ def detect_hands(self, frame: CapturedFrame) -> HanddetectionResult:
             handedness = Handedness.LEFT
 
         return DetectedHand(
-            handedness = handedness,
-            landmarks = landmarks,
-            confidence = confidence
+            handedness=handedness,
+            landmarks=landmarks,
+            confidence=confidence,
         )
         
     #drawing helper for smoke test
-    def draw_landmarks(self, frame: CapturedDrame, result: handDetectionResult) -> np.ndarray:
+    def draw_landmarks(self, frame: CapturedFrame, result: HandDetectionResult) -> np.ndarray:
         """
             Draw landmarks onto BGR frame 
             should return annotated frame (does not mess with original)
@@ -242,11 +238,12 @@ def detect_hands(self, frame: CapturedFrame) -> HanddetectionResult:
 #smoke test
 
 if __name__ == "__main__":
-    import cv2
     import os
     import sys
 
-    logging.basicConfig(level = logging.DEBUG)
+    import cv2
+
+    logging.basicConfig(level=logging.DEBUG)
     
     # add cam folder to path for smoke test
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "camera"))
@@ -265,12 +262,10 @@ if __name__ == "__main__":
             for i, hand in enumerate(result.hands):
                 wrist = hand.landmarks[0]
                 print(
-                    """
-                        f"frame={frame.frame_index:04d} "
-                        f"hand={i} {hand.handedness.name} "
-                        f"conf={hand.confidence: .2f} "
-                        f:wrist=({wrist.x:.2f}, {wrist.y:,2f})"
-                    """
+                    f"frame={frame.frame_index:04d} "
+                    f"hand={i} {hand.handedness.name} "
+                    f"conf={hand.confidence:.2f} "
+                    f"wrist=({wrist.x:.2f}, {wrist.y:.2f})"
                 )
             
             cv2.imshow("hand detection smoke test", annotated)
@@ -278,9 +273,3 @@ if __name__ == "__main__":
                 break
 
     cv2.destroyAllWindows()
-        
-            
-
-
-
-
