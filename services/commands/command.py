@@ -54,53 +54,53 @@ PRIORITY_CRITICAL = 999
 @dataclass
 class Command:
 	"""
-	    Represents a command to be sent to a drone.
+		Represents a command to be sent to a drone.
 
-	    Immutable data object representing a single option.
-	    Instances are read-only after creation since nothing in the
-	    pipeline would need to mutate a Command once emitted by an
+		Immutable data object representing a single option.
+		Instances are read-only after creation since nothing in the
+		pipeline would need to mutate a Command once emitted by an
 	InputAdapter.
 
-	    Attributes:
+		Attributes:
 
-	    type : CommandType
-	            the action to performed, required as there is no default
+		type : CommandType
+				the action to performed, required as there is no default
 
-	    payload : dict[str, Any]
-	            Optional params that modify how the command executes.
-	            Useful for more complex Commands and possibly macros
-	            or intelligent pathfinding.
+		payload : dict[str, Any]
+				Optional params that modify how the command executes.
+				Useful for more complex Commands and possibly macros
+				or intelligent pathfinding.
 
-	            Keys (to be implemented):
-	                    "distance_m" - How far to move
-	                    "speed_ms"   - Movement speed (m/s)
-	                    "duration_s  - how long to apply movement (s)
-	                    "degrees"    - rotation amount (degrees)
+				Keys (to be implemented):
+						"distance_m" - How far to move
+						"speed_ms"   - Movement speed (m/s)
+						"duration_s  - how long to apply movement (s)
+						"degrees"    - rotation amount (degrees)
 
-	    priority : int
-	            Ordering hit for a future async priority queue.
-	            Higher number = higher priority. dont set manually,
-	            this should be handled higher up in the pipeline
+		priority : int
+				Ordering hit for a future async priority queue.
+				Higher number = higher priority. dont set manually,
+				this should be handled higher up in the pipeline
 
-	    source : str
-	            Tag identifying which InputAdapter created the command.
-	            Just used for logging and debugging
+		source : str
+				Tag identifying which InputAdapter created the command.
+				Just used for logging and debugging
 
-	    Examples
+		Examples
 	--------
 	Basic takeoff:
-	    cmd = Command(type=CommandType.TAKEOFF, source="keyboard")
+		cmd = Command(type=CommandType.TAKEOFF, source="keyboard")
 
 	Move forward 3 m at a specific speed:
-	    cmd = Command(
-	        type=CommandType.MOVE_FORWARD,
-	        payload={"distance_m": 3.0, "speed_ms": 1.5},
-	        source="gesture",
-	    )
+		cmd = Command(
+			type=CommandType.MOVE_FORWARD,
+			payload={"distance_m": 3.0, "speed_ms": 1.5},
+			source="gesture",
+		)
 
 	Emergency stop (priority auto-elevated):
-	    cmd = Command(type=CommandType.EMERGENCY_STOP, source="keyboard")
-	    assert cmd.priority == PRIORITY_CRITICAL  # always True
+		cmd = Command(type=CommandType.EMERGENCY_STOP, source="keyboard")
+		assert cmd.priority == PRIORITY_CRITICAL  # always True
 	"""
 
 	type: CommandType

@@ -36,13 +36,13 @@ logger = logging.getLogger(__name__)
 
 class InputAdapter(ABC):
 	"""
-	    Abstract base class for all input adapters.
+		Abstract base class for all input adapters.
 
-	    Subclasses represent a single input channnel.
-	    Each channel must implement start() to begin listening
-	    and call self._emit() whenever a Command needs to be fired.
+		Subclasses represent a single input channnel.
+		Each channel must implement start() to begin listening
+		and call self._emit() whenever a Command needs to be fired.
 
-	    _emit() is synchronous. If a subclass runs in a background thread
+		_emit() is synchronous. If a subclass runs in a background thread
 	or async task, schedule the handler appropriately. I do not know how to do this
 	"""
 
