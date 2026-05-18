@@ -29,5 +29,7 @@ export const DashboardSideCard = ({ userName = "User" }) => {
                 </div>
             </Card>
         </>
-    )
-}
+    );
+};
+
+export default DashboardSideCard;
