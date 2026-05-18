@@ -3,10 +3,19 @@
 
 import os
 import sys
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
+
+# ---------------------------------------------------------------------------
+# Mock mediapipe BEFORE importing mediapipe_detector
+# mediapipe 0.10+ does not expose mp.solutions at module level
+# injecting a MagicMock into sys.modules means mp inside the detector
+# is a MagicMock and all attribute access (mp.solutions.hands.Hands) works
+# ---------------------------------------------------------------------------
+_mock_mp = MagicMock()
+sys.modules["mediapipe"] = _mock_mp
 
 # find hand-detection and camera folders
 sys.path.insert(
@@ -14,7 +23,7 @@ sys.path.insert(
 )
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "cv_pipeline", "camera"))
 
-from mediapipe_detector import (
+from mediapipe_detector import (  # noqa: E402
     MAX_HANDS,
     NUM_LANDMARKS,
     DetectedHand,
@@ -66,13 +75,12 @@ def make_mock_handedness(label="Right", score=0.95):
 
 
 def make_open_pipeline(config=None):
-    """Returns a HandDetectionPipeline with mediapipe mocked open."""
-    with patch("mediapipe_detector.mp.solutions.hands.Hands") as mock_hands_cls:
-        mock_hands = MagicMock()
-        mock_hands_cls.return_value = mock_hands
-        pipeline = HandDetectionPipeline(config or DetectorConfig())
-        pipeline.open()
-        return pipeline, mock_hands
+    """Returns a HandDetectionPipeline with a mock hands instance."""
+    mock_hands = MagicMock()
+    _mock_mp.solutions.hands.Hands.return_value = mock_hands
+    pipeline = HandDetectionPipeline(config or DetectorConfig())
+    pipeline.open()
+    return pipeline, mock_hands
 
 
 # ---------------------------------------------------------------------------
@@ -172,29 +180,29 @@ class TestHandDetectionResult:
 # ---------------------------------------------------------------------------
 
 class TestHandDetectionPipelineOpen:
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_open_initialises_mediapipe(self, mock_hands_cls):
+    def test_open_initialises_mediapipe(self):
         mock_hands = MagicMock()
-        mock_hands_cls.return_value = mock_hands
+        _mock_mp.solutions.hands.Hands.return_value = mock_hands
 
         pipeline = HandDetectionPipeline()
         pipeline.open()
 
-        mock_hands_cls.assert_called_once_with(
+        _mock_mp.solutions.hands.Hands.assert_called_with(
             static_image_mode=False,
             max_num_hands=MAX_HANDS,
             min_detection_confidence=0.7,
             min_tracking_confidence=0.5,
         )
 
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_open_with_custom_config(self, mock_hands_cls):
-        mock_hands_cls.return_value = MagicMock()
+    def test_open_with_custom_config(self):
+        mock_hands = MagicMock()
+        _mock_mp.solutions.hands.Hands.return_value = mock_hands
+
         config = DetectorConfig(min_detection_confidence=0.9, min_tracking_confidence=0.8)
         pipeline = HandDetectionPipeline(config)
         pipeline.open()
 
-        mock_hands_cls.assert_called_once_with(
+        _mock_mp.solutions.hands.Hands.assert_called_with(
             static_image_mode=False,
             max_num_hands=MAX_HANDS,
             min_detection_confidence=0.9,
@@ -207,13 +215,8 @@ class TestHandDetectionPipelineOpen:
 # ---------------------------------------------------------------------------
 
 class TestHandDetectionPipelineClose:
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_close_releases_mediapipe(self, mock_hands_cls):
-        mock_hands = MagicMock()
-        mock_hands_cls.return_value = mock_hands
-
-        pipeline = HandDetectionPipeline()
-        pipeline.open()
+    def test_close_releases_mediapipe(self):
+        pipeline, mock_hands = make_open_pipeline()
         pipeline.close()
 
         mock_hands.close.assert_called_once()
@@ -229,10 +232,9 @@ class TestHandDetectionPipelineClose:
 # ---------------------------------------------------------------------------
 
 class TestHandDetectionPipelineContextManager:
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_context_manager_opens_and_closes(self, mock_hands_cls):
+    def test_context_manager_opens_and_closes(self):
         mock_hands = MagicMock()
-        mock_hands_cls.return_value = mock_hands
+        _mock_mp.solutions.hands.Hands.return_value = mock_hands
 
         with HandDetectionPipeline() as pipeline:
             assert pipeline._hands is not None
@@ -254,68 +256,46 @@ class TestDetectHands:
         assert result.has_hands is False
         assert result.frame_index == frame.frame_index
 
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_returns_empty_result_when_no_hands(self, mock_hands_cls):
-        mock_hands = MagicMock()
+    def test_returns_empty_result_when_no_hands(self):
+        pipeline, mock_hands = make_open_pipeline()
         mock_hands.process.return_value = MagicMock(multi_hand_landmarks=None)
-        mock_hands_cls.return_value = mock_hands
 
-        pipeline = HandDetectionPipeline()
-        pipeline.open()
         result = pipeline.detect_hands(make_blank_frame())
-
         assert result.has_hands is False
 
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_returns_result_with_one_hand(self, mock_hands_cls):
+    def test_returns_result_with_one_hand(self):
+        pipeline, mock_hands = make_open_pipeline()
+
         hand_lms = make_mock_hand_landmarks()
         handedness = make_mock_handedness(label="Right", score=0.95)
-
         mp_result = MagicMock()
         mp_result.multi_hand_landmarks = [hand_lms]
         mp_result.multi_handedness = [handedness]
-
-        mock_hands = MagicMock()
         mock_hands.process.return_value = mp_result
-        mock_hands_cls.return_value = mock_hands
 
-        pipeline = HandDetectionPipeline()
-        pipeline.open()
         result = pipeline.detect_hands(make_blank_frame())
-
         assert result.has_hands is True
         assert result.hand_count == 1
 
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_returns_result_with_two_hands(self, mock_hands_cls):
+    def test_returns_result_with_two_hands(self):
+        pipeline, mock_hands = make_open_pipeline()
+
         hand_lms = make_mock_hand_landmarks()
         handedness = make_mock_handedness()
-
         mp_result = MagicMock()
         mp_result.multi_hand_landmarks = [hand_lms, hand_lms]
         mp_result.multi_handedness = [handedness, handedness]
-
-        mock_hands = MagicMock()
         mock_hands.process.return_value = mp_result
-        mock_hands_cls.return_value = mock_hands
 
-        pipeline = HandDetectionPipeline()
-        pipeline.open()
         result = pipeline.detect_hands(make_blank_frame())
-
         assert result.hand_count == 2
 
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_frame_index_passed_through(self, mock_hands_cls):
-        mock_hands = MagicMock()
+    def test_frame_index_passed_through(self):
+        pipeline, mock_hands = make_open_pipeline()
         mock_hands.process.return_value = MagicMock(multi_hand_landmarks=None)
-        mock_hands_cls.return_value = mock_hands
 
         frame = make_blank_frame()
         frame.frame_index = 99
-
-        pipeline = HandDetectionPipeline()
-        pipeline.open()
         result = pipeline.detect_hands(frame)
 
         assert result.frame_index == 99
@@ -326,62 +306,42 @@ class TestDetectHands:
 # ---------------------------------------------------------------------------
 
 class TestExtractLandmarks:
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_extracts_21_landmarks(self, mock_hands_cls):
-        mock_hands_cls.return_value = MagicMock()
-        pipeline = HandDetectionPipeline()
-        pipeline.open()
-
+    def test_extracts_21_landmarks(self):
+        pipeline, _ = make_open_pipeline()
         hand = pipeline._extract_landmarks(
             make_mock_hand_landmarks(),
             make_mock_handedness(),
         )
         assert len(hand.landmarks) == NUM_LANDMARKS
 
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_landmark_values_correct(self, mock_hands_cls):
-        mock_hands_cls.return_value = MagicMock()
-        pipeline = HandDetectionPipeline()
-        pipeline.open()
-
+    def test_landmark_values_correct(self):
+        pipeline, _ = make_open_pipeline()
         lms = make_mock_hand_landmarks()
         hand = pipeline._extract_landmarks(lms, make_mock_handedness())
 
         assert hand.landmarks[0].x == pytest.approx(0.0)
         assert hand.landmarks[1].x == pytest.approx(0.01)
 
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_handedness_flipped_left_to_right(self, mock_hands_cls):
+    def test_handedness_flipped_left_to_right(self):
         # mp "Left" should map to Handedness.RIGHT (mirrored)
-        mock_hands_cls.return_value = MagicMock()
-        pipeline = HandDetectionPipeline()
-        pipeline.open()
-
+        pipeline, _ = make_open_pipeline()
         hand = pipeline._extract_landmarks(
             make_mock_hand_landmarks(),
             make_mock_handedness(label="Left"),
         )
         assert hand.handedness == Handedness.RIGHT
 
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_handedness_flipped_right_to_left(self, mock_hands_cls):
+    def test_handedness_flipped_right_to_left(self):
         # mp "Right" should map to Handedness.LEFT (mirrored)
-        mock_hands_cls.return_value = MagicMock()
-        pipeline = HandDetectionPipeline()
-        pipeline.open()
-
+        pipeline, _ = make_open_pipeline()
         hand = pipeline._extract_landmarks(
             make_mock_hand_landmarks(),
             make_mock_handedness(label="Right"),
         )
         assert hand.handedness == Handedness.LEFT
 
-    @patch("mediapipe_detector.mp.solutions.hands.Hands")
-    def test_confidence_stored_correctly(self, mock_hands_cls):
-        mock_hands_cls.return_value = MagicMock()
-        pipeline = HandDetectionPipeline()
-        pipeline.open()
-
+    def test_confidence_stored_correctly(self):
+        pipeline, _ = make_open_pipeline()
         hand = pipeline._extract_landmarks(
             make_mock_hand_landmarks(),
             make_mock_handedness(score=0.88),
