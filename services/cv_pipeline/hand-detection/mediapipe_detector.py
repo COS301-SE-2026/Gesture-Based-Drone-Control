@@ -45,6 +45,15 @@ class HandLandmark:
     - val = closer to cam
     + val = further from cam
     """
+    x: float
+    y: float
+    z: float
+    
+@dataclass
+class DetectedHand:
+    handedness: Handedness
+    landmarks: list[HandLandmark]
+    confidence: float
 
 
 
