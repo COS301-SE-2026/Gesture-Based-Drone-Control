@@ -34,3 +34,7 @@ airsim = [
     "msgpack-rpc-python",
     "backports.ssl-match-hostname",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
