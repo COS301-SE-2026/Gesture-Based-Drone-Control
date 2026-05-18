@@ -208,7 +208,41 @@ class AirSimAdapter(DroneAdapter):
 			self._client.hoverAsync(vehicle_name=self._vehicle)
 		except Exception as ex:
 			logger.error("AirSimAdapter: error during emergency_stop - %s", ex)
+   
+   async def move(self, direction: CommandType, **kwargs) -> None:
+		"""
+		A discrete directional move or rotation.
+		
+		Params:
+		
+		direction: CommandType
+			Movement direction based on the enum passed in. 
+			All rotations are dispatch using a helper _rotate, else use
+			baked in velocity based movement
 	
+		**kwargs 
+			Parity with the command payload:
+			duration_s : float , seconds to apply the velocity       (0.5 default)
+			speed_ms   : float , movement speed in metres per second (2.0 default)
+			degrees    : float , rotation amount for ROTATE_*        (15.0 default)
+	
+		Recall that AirSim's movement maps to (vx, vy, vz) vectors in the North, East, Down frame
+		MOVE_UP uses a negative vz because NED points down for whatever reason
+		"""
+		
+		self._assert_connected()
+		
+		#rotation is handled separately 
+		if direction in (CommandType.ROTATE_CW, CommandType.ROTATE):
+			await self._rotate(direction, degrees=kwargs.get("degrees", DEFAULT_ROTATE-DEG))
+			return
+	
+	
+	
+	
+	#Private helpers only called internally
+	
+	def _rotate(self, direction: CommandType, degrees: float) -> None:
 	
  
 	def _assert_connected(self) -> None:
