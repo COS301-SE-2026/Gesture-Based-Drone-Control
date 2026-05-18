@@ -16,7 +16,7 @@ function App() {
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
         <div>
-          <h1>Get started</h1>
+          <h1>henjcsdzjhndsvfjkhifdsjnk</h1>
           <p>
             Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
           </p>
@@ -113,7 +113,6 @@ function App() {
         </div>
       </section>
 
-      <div className="ticks"></div>
       <section id="spacer"></section>
     </>
   )
