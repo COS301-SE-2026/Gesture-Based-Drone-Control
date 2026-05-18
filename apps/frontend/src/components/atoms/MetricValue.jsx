@@ -18,7 +18,7 @@ const MetricValue = ({ value,unit,size="md",className=""}) =>{
         <div className={["flex items-baseline gap-1 leading-none", className].join(" ")}>
             <span
             className={[
-                "font-display font-bold text-OffWhite tracking-tight",
+                "font-display font-bold text-OffBlack tracking-tight",
                 valueSizes[size],
             ].join(" ")}
             >
@@ -27,7 +27,7 @@ const MetricValue = ({ value,unit,size="md",className=""}) =>{
             {unit && (
                 <span
                 className={[
-                    "font-Inter font-medium text-DarkGrey opacity-50",
+                    "font-Inter font-medium text-OffBlack",
                     unitSizes[size],
                 ].join(" ")}
                 >
