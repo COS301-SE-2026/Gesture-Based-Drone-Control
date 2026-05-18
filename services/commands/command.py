@@ -5,10 +5,11 @@
 
 from enum import Enum, auto
 
-#STUB
+
+# STUB
 class CommandType(Enum):
     """Types of commands that can be sent to a drone."""
-     
+
     TAKEOFF = auto()
     LAND = auto()
     MOVE_UP = auto()
@@ -18,7 +19,7 @@ class CommandType(Enum):
 
 class Command:
     """Represents a command to be sent to a drone."""
-    
+
     def __init__(self, command_type: CommandType, **kwargs):
         self.command_type = command_type
         self.params = kwargs

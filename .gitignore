@@ -5,4 +5,4 @@ data/*.db
 .venv
 .egg-info
 __pycache__
-
+.coverage
