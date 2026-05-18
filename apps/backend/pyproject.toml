@@ -13,15 +13,17 @@ dependencies = [
     "numpy>=2.4.4",
     "opencv-python>=4.13.0.92",
     "websockets>=16.0",
-    # all files from services will be needed at some point, just not yet
-    # "drone-services @ file://../../services"
 ]
+
+[tool.uv.sources]
+drone-services = { path = "../../services", editable = true }
 
 [dependency-groups]
 dev = [
     "pytest>=9.0.3",
     "pytest-cov>=7.1.0",
     "ruff>=0.15.12",
+    "pytest-asyncio>=0.23",
 ]
 
 
