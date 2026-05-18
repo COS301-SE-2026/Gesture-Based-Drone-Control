@@ -22,20 +22,21 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
-from dataclasses import field
+from dataclasses import dataclass, field
 
 from services.commands import Command, CommandType
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass
 class TelemetryData:
 	"""
 	All drone adapters return this shape from get_telemetry()
 	extra : dict
-	    Escape hatch for adapter-specific values that don't belong in
-	    the standard fields. Use sparingly. Consumers must not depend
-	    on keys in this dict being present.
+		Escape hatch for adapter-specific values that don't belong in
+		the standard fields. Use sparingly. Consumers must not depend
+		on keys in this dict being present.
 	"""
 
 	altitude_m: float = 0.0

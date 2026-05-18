@@ -44,9 +44,11 @@ For simplicity in this minimal implementation, .join() is called directly.
 from __future__ import annotations
 
 import logging
+import math
 from typing import TYPE_CHECKING
 
-from services.drone_control.adapters.drone_adapter import DroneAdapter
+from services.commands.command import CommandType
+from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 # allow rest of package to be imported if airsim is not installed
 if TYPE_CHECKING:
@@ -164,30 +166,30 @@ class AirSimAdapter(DroneAdapter):
 		"""
 
 		self._assert_connected()
-		logger.info("AirSimAdapter: takeoff")
-		#TODO: wrap run_in_executor for async correctness in prod. this is good enough for now
+		logger.info('AirSimAdapter: takeoff')
+		# TODO: wrap run_in_executor for async correctness in prod. this is good enough for now
 		self._client.takeoffAsync(vehicle_name=self._vehicle).join()
-	
+
 	async def land(self) -> None:
 		"""
 		Descend to the ground and disarm the drone
 		"""
-  
+
 		self._assert_connected()
-		logger.info("AirSimAdapter: land")
+		logger.info('AirSimAdapter: land')
 		self._client.landAsync(vehicle_name=self._vehicle).join()
 
 	async def hover(self) -> None:
 		"""
 		Cancel whatever movement is happening now and hold current altitude
-  
+
 		hoverAsync() from the AirSim api implements this behaviour for us
 		"""
-	
+
 		self._assert_connected()
-		logger.info("AirSimAdapter: hover")
+		logger.info('AirSimAdapter: hover')
 		self._client.hoverAsync(vehicle_name=self._vehicle).join()
-  
+
 	async def emergency_stop(self) -> None:
 		"""
 		Cancel all pending tasks and immediately hover
@@ -195,92 +197,100 @@ class AirSimAdapter(DroneAdapter):
 		cancelLastTask() is the closest AirSim implementation of an emergency
 		stop. It aborts the active task immediately.
 		We then issue hoverAsync() to stay in place
-		"""	
+		"""
 
 		if self._client is None:
-			logger.warning("AirSimAdapter: emergency_stop called but the client is Null")
+			logger.warning('AirSimAdapter: emergency_stop called but the client is Null')
 			return
 
-		logger.warning("AirSimAdapter: EMERGENCY STOP CALLED")
+		logger.warning('AirSimAdapter: EMERGENCY STOP CALLED')
 		try:
 			self._client.cancelLastTask(self._vehicle)
-			#dont join since we want there to be little to no delay
+			# dont join since we want there to be little to no delay
 			self._client.hoverAsync(vehicle_name=self._vehicle)
 		except Exception as ex:
-			logger.error("AirSimAdapter: error during emergency_stop - %s", ex)
-   
-   async def move(self, direction: CommandType, **kwargs) -> None:
+			logger.error('AirSimAdapter: error during emergency_stop - %s', ex)
+
+	async def move(self, direction: CommandType, **kwargs) -> None:
 		"""
 		A discrete directional move or rotation.
-		
+
 		Params:
-		
+
 		direction: CommandType
-			Movement direction based on the enum passed in. 
+			Movement direction based on the enum passed in.
 			All rotations are dispatch using a helper _rotate, else use
 			baked in velocity based movement
-	
-		**kwargs 
+
+		**kwargs
 			Parity with the command payload:
 			duration_s : float , seconds to apply the velocity       (0.5 default)
 			speed_ms   : float , movement speed in metres per second (2.0 default)
 			degrees    : float , rotation amount for ROTATE_*        (15.0 default)
-	
+
 		Recall that AirSim's movement maps to (vx, vy, vz) vectors in the North, East, Down frame
 		MOVE_UP uses a negative vz because NED points down for whatever reason
 		"""
-		
-		self._assert_connected()
-		
-		#rotation is handled separately 
-		if direction in (CommandType.ROTATE_CW, CommandType.ROTATE):
-			await self._rotate(direction, degrees=kwargs.get("degrees", DEFAULT_ROTATE-DEG))
-			return
-	
-		#check if speed was passed in
-		speed = kwargs.get("speed_ms", DEFAULT_SPEED_MS)
 
-		#map command types to velocity vectors in airsim's movement system (x,y,-z)
+		self._assert_connected()
+
+		# rotation is handled separately
+		if direction in (CommandType.ROTATE_CW, CommandType.ROTATE_CCW):
+			await self._rotate(direction, degrees=kwargs.get('degrees', DEFAULT_ROTATE_DEG))
+			return
+
+		# check if speed was passed in
+		speed = kwargs.get('speed_ms', DEFAULT_SPEED_MS)
+
+		# map command types to velocity vectors in airsim's movement system (x,y,-z)
 		velocity_map: dict[CommandType, tuple[float, float, float]] = {
-			CommandType.MOVE_FORWARD:  ( speed,   0.0,   0.0),
-            CommandType.MOVE_BACKWARD: (-speed,   0.0,   0.0),
-            CommandType.MOVE_RIGHT:    ( 0.0,    speed,  0.0),
-            CommandType.MOVE_LEFT:     ( 0.0,   -speed,  0.0),
-            CommandType.MOVE_UP:       ( 0.0,    0.0,  -speed), #up = -z
-            CommandType.MOVE_DOWN:     ( 0.0,    0.0,   speed),
+			CommandType.MOVE_FORWARD: (speed, 0.0, 0.0),
+			CommandType.MOVE_BACKWARD: (-speed, 0.0, 0.0),
+			CommandType.MOVE_RIGHT: (0.0, speed, 0.0),
+			CommandType.MOVE_LEFT: (0.0, -speed, 0.0),
+			CommandType.MOVE_UP: (0.0, 0.0, -speed),  # up = -z
+			CommandType.MOVE_DOWN: (0.0, 0.0, speed),
 		}
-	
+
 		vec = velocity_map.get(direction)
 
-		#skip undefined movements
+		# skip undefined movements
 		if vec is None:
-			logger.warning("AirSimAdapter.move: Skipping, no velocity vector defined for %s", direction.name)
+			logger.warning(
+				'AirSimAdapter.move: Skipping, no velocity vector defined for %s', direction.name
+			)
 			return
 
 		vx, vy, vz = vec
-		duration = kwargs.get("duration_s", DEFAULT_DURATION_S)
-	
+		duration = kwargs.get('duration_s', DEFAULT_DURATION_S)
+
 		logger.info(
-      		"AirSimAdapter: move %s (vx=%.2f vy=%.2f vz=%.2f duration=%.2fs)",
-            direction.name, vx, vy, vz, duration,
-        )
-  
-		#apply a constant velocity for 'duration' seconds
+			'AirSimAdapter: move %s (vx=%.2f vy=%.2f vz=%.2f duration=%.2fs)',
+			direction.name,
+			vx,
+			vy,
+			vz,
+			duration,
+		)
+
+		# apply a constant velocity for 'duration' seconds
 		self._client.moveByVelocityAsync(
-			vx, vy, vz, duration,
+			vx,
+			vy,
+			vz,
+			duration,
 			vehicle_name=self._vehicle,
 		).join()
 
-		#auto hover after each move (can remove once movements are a bit better)
+		# auto hover after each move (can remove once movements are a bit better)
 		self._client.hoverAsync(vehicle_name=self._vehicle).join()
-		
-	
+
 	# TELEMETRY DATA
-	
+
 	async def get_telemetry(self) -> TelemetryData:
 		"""
 		Query AirSim for the current drone state and
-		normalise the data to be encapsulated in a 
+		normalise the data to be encapsulated in a
 		TelemetryData object
 
 		Returns a zeroed TelemetryData if not connected
@@ -288,57 +298,58 @@ class AirSimAdapter(DroneAdapter):
 		"""
 
 		if not self._connected or self._client is None:
-			return TelemetryData(source="airsim-disconnected")
+			return TelemetryData(source='airsim-disconnected')
 
 		try:
 			state = self._client.getMultirotorState(vehicle_name=self._vehicle)
-            kin   = state.kinematics_estimated
+			kin = state.kinematics_estimated
+			pos = kin.position
+			vel = kin.linear_velocity
+			speed = math.sqrt(vel.x_val**2 + vel.y_val**2 + vel.z_val**2)
 
-            pos  = kin.position
-            vel  = kin.linear_velocity
-            speed = math.sqrt(vel.x_val**2 + vel.y_val**2 + vel.z_val**2)
+			# NED: z is negative when airborne, so negate for a positive altitude
+			altitude = max(0.0, -pos.z_val)
 
-            #NED: z is negative when airborne, so negate for a positive altitude
-            altitude = max(0.0, -pos.z_val)
+			# LandedState.Landed == 1, Flying == 0 (check AirSim source)
+			is_flying = state.landed_state.value != 1
 
-            #LandedState.Landed == 1, Flying == 0 (check AirSim source)
-            is_flying = state.landed_state.value != 1
+			return TelemetryData(
+				altitude_m=altitude,
+				speed_ms=round(speed, 3),
+				battery_pct=100.0,  # AirSim has no battery model
+				heading_deg=self._get_heading_deg(),
+				is_flying=is_flying,
+				source='airsim',
+			)
+		except Exception as ex:
+			logger.error('AirSimAdapter.get_telemetry: error - %s', ex)
+			return TelemetryData(source='airsim-error')
 
-            return TelemetryData(
-                altitude_m=  altitude,
-                speed_ms=    round(speed, 3),
-                battery_pct= 100.0,     #AirSim has no battery model
-                heading_deg= self._get_heading_deg(),
-                is_flying=   is_flying,
-                source=      "airsim",
-            )
-    	except Exception as ex:
-			logger.error("AirSimAdapter.get_telemetry: error - %s", ex)
-			return TelemetryData("source="airsim-error)
-      
-	#Private helpers only called internally
-	
-	def _rotate(self, direction: CommandType, degrees: float) -> None:
+	# Private helpers only called internally
+
+	async def _rotate(self, direction: CommandType, degrees: float) -> None:
 		"""
 		Yaw in place by 'degrees' at DEFAULT_YAW_RATE_DPS
 
 		Positive yaw rate -> clockwise when viewed from above
 		"""
-		#decide which direction to rotate
-		yaw_rate = DEFAULT_YAW_RATE_DPS if direction is CommandType.ROTATE_CW else -DEFAULT_YAW_RATE_DPS
+		# decide which direction to rotate
+		yaw_rate = (
+			DEFAULT_YAW_RATE_DPS if direction is CommandType.ROTATE_CW else -DEFAULT_YAW_RATE_DPS
+		)
 		duration = abs(degrees / DEFAULT_YAW_RATE_DPS)
 
 		logger.info(
-			"AirSimAdapter: rotate %s (%.1f° at %.1f°/s over %.2fs)",
-            direction.name, degrees, abs(yaw_rate), duration,
-        )
-  
-		self._client.rotateByYawRateAsync(
-			yaw_rate, duration,
-			vehicle_name=self.vehicle
-		).join()
-	
-	def _get_heading_deg(self) -> float
+			'AirSimAdapter: rotate %s (%.1f° at %.1f°/s over %.2fs)',
+			direction.name,
+			degrees,
+			abs(yaw_rate),
+			duration,
+		)
+
+		self._client.rotateByYawRateAsync(yaw_rate, duration, vehicle_name=self._vehicle).join()
+
+	def _get_heading_deg(self) -> float:
 		"""
 		Helper to convert the current orientation quaternion to a heading in degrees
 		Degree is defined as [0,360] clockwise from North
@@ -346,27 +357,24 @@ class AirSimAdapter(DroneAdapter):
 
 		try:
 			import airsim
+
 			orientation = self._client.getMultirotorState(
 				vehicle_name=self._vehicle
 			).kinematics_estimated.orientation
 			_, _, yaw = airsim.to_eularian_angles(orientation)
 			return math.degrees(yaw) % 360.0
 		except Exception as ex:
-			logger.warning("DroneAdapter._get_heading_deg : returning 0, error - %s", ex)
+			logger.warning('DroneAdapter._get_heading_deg : returning 0, error - %s', ex)
 			return 0.0
- 
+
 	def _assert_connected(self) -> None:
 		"""
 		Raises a runtime error if the adapter is not connected to a sim vehicle.
 
-		Called at the top of every method involving movement to prevent uncaught 
+		Called at the top of every method involving movement to prevent uncaught
 		failures slipping through
-		"""	
+		"""
 		if not self._connected or self._client is None:
 			raise RuntimeError(
-				"AirSimAdapter is not connected."
-				"Await connect() before issuing commands."
+				'AirSimAdapter is not connected.Await connect() before issuing commands.'
 			)
-  
-
-		
