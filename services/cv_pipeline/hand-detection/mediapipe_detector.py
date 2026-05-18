@@ -39,11 +39,11 @@ class Handedness(Enum):
 @dataclass 
 class HandLandmark:
     """
-    A single landmark point from mp
-    x, y normalised to [0.0, 1.0] relative to frame dimesions
-    z represents depth relative to wrist 
-    - val = closer to cam
-    + val = further from cam
+        A single landmark point from mp
+        x, y normalised to [0.0, 1.0] relative to frame dimesions
+        z represents depth relative to wrist 
+        - val = closer to cam
+        + val = further from cam
     """
     x: float
     y: float
@@ -51,9 +51,47 @@ class HandLandmark:
     
 @dataclass
 class DetectedHand:
+    """
+        One hand detected -> must xontain all 21 landmarks and L/R hand
+        landmark vals:
+        0 = wrist
+        4 = thumb finger tip
+        8 = index finger tip
+        12 = middle finger tip
+        16 = ring finger tip
+        20 = pinky finger tip
+        
+        reference for landmark layout: https://mediapipe.readthedocs.io/en/latest/solutions/hands.html
+    """
     handedness: Handedness
+    #landmark always = 21
     landmarks: list[HandLandmark]
+    #mediapipe confidence for telemetry 
     confidence: float
+    
+@dataclass
+class HandDetectionResult:
+    """
+        Result returned with HandDetectionPipeline.detect_hands()
+        hands = empty when no hands in camera view (never none)
+    """
+    hands: list[DetectedHand] = field(default_factory = list)
+    frame_index: int = 0
+    
+    @property
+    def has_hands(self) -> bool:
+        return len(self.hands) > 0
+    
+    @property
+    def has_hands(self) -> bool:
+        return len(self.hands) > 0
+    
+    @property
+    def hand_count(self) -> int:
+        return len(self.hands)
+    
+
+
 
 
 
