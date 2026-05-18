@@ -20,7 +20,7 @@ class GestureRecognizer(ABC):
     """
     
     @abstractmethod
-    def intepret_gesture(self, hand: DetectedHand) -> "GestureResult":
+    def interpret_gesture(self, hand: DetectedHand) -> "GestureResult":
         """
             Takes single detected hand and returns GestureResult
             To be implemented in all subclasses
