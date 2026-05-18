@@ -1,0 +1,17 @@
+Metadata-Version: 2.4
+Name: drone-services
+Version: 0.1.0
+Summary: CV pipeline, gesture recognition, and drone control adapters
+Requires-Python: >=3.11
+Requires-Dist: opencv-python>=4.8
+Requires-Dist: mediapipe>=0.10
+Requires-Dist: tornado==4.5.3
+Requires-Dist: numpy>=1.26
+Requires-Dist: msgpack-rpc-python
+Requires-Dist: backports.ssl-match-hostname
+Provides-Extra: airsim
+Requires-Dist: airsim; extra == "airsim"
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.23; extra == "dev"
+Requires-Dist: ruff; extra == "dev"

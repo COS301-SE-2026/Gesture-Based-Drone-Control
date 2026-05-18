@@ -12,7 +12,6 @@ test:
 #--cov-fail-under=80
 
 lint:
-	uv run ruff check app tests ../../services/tests/ --statistics 
 	uv run ruff check app tests ../../services/tests/ --output-format=github
 
 fix:
