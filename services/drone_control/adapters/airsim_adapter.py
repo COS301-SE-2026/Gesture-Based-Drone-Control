@@ -237,6 +237,43 @@ class AirSimAdapter(DroneAdapter):
 			await self._rotate(direction, degrees=kwargs.get("degrees", DEFAULT_ROTATE-DEG))
 			return
 	
+		#check if speed was passed in
+		speed = kwargs.get("speed_ms", DEFAULT_SPEED_MS)
+
+		#map command types to velocity vectors in airsim's movement system (x,y,-z)
+		velocity_map: dict[CommandType, tuple[float, float, float]] = {
+			CommandType.MOVE_FORWARD:  ( speed,   0.0,   0.0),
+            CommandType.MOVE_BACKWARD: (-speed,   0.0,   0.0),
+            CommandType.MOVE_RIGHT:    ( 0.0,    speed,  0.0),
+            CommandType.MOVE_LEFT:     ( 0.0,   -speed,  0.0),
+            CommandType.MOVE_UP:       ( 0.0,    0.0,  -speed), #up = -z
+            CommandType.MOVE_DOWN:     ( 0.0,    0.0,   speed),
+		}
+	
+		vec = velocity_map.get(direction)
+
+		#skip undefined movements
+		if vec is None:
+			logger.warning("AirSimAdapter.move: Skipping, no velocity vector defined for %s", direction.name)
+			return
+
+		vx, vy, vz = vec
+		duration = kwargs.get("duration_s", DEFAULT_DURATION_S)
+	
+		logger.info(
+      		"AirSimAdapter: move %s (vx=%.2f vy=%.2f vz=%.2f duration=%.2fs)",
+            direction.name, vx, vy, vz, duration,
+        )
+  
+		#apply a constant velocity for 'duration' seconds
+		self._client.moveByVelocityAsync(
+			vx, vy, vz, duration,
+			vehicle_name=self._vehicle,
+		).join()
+
+		#auto hover after each move (can remove once movements are a bit better)
+		self._client.hoverAsync(vehicle_name=self._vehicle).join()
+
 	
 	
 	
