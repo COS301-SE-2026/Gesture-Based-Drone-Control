@@ -154,3 +154,75 @@ class AirSimAdapter(DroneAdapter):
 				logger.info('AirSimAdapter: disconnected')
 
 	# Flight commands
+	async def takeoff(self) -> None:
+		"""
+		Ascend to AirSim's default hover altitude, around 3m
+
+		This blocks the thread until the drone reports that it has
+		reached hover altitude. in prod, we should replace .join()
+		with run_in_executor so we dont block the event loop
+		"""
+
+		self._assert_connected()
+		logger.info("AirSimAdapter: takeoff")
+		#TODO: wrap run_in_executor for async correctness in prod. this is good enough for now
+		self._client.takeoffAsync(vehicle_name=self._vehicle).join()
+	
+	async def land(self) -> None:
+		"""
+		Descend to the ground and disarm the drone
+		"""
+  
+		self._assert_connected()
+		logger.info("AirSimAdapter: land")
+		self._client.landAsync(vehicle_name=self._vehicle).join()
+
+	async def hover(self) -> None:
+		"""
+		Cancel whatever movement is happening now and hold current altitude
+  
+		hoverAsync() from the AirSim api implements this behaviour for us
+		"""
+	
+		self._assert_connected()
+		logger.info("AirSimAdapter: hover")
+		self._client.hoverAsync(vehicle_name=self._vehicle).join()
+  
+	async def emergency_stop(self) -> None:
+		"""
+		Cancel all pending tasks and immediately hover
+
+		cancelLastTask() is the closest AirSim implementation of an emergency
+		stop. It aborts the active task immediately.
+		We then issue hoverAsync() to stay in place
+		"""	
+
+		if self._client is None:
+			logger.warning("AirSimAdapter: emergency_stop called but the client is Null")
+			return
+
+		logger.warning("AirSimAdapter: EMERGENCY STOP CALLED")
+		try:
+			self._client.cancelLastTask(self._vehicle)
+			#dont join since we want there to be little to no delay
+			self._client.hoverAsync(vehicle_name=self._vehicle)
+		except Exception as ex:
+			logger.error("AirSimAdapter: error during emergency_stop - %s", ex)
+	
+	
+ 
+	def _assert_connected(self) -> None:
+		"""
+		Raises a runtime error if the adapter is not connected to a sim vehicle.
+
+		Called at the top of every method involving movement to prevent uncaught 
+		failures slipping through
+		"""	
+		if not self._connected or self._client is None:
+			raise RuntimeError(
+				"AirSimAdapter is not connected."
+				"Await connect() before issuing commands."
+			)
+  
+
+		
