@@ -4,10 +4,9 @@ PORT ?= 3001
 
 install: 
 	uv sync --all-groups
-	uv pip install -e ../../services 
 
 test: 	
-	uv run pytest tests/ ../../services/tests/ ../../tests --cov=app --cov-report=term-missing
+	PYTHONPATH=../../ uv run pytest tests/ ../../services/tests/ ../../tests --cov=app --cov-report=term-missing
 	
 
 #--cov-fail-under=80
