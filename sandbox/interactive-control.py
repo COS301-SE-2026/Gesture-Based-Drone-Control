@@ -8,7 +8,6 @@ input and map it to drone movement
 currently somewhat smooth but lacks simultaneous input or any advanced controls
 '''
 
-
 import airsim
 import keyboard
 import time
