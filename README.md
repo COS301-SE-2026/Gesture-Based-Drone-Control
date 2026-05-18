@@ -326,14 +326,6 @@ Trunk-based development. The `main` branch must always be in a deployable state 
 | `dev` | Integration. Completed features land here before main. |
 | `feature/<name>` | Short-lived. One branch per feature or fix, branched from `dev`. |
 
-> [!IMPORTANT]
-> **All commits must use system-installed Git via the CLI.** Graphical clients (GitHub Desktop, GitKraken) are not permitted under COS 301 regulations — they can break commit tracking. Untracked contributions are non-recoverable.
->
-> ```bash
-> git config --global user.name "your-github-username"
-> git config --global user.email "your@email.com"
-> ```
-
 ---
 
 ## ◈ CI/CD & Code Quality
@@ -344,15 +336,6 @@ Trunk-based development. The `main` branch must always be in a deployable state 
 | Code Coverage (Coveralls) | [![Coverage](https://img.shields.io/coveralls/github/codex-merchants/gesture-drone-control?style=flat-square&logo=coveralls&labelColor=0d1117)](https://coveralls.io) |
 | Issues | [![Issues](https://img.shields.io/github/issues/codex-merchants/gesture-drone-control?style=flat-square&logo=github&labelColor=0d1117)](https://github.com/codex-merchants/gesture-drone-control/issues) |
 | Uptime | [![Uptime](https://img.shields.io/uptimerobot/status/m000000000-xxxxxxxxxxxx?style=flat-square&labelColor=0d1117)](https://uptimerobot.com) |
-
----
-
-## ◈ AI Usage Policy
-
-All contributors must have the **COS301 VibeCheck** tool active during development. This monitors AI-assisted code generation to ensure transparency.
-
-> [!WARNING]
-> **Vibe coding is strictly prohibited.** Generating large portions of code using AI without clear understanding, validation, or meaningful contribution results in **zero marks** for the affected work. Every team member must be able to explain, justify, and maintain any code they submit.
 
 ---
 
