@@ -5,7 +5,7 @@ echo "Creating Python 3.11 virtual environment..."
 #check python3.11 exists
 if ! command -v python3.11 &> /dev/null
 then
-    echo "ERROR: python3.11 not found" >&2
+    echo "ERROR: python3.11 not found"
     exit 1
 fi
 
