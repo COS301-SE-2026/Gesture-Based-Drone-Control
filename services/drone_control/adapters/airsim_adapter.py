@@ -127,7 +127,7 @@ class AirSimAdapter(DroneAdapter):
 
 			self._connected = True
 			logger.info(
-				'AirSimAdapter: connected to $s:%d (vehicle=%r)',
+				'AirSimAdapter: connected to %s:%d (vehicle=%r)',
 				self._host,
 				self._port,
 				self._vehicle or 'unknown',
@@ -136,7 +136,7 @@ class AirSimAdapter(DroneAdapter):
 			return True
 
 		except Exception as ex:
-			logger.error('AirSimAdapter: connection failed - %s', ex)
+			logger.exception('AirSimAdapter: connection failed - %s', ex)
 			self._connected = False
 			return False
 

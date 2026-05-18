@@ -33,6 +33,7 @@ def test_command_repr_minimal():
 
 class DummyAdapter(InputAdapter):
 	def start(self):
+        #stub
 		pass
 
 
@@ -111,6 +112,7 @@ class DummyDrone(DroneAdapter):
 		return True
 
 	async def disconnect(self):
+        #stub
 		pass
 
 	async def takeoff(self):
