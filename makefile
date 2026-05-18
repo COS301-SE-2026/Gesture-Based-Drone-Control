@@ -36,7 +36,7 @@ services-install:
 	pip install -e $(SERVICES_DIR)[dev] --break-system-packages
 
 services-test:
-	cd $(SERVICES_DIR) && pytest
+	python -m pytest services/tests
 
 	
 
