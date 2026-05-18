@@ -217,7 +217,67 @@ def detect_hands(self, frame: CapturedFrame) -> HanddetectionResult:
             confidence = confidence
         )
         
+    #drawing helper for smoke test
+    def draw_landmarks(self, frame: CapturedDrame, result: handDetectionResult) -> np.ndarray:
+        """
+            Draw landmarks onto BGR frame 
+            should return annotated frame (does not mess with original)
+        """
+        annotated = frame.bgr_frame.copy()
+        
+        if not result.has_hands:
+            return annotated
+        
+        #re-run mp result format for drawing
+        mp_result = self._hands.process(frame.rgb_frame)
+        if mp_result.multi_hand_landmarks:
+            for hand_landmarks in mp_result.multi_hand_landmarks:
+                _mp_drawing.draw_landmarks(
+                    annotated,
+                    hand_landmarks,
+                    _mp_hands.HAND_CONNECTIONS,
+                )
+        return annotated
+    
+#smoke test
 
+if __name__ == "__main__":
+    import cv2
+    import os
+    import sys
+
+    logging.basicConfig(level = logging.DEBUG)
+    
+    # add cam folder to path for smoke test
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "camera"))
+    from camera_feed import CameraFeed, CameraConfig
+    
+    with CameraFeed(CameraConfig()) as camera, HandDetectionPipeline() as detector:
+        while True:
+            frame = camera.capture_image()
+            if frame is None:
+                break
+
+            result = detector.detect_hands(frame)
+            annotated = detector.draw_landmarks(frame, result)
+            
+            #print landmark info in terminal
+            for i, hand in enumerate(result.hands):
+                wrist = hand.landmarks[0]
+                print(
+                    """
+                        f"frame={frame.frame_index:04d} "
+                        f"hand={i} {hand.handedness.name} "
+                        f"conf={hand.confidence: .2f} "
+                        f:wrist=({wrist.x:.2f}, {wrist.y:,2f})"
+                    """
+                )
+            
+            cv2.imshow("hand detection smoke test", annotated)
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
+
+    cv2.destroyAllWindows()
         
             
 
