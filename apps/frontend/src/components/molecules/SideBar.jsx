@@ -1,28 +1,34 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import NavItem from "../atoms/NavItem";
+import Card from "../atoms/Card";
 
 //main nav sidebar that will be displayed on all pages
 
-export default function SideBar({ items = [] }) {
+export default function SideBar({ 
+        items = [],
+        topContent = null,
+        bottomContent = null,
+        className = ""
+    }) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    if (!items.length) {
-        return null;
-    }
-
     return (
-        <aside className="bg-OffWhite dark:bg-OffBlack border-r border-Grey/30 dark:border-DarkGrey/20 w-30 flex flex-col gap-3 p-4 min-h-screen">
+        <aside className={`bg-OffWhite dark:bg-OffBlack border-r border-Grey/30 dark:border-DarkGrey/20 w-80 flex flex-col gap-3 p-4 min-h-screen ${className} `}>
             {/*Logo goes here*/}
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-between items-center mb-4">
                 <img 
-                    src="" //need to put img in assets
+                    src="apps/frontend/src/assets/codex_merchants_logo.png" 
                     alt="Codex Merchants Logo"
-                    className="w-10 h-10 object-contain rounded-lg"
+                    className="w-20 h-15 object-contain"
                 />
             </div>
 
-            {/* need to add the welcome card but it differs so need to figure that out */}
+            {topContent && (
+                <div className="mb-4">
+                    {topContent}
+                </div>
+            )}
 
             {/*Nav items*/}
             <nav className="flex-1 space-y-1">
@@ -40,6 +46,12 @@ export default function SideBar({ items = [] }) {
                     );
                 })}
             </nav>
+
+            {bottomContent && (
+                <div className="mt-auto pt-4 border-t border-Grey/20">
+                    {bottomContent}
+                </div>
+            )}
         </aside>
     );
 }
