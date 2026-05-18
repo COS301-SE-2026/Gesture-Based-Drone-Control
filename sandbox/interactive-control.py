@@ -13,7 +13,7 @@ import airsim
 import keyboard
 import time
 
-#airsim works on localhos, library handles everything else
+#airsim works on localhost, library handles everything else
 client = airsim.MultirotorClient()
 client.confirmConnection()
 

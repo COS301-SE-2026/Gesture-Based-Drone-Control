@@ -273,14 +273,87 @@ class AirSimAdapter(DroneAdapter):
 
 		#auto hover after each move (can remove once movements are a bit better)
 		self._client.hoverAsync(vehicle_name=self._vehicle).join()
+		
+	
+	# TELEMETRY DATA
+	
+	async def get_telemetry(self) -> TelemetryData:
+		"""
+		Query AirSim for the current drone state and
+		normalise the data to be encapsulated in a 
+		TelemetryData object
 
-	
-	
-	
+		Returns a zeroed TelemetryData if not connected
+		to ensure safety
+		"""
+
+		if not self._connected or self._client is None:
+			return TelemetryData(source="airsim-disconnected")
+
+		try:
+			state = self._client.getMultirotorState(vehicle_name=self._vehicle)
+            kin   = state.kinematics_estimated
+
+            pos  = kin.position
+            vel  = kin.linear_velocity
+            speed = math.sqrt(vel.x_val**2 + vel.y_val**2 + vel.z_val**2)
+
+            #NED: z is negative when airborne, so negate for a positive altitude
+            altitude = max(0.0, -pos.z_val)
+
+            #LandedState.Landed == 1, Flying == 0 (check AirSim source)
+            is_flying = state.landed_state.value != 1
+
+            return TelemetryData(
+                altitude_m=  altitude,
+                speed_ms=    round(speed, 3),
+                battery_pct= 100.0,     #AirSim has no battery model
+                heading_deg= self._get_heading_deg(),
+                is_flying=   is_flying,
+                source=      "airsim",
+            )
+    	except Exception as ex:
+			logger.error("AirSimAdapter.get_telemetry: error - %s", ex)
+			return TelemetryData("source="airsim-error)
+      
 	#Private helpers only called internally
 	
 	def _rotate(self, direction: CommandType, degrees: float) -> None:
+		"""
+		Yaw in place by 'degrees' at DEFAULT_YAW_RATE_DPS
+
+		Positive yaw rate -> clockwise when viewed from above
+		"""
+		#decide which direction to rotate
+		yaw_rate = DEFAULT_YAW_RATE_DPS if direction is CommandType.ROTATE_CW else -DEFAULT_YAW_RATE_DPS
+		duration = abs(degrees / DEFAULT_YAW_RATE_DPS)
+
+		logger.info(
+			"AirSimAdapter: rotate %s (%.1f° at %.1f°/s over %.2fs)",
+            direction.name, degrees, abs(yaw_rate), duration,
+        )
+  
+		self._client.rotateByYawRateAsync(
+			yaw_rate, duration,
+			vehicle_name=self.vehicle
+		).join()
 	
+	def _get_heading_deg(self) -> float
+		"""
+		Helper to convert the current orientation quaternion to a heading in degrees
+		Degree is defined as [0,360] clockwise from North
+		"""
+
+		try:
+			import airsim
+			orientation = self._client.getMultirotorState(
+				vehicle_name=self._vehicle
+			).kinematics_estimated.orientation
+			_, _, yaw = airsim.to_eularian_angles(orientation)
+			return math.degrees(yaw) % 360.0
+		except Exception as ex:
+			logger.warning("DroneAdapter._get_heading_deg : returning 0, error - %s", ex)
+			return 0.0
  
 	def _assert_connected(self) -> None:
 		"""
