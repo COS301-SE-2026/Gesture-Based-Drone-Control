@@ -1,4 +1,9 @@
 # /apps/backend/app/main.py
-# main entrypoint for fastAPI
 
-print('This will be the main fastAPI entrypoint.')
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
