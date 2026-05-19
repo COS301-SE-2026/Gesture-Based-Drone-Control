@@ -8,14 +8,15 @@
 """
 
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum, auto
 
 #hand detection import 
 from mediapipe_detector import DetectedHand, Handedness
+
 from .gesture_recognizer import GestureRecognizer
 
-logger - logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 #land mark consts
 THUMB_MCP = 2
@@ -53,7 +54,7 @@ class Gesture(Enum):
     
 #finger stats
 @dataclass
-class FingerStats:
+class FingerState:
     """
         Tracks which fingers up for one hand
         -> True = finger up
@@ -73,6 +74,7 @@ class FingerStats:
     
     
 # gesture result
+@dataclass
 class GestureResult:
     """
         Result of gesture recognition for one hand
@@ -80,7 +82,7 @@ class GestureResult:
     """
     
     gesture: Gesture
-    finger_stats: FingerStats
+    finger_state: FingerState
     #pass handedness through so gesture engine knows which hand this is for
     handedness: Handedness
     #confidence = from mediapipe passed through for telemetry data
@@ -97,7 +99,7 @@ class RuleBasedRecognizer(GestureRecognizer):
         (thumb extends horizontally, not vertically)
     """
     
-    def interpret_gesture(self, hand:DetectedHand) -> GestureResult:
+    def interpret_gesture(self, hand: DetectedHand) -> GestureResult:
         """
             Takes a DetectedHand, checks every finger and return GestureResult
         """
@@ -122,10 +124,10 @@ class RuleBasedRecognizer(GestureRecognizer):
         )
         
         return GestureResult(
-            gesture = gesture,
-            finger_state = finger_state,
-            handedness = hand.handedness,
-            confidence = hand.confidence,
+            gesture=gesture,
+            finger_state=finger_state,
+            handedness=hand.handedness,
+            confidence=hand.confidence,
         )
         
     #finger state helpers
@@ -145,8 +147,8 @@ class RuleBasedRecognizer(GestureRecognizer):
             Accounts for the mirror flip applied in camera_feed.py
         """
 
-        tip_x = landmarks[THUMBS_TIP].x
-        ip_x = landmarks[THUMBS_IP].x
+        tip_x = landmarks[THUMB_TIP].x
+        ip_x = landmarks[THUMB_IP].x
         
         if handedness == Handedness.RIGHT:
             return tip_x < ip_x
@@ -154,7 +156,7 @@ class RuleBasedRecognizer(GestureRecognizer):
             return tip_x > ip_x
         
     #gesture classification
-    def _classify(self, fs:FingerState) -> Gesture:
+    def _classify(self, fs: FingerState) -> Gesture:
         """
             Maps finger count to a Gesture
             Specific patterns (fist, open palm) take priority over raw count
@@ -176,7 +178,3 @@ class RuleBasedRecognizer(GestureRecognizer):
         }
         
         return count_map.get(count, Gesture.UNKNOWN)
-
-    
-
-

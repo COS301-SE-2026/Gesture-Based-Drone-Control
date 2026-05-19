@@ -12,6 +12,7 @@ from abc import ABC, abstractmethod
 #hand-detection import
 from mediapipe_detector import DetectedHand
 
+
 class GestureRecognizer(ABC):
     """
         Interface for ml/rule-based
