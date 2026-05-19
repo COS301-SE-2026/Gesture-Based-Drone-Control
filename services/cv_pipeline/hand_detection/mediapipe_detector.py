@@ -201,15 +201,16 @@ class HandDetectionPipeline:
 
 		landmarks = [HandLandmark(x=lm.x, y=lm.y, z=lm.z) for lm in hand_landmarks.landmark]
 
-		# mp labels from own perspective (mirrored so flip)
-		# left swaps right to match user shown hand
+		# mp's label matches the user's hand as shown on the mirrored display,
+		# so we pass it through directly now
 		raw_label = handedness_info.classification[0].label
 		confidence = handedness_info.classification[0].score
 
+		# I inversed it oopsy
 		if raw_label == 'Left':
-			handedness = Handedness.RIGHT
-		else:
 			handedness = Handedness.LEFT
+		else:
+			handedness = Handedness.RIGHT
 
 		return DetectedHand(
 			handedness=handedness,

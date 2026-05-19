@@ -286,23 +286,23 @@ class TestExtractLandmarks:
 		assert hand.landmarks[0].x == pytest.approx(0.0)
 		assert hand.landmarks[1].x == pytest.approx(0.01)
 
-	def test_handedness_flipped_left_to_right(self):
+	def test_handedness_left_label_maps_to_left(self):
 		# mp "Left" should map to Handedness.RIGHT (mirrored)
 		pipeline, _ = make_open_pipeline()
 		hand = pipeline._extract_landmarks(
 			make_mock_hand_landmarks(),
 			make_mock_handedness(label='Left'),
 		)
-		assert hand.handedness == Handedness.RIGHT
+		assert hand.handedness == Handedness.LEFT
 
-	def test_handedness_flipped_right_to_left(self):
+	def test_handedness_right_label_maps_to_right(self):
 		# mp "Right" should map to Handedness.LEFT (mirrored)
 		pipeline, _ = make_open_pipeline()
 		hand = pipeline._extract_landmarks(
 			make_mock_hand_landmarks(),
 			make_mock_handedness(label='Right'),
 		)
-		assert hand.handedness == Handedness.LEFT
+		assert hand.handedness == Handedness.RIGHT
 
 	def test_confidence_stored_correctly(self):
 		pipeline, _ = make_open_pipeline()
