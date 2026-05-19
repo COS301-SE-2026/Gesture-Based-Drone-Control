@@ -32,5 +32,8 @@ telemetry/observer.py
 telemetry/storage/postgres_repo.py
 telemetry/storage/sqlite_repo.py
 tests/placeholder_services_test.py
+tests/test_adapters.py
 tests/test_imports.py
 tests/test_telemetry_manager.py
+tests/cv_pipeline_testing/test_camera_feed.py
+tests/cv_pipeline_testing/test_mediapipe_detector.py

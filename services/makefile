@@ -7,7 +7,7 @@ test:
 	uv run pytest tests/ --cov=services --cov-report=term-missing
 
 lint:
-	uv run ruff check --verbose --output-format=github
+	uv run ruff check --output-format=github
 
 dev:
 	uv run python -m services.main
