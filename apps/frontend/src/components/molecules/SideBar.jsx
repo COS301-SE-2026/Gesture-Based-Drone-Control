@@ -2,12 +2,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import NavItem from "../atoms/NavItem";
 import Card from "../atoms/Card";
 
+
 //main nav sidebar that will be displayed on all pages
 
 export default function SideBar({ 
         items = [],
         topContent = null,
-        bottomContent = null,
         className = ""
     }) {
     const navigate = useNavigate();
@@ -18,16 +18,16 @@ export default function SideBar({
             {/*Logo goes here*/}
             <div className="flex justify-between items-center mb-4">
                 <img 
-                    src="apps/frontend/src/assets/codex_merchants_logo.png" 
+                    src="insert logo here"
                     alt="Codex Merchants Logo"
                     className="w-20 h-15 object-contain"
                 />
             </div>
 
             {topContent && (
-                <div className="mb-4">
+                <Card variant="secondary">
                     {topContent}
-                </div>
+                </Card>
             )}
 
             {/*Nav items*/}
@@ -47,11 +47,6 @@ export default function SideBar({
                 })}
             </nav>
 
-            {bottomContent && (
-                <div className="mt-auto pt-4 border-t border-Grey/20">
-                    {bottomContent}
-                </div>
-            )}
         </aside>
     );
 }

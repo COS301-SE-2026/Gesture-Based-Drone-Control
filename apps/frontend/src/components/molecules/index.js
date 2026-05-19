@@ -7,3 +7,6 @@ export { default as GestureGuide } from './GestureGuide';
 export { default as GPSWidget } from './GPSWidget';
 export { default as SideBar } from './SideBar';
 export { default as StatCard } from './StatCard';
+export { default as DarkModeToggle } from './DarkModeToggle';
+export { default as GestureSideContent } from './GestureSideContent';
+export { default as AnalyticsSideContent } from './AnalyticsSideContent';
