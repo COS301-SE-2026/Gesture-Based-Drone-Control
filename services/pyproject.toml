@@ -48,6 +48,8 @@ select = [
     "I",   # import ordering
     "N",   # python naming conventions
 ]
+ignore = ["E402"]
+
 
 [tool.ruff.format]
 quote-style = "single"
