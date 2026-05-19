@@ -31,7 +31,6 @@ telemetry/manager.py
 telemetry/observer.py
 telemetry/storage/postgres_repo.py
 telemetry/storage/sqlite_repo.py
-tests/placeholder_services_test.py
 tests/test_adapters.py
 tests/test_imports.py
 tests/test_telemetry_manager.py
