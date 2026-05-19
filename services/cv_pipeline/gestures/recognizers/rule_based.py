@@ -1,16 +1,17 @@
 # /services/cv_pipeline/gestures/recognizers/rule_based.py
 """
-Rule-based gesture recognition using mediapipe landmark positions
-How it works:
--> Receives a DetectedHand from mediapipe_detector.py
--> Uses landmark x/y positions to determine finger states
--> returns GestureResult
+    Rule-based gesture recognition using mediapipe landmark positions
+    How it works:
+    -> Receives a DetectedHand from mediapipe_detector.py
+    -> Uses landmark x/y positions to determine finger states
+    -> returns GestureResult
 """
 
 import logging
+import math
 
 # hand detection import
-from cv_pipeline.hand_detection.mediapipe_detector import DetectedHand, Handedness
+from cv_pipeline.hand_detection.mediapipe_detector import DetectedHand
 
 # pull interface + shared types from the recognizer module
 from .gesture_recognizer import (
@@ -27,6 +28,7 @@ THUMB_MCP = 2
 THUMB_IP = 3
 THUMB_TIP = 4
 
+INDEX_MCP = 5
 INDEX_PIP = 6
 INDEX_TIP = 8
 
@@ -46,9 +48,11 @@ class RuleBasedRecognizer(GestureRecognizer):
 	Classifies gestures using landmark geometry
 	Finger up detection:
 	-> For index, middle, ring, pinky: tip.y < pip.y
-	(y=0 is top of frame, so tip above pip = finger extended)
-	-> For thumb: compare tip.x vs mcp.x adjusted for handedness
-	(thumb extends horizontally, not vertically)
+		(y=0 is top of frame, so tip above pip = finger extended)
+	-> For thumb: distance(thumb_tip, index_mcp) vs distance(thumb_ip, index_mcp)
+		(thumb extended = tip further from index knuckle than the IP joint)
+		Using index_mcp as reference makes the check rotation-invariant —
+		works whether the hand is upright, tilted, or sideways.
 	"""
 
 	def interpret_gesture(self, hand: DetectedHand) -> GestureResult:
@@ -59,7 +63,7 @@ class RuleBasedRecognizer(GestureRecognizer):
 		lm = hand.landmarks
 
 		finger_state = FingerState(
-			thumb=self._is_thumb_up(lm, hand.handedness),
+			thumb=self._is_thumb_up(lm),
 			index=self._is_finger_up(lm, INDEX_TIP, INDEX_PIP),
 			middle=self._is_finger_up(lm, MIDDLE_TIP, MIDDLE_PIP),
 			ring=self._is_finger_up(lm, RING_TIP, RING_PIP),
@@ -84,25 +88,31 @@ class RuleBasedRecognizer(GestureRecognizer):
 
 		return landmarks[tip_idx].y < landmarks[pip_idx].y
 
-	def _is_thumb_up(self, landmarks, handedness: Handedness) -> bool:
+	def _is_thumb_up(self, landmarks) -> bool:
 		"""
-		Thumb extends horizontally so we compare x positions
-		For a right hand: tip.x < ip.x means thumb is out to the left
-		For a left hand:  tip.x > ip.x means thumb is out to the right
-		Accounts for the mirror flip applied in camera_feed.py
+		Check thumb extension using distance from the index finger MCP.
 
-		Heads up: this gets shaky if the user tilts/rotates their wrist,
-		since the thumb stops being purely horizontal. Fine for demo 1,
-		revisit by comparing against the index MCP if false counts pile up
+		The thumb is extended when its tip is further from the index knuckle
+		(landmark 5) than its IP joint (landmark 3) is. Curled thumbs cross
+		toward the palm, putting the tip closer to or behind the index MCP.
+
+		This is rotation-invariant (works at any wrist angle) and handedness-
+		invariant (no need to pass left vs right) — both big improvements
+		over the old tip.x vs ip.x rule
 		"""
 
-		tip_x = landmarks[THUMB_TIP].x
-		ip_x = landmarks[THUMB_IP].x
+		index_mcp = landmarks[INDEX_MCP]
+		thumb_tip = landmarks[THUMB_TIP]
+		thumb_ip = landmarks[THUMB_IP]
 
-		if handedness == Handedness.RIGHT:
-			return tip_x < ip_x
-		else:
-			return tip_x > ip_x
+		tip_dist = self._distance(thumb_tip, index_mcp)
+		ip_dist = self._distance(thumb_ip, index_mcp)
+
+		return tip_dist > ip_dist
+
+	def _distance(self, a, b) -> float:
+		"""Euclidean distance between two landmarks in normalised x/y space"""
+		return math.hypot(a.x - b.x, a.y - b.y)
 
 	# gesture classification
 	def _classify(self, fs: FingerState) -> Gesture:

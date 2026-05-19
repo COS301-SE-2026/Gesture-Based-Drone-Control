@@ -16,7 +16,7 @@ import mediapipe as mp
 import numpy as np
 
 # camera_feed.py imports -> 1st in chain then this file
-from camera_feed import CapturedFrame
+from cv_pipeline.camera.camera_feed import CapturedFrame
 
 logger = logging.getLogger(__name__)
 
@@ -256,7 +256,7 @@ if __name__ == '__main__':
 
 	# add cam folder to path for smoke test
 	sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'camera'))
-	from camera_feed import CameraConfig, CameraFeed
+	from cv_pipeline.camera.camera_feed import CameraConfig, CameraFeed
 
 	with CameraFeed(CameraConfig()) as camera, HandDetectionPipeline() as detector:
 		while True:
