@@ -18,6 +18,8 @@ dependencies = [
     "numpy>=1.26",
     "msgpack-rpc-python",
     "backports.ssl-match-hostname",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.1.0",
 ]
 
 [project.optional-dependencies]

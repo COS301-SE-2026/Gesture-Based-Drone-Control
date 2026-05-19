@@ -13,7 +13,8 @@ dependencies = [
     "numpy>=2.4.4",
     "opencv-python>=4.13.0.92",
     "websockets>=16.0",
-    "drone-services",                     
+    "drone-services",
+    "pytest-asyncio>=1.3.0",
 ]
 
 [dependency-groups]

@@ -5,3 +5,4 @@ drone_services.egg-info/dependency_links.txt
 drone_services.egg-info/requires.txt
 drone_services.egg-info/top_level.txt
 tests/test_imports.py
+tests/test_telemetry_manager.py
