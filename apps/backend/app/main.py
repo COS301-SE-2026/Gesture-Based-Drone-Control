@@ -2,13 +2,12 @@
 import sys
 from pathlib import Path
 
-from fastapi import FastAPI
-
-from app.api import router
-
 project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+from fastapi import FastAPI
+
+from app.api import router
 
 app = FastAPI(
 	title='Drone Control API',

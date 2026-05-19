@@ -38,6 +38,7 @@ select = [
     "I",   # import ordering
     "N",   # python naming conventions
 ]
+ignore = ["E402"]
 
 [tool.ruff.format]
 quote-style = "single"
@@ -48,4 +49,4 @@ airsim = ["setuptools", "wheel", "numpy"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-pythonpath = [".", "../.."]
+pythonpath = [".", "../../services"]
