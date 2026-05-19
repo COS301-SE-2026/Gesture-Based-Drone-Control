@@ -1,0 +1,5 @@
+numpy
+tornado==4.5.3
+msgpack-rpc-python
+backports.ssl-match-hostname
+airsim

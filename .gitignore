@@ -4,5 +4,9 @@ dist/
 data/*.db
 .venv
 .egg-info
+drone_services.egg-info
+services.egg-info
+__pycache__/
+.pytest_cache
 __pycache__
 .coverage
