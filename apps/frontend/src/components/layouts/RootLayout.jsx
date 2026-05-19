@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { SideBar } from "../molecules";
+import { SideBar, DashboardSideCard } from "../molecules";
 import { Home, Hand, BarChart3, MapPin, Settings } from 'lucide-react';
 
 const RootLayout = () => {
@@ -13,6 +13,7 @@ const RootLayout = () => {
 
     return (
         <div className="flex min-h-screen bg-OffWhite dark:bg-OffBlack">
+            
             <SideBar items={menuItems} />
             <main className="flex-1 overflow-y-auto">
                 <Outlet/>

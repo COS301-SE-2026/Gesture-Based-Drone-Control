@@ -14,7 +14,7 @@ const DroneModeCard = ({ currentMode = 'DroneSim', onModeChange = null, classNam
 
     return (
         <Card variant='glass' className={className}>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 ">
                 <Label size="md">Select Drone Mode</Label>
 
                 <div className="grid grid-cols-2 gap-3">

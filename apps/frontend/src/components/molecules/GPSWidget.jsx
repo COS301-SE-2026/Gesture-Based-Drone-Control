@@ -6,15 +6,14 @@ import Label from '../atoms/Label';
 
 const Compass = ({ heading = 0, className = '' }) => {
     return (
-        <Card variant="secondary" className={className}>
-            <div className="flex flex-col gap-4">
+        <Card className={className}>
+            <div className="w-full h-70 bg-OffWhite rounded-full  flex flex-col items-center justify-center gap-4">
                 <Label size="md">Drone Orientation</Label>
 
-                <div className="w-full h-64 bg-OffBlack/50 rounded-lg border border-Grey/20 flex flex-col items-center justify-center gap-4">
                     {/* compass head/rose */}
                     <div className="relative w-48 h-48">
                         {/* outer circle of compass */}
-                        <div className="absolute inset-0 rounded-full border-2 border-Grey/40"/>
+                        <div className="absolute inset-0 rounded-full border-2 border-Grey"/>
 
                         {/* cardinal direction */}
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -36,7 +35,7 @@ const Compass = ({ heading = 0, className = '' }) => {
                                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-20 bg-Red rounded-full origin-bottom" />
                                 <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-20 bg-DarkGrey rounded-full origin-top" />
 
-                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-OffWhite rounded-full" />
+                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-OffBlack rounded-full" />
 
                             </div>
                         </div>
@@ -52,7 +51,7 @@ const Compass = ({ heading = 0, className = '' }) => {
                         </p>
                     </div>
                 </div>
-            </div>
+            
         </Card>
     );
 };
