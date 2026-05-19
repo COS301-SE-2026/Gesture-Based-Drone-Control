@@ -21,6 +21,7 @@ dependencies = [
     "pytest-asyncio>=1.3.0",
     "pytest-cov>=7.1.0",
     "ruff>=0.15.12",
+    "projectairsim",
 ]
 
 [project.optional-dependencies]
@@ -36,6 +37,9 @@ airsim = [
     "msgpack-rpc-python",
     "backports.ssl-match-hostname",
 ]
+
+[tool.uv.sources]
+projectairsim = { path = "../vendors/projectairsim" }
 
 [tool.ruff]
 target-version = "py311"
