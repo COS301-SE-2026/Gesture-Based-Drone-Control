@@ -99,7 +99,7 @@ class KeyboardAdapter(InputAdapter):
 
 	"""
 
-	def start(self) -> None:
+	async def start(self) -> None:
 		"""
 		No initialization needed for this adapter
 		This one is entirely event driven with no background tasks

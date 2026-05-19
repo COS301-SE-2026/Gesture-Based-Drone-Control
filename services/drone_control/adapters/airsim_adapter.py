@@ -9,21 +9,21 @@ Prereqs:
 		hostport before connect() is called
 		default: localhost:41451
 
-    2) AirSim Python package, should be part of your venv if
+	2) AirSim Python package, should be part of your venv if
 		'uv run' is executed in the services folder
 
 Notes:
 the coordinate system
 
 AirSim uses a right handed, North-East-Down system:
-  +x = North  (forward in default world orientation)
-  +y = East   (right)
-  +z = Down   (into the ground, NEGATIVE when airborne)
++x = North  (forward in default world orientation)
++y = East   (right)
++z = Down   (into the ground, NEGATIVE when airborne)
 
 This means:
-  - "Move up"   -> negative z velocity
-  - "Move down" -> positive z velocity
-  - Altitude    -> negate the z position component
+- "Move up"   -> negative z velocity
+- "Move down" -> positive z velocity
+- Altitude    -> negate the z position component
 
 All conversions are handled in this adapter, such that telemetrydata
 consumers receive comparable and consistent data across all adapter types
@@ -43,6 +43,7 @@ For simplicity in this minimal implementation, .join() is called directly.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import math
 from typing import TYPE_CHECKING
@@ -107,6 +108,23 @@ class AirSimAdapter(DroneAdapter):
 
 	# logic for the connection lifecycle
 
+	@staticmethod
+	async def _run(fn):
+		"""
+		Internal helper to await a blocking callable in the default thread pool
+		executor
+
+		Usage:
+			await self._run(lambda: self._client.takeoffAsync().join())
+
+		The lambda captures both the AirSim *Async call and the .join()
+		so the whole blocking operation happens off the event loop thread.
+		This needs to be used since AirSim doesn't play nice with async calls,
+		as I have regrettably found out through a long and painful night
+		"""
+		loop = asyncio.get_event_loop()
+		return await loop.run_in_executor(None, fn)
+
 	async def connect(self) -> bool:
 		"""
 		Connect to airsim, enable API control, and arm the vehicle
@@ -119,20 +137,29 @@ class AirSimAdapter(DroneAdapter):
 		try:
 			import airsim  # type: ignore (the package does in fact exist...)
 
-			# raises if airsim unreachable
-			self._client = airsim.MultirotorClient(ip=self._host, port=self._port)
+			def _connect_blocking():
+				# AirSim's MultirotorClient may be broken.
+				# look into how it handles ip and port -
+				# for the life of me i couldnt get it working
+				using_defaults = self._host in ('localhost', '127.0.0.1') and self._port == 41451
+				if using_defaults:
+					client = airsim.MultirotorClient()
+				else:  # this will likely break but its kept here just in case
+					client = airsim.MultirotorClient(ip=self._host, port=self._port)
+				client.confirmConnection()
+				client.enableApiControl(True, self._vehicle)
+				client.armDisarm(True, self._vehicle)
+				return client
 
-			self._client.enableApiControl(True, self._vehicle)
-			self._client.armDisarm(True, self._vehicle)
-
+			self._client = await self._run(_connect_blocking)
 			self._connected = True
+
 			logger.info(
-				'AirSimAdapter: connected to $s:%d (vehicle=%r)',
+				'AirSimAdapter: connected to %s:%d (vehicle=%r)',
 				self._host,
 				self._port,
-				self._vehicle or 'unknown',
+				self._vehicle or 'default',
 			)
-
 			return True
 
 		except Exception as ex:
@@ -147,10 +174,16 @@ class AirSimAdapter(DroneAdapter):
 
 		if self._client and self._connected:
 			try:
-				self._client.armDisarm(False, self._vehicle)
-				self._client.enableApiControl(False, self._vehicle)
-			except Exception:
-				logger.warning('AirSimAdapter: error')
+				client = self._client
+				vehicle = self._vehicle
+				await self._run(
+					lambda: (
+						client.armDisarm(False, vehicle),
+						client.enableApiControl(False, vehicle),
+					)
+				)
+			except Exception as ex:
+				logger.warning('AirSimAdapter: error during disconnect - %s', ex)
 			finally:
 				self._connected = False
 				logger.info('AirSimAdapter: disconnected')
@@ -168,7 +201,7 @@ class AirSimAdapter(DroneAdapter):
 		self._assert_connected()
 		logger.info('AirSimAdapter: takeoff')
 		# TODO: wrap run_in_executor for async correctness in prod. this is good enough for now
-		self._client.takeoffAsync(vehicle_name=self._vehicle).join()
+		await self._run(lambda: self._client.takeoffAsync(vehicle_name=self._vehicle).join())
 
 	async def land(self) -> None:
 		"""
@@ -177,7 +210,7 @@ class AirSimAdapter(DroneAdapter):
 
 		self._assert_connected()
 		logger.info('AirSimAdapter: land')
-		self._client.landAsync(vehicle_name=self._vehicle).join()
+		await self._run(lambda: self._client.landAsync(vehicle_name=self._vehicle).join())
 
 	async def hover(self) -> None:
 		"""
@@ -188,7 +221,7 @@ class AirSimAdapter(DroneAdapter):
 
 		self._assert_connected()
 		logger.info('AirSimAdapter: hover')
-		self._client.hoverAsync(vehicle_name=self._vehicle).join()
+		await self._run(lambda: self._client.hoverAsync(vehicle_name=self._vehicle).join())
 
 	async def emergency_stop(self) -> None:
 		"""
@@ -205,9 +238,15 @@ class AirSimAdapter(DroneAdapter):
 
 		logger.warning('AirSimAdapter: EMERGENCY STOP CALLED')
 		try:
-			self._client.cancelLastTask(self._vehicle)
-			# dont join since we want there to be little to no delay
-			self._client.hoverAsync(vehicle_name=self._vehicle)
+			client = self._client
+			vehicle = self._vehicle
+			# dont run with jojin since we want minimal lataency on this command
+			await self._run(
+				lambda: (
+					client.cancelLastTask(vehicle),
+					client.hoverAsync(vehicle_name=vehicle),
+				)
+			)
 		except Exception as ex:
 			logger.error('AirSimAdapter: error during emergency_stop - %s', ex)
 
@@ -273,17 +312,22 @@ class AirSimAdapter(DroneAdapter):
 			duration,
 		)
 
-		# apply a constant velocity for 'duration' seconds
-		self._client.moveByVelocityAsync(
-			vx,
-			vy,
-			vz,
-			duration,
-			vehicle_name=self._vehicle,
-		).join()
+		client = self._client
+		vehicle = self._vehicle
 
-		# auto hover after each move (can remove once movements are a bit better)
-		self._client.hoverAsync(vehicle_name=self._vehicle).join()
+		# apply a constant velocity for 'duration' seconds
+		await self._run(
+			lambda: client.moveByVelocityAsync(
+				vx,
+				vy,
+				vz,
+				duration,
+				vehicle_name=vehicle,
+			).join()
+		)
+
+		# Snap to hover after each move so the drone doesn't drift.
+		await self._run(lambda: client.hoverAsync(vehicle_name=vehicle).join())
 
 	# TELEMETRY DATA
 
@@ -301,7 +345,10 @@ class AirSimAdapter(DroneAdapter):
 			return TelemetryData(source='airsim-disconnected')
 
 		try:
-			state = self._client.getMultirotorState(vehicle_name=self._vehicle)
+			client = self._client
+			vehicle = self._vehicle
+			state = await self._run(lambda: client.getMultirotorState(vehicle_name=vehicle))
+
 			kin = state.kinematics_estimated
 			pos = kin.position
 			vel = kin.linear_velocity
@@ -311,7 +358,10 @@ class AirSimAdapter(DroneAdapter):
 			altitude = max(0.0, -pos.z_val)
 
 			# LandedState.Landed == 1, Flying == 0 (check AirSim source)
-			is_flying = state.landed_state.value != 1
+			# airsim is stupid and uses either a plain int or enum depending on version.
+			# this handles both
+			landed = state.landed_state
+			is_flying = (landed if isinstance(landed, int) else landed.value) != 1
 
 			return TelemetryData(
 				altitude_m=altitude,
@@ -347,9 +397,13 @@ class AirSimAdapter(DroneAdapter):
 			duration,
 		)
 
-		self._client.rotateByYawRateAsync(yaw_rate, duration, vehicle_name=self._vehicle).join()
+		client = self._client
+		vehicle = self._vehicle
+		await self._run(
+			lambda: client.rotateByYawRateAsync(yaw_rate, duration, vehicle_name=vehicle).join()
+		)
 
-	def _get_heading_deg(self) -> float:
+	def _get_heading_deg(self, state=None) -> float:
 		"""
 		Helper to convert the current orientation quaternion to a heading in degrees
 		Degree is defined as [0,360] clockwise from North
@@ -358,13 +412,15 @@ class AirSimAdapter(DroneAdapter):
 		try:
 			import airsim
 
-			orientation = self._client.getMultirotorState(
-				vehicle_name=self._vehicle
-			).kinematics_estimated.orientation
+			if state is None:
+				state = self._client.getMultirotorState(vehicle_name=self._vehicle)
+
+			orientation = state.kinematics_estimated.orientation
 			_, _, yaw = airsim.to_eularian_angles(orientation)
 			return math.degrees(yaw) % 360.0
+
 		except Exception as ex:
-			logger.warning('DroneAdapter._get_heading_deg : returning 0, error - %s', ex)
+			logger.warning('AirSimAdapter._get_heading_deg: returning 0 due to error - %s', ex)
 			return 0.0
 
 	def _assert_connected(self) -> None:
