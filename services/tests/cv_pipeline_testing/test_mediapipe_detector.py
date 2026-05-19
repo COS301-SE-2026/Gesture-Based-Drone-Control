@@ -8,22 +8,19 @@ from unittest.mock import MagicMock
 import numpy as np
 import pytest
 
-# ---------------------------------------------------------------------------
-# Mock mediapipe BEFORE importing mediapipe_detector
-# mediapipe 0.10+ does not expose mp.solutions at module level
-# injecting a MagicMock into sys.modules means mp inside the detector
-# is a MagicMock and all attribute access (mp.solutions.hands.Hands) works
-# ---------------------------------------------------------------------------
+# Mock mediapipe before importing mediapipe_detector
 _mock_mp = MagicMock()
 sys.modules['mediapipe'] = _mock_mp
 
-# find hand-detection and camera folders
-sys.path.insert(
-	0, os.path.join(os.path.dirname(__file__), '..', '..', 'cv_pipeline', 'hand-detection')
-)
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'cv_pipeline', 'camera'))
+# add services/ to sys.path so cv_pipeline.* imports resolve when running
+# pytest from anywhere. services/ is three levels up from this test file
+# (tests/cv_pipeline_testing/test_mediapipe_detector.py -> services/)
+_services_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, _services_dir)
 
-from mediapipe_detector import (  # noqa: E402
+# noqa :E402 stops the warnings dont remvoe those
+from cv_pipeline.camera.camera_feed import CapturedFrame  # noqa: E402
+from cv_pipeline.hand_detection.mediapipe_detector import (  # noqa: E402
 	MAX_HANDS,
 	NUM_LANDMARKS,
 	DetectedHand,
@@ -34,15 +31,10 @@ from mediapipe_detector import (  # noqa: E402
 	HandLandmark,
 )
 
-# ---------------------------------------------------------------------------
+
 # helpers
-# ---------------------------------------------------------------------------
-
-
 def make_blank_frame():
 	"""Returns a mock CapturedFrame with blank rgb and bgr arrays."""
-	from camera_feed import CapturedFrame
-
 	return CapturedFrame(
 		bgr_frame=np.zeros((480, 640, 3), dtype=np.uint8),
 		rgb_frame=np.zeros((480, 640, 3), dtype=np.uint8),
@@ -85,11 +77,7 @@ def make_open_pipeline(config=None):
 	return pipeline, mock_hands
 
 
-# ---------------------------------------------------------------------------
-# const
-# ---------------------------------------------------------------------------
-
-
+# consts
 class TestConstants:
 	def test_num_landmarks(self):
 		assert NUM_LANDMARKS == 21
@@ -98,11 +86,7 @@ class TestConstants:
 		assert MAX_HANDS == 2
 
 
-# ---------------------------------------------------------------------------
-# detector config
-# ---------------------------------------------------------------------------
-
-
+# detector configs
 class TestDetectorConfig:
 	def test_defaults(self):
 		config = DetectorConfig()
@@ -121,11 +105,7 @@ class TestDetectorConfig:
 		assert config.static_image_mode is True
 
 
-# ---------------------------------------------------------------------------
 # landmarks
-# ---------------------------------------------------------------------------
-
-
 class TestHandLandmark:
 	def test_fields_stored_correctly(self):
 		lm = HandLandmark(x=0.1, y=0.2, z=-0.05)
@@ -134,11 +114,7 @@ class TestHandLandmark:
 		assert lm.z == pytest.approx(-0.05)
 
 
-# ---------------------------------------------------------------------------
 # hand detection
-# ---------------------------------------------------------------------------
-
-
 class TestDetectedHand:
 	def test_fields_stored_correctly(self):
 		landmarks = [HandLandmark(x=0.0, y=0.0, z=0.0)] * NUM_LANDMARKS
@@ -152,11 +128,7 @@ class TestDetectedHand:
 		assert hand.confidence == pytest.approx(0.95)
 
 
-# ---------------------------------------------------------------------------
 # detection result
-# ---------------------------------------------------------------------------
-
-
 class TestHandDetectionResult:
 	def test_empty_by_default(self):
 		result = HandDetectionResult()
@@ -182,11 +154,7 @@ class TestHandDetectionResult:
 		assert result.frame_index == 42
 
 
-# ---------------------------------------------------------------------------
 # pipeline open()
-# ---------------------------------------------------------------------------
-
-
 class TestHandDetectionPipelineOpen:
 	def test_open_initialises_mediapipe(self):
 		mock_hands = MagicMock()
@@ -218,11 +186,7 @@ class TestHandDetectionPipelineOpen:
 		)
 
 
-# ---------------------------------------------------------------------------
-# pipeline close
-# ---------------------------------------------------------------------------
-
-
+# pipeline close()
 class TestHandDetectionPipelineClose:
 	def test_close_releases_mediapipe(self):
 		pipeline, mock_hands = make_open_pipeline()
@@ -236,11 +200,7 @@ class TestHandDetectionPipelineClose:
 		pipeline.close()  # should be a no-op
 
 
-# ---------------------------------------------------------------------------
 # hand context manager
-# ---------------------------------------------------------------------------
-
-
 class TestHandDetectionPipelineContextManager:
 	def test_context_manager_opens_and_closes(self):
 		mock_hands = MagicMock()
@@ -252,11 +212,7 @@ class TestHandDetectionPipelineContextManager:
 		mock_hands.close.assert_called_once()
 
 
-# ---------------------------------------------------------------------------
 # detect hands()
-# ---------------------------------------------------------------------------
-
-
 class TestDetectHands:
 	def test_returns_empty_result_before_open(self):
 		pipeline = HandDetectionPipeline()
@@ -312,11 +268,7 @@ class TestDetectHands:
 		assert result.frame_index == 99
 
 
-# ---------------------------------------------------------------------------
-# extract landmarks
-# ---------------------------------------------------------------------------
-
-
+# extra landamrks
 class TestExtractLandmarks:
 	def test_extracts_21_landmarks(self):
 		pipeline, _ = make_open_pipeline()
