@@ -16,13 +16,13 @@ sys.modules['mediapipe'] = _mock_mp
 _services_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, _services_dir)
 
-#dont remove the noqa comment i need the import structure this way, linting complians import must come at very top, this stops the warning
+# dont remove the noqa comment i need the import structure this way,
+# linting complians import must come at very top, this stops the warning
 from cv_pipeline.gestures.recognizers.gesture_recognizer import (  # noqa: E402
 	FingerState,
 	Gesture,
 	GestureResult,
 )
-
 from cv_pipeline.gestures.recognizers.rule_based import (  # noqa: E402
 	INDEX_MCP,
 	INDEX_PIP,
@@ -37,7 +37,6 @@ from cv_pipeline.gestures.recognizers.rule_based import (  # noqa: E402
 	THUMB_TIP,
 	RuleBasedRecognizer,
 )
-
 from cv_pipeline.hand_detection.mediapipe_detector import (  # noqa: E402
 	NUM_LANDMARKS,
 	DetectedHand,
@@ -45,7 +44,8 @@ from cv_pipeline.hand_detection.mediapipe_detector import (  # noqa: E402
 	HandLandmark,
 )
 
-#helpers
+
+# helpers
 def make_hand(
 	thumb_up: bool = False,
 	index_up: bool = False,
@@ -66,8 +66,8 @@ def make_hand(
 	Thumb extension is distance-based: tip is "up" when its distance from
 	the index MCP is greater than the IP joint's distance from the index MCP
 	We anchor the index MCP at (0.4, 0.5) and choose thumb positions so:
-	-> thumb up:   thumb_tip far from index_mcp 
-	-> thumb down: thumb_tip close to / inside the palm 
+	-> thumb up:   thumb_tip far from index_mcp
+	-> thumb down: thumb_tip close to / inside the palm
 	"""
 	# start every landmark in the centre and irrelevant points stay neutral
 	landmarks = [HandLandmark(x=0.5, y=0.5, z=0.0) for _ in range(NUM_LANDMARKS)]
@@ -100,7 +100,8 @@ def make_hand(
 		confidence=confidence,
 	)
 
-#finger stats
+
+# finger stats
 class TestFingerState:
 	def test_defaults_all_down(self):
 		fs = FingerState()
@@ -120,7 +121,7 @@ class TestFingerState:
 		assert fs.count == 3
 
 
-#gesture result
+# gesture result
 class TestGestureResult:
 	def test_fields_stored_correctly(self):
 		fs = FingerState(index=True)
@@ -136,7 +137,7 @@ class TestGestureResult:
 		assert result.confidence == pytest.approx(0.88)
 
 
-#finger detection helpers
+# finger detection helpers
 class TestIsFingerUp:
 	def test_finger_up_when_tip_above_pip(self):
 		recognizer = RuleBasedRecognizer()
@@ -147,6 +148,7 @@ class TestIsFingerUp:
 		recognizer = RuleBasedRecognizer()
 		hand = make_hand(index_up=False)
 		assert recognizer._is_finger_up(hand.landmarks, INDEX_TIP, INDEX_PIP) is False
+
 
 class TestIsThumbUp:
 	def test_thumb_up_when_tip_far_from_index_mcp(self):
@@ -166,9 +168,8 @@ class TestIsThumbUp:
 		recognizer = RuleBasedRecognizer()
 		right = make_hand(thumb_up=True, handedness=Handedness.RIGHT)
 		left = make_hand(thumb_up=True, handedness=Handedness.LEFT)
-		assert recognizer._is_thumb_up(right.landmarks) == recognizer._is_thumb_up(
-			left.landmarks
-		)
+		assert recognizer._is_thumb_up(right.landmarks) == recognizer._is_thumb_up(left.landmarks)
+
 
 class TestDistance:
 	def test_distance_zero_for_same_point(self):
@@ -189,7 +190,7 @@ class TestDistance:
 		assert recognizer._distance(a, b) == pytest.approx(5.0)
 
 
-#gesture classification
+# gesture classification
 class TestClassifyFist:
 	def test_fist_when_all_fingers_down(self):
 		recognizer = RuleBasedRecognizer()
@@ -197,6 +198,7 @@ class TestClassifyFist:
 		result = recognizer.interpret_gesture(hand)
 		assert result.gesture == Gesture.FIST
 		assert result.finger_state.count == 0
+
 
 class TestClassifyOpenPalm:
 	def test_open_palm_when_all_fingers_up(self):
@@ -211,6 +213,7 @@ class TestClassifyOpenPalm:
 		result = recognizer.interpret_gesture(hand)
 		assert result.gesture == Gesture.OPEN_PALM
 		assert result.finger_state.count == 5
+
 
 class TestClassifyFingerCounts:
 	def test_one_finger_index_only(self):
@@ -248,6 +251,7 @@ class TestClassifyFingerCounts:
 		result = recognizer.interpret_gesture(hand)
 		assert result.gesture == Gesture.ONE_FINGER
 		assert result.finger_state.count == 1
+
 
 # interpret_gesture — result fields
 class TestInterpretGestureResult:
