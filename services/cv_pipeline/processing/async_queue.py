@@ -28,11 +28,11 @@ class BoundedFrameQueue(Generic[T]):
 	thread because cv2.VideoCapture.read() is blocking
 
 	Usage:
-	    q = BoundedFrameQueue[Capturedframe](maxSize = 2)
-	    #from camera thread
-	    q.ttry_put_threadsafe(frame, loop)
-	    # from async consumer
-	    item = await q.get()
+		q = BoundedFrameQueue[Capturedframe](maxSize = 2)
+		#from camera thread
+		q.ttry_put_threadsafe(frame, loop)
+		# from async consumer
+		item = await q.get()
 	"""
 
 	def __init__(self, maxsize: int = 2) -> None:
