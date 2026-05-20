@@ -1,7 +1,7 @@
 .PHONY: install test lint dev
 
 install:
-	uv sync --all-groups
+	uv sync --all-groups --python 3.11
 
 test:
 	uv run pytest tests/ --cov=services --cov-report=term-missing

@@ -14,15 +14,21 @@ import cv2
 import numpy as np
 import pytest
 
-# find camera_feed.py file
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'cv_pipeline', 'camera'))
+# add services/ to sys.path so cv_pipeline.* imports resolve. services/ is
+# three levels up from this test file
+# (tests/cv_pipeline_testing/test_camera_feed.py -> services/)
+_services_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, _services_dir)
 
-from camera_feed import (
+from cv_pipeline.camera.camera_feed import (  # noqa: E402
 	CameraConfig,
 	CameraFeed,
 	CameraSource,
 	CapturedFrame,
 )
+
+# shorthand for the @patch target — keeps the patch strings readable
+_CV2_VIDEO_CAPTURE = 'cv_pipeline.camera.camera_feed.cv2.VideoCapture'
 
 
 # helpers
@@ -83,7 +89,7 @@ class TestCapturedFrame:
 
 # opened cam feed testing
 class TestCameraFeedOpen:
-	@patch('camera_feed.cv2.VideoCapture')
+	@patch(_CV2_VIDEO_CAPTURE)
 	def test_open_webcam_success(self, mock_cap_cls):
 		mock_cap = MagicMock()
 		mock_cap.isOpened.return_value = True
@@ -96,7 +102,7 @@ class TestCameraFeedOpen:
 		mock_cap.set.assert_called()
 		assert feed.is_open()
 
-	@patch('camera_feed.cv2.VideoCapture')
+	@patch(_CV2_VIDEO_CAPTURE)
 	def test_open_file_source_success(self, mock_cap_cls):
 		mock_cap = MagicMock()
 		mock_cap.isOpened.return_value = True
@@ -108,7 +114,7 @@ class TestCameraFeedOpen:
 
 		mock_cap_cls.assert_called_once_with('clip.mp4')
 
-	@patch('camera_feed.cv2.VideoCapture')
+	@patch(_CV2_VIDEO_CAPTURE)
 	def test_open_raises_if_camera_fails(self, mock_cap_cls):
 		mock_cap = MagicMock()
 		mock_cap.isOpened.return_value = False
@@ -124,7 +130,7 @@ class TestCameraFeedOpen:
 		with pytest.raises(ValueError):
 			feed.open()
 
-	@patch('camera_feed.cv2.VideoCapture')
+	@patch(_CV2_VIDEO_CAPTURE)
 	def test_open_sets_resolution_and_fps(self, mock_cap_cls):
 		mock_cap = MagicMock()
 		mock_cap.isOpened.return_value = True
@@ -141,7 +147,7 @@ class TestCameraFeedOpen:
 
 # closed cam feed testing
 class TestCameraFeedClose:
-	@patch('camera_feed.cv2.VideoCapture')
+	@patch(_CV2_VIDEO_CAPTURE)
 	def test_close_releases_capture(self, mock_cap_cls):
 		mock_cap = MagicMock()
 		mock_cap.isOpened.return_value = True
@@ -161,7 +167,7 @@ class TestCameraFeedClose:
 
 # cam manager testing
 class TestCameraFeedContextManager:
-	@patch('camera_feed.cv2.VideoCapture')
+	@patch(_CV2_VIDEO_CAPTURE)
 	def test_context_manager_opens_and_closes(self, mock_cap_cls):
 		mock_cap = MagicMock()
 		mock_cap.isOpened.return_value = True
@@ -175,14 +181,14 @@ class TestCameraFeedContextManager:
 
 # capture img testing
 class TestCaptureImage:
-	@patch('camera_feed.cv2.VideoCapture')
+	@patch(_CV2_VIDEO_CAPTURE)
 	def test_returns_none_before_open(self, mock_cap_cls):
 		feed = make_feed()
 		# _cap is None — should return None without crashing
 		result = feed.capture_image()
 		assert result is None
 
-	@patch('camera_feed.cv2.VideoCapture')
+	@patch(_CV2_VIDEO_CAPTURE)
 	def test_returns_captured_frame_on_success(self, mock_cap_cls):
 		raw = make_blank_frame()
 		mock_cap = MagicMock()
@@ -197,7 +203,7 @@ class TestCaptureImage:
 		assert isinstance(result, CapturedFrame)
 		assert result.frame_index == 1
 
-	@patch('camera_feed.cv2.VideoCapture')
+	@patch(_CV2_VIDEO_CAPTURE)
 	def test_returns_none_when_read_fails(self, mock_cap_cls):
 		mock_cap = MagicMock()
 		mock_cap.isOpened.return_value = True
@@ -210,7 +216,7 @@ class TestCaptureImage:
 
 		assert result is None
 
-	@patch('camera_feed.cv2.VideoCapture')
+	@patch(_CV2_VIDEO_CAPTURE)
 	def test_frame_index_increments(self, mock_cap_cls):
 		raw = make_blank_frame()
 		mock_cap = MagicMock()
@@ -234,7 +240,7 @@ class TestCaptureImage:
 class TestPreprocess:
 	def _make_open_feed(self, config=None):
 		"""Returns a feed with a mocked-open capture device."""
-		with patch('camera_feed.cv2.VideoCapture') as mock_cap_cls:
+		with patch(_CV2_VIDEO_CAPTURE) as mock_cap_cls:
 			mock_cap = MagicMock()
 			mock_cap.isOpened.return_value = True
 			mock_cap_cls.return_value = mock_cap
@@ -268,7 +274,7 @@ class TestPreprocess:
 		feed = self._make_open_feed(config)
 
 		raw = make_blank_frame(640, 480)
-		with patch('camera_feed.cv2.resize') as mock_resize:
+		with patch('cv_pipeline.camera.camera_feed.cv2.resize') as mock_resize:
 			feed._preprocess(raw)
 			mock_resize.assert_not_called()
 
@@ -277,7 +283,10 @@ class TestPreprocess:
 		feed = self._make_open_feed(config)
 		raw = make_blank_frame()
 
-		with patch('camera_feed.cv2.flip', wraps=__import__('cv2').flip) as mock_flip:
+		with patch(
+			'cv_pipeline.camera.camera_feed.cv2.flip',
+			wraps=__import__('cv2').flip,
+		) as mock_flip:
 			feed._preprocess(raw)
 			mock_flip.assert_called_once_with(raw, 1)
 
@@ -286,7 +295,7 @@ class TestPreprocess:
 		feed = self._make_open_feed(config)
 		raw = make_blank_frame()
 
-		with patch('camera_feed.cv2.flip') as mock_flip:
+		with patch('cv_pipeline.camera.camera_feed.cv2.flip') as mock_flip:
 			feed._preprocess(raw)
 			mock_flip.assert_not_called()
 
