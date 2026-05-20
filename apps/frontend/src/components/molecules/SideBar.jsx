@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom"
-import NavItem from "../atoms/NavItem"
-import Card from "../atoms/Card"
+import { NavItem, Card } from "../atoms"
+import DarkModeToggle from "./DarkModeToggle"
 import Logo from "../../assets/codex_merchants_logo.png"
 import PropTypes from "prop-types"
 
@@ -25,6 +25,10 @@ export default function SideBar({
           alt="Codex Merchants Logo"
           className="w-40 h-14 object-cover rounded-full"
         />
+      </div>
+
+      <div className="flex justify-between items-center mb-4">
+        <DarkModeToggle />
       </div>
 
       {topContent && <Card variant="secondary">{topContent}</Card>}

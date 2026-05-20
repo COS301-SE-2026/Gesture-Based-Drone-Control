@@ -4,7 +4,6 @@ import {
   DashboardSideCard,
   GestureSideContent,
   AnalyticsSideContent,
-  DarkModeToggle,
 } from "../molecules"
 import { Home, Hand, BarChart3, MapPin, Settings } from "lucide-react"
 
@@ -38,7 +37,6 @@ const RootLayout = () => {
       <div className="flex flex-col">
         <SideBar items={menuItems} topContent={getTopContent()} />
         <div className="w-80 px-4 pb-4">
-          <DarkModeToggle />
         </div>
       </div>
       <main className="flex-1 overflow-y-auto">
