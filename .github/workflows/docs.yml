@@ -1,0 +1,26 @@
+name: Deploy Docs
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.x'
+
+      - name: Install dependencies
+        run: pip install mkdocs mkdocs-material
+
+      - name: Deploy to GitHub Pages
+        run: mkdocs gh-deploy --force
