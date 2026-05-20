@@ -24,7 +24,7 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
-from services.commands import Command, CommandType
+from services.commands.command import Command, CommandType
 
 logger = logging.getLogger(__name__)
 

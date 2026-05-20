@@ -18,6 +18,10 @@ dependencies = [
     "numpy>=1.26",
     "msgpack-rpc-python",
     "backports.ssl-match-hostname",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.12",
+    "projectairsim",
     "websockets>=16.0",
     "input",
 ]
@@ -28,7 +32,6 @@ dev    = ["pytest>=8.0", "pytest-asyncio>=0.23", "ruff"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["services*"]
 
 [tool.uv.extra-build-dependencies]
 airsim = [
@@ -37,6 +40,27 @@ airsim = [
     "backports.ssl-match-hostname",
 ]
 
+[tool.uv.sources]
+projectairsim = { path = "../vendors/projectairsim" }
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",   # bugs + certain code breaks
+    "F",   # logical errors + unused code
+    "I",   # import ordering
+    "N",   # python naming conventions
+]
+ignore = ["E402"]
+
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "tab"
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["tests"]
+pythonpath = ["."]

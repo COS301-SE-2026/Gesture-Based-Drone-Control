@@ -1,9 +1,10 @@
 import pytest
-from services.commands.command import PRIORITY_CRITICAL, Command, CommandType
-from services.drone_control.adapters.airsim_adapter import AirSimAdapter
-from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
-from services.input.sources.input_adapter import InputAdapter
-from services.input.sources.keyboard_adapter import KeyboardAdapter
+
+from commands.command import PRIORITY_CRITICAL, Command, CommandType
+from drone_control.adapters.airsim_adapter import AirSimAdapter
+from drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
+from input.sources.input_adapter import InputAdapter
+from input.sources.keyboard_adapter import KeyboardAdapter
 
 # Integration and unit testing for the adapter to adapter pipeline
 

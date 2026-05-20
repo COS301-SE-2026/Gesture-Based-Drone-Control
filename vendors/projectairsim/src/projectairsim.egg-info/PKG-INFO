@@ -1,0 +1,50 @@
+Metadata-Version: 2.4
+Name: projectairsim
+Version: 0.1.1
+Summary: Project AirSim client package
+Author: IAMAI Simulations
+License: MIT
+Keywords: simulation,uav,drone,airsim,robotics
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Scientific/Engineering :: Visualization
+Requires-Python: <4,>=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: pynng>=0.5.0
+Requires-Dist: msgpack>=1.0.5
+Requires-Dist: opencv-python>=4.2.0.32
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: commentjson>=0.9.0
+Requires-Dist: jsonschema>=4.4.0
+Requires-Dist: inputs
+Requires-Dist: pqdict
+Requires-Dist: cryptography
+Requires-Dist: pykml
+Requires-Dist: junit-xml
+Requires-Dist: jsonlines
+Requires-Dist: Shapely
+Requires-Dist: azure-storage-blob
+Provides-Extra: lidar
+Requires-Dist: open3d>=0.16.0; extra == "lidar"
+Provides-Extra: autonomy
+Requires-Dist: torch>=1.8.0; extra == "autonomy"
+Requires-Dist: torchvision>=0.9.0; extra == "autonomy"
+Requires-Dist: scikit-image>=0.18.1; extra == "autonomy"
+Requires-Dist: Pillow<=8.2.0; extra == "autonomy"
+Requires-Dist: gym==0.18.3; extra == "autonomy"
+Requires-Dist: onnxruntime-gpu; extra == "autonomy"
+Requires-Dist: pydantic; extra == "autonomy"
+Requires-Dist: python-multipart; extra == "autonomy"
+Requires-Dist: fastapi; extra == "autonomy"
+Requires-Dist: uvicorn; extra == "autonomy"
+Provides-Extra: bonsai
+Requires-Dist: microsoft-bonsai-api==0.1.2; extra == "bonsai"
+Requires-Dist: python-dotenv==0.13.0; extra == "bonsai"
+Requires-Dist: bonsai-cli==1.0.8; extra == "bonsai"
+Requires-Dist: msal-extensions==0.1.3; extra == "bonsai"
+Provides-Extra: datacollection
+Requires-Dist: albumentations==1.3.0; extra == "datacollection"
