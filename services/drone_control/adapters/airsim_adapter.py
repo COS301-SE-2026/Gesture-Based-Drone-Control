@@ -48,8 +48,8 @@ import logging
 import math
 from typing import TYPE_CHECKING
 
-from commands.command import CommandType
-from drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
+from services.commands.command import CommandType
+from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 # allow rest of package to be imported if airsim is not installed
 if TYPE_CHECKING:

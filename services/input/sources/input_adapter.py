@@ -29,7 +29,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Callable
 
-from commands.command import Command
+from services.commands.command import Command
 
 logger = logging.getLogger(__name__)
 

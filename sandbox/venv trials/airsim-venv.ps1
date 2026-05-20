@@ -93,6 +93,14 @@ Write-Host "checking because airsim sucks"
 
 python -c "import airsim; print('AirSim import OK')"
 
+Write-Host "installing services package (assumed running from project root)"
+
+pip install -e services
+
+Write-Host "installing project airsim from vendors folder"
+
+pip install -e vendors\projectairsim
+
 Write-Host "To activate later:"
 Write-Host ".\.venv\Scripts\Activate.ps1"
 

@@ -55,8 +55,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # defaults for movement. tweakable, same as airsim
-DEFAULT_SPEED_MS: float = 3.0
-DEFAULT_DURATION_S: float = 0.1
+DEFAULT_SPEED_MS: float = 4.0
+DEFAULT_DURATION_S: float = 0.5
 DEFAULT_ROTATE_DEG: float = 15.0
 DEFAULT_YAW_RATE_DPS: float = 45.0
 
@@ -193,13 +193,14 @@ class ProjectAirSimAdapter(DroneAdapter):
 
         if self._drone and self._connected:
             try:
+                await self._drone.land_async()
                 self._drone.disarm()
                 self._drone.disable_api_control()
             except Exception as ex:
                 logger.warning('ProjectAirSimAdapter: error during disarm - %s', ex)
 
         # can increase if error messages still flooding
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(5)
 
         if self._client:
             try:
@@ -221,7 +222,7 @@ class ProjectAirSimAdapter(DroneAdapter):
         logger.info('ProjectAirSimAdapter: arming the drone')
         self._drone.arm()
         logger.info('ProjectAirSimAdapter: taking off')
-        self._drone.takeoff_async()
+        await self._drone.takeoff_async()
 
     async def land(self) -> None:
         """
@@ -232,7 +233,7 @@ class ProjectAirSimAdapter(DroneAdapter):
         self._assert_connected()
 
         logger.info('ProjectAirSimAdapter: landing the drone')
-        self._drone.land_async()
+        await self._drone.land_async()
         logger.info('ProjectAirSimAdapter: disarming the drone')
         self._drone.disarm()
 
@@ -301,23 +302,20 @@ class ProjectAirSimAdapter(DroneAdapter):
         self._assert_connected()
 
         logger.info('ProjectAirSimAdapter: hovering...')
-        self._drone.hover_async()
+        await self._drone.hover_async()
 
     async def emergency_stop(self) -> None:
         """
         Cancel any active movement and hold current position
         Maybe initiate a landing, not sure what would be best
         """
-        # dont assert since we want minimal latency
-        # instead just do a null check
-        if self._client is None:
-            logger.warning('AirSimAdapter: emergency_stop called but the client is Null')
+        if self._drone is None:
+            logger.warning('ProjectAirSimAdapter: emergency_stop called but drone is None')
             return
 
         logger.warning('ProjectAirSimAdapter: EMERGENCY STOP CALLED')
         try:
-            # effectively cancel all movement
-            self._drone.move_by_velocity_body_frame_async(0.0, 0.0, 0.0, 0.1)
+            await self._drone.hover_async()
             self._drone.disarm()
         except Exception as ex:
             logger.error('ProjectAirSimAdapter: error during emergency_stop - %s', ex)
@@ -405,18 +403,6 @@ class ProjectAirSimAdapter(DroneAdapter):
         )
         # hell yeah its built in
         await self._drone.rotate_by_yaw_rate_async(yaw_rate, duration)
-
-    def _assert_connected(self) -> None:
-        """
-        Internal helper, raises a runtime error if the adapter is not connected to a sim vehicle.
-
-        Called at the top of every method involving movement to prevent uncaught
-        failures slipping through
-        """
-        if not self._connected or self._client is None:
-            raise RuntimeError(
-                'ProjectAirSimAdapter is not connected.Await connect() before issuing commands.'
-            )
     
     @staticmethod
     def _yaw_from_quaternion_dict(q: dict) -> float:
