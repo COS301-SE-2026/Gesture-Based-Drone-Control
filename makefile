@@ -19,14 +19,17 @@ build:
 
 
 test:
+	$(MAKE) -C $(SERVICES_DIR) test
 	$(MAKE) -C $(BACKEND_DIR) test
 	cd $(FRONTEND_DIR) && yarn test
 
 lint:
+	$(MAKE) -C $(SERVICES_DIR) lint
 	$(MAKE) -C $(BACKEND_DIR) lint
 	cd $(FRONTEND_DIR) && yarn lint
 
 fix:
+	$(MAKE) -C $(SERVICES_DIR) fix
 	$(MAKE) -C $(BACKEND_DIR) fix
 	cd $(FRONTEND_DIR) && yarn format
 
@@ -36,7 +39,7 @@ services-install:
 	pip install -e $(SERVICES_DIR)[dev] --break-system-packages
 
 services-test:
-	cd $(SERVICES_DIR) && pytest
+	python -m pytest services/tests
 
 	
 
