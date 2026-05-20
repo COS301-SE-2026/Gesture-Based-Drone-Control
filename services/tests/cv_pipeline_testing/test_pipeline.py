@@ -3,6 +3,9 @@
 
 import os
 import sys
+
+# need to slow stuff down
+import time
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -56,11 +59,19 @@ def make_engine_result(frame_idx: int = 1, gesture: Gesture = Gesture.FIST) -> G
 
 
 class _FakeCamera:
-	"""Mimics CameraFeed for tests — yields a finite stream of fake frames."""
+	"""
+	Mimics CameraFeed for tests — yields fake frames with a small delay
+	between them.
 
-	def __init__(self, _config=None, frames=None):
-		self._frames = frames if frames is not None else [make_frame(i) for i in range(1, 6)]
+	The delay matters: without it, the camera thread blasts all frames into
+	the bounded queue (maxsize=2) faster than the asyncio consumer can pull
+	them out, and most get dropped
+	"""
+
+	def __init__(self, _config=None, frames=None, frame_delay=0.02):
+		self._frames = frames if frames is not None else [make_frame(i) for i in range(1, 21)]
 		self._idx = 0
+		self._frame_delay = frame_delay
 		self.opened = False
 		self.closed = False
 
@@ -75,6 +86,7 @@ class _FakeCamera:
 			# return None forever once exhausted — the camera loop will spin
 			# back-off on this; tests cancel out via stop()
 			return None
+		time.sleep(self._frame_delay)
 		frame = self._frames[self._idx]
 		self._idx += 1
 		return frame
