@@ -135,8 +135,13 @@ class CvPipeline:
 			self._consumer_task.cancel()
 			try:
 				await self._consumer_task
-			except asyncio.CancelledError: 
-				pass
+			except asyncio.CancelledError:
+				# if stop() itself was cancelled, propagate. Otherwise the
+				# CancelledError is our own cancel() above coming back to us,
+				# which is expected and should be swallowed
+				current = asyncio.current_task()
+				if current is not None and current.cancelling() > 0:
+					raise
 
 		# close resources
 		if self._detector is not None:
@@ -166,6 +171,9 @@ class CvPipeline:
 		"""
 		async generator yielding one pipeline event per processed frame
 		stops when stop() is called
+
+		If the caller cancels iteration, CancelledError propagates naturally
+		out of asyncio.wait_for — no explicit handler needed
 		"""
 
 		if self._event_queue is None:
@@ -178,8 +186,6 @@ class CvPipeline:
 			except asyncio.TimeoutError:
 				# loop around to recheck self._running -> lets stop() unstick
 				continue
-			except asyncio.CancelledError:
-				raise
 
 	def _camera_loop(self, loop: asyncio.AbstractEventLoop) -> None:
 		"""
