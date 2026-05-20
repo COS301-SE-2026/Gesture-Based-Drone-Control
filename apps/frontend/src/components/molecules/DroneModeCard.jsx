@@ -1,7 +1,7 @@
 import Button from "../atoms/Button"
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 const DroneModeCard = ({
   currentMode = "DroneSim",
@@ -42,7 +42,7 @@ const DroneModeCard = ({
 }
 
 DroneModeCard.propTypes = {
-  currentMode: PropTypes.oneOf(['DroneSim', 'Hardware']),
+  currentMode: PropTypes.oneOf(["DroneSim", "Hardware"]),
   onModeChange: PropTypes.func,
   className: PropTypes.string,
 }

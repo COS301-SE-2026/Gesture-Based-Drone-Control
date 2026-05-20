@@ -1,7 +1,7 @@
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
 import StatusDot from "../atoms/StatusDot"
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 const DroneInfoCard = ({
   connected = true,

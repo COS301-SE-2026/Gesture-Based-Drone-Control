@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
   return (

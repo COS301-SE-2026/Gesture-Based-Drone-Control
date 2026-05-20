@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 const Label = ({ children, size = "xs", className = "" }) => {
   const sizes = {
@@ -23,7 +23,7 @@ const Label = ({ children, size = "xs", className = "" }) => {
 
 Label.propTypes = {
   children: PropTypes.node,
-  size: PropTypes.oneOf(['xs', 'sm']),
+  size: PropTypes.oneOf(["xs", "sm"]),
   className: PropTypes.string,
 }
 
@@ -32,6 +32,5 @@ Label.defaultProps = {
   size: "xs",
   className: "",
 }
-
 
 export default Label

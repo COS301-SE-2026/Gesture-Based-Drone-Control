@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 const MetricValue = ({ value, unit, size = "md", className = "" }) => {
   const valueSizes = {
@@ -45,7 +45,7 @@ const MetricValue = ({ value, unit, size = "md", className = "" }) => {
 MetricValue.propTypes = {
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   unit: PropTypes.string,
-  size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
+  size: PropTypes.oneOf(["sm", "md", "lg", "xl"]),
   className: PropTypes.string,
 }
 

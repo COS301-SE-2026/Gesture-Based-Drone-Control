@@ -1,6 +1,6 @@
 import Card from "../atoms/Card"
 import MetricValue from "../atoms/MetricValue"
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 // displays a metric with an icon, value and unit
 // used in dashboard and analytics page

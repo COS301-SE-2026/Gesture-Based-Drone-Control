@@ -1,6 +1,6 @@
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 //on the dashboard, shows a compass of the drones coords
 
@@ -95,6 +95,5 @@ Compass.defaultProps = {
   heading: 0,
   className: "",
 }
-
 
 export default Compass

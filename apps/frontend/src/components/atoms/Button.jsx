@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react"
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 export default function Button({
   variant = "default",
@@ -28,15 +28,13 @@ export default function Button({
 
   const renderIcon = () => {
     if (isLoading) {
-      return <Loader2 className="w-4 h-4 animate-spin" />;
+      return <Loader2 className="w-4 h-4 animate-spin" />
     }
     if (Icon) {
-      return <Icon className="w-4 h-4" />;
+      return <Icon className="w-4 h-4" />
     }
-    return null;
+    return null
   }
-      
-  
 
   return (
     <button
@@ -65,10 +63,10 @@ export default function Button({
 }
 
 Button.propTypes = {
-  variant: PropTypes.oneOf(['default', 'secondary']),
+  variant: PropTypes.oneOf(["default", "secondary"]),
   isLoading: PropTypes.bool,
   icon: PropTypes.elementType,
-  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  size: PropTypes.oneOf(["sm", "md", "lg"]),
   className: PropTypes.string,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
@@ -76,10 +74,10 @@ Button.propTypes = {
 }
 
 Button.defaultProps = {
-  variant: 'default',
+  variant: "default",
   isLoading: false,
   icon: null,
-  size: 'md',
+  size: "md",
   className: "",
   disabled: false,
   onClick: undefined,

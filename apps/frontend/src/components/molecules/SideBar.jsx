@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 import NavItem from "../atoms/NavItem"
 import Card from "../atoms/Card"
 import Logo from "../../assets/codex_merchants_logo.png"
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 //main nav sidebar that will be displayed on all pages
 

@@ -3,7 +3,6 @@ import { Battery, Mountain, Wifi, Gauge, Camera } from "lucide-react"
 import { DroneModeCard, DroneInfoCard, GPSWidget } from "../molecules"
 import { Card, Label } from "../atoms"
 
-
 const Dashboard = () => {
   const [droneMode, setDroneMode] = useState("DroneSim")
   const [heading] = useState(90)

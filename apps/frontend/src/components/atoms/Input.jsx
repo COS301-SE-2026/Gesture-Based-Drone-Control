@@ -1,7 +1,7 @@
 import { Input as ShadcnInput } from "@/components/ui/input"
 import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 export default function Input({
   type = "text",
@@ -75,7 +75,7 @@ export default function Input({
 }
 
 Input.propTypes = {
-  type: PropTypes.oneOf(['text', 'email', 'password', 'number', 'tel', 'url']),
+  type: PropTypes.oneOf(["text", "email", "password", "number", "tel", "url"]),
   placeHolder: PropTypes.string,
   icon: PropTypes.elementType,
   error: PropTypes.bool,

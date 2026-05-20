@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 const StatusDot = ({ variant = "connected", size = "sm", className = "" }) => {
   const dotColor = {
@@ -43,8 +43,8 @@ const StatusDot = ({ variant = "connected", size = "sm", className = "" }) => {
 }
 
 StatusDot.propTypes = {
-  variant: PropTypes.oneOf(['connected', 'disconnected', 'warning', 'idle']),
-  size: PropTypes.oneOf(['sm', 'md']),
+  variant: PropTypes.oneOf(["connected", "disconnected", "warning", "idle"]),
+  size: PropTypes.oneOf(["sm", "md"]),
   className: PropTypes.string,
 }
 

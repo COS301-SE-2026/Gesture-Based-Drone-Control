@@ -1,6 +1,6 @@
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 const CommandHistory = ({ commands = [], className = "" }) => {
   //made mock data here
