@@ -1,4 +1,4 @@
-# /services/cv-pipeline/camera/camera_feed.py
+# /services/cv_pipeline/camera/camera_feed.py
 # To do in camera:
 # Open and config camera (test on mutliple devices -> mac uses iphone camera for some reason)
 # raw frames reading (extract fps for api)
@@ -147,6 +147,7 @@ class CameraFeed:
 
 
 # smoke test, i could go for a smoke
+# run from services/ with: python -m cv_pipeline.camera.camera_feed
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.DEBUG)
 	# if display from phone (mac specifically for me, device_index=1 or 2 in CameraConfig())

@@ -16,7 +16,7 @@ import mediapipe as mp
 import numpy as np
 
 # camera_feed.py imports -> 1st in chain then this file
-from camera_feed import CapturedFrame
+from cv_pipeline.camera.camera_feed import CapturedFrame
 
 logger = logging.getLogger(__name__)
 
@@ -201,15 +201,16 @@ class HandDetectionPipeline:
 
 		landmarks = [HandLandmark(x=lm.x, y=lm.y, z=lm.z) for lm in hand_landmarks.landmark]
 
-		# mp labels from own perspective (mirrored so flip)
-		# left swaps right to match user shown hand
+		# mp's label matches the user's hand as shown on the mirrored display,
+		# so we pass it through directly now
 		raw_label = handedness_info.classification[0].label
 		confidence = handedness_info.classification[0].score
 
+		# I inversed it oopsy
 		if raw_label == 'Left':
-			handedness = Handedness.RIGHT
-		else:
 			handedness = Handedness.LEFT
+		else:
+			handedness = Handedness.RIGHT
 
 		return DetectedHand(
 			handedness=handedness,
@@ -256,7 +257,7 @@ if __name__ == '__main__':
 
 	# add cam folder to path for smoke test
 	sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'camera'))
-	from camera_feed import CameraConfig, CameraFeed
+	from cv_pipeline.camera.camera_feed import CameraConfig, CameraFeed
 
 	with CameraFeed(CameraConfig()) as camera, HandDetectionPipeline() as detector:
 		while True:
