@@ -1,3 +1,4 @@
+# /services/drone-control/adapters/dummy_drone_adapter.py
 """
 A minimal implementation of the DroneAdapter abc to use as a stub for testing
 and to show off dynamic switching between adapters
@@ -11,7 +12,7 @@ from services.drone_control.adapters.drone_adapter import DroneAdapter, Telemetr
 logger = logging.getLogger(__name__)
 
 
-class DummyAdapter(DroneAdapter):
+class DummyDroneAdapter(DroneAdapter):
 	"""
 	Does absolutely nothing but log. This can be considered
 	our mocked implementation of 'dynamic drone adapter switching'
@@ -22,9 +23,9 @@ class DummyAdapter(DroneAdapter):
 
 	async def connect(self) -> bool:
 		if self._connected:
-			logger.info('DummyAdapter already connected. ignoring')
+			logger.info('DummyDroneAdapter already connected. ignoring')
 			return False
-		logger.info('DummyAdapter connected')
+		logger.info('DummyDroneAdapter connected')
 		self._connected = True
 		return True
 
@@ -33,16 +34,16 @@ class DummyAdapter(DroneAdapter):
 		Release the connection and land the drone
 		"""
 		if not self._connected:
-			logger.info('DummyAdapter already disconnected. ignoring')
+			logger.info('DummyDroneAdapter already disconnected. ignoring')
 			return
-		logger.info('DummyAdapter disconnected')
+		logger.info('DummyDroneAdapter disconnected')
 		self._connected = False
 
 	async def takeoff(self) -> None:
 		"""
 		Arm the drone and ascend to a safe altitude
 		"""
-		logger.info('DummyAdapter took off')
+		logger.info('DummyDroneAdapter took off')
 
 	async def land(self) -> None:
 		"""
@@ -51,7 +52,7 @@ class DummyAdapter(DroneAdapter):
 		is on the ground.
 		"""
 		self._assert_connected()
-		logger.info('DummyAdapter: landed')
+		logger.info('DummyDroneAdapter: landed')
 
 	async def move(self, direction: CommandType, **kwargs) -> None:
 		"""
@@ -61,7 +62,7 @@ class DummyAdapter(DroneAdapter):
 		"""
 		self._assert_connected()
 		logger.info(
-			'DummyAdapter: move %s)',
+			'DummyDroneAdapter: move %s)',
 			direction.name,
 		)
 
@@ -103,5 +104,5 @@ class DummyAdapter(DroneAdapter):
 		"""
 		if not self._connected:
 			raise RuntimeError(
-				'DummyAdapter is not connected. Await connect() before issuing commands.'
+				'DummyDroneAdapter is not connected. Await connect() before issuing commands.'
 			)
