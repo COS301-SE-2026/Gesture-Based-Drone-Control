@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,7 +17,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
@@ -27,7 +27,7 @@ html,
 body,
 #root {
   width: 100%;
-  height: 100%
+  height: 100%;
 }
 
 /* typography */
@@ -57,7 +57,6 @@ h3 {
 
 h4 {
   font-size: 1.125rem;
-  
 }
 
 h5 {
@@ -84,7 +83,7 @@ pre {
 }
 
 a {
-  color: #A4161A;
+  color: #a4161a;
   text-decoration: none;
   transition: opacity 0.2 ease;
 }
@@ -95,10 +94,10 @@ a:hover {
 
 /* form elements */
 
-input, 
+input,
 textarea,
 select {
-  font-family: 'Inter', inherit;
+  font-family: "Inter", inherit;
   font-size: 0.95rem;
 }
 
@@ -120,21 +119,21 @@ select:focus {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D3D3D3;
+  background: #d3d3d3;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #B1A7A6;
+  background: #b1a7a6;
 }
 
 @media (prefers-color-scheme: dark) {
   ::-webkit-scrollbar-thumb {
-    background: #B1A7A6;
+    background: #b1a7a6;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #D3D3D3;
+    background: #d3d3d3;
   }
 }
 
@@ -176,6 +175,3 @@ select:focus {
     transition-duration: 0.01ms !important;
   }
 }
-
-
-

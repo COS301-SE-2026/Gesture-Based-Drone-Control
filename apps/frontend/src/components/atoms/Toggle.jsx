@@ -1,35 +1,35 @@
-import { useState } from "react";
+import { useState } from "react"
 
 export default function Toggle({
-    checked = false,
-    onChange = null,
-    disabled = false,
-    className = '',
-    ...props
+  checked = false,
+  onChange = null,
+  disabled = false,
+  className = "",
+  ...props
 }) {
-    const [isChecked, setIsChecked] = useState(checked);
+  const [isChecked, setIsChecked] = useState(checked)
 
-    const handleChange = (e) => {
-        const newVal = e.target.checked;
-        setIsChecked(newVal);
-        if (onChange) {
-            onChange(newVal);
-        }
-    };
+  const handleChange = (e) => {
+    const newVal = e.target.checked
+    setIsChecked(newVal)
+    if (onChange) {
+      onChange(newVal)
+    }
+  }
 
-    return (
-        <label className={`inline-flex items-center cursor-pointer ${className}`}>
-            <input
-            type="checkbox"
-            checked={isChecked}
-            onChange={handleChange}
-            disabled={disabled}
-            className="sr-only"
-            {...props}
-            />
+  return (
+    <label className={`inline-flex items-center cursor-pointer ${className}`}>
+      <input
+        type="checkbox"
+        checked={isChecked}
+        onChange={handleChange}
+        disabled={disabled}
+        className="sr-only"
+        {...props}
+      />
 
-            <div
-                className={`
+      <div
+        className={`
                     relative
                     inline-flex
                     h-6
@@ -38,16 +38,12 @@ export default function Toggle({
                     rounded-full
                     transition-colors
                     duration-200
-                    ${
-                        isChecked
-                        ? 'bg-OffBlack'
-                        : 'bg-Grey'
-                    }
-                    ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+                    ${isChecked ? "bg-OffBlack" : "bg-Grey"}
+                    ${disabled ? "opacity-50 cursor-not-allowed" : ""}
                 `}
-            >
-                <span
-                    className={`
+      >
+        <span
+          className={`
                         inline-block
                         h-4
                         w-4
@@ -56,10 +52,10 @@ export default function Toggle({
                         bg-OffWhite
                         transition-transform
                         duration-200
-                        ${isChecked ? 'translate-x-6' : 'translate-x-1'}
+                        ${isChecked ? "translate-x-6" : "translate-x-1"}
                     `}
-                />   
-            </div>
-        </label>
-    );
+        />
+      </div>
+    </label>
+  )
 }

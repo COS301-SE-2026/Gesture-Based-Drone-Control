@@ -1,14 +1,14 @@
 export default function Card({
-    children,
-    className = '',
-    variant = 'glass',
-    clickable = false,
-    onClick = null,
-    ...props
+  children,
+  className = "",
+  variant = "glass",
+  clickable = false,
+  onClick = null,
+  ...props
 }) {
-    const variantClasses = {
-        //light mode glass
-        glass: `
+  const variantClasses = {
+    //light mode glass
+    glass: `
         bg-OffWhite/10
         dark:bg-OffWhite/5
         backdrop-blur-md
@@ -18,8 +18,8 @@ export default function Card({
         shadow-xl
         dark:shadow-2xl
         `,
-        //dark mode glass
-        dark: `
+    //dark mode glass
+    dark: `
         bg-OffBlack
         dark:bg-OffBlack
         backdrop-blur-md
@@ -27,10 +27,10 @@ export default function Card({
         border-Grey/30
         dark:border-DarkGrey/20
         shadow-lg
-        dark:shadow-lg`
-    };
+        dark:shadow-lg`,
+  }
 
-    const interactiveClasses = clickable
+  const interactiveClasses = clickable
     ? `
     cursor-pointer
     transition-all
@@ -41,11 +41,12 @@ export default function Card({
     hover:bg-OffWhite/20
     dark:hover:bg-OffWhite/10
     `
-    : '';
+    : ""
 
-    return (
-        <div onClick={clickable ? onClick : null}
-        className={`
+  return (
+    <div
+      onClick={clickable ? onClick : null}
+      className={`
             ${variantClasses[variant]}
             ${interactiveClasses}
             rounded-xl
@@ -54,9 +55,9 @@ export default function Card({
             duration-200
             ${className}
             `}
-            {...props}
-        >
-            {children}
-        </div>
-    );
+      {...props}
+    >
+      {children}
+    </div>
+  )
 }

@@ -1,33 +1,36 @@
-import Card from "../atoms/Card";
-import Label from "../atoms/Label";
+import Card from "../atoms/Card"
+import Label from "../atoms/Label"
 
-const CommandHistory = ({ commands = [], className = '' }) => {
-    //made mock data here
-    const defaultCommands = [
-        { action: 'swipe up - move up', timestamp: '18:50:43' },
-        { action: 'swipe up - move up', timestamp: '18:50:43' },
-        { action: 'swipe down - move down', timestamp: '18:50:43' },
-        { action: 'swipe up - move up', timestamp: '18:50:42' },
-    ];
+const CommandHistory = ({ commands = [], className = "" }) => {
+  //made mock data here
+  const defaultCommands = [
+    { action: "swipe up - move up", timestamp: "18:50:43" },
+    { action: "swipe up - move up", timestamp: "18:50:43" },
+    { action: "swipe down - move down", timestamp: "18:50:43" },
+    { action: "swipe up - move up", timestamp: "18:50:42" },
+  ]
 
-    const displayCommands = commands.length > 0 ? commands : defaultCommands;
+  const displayCommands = commands.length > 0 ? commands : defaultCommands
 
-    return (
-        <Card variant="secondary" className={className}>
-            <div className="flex flex-col gap-4">
-                <Label size="md">Command History</Label>
+  return (
+    <Card variant="secondary" className={className}>
+      <div className="flex flex-col gap-4">
+        <Label size="md">Command History</Label>
 
-                <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {displayCommands.map((cmd, index) => (
-                        <div key={index} className="flex justify-between items-center text-sm border-b border-Grey/20 pb-2">
-                            <span className="text-OffBlack/80">{cmd.action}</span>
-                            <span className="text-xs text-DarkGrey">{cmd.timestamp}</span>
-                        </div>
-                    ))}
-                </div>
+        <div className="space-y-3 max-h-64 overflow-y-auto">
+          {displayCommands.map((cmd, index) => (
+            <div
+              key={index}
+              className="flex justify-between items-center text-sm border-b border-Grey/20 pb-2"
+            >
+              <span className="text-OffBlack/80">{cmd.action}</span>
+              <span className="text-xs text-DarkGrey">{cmd.timestamp}</span>
             </div>
-        </Card>
-    );
-};
+          ))}
+        </div>
+      </div>
+    </Card>
+  )
+}
 
-export default CommandHistory;
+export default CommandHistory
