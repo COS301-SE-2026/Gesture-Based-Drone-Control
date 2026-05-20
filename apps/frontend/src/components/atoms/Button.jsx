@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react"
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
 export default function Button({
   variant = "default",
@@ -40,7 +40,6 @@ export default function Button({
 
   return (
     <button
-      variant={variant === "default" ? "default" : "secondary"}
       disabled={disabled || isLoading}
       onClick={onClick}
       className={`
@@ -81,7 +80,7 @@ Button.defaultProps = {
   isLoading: false,
   icon: null,
   size: 'md',
-  className: '',
+  className: "",
   disabled: false,
   onClick: undefined,
   children: undefined,

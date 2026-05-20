@@ -1,6 +1,7 @@
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
 import StatusDot from "../atoms/StatusDot"
+import PropTypes from 'prop-types';
 
 const DroneInfoCard = ({
   connected = true,
@@ -54,6 +55,22 @@ const DroneInfoCard = ({
       </div>
     </Card>
   )
+}
+
+DroneInfoCard.propTypes = {
+  connected: PropTypes.bool,
+  droneName: PropTypes.string,
+  model: PropTypes.string,
+  description: PropTypes.string,
+  className: PropTypes.string,
+}
+
+DroneInfoCard.defaultProps = {
+  connected: true,
+  droneName: "DroneName",
+  model: "DroneModel",
+  description: "Professional drone with 4k camera",
+  className: "",
 }
 
 export default DroneInfoCard

@@ -1,6 +1,7 @@
 import { Input as ShadcnInput } from "@/components/ui/input"
 import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
+import PropTypes from 'prop-types';
 
 export default function Input({
   type = "text",
@@ -31,7 +32,7 @@ export default function Input({
 
         <ShadcnInput
           type={inputType}
-          placeHolder={placeHolder}
+          placeholder={placeHolder}
           value={value}
           onChange={onChange}
           disabled={disabled}
@@ -67,8 +68,32 @@ export default function Input({
       </div>
 
       {error && errorMessage && (
-        <p className="text=sm text-Red mt-1">{errorMessage}</p>
+        <p className="text-sm text-Red mt-1">{errorMessage}</p>
       )}
     </div>
   )
+}
+
+Input.propTypes = {
+  type: PropTypes.oneOf(['text', 'email', 'password', 'number', 'tel', 'url']),
+  placeHolder: PropTypes.string,
+  icon: PropTypes.elementType,
+  error: PropTypes.bool,
+  errorMessage: PropTypes.string,
+  className: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onChange: PropTypes.func,
+  disabled: PropTypes.bool,
+}
+
+Input.defaultProps = {
+  type: "text",
+  placeHolder: "",
+  icon: null,
+  error: false,
+  errorMessage: "",
+  className: "",
+  value: undefined,
+  onChange: undefined,
+  disabled: false,
 }

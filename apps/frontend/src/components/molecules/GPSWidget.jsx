@@ -1,12 +1,13 @@
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
+import PropTypes from 'prop-types';
 
 //on the dashboard, shows a compass of the drones coords
 
 const Compass = ({ heading = 0, className = "" }) => {
   return (
     <Card className={className}>
-      <div className="w-full h-70 bg-OffWhite rounded-full  flex flex-col items-center justify-center gap-4">
+      <div className="w-full h-70 bg-OffWhite rounded-full flex flex-col items-center justify-center gap-4">
         <Label size="md">Drone Orientation</Label>
 
         {/* compass head/rose */}
@@ -84,5 +85,16 @@ const getHeadingDirection = (heading) => {
   const index = Math.round((heading % 360) / 22.5) % 16
   return directions[index]
 }
+
+Compass.propTypes = {
+  heading: PropTypes.number,
+  className: PropTypes.string,
+}
+
+Compass.defaultProps = {
+  heading: 0,
+  className: "",
+}
+
 
 export default Compass

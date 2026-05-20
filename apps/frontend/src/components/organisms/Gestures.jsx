@@ -32,7 +32,7 @@ const GestureControl = () => {
                 {/* status indicator */}
                 <div className="absolute top-4 right-4 flex items-center gap-2 bg-OffBlack/60 px-3 py-1 rounded-full text-xs text-OffWhite">
                   <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  Active
+                  <spane>Active</spane>
                 </div>
               </div>
             </div>

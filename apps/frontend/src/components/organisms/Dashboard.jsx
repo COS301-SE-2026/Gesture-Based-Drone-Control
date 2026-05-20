@@ -3,6 +3,7 @@ import { Battery, Mountain, Wifi, Gauge, Camera } from "lucide-react"
 import { DroneModeCard, DroneInfoCard, GPSWidget } from "../molecules"
 import { Card, Label } from "../atoms"
 
+
 const Dashboard = () => {
   const [droneMode, setDroneMode] = useState("DroneSim")
   const [heading] = useState(90)
@@ -99,7 +100,7 @@ const Dashboard = () => {
             <Camera className="w-8 h-8 text-DarkGrey" />
             <div className="absolute top-4 right-4 flex items-center gap-2 bg-OffBlack/60 px-3 py-1 rounded text-xs text-OffWhite">
               <span className="w-2 h-2 bg-Red rounded-full animate-pulse" />
-              02:12
+              <span>02:12</span>
             </div>
           </div>
         </div>

@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 const MetricValue = ({ value, unit, size = "md", className = "" }) => {
   const valueSizes = {
     sm: "text-lg",
@@ -38,5 +40,18 @@ const MetricValue = ({ value, unit, size = "md", className = "" }) => {
       )}
     </div>
   )
+}
+
+MetricValue.propTypes = {
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  unit: PropTypes.string,
+  size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
+  className: PropTypes.string,
+}
+
+MetricValue.defaultProps = {
+  unit: undefined,
+  size: "md",
+  className: "",
 }
 export default MetricValue

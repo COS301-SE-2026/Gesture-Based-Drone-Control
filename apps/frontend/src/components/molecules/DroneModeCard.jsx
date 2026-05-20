@@ -1,6 +1,7 @@
 import Button from "../atoms/Button"
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
+import PropTypes from 'prop-types';
 
 const DroneModeCard = ({
   currentMode = "DroneSim",
@@ -28,7 +29,7 @@ const DroneModeCard = ({
             <Button
               key={mode.id}
               variant={currentMode === mode.id ? "default" : "secondary"}
-              onClick={() => onModeChange && onModeChange(mode.id)}
+              onClick={() => onModeChange?.(mode.id)}
               className="w-full"
             >
               {mode.label}
@@ -38,6 +39,18 @@ const DroneModeCard = ({
       </div>
     </Card>
   )
+}
+
+DroneModeCard.propTypes = {
+  currentMode: PropTypes.oneOf(['DroneSim', 'Hardware']),
+  onModeChange: PropTypes.func,
+  className: PropTypes.string,
+}
+
+DroneModeCard.defaultProps = {
+  currentMode: "DroneSim",
+  onModeChange: null,
+  className: "",
 }
 
 export default DroneModeCard

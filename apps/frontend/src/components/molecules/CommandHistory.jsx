@@ -1,5 +1,6 @@
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
+import PropTypes from 'prop-types';
 
 const CommandHistory = ({ commands = [], className = "" }) => {
   //made mock data here
@@ -20,7 +21,7 @@ const CommandHistory = ({ commands = [], className = "" }) => {
         <div className="space-y-3 max-h-64 overflow-y-auto">
           {displayCommands.map((cmd, index) => (
             <div
-              key={index}
+              key={cmd.id || index}
               className="flex justify-between items-center text-sm border-b border-Grey/20 pb-2"
             >
               <span className="text-OffBlack/80">{cmd.action}</span>
@@ -31,6 +32,22 @@ const CommandHistory = ({ commands = [], className = "" }) => {
       </div>
     </Card>
   )
+}
+
+CommandHistory.propTypes = {
+  commands: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      action: PropTypes.string,
+      timestamp: PropTypes.string,
+    })
+  ),
+  className: PropTypes.string,
+}
+
+CommandHistory.defaultProps = {
+  commands: [],
+  className: "",
 }
 
 export default CommandHistory

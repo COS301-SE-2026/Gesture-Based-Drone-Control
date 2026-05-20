@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
   return (
     <button
@@ -30,6 +32,21 @@ const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
       <span>{label}</span>
     </button>
   )
+}
+
+NavItem.propTypes = {
+  label: PropTypes.string.isRequired,
+  Icon: PropTypes.elementType,
+  active: PropTypes.bool,
+  onClick: PropTypes.func,
+  className: PropTypes.string,
+}
+
+NavItem.defaultProps = {
+  Icon: undefined,
+  active: false,
+  onClick: undefined,
+  className: "",
 }
 
 export default NavItem

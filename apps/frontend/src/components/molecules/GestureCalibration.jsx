@@ -1,5 +1,6 @@
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
+import PropTypes from 'prop-types';
 
 const GestureCalibration = ({
   visibility = 80,
@@ -84,6 +85,24 @@ const GestureCalibration = ({
       </div>
     </Card>
   )
+}
+
+GestureCalibration.propTypes = {
+  visibility: PropTypes.number,
+  confidence: PropTypes.number,
+  stability: PropTypes.number,
+  lighting: PropTypes.string,
+  background: PropTypes.string,
+  className: PropTypes.string,
+}
+
+GestureCalibration.defaultProps = {
+  visibility: 80,
+  confidence: 45,
+  stability: 60,
+  lighting: "Good",
+  background: "Fair",
+  className: "",
 }
 
 export default GestureCalibration

@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 import NavItem from "../atoms/NavItem"
 import Card from "../atoms/Card"
 import Logo from "../../assets/codex_merchants_logo.png"
+import PropTypes from 'prop-types';
 
 //main nav sidebar that will be displayed on all pages
 
@@ -22,7 +23,7 @@ export default function SideBar({
         <img
           src={Logo}
           alt="Codex Merchants Logo"
-          className=" w-40 h-14 object-cover rounded-full"
+          className="w-40 h-14 object-cover rounded-full"
         />
       </div>
 
@@ -46,4 +47,23 @@ export default function SideBar({
       </nav>
     </aside>
   )
+}
+
+SideBar.propTypes = {
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      label: PropTypes.string.isRequired,
+      path: PropTypes.string.isRequired,
+      icon: PropTypes.elementType,
+    })
+  ),
+  topContent: PropTypes.node,
+  className: PropTypes.string,
+}
+
+SideBar.defaultProps = {
+  items: [],
+  topContent: null,
+  className: "",
 }

@@ -1,4 +1,6 @@
 import { useState } from "react"
+import PropTypes from 'prop-types';
+
 
 export default function Toggle({
   checked = false,
@@ -58,4 +60,18 @@ export default function Toggle({
       </div>
     </label>
   )
+}
+
+Toggle.propTypes = {
+  checked: PropTypes.bool,
+  onChange: PropTypes.func,
+  disabled: PropTypes.bool,
+  className: PropTypes.string,
+}
+
+Toggle.defaultProps = {
+  checked: false,
+  onChange: null,
+  disabled: false,
+  className: "",
 }

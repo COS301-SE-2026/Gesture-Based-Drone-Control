@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 const StatusDot = ({ variant = "connected", size = "sm", className = "" }) => {
   const dotColor = {
     connected: "bg-green-400",
@@ -38,6 +40,18 @@ const StatusDot = ({ variant = "connected", size = "sm", className = "" }) => {
       />
     </span>
   )
+}
+
+StatusDot.propTypes = {
+  variant: PropTypes.oneOf(['connected', 'disconnected', 'warning', 'idle']),
+  size: PropTypes.oneOf(['sm', 'md']),
+  className: PropTypes.string,
+}
+
+StatusDot.defaultProps = {
+  variant: "connected",
+  size: "sm",
+  className: "",
 }
 
 export default StatusDot

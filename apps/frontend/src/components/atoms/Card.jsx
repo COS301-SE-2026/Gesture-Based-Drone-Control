@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types'
+
 export default function Card({
   children,
   className = "",
@@ -43,9 +45,10 @@ export default function Card({
     `
     : ""
 
+  if (clickable) {
   return (
-    <div
-      onClick={clickable ? onClick : null}
+    <button
+      onClick={onClick}
       className={`
             ${variantClasses[variant]}
             ${interactiveClasses}
@@ -53,11 +56,48 @@ export default function Card({
             p-6
             transition-colors
             duration-200
+            w-full
+            text-left
             ${className}
             `}
       {...props}
     >
       {children}
-    </div>
+    </button>
   )
 }
+
+  return (
+      <div
+        className={`
+              ${variantClasses[variant]}
+              ${interactiveClasses}
+              rounded-xl
+              p-6
+              transition-colors
+              duration-200
+              ${className}
+              `}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
+
+  Card.PropTypes = {
+    children: PropTypes.node,
+    className: PropTypes.string,
+    variant: PropTypes.oneOf(['glass', 'dark']),
+    clickable: PropTypes.bool,
+    onClick: PropTypes.func,
+  }
+
+    Card.defaultProps = {
+    children: undefined,
+    className: "",
+    variant: 'glass',
+    clickable: false,
+    onClick: null,
+  }
+
