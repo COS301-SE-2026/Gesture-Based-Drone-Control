@@ -1,4 +1,5 @@
 import { Loader2 } from "lucide-react"
+import PropTypes from 'prop-types'
 
 export default function Button({
   variant = "default",
@@ -25,6 +26,18 @@ export default function Button({
     //can add more if we need them
   }
 
+  const renderIcon = () => {
+    if (isLoading) {
+      return <Loader2 className="w-4 h-4 animate-spin" />;
+    }
+    if (Icon) {
+      return <Icon className="w-4 h-4" />;
+    }
+    return null;
+  }
+      
+  
+
   return (
     <button
       variant={variant === "default" ? "default" : "secondary"}
@@ -46,12 +59,30 @@ export default function Button({
             `}
       {...props}
     >
-      {isLoading ? (
-        <Loader2 className="w-4 h-4 animate-spin" />
-      ) : Icon ? (
-        <Icon className="w-4 h-4" />
-      ) : null}
+      {renderIcon()}
       {children}
     </button>
   )
+}
+
+Button.propTypes = {
+  variant: PropTypes.oneOf(['default', 'secondary']),
+  isLoading: PropTypes.bool,
+  icon: PropTypes.elementType,
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  className: PropTypes.string,
+  disabled: PropTypes.bool,
+  onClick: PropTypes.func,
+  children: PropTypes.node,
+}
+
+Button.defaultProps = {
+  variant: 'default',
+  isLoading: false,
+  icon: null,
+  size: 'md',
+  className: '',
+  disabled: false,
+  onClick: undefined,
+  children: undefined,
 }
