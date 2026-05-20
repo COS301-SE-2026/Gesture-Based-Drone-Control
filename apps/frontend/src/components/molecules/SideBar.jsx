@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import NavItem from "../atoms/NavItem";
 import Card from "../atoms/Card";
+import Logo from "../../assets/codex_merchants_logo.png"
 
 
 //main nav sidebar that will be displayed on all pages
@@ -18,9 +19,9 @@ export default function SideBar({
             {/*Logo goes here*/}
             <div className="flex justify-between items-center mb-4">
                 <img 
-                    src="insert logo here"
+                    src={Logo}
                     alt="Codex Merchants Logo"
-                    className="w-20 h-15 object-contain"
+                    className=" w-40 h-14 object-cover rounded-full"
                 />
             </div>
 
