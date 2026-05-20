@@ -206,4 +206,71 @@ class ProjectAirSimAdapter(DroneAdapter):
         
     #Flight commands
     
+	async def takeoff(self) -> None:
+		"""
+		Arm the drone and ascend to a safe altitude
+		"""
+		self._assert_connected()
+
+        logger.info('ProjectAirSimAdapter: arming the drone')
+        self._drone.arm()
+        logger.info('ProjectAirSimAdapter: taking off')
+        self._drone.takeoff_async()
+                
+
+	async def land(self) -> None:
+		"""
+		Safely descend and disarm the drone
+		Should block other operations until the drone
+		is on the ground.
+		"""
+  		self._assert_connected()
+
+        logger.info('ProjectAirSimAdapter: landing the drone')
+        self._drone.land_async()
+        logger.info('ProjectAirSimAdapter: disarming the drone')
+        self._drone.disarm()
+		
+
+	async def move(self, direction: CommandType, **kwargs) -> None:
+		"""
+		A single directional movement or rotation
+		**kwargs - Values extracted from Command.payload by execute().
+		- these will be implemented at a later stage, and are completely optional
+		"""
+		...
+
+	async def hover(self) -> None:
+		"""
+		Cancel any active movement and hold a specified position
+		Should take prioriy over all commands except an emergency landing
+		"""
+		...
+
+	async def emergency_stop(self) -> None:
+		"""
+		Cancel any active movement and hold current position
+		Maybe initiate a landing, not sure what would be best
+		"""
+		...
+
+	async def get_telemetry(self) -> TelemetryData:
+		"""
+		Return a snapshot of the current drone state
+		Should be constantly polling
+		"""
+		...
+  
+    def _assert_connected(self) -> None:
+		"""
+		Internal helper, raises a runtime error if the adapter is not connected to a sim vehicle.
+
+		Called at the top of every method involving movement to prevent uncaught
+		failures slipping through
+		"""
+		if not self._connected or self._client is None:
+			raise RuntimeError(
+				'ProjectAirSimAdapter is not connected.Await connect() before issuing commands.'
+			)
+    
     
