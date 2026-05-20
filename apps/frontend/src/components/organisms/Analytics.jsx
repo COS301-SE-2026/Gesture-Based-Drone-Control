@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {Clock, Gauge, Mountain } from 'lucide-react';
 import { Card } from '../atoms';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';

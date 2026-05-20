@@ -4,7 +4,7 @@ import { Card } from '../atoms';
 import { Camera } from 'lucide-react';
 
 const GestureControl = () => {
-    const [commands, setCommands] = useState([
+    const [commands] = useState([
         { action: 'swipe up - move up', timestamp: '18:50:43' },
         { action: 'swipe right - move right', timestamp: '18:50:43' },
         { action: 'swipe down - move down', timestamp: '18:50:43' },

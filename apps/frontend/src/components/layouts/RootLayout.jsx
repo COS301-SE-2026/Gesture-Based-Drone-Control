@@ -26,12 +26,15 @@ const RootLayout = () => {
 
     return (
         <div className="flex min-h-screen bg-OffWhite dark:bg-OffBlack">
-            
-            <SideBar
-                items={menuItems}
-                topContent={getTopContent()}
-            />
-
+            <div className="flex flex-col">
+                <SideBar
+                    items={menuItems}
+                    topContent={getTopContent()}
+                />
+                <div className="w-80 px-4 pb-4">
+                    <DarkModeToggle/>
+                </div>
+            </div>
             <main className="flex-1 overflow-y-auto">
                 <Outlet/>
             </main>
