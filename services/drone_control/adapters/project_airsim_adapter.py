@@ -55,10 +55,12 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # defaults for movement. tweakable, same as airsim
-DEFAULT_SPEED_MS: float = 4.0
+DEFAULT_SPEED_MS: float = 8.0
 DEFAULT_DURATION_S: float = 0.5
 DEFAULT_ROTATE_DEG: float = 15.0
-DEFAULT_YAW_RATE_DPS: float = 45.0
+DEFAULT_YAW_RATE_DPS: float = 120.0
+
+GRAVITY_COMP_VZ: float = -0.3  #the drone drops like a rock, drift it up a lil every time we move horzontally
 
 
 def _find_sim_config() -> str:
@@ -193,14 +195,14 @@ class ProjectAirSimAdapter(DroneAdapter):
 
         if self._drone and self._connected:
             try:
-                await self._drone.land_async()
+                await self.land()
+                # can increase if error messages still flooding
+                await asyncio.sleep(5)
                 self._drone.disarm()
                 self._drone.disable_api_control()
             except Exception as ex:
                 logger.warning('ProjectAirSimAdapter: error during disarm - %s', ex)
 
-        # can increase if error messages still flooding
-        await asyncio.sleep(5)
 
         if self._client:
             try:
@@ -234,6 +236,13 @@ class ProjectAirSimAdapter(DroneAdapter):
 
         logger.info('ProjectAirSimAdapter: landing the drone')
         await self._drone.land_async()
+        #wait until altitude confirms touchdown
+        for _ in range(10):  #max 5 seconds
+            await asyncio.sleep(0.5)
+            t = await self.get_telemetry()
+            if not t.is_flying:
+                break
+            
         logger.info('ProjectAirSimAdapter: disarming the drone')
         self._drone.disarm()
 
@@ -266,10 +275,10 @@ class ProjectAirSimAdapter(DroneAdapter):
 
         # vx = forward, vy=right, vz=down
         velocity_map: dict[CommandType, tuple[float, float, float]] = {
-            CommandType.MOVE_FORWARD: (speed, 0.0, 0.0),
-            CommandType.MOVE_BACKWARD: (-speed, 0.0, 0.0),
-            CommandType.MOVE_RIGHT: (0.0, speed, 0.0),
-            CommandType.MOVE_LEFT: (0.0, -speed, 0.0),
+            CommandType.MOVE_FORWARD: (speed, 0.0, GRAVITY_COMP_VZ),
+            CommandType.MOVE_BACKWARD: (-speed, 0.0, GRAVITY_COMP_VZ),
+            CommandType.MOVE_RIGHT: (0.0, speed, GRAVITY_COMP_VZ),
+            CommandType.MOVE_LEFT: (0.0, -speed, GRAVITY_COMP_VZ),
             CommandType.MOVE_UP: (0.0, 0.0, -speed),  # up = -z
             CommandType.MOVE_DOWN: (0.0, 0.0, speed),
         }
