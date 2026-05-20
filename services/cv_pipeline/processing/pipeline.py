@@ -1,4 +1,3 @@
-# /services/cv-pipeline/processing/pipeline.py
 """
 Controls the entire pipeline basically
 camera (thread) -> bounded queue -> detector -> engine ->events
@@ -86,6 +85,9 @@ class CvPipeline:
 			logger.warning('CvPipeline.start() called while already running')
 			return
 
+		# yield to the loop once
+		await asyncio.sleep(0)
+
 		self._frame_queue = BoundedFrameQueue[CapturedFrame](maxsize=self._config.queue_size)
 		self._event_queue = asyncio.Queue()
 
@@ -133,7 +135,7 @@ class CvPipeline:
 			self._consumer_task.cancel()
 			try:
 				await self._consumer_task
-			except asyncio.CancelledError:
+			except asyncio.CancelledError: 
 				pass
 
 		# close resources
@@ -177,7 +179,7 @@ class CvPipeline:
 				# loop around to recheck self._running -> lets stop() unstick
 				continue
 			except asyncio.CancelledError:
-				break
+				raise
 
 	def _camera_loop(self, loop: asyncio.AbstractEventLoop) -> None:
 		"""
