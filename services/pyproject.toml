@@ -18,6 +18,8 @@ dependencies = [
     "numpy>=1.26",
     "msgpack-rpc-python",
     "backports.ssl-match-hostname",
+    "websockets>=16.0",
+    "input",
 ]
 
 [project.optional-dependencies]
