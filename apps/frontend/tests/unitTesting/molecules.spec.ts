@@ -201,6 +201,23 @@ test.describe('DarkModeToggle',()=>{
 })
 
 
+test.describe('DashboardSideCard',()=>{
+    test('welcome message shows up',async ({page})=>{
+        await page.goto('/dashboard')
+        await page.waitForLoadState('domcontentloaded')
+        await expect(page.getByText(/welcome back/i)).toBeVisible()
+    })
+
+    test('switch profile and logout buttons show up', async ({page})=> {
+        await page.goto('/dashboard')
+        await page.waitForLoadState('domcontentloaded')
+        await expect(page.getByText(/switch profile/i).first()).toBeVisible()
+        await expect(page.getByText(/logout/i).first()).toBeVisible()
+        
+    })
+
+})
+
 
 
 
