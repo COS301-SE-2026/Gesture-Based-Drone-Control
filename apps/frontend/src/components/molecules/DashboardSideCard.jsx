@@ -11,20 +11,20 @@ export const DashboardSideCard = ({ userName = "User" }) => {
 
   return (
     <>
-      <h2 className="text-lg font-bold text-OffBlack mb-2">Dashboard</h2>
+      <h2 className="text-lg font-bold text-Red mb-2">Dashboard</h2>
 
       {/* welcome card */}
 
       <Card variant="glass">
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
-            <UserCircle size={30} className="text-OffBlack" />
-            <span className="text-xs text-OffBlack">{formattedDate}</span>
+            <UserCircle size={30} className="text-OffBlack dark:text-Grey" />
+            <span className="text-xs text-OffBlack dark:text-Grey">{formattedDate}</span>
           </div>
 
           <div className="mt-2">
-            <p className="text-sm text-OffBlack">Welcome back,</p>
-            <p className="text-lg text-OffBlack font-bold">{userName}</p>
+            <p className="text-sm text-OffBlack dark:text-OffWhite">Welcome back,</p>
+            <p className="text-lg text-OffBlack font-bold dark:text-OffWhite">{userName}</p>
           </div>
 
           <div className="flex gap-2 mt-2 pt-2 border-t border-Grey/20">

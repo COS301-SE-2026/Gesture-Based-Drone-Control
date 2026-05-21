@@ -7,7 +7,7 @@ import PropTypes from "prop-types"
 const Compass = ({ heading = 0, className = "" }) => {
   return (
     <Card className={className}>
-      <div className="w-full h-70 bg-OffWhite rounded-full flex flex-col items-center justify-center gap-4">
+      <div className="w-full h-70 bg-OffWhite dark:bg-OffBlack rounded-full flex flex-col items-center justify-center gap-4">
         <Label size="md">Drone Orientation</Label>
 
         {/* compass head/rose */}
@@ -21,13 +21,13 @@ const Compass = ({ heading = 0, className = "" }) => {
               <span className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-Red font-bold text-xl">
                 N
               </span>
-              <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 text-OffBlack font-bold text-xl">
+              <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 text-OffBlack dark:text-Grey font-bold text-xl">
                 S
               </span>
-              <span className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 text-OffBlack font-bold text-xl">
+              <span className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 text-OffBlack dark:text-Grey font-bold text-xl">
                 E
               </span>
-              <span className="absolute left-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-OffBlack font-bold text-xl">
+              <span className="absolute left-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-OffBlack dark:text-Grey font-bold text-xl">
                 W
               </span>
             </div>
@@ -43,17 +43,17 @@ const Compass = ({ heading = 0, className = "" }) => {
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-20 bg-Red rounded-full origin-bottom" />
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-20 bg-DarkGrey rounded-full origin-top" />
 
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-OffBlack rounded-full" />
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-OffBlack dark:bg-OffWhite rounded-full" />
             </div>
           </div>
         </div>
 
         {/* heading */}
         <div className="text-center">
-          <p className="text-3xl font-bold text-OffBlack font-mono">
+          <p className="text-3xl font-bold text-OffBlack dark:text-OffWhite font-mono">
             {heading}°
           </p>
-          <p className="text-sm text-OffBlack mt-1">
+          <p className="text-sm text-OffBlack dark:text-OffWhite mt-1">
             {getHeadingDirection(heading)}
           </p>
         </div>

@@ -11,7 +11,7 @@ const GestureCalibration = ({
   className = "",
 }) => {
   return (
-    <Card variant="secondary" className={className}>
+    <Card variant="glass" className={className}>
       <div className="flex flex-col gap-4">
         <Label size="md">Gesture Calibration</Label>
 
@@ -21,7 +21,7 @@ const GestureCalibration = ({
             {/* visibility */}
             <div>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-sm text-OffBlack/80">Visibility</span>
+                <span className="text-sm text-OffBlack/80 dark:text-OffWhite">Visibility</span>
                 <span className="text-sm font-medium text-OffBlack">
                   {visibility}%
                 </span>
@@ -37,7 +37,7 @@ const GestureCalibration = ({
             {/* confidence */}
             <div>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-sm text-OffBlack/80">Confidence</span>
+                <span className="text-sm text-OffBlack/80 dark:text-OffWhite">Confidence</span>
                 <span className="text-sm font-medium text-OffBlack">
                   {confidence}%
                 </span>
@@ -53,7 +53,7 @@ const GestureCalibration = ({
             {/* stability */}
             <div>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-sm text-OffBlack/80">Stability</span>
+                <span className="text-sm text-OffBlack/80 dark:text-OffWhite">Stability</span>
                 <span className="text-sm font-medium text-OffBlack">
                   {stability}%
                 </span>
@@ -74,11 +74,11 @@ const GestureCalibration = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <p className="text-xs text-DarkGrey uppercase mb-1">Lighting</p>
-              <p className="text-sm font-medium text-OffBlack">{lighting}</p>
+              <p className="text-sm font-medium text-OffBlack dark:text-OffWhite">{lighting}</p>
             </div>
             <div>
               <p className="text-xs text-DarkGrey uppercase mb-1">Background</p>
-              <p className="text-sm font-medium text-OffBlack">{background}</p>
+              <p className="text-sm font-medium text-OffBlack dark:text-OffWhite">{background}</p>
             </div>
           </div>
         </div>
