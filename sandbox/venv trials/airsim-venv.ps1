@@ -36,6 +36,8 @@ pip install pynput
 
 #demoing
 pip install termios
+pip install uvicorn
+pip install fastapi
 
 Write-Host "installing airsim"
 
