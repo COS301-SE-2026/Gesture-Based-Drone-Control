@@ -44,7 +44,7 @@
 
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=A4161A&height=2&section=header" width="100%"/>
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 <table>
   <tr>
@@ -63,13 +63,15 @@
   </tr>
 </table>
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=A4161A&height=2&section=header" width="100%"/>
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 </div>
 
 <br/>
 
-## <img src="docs/assets/icons/propeller.svg" width="24" align="center"/> &nbsp;Documentation
+## <img src="docs/assets/propeller.svg" width="24" align="center"/> &nbsp;Documentation
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 > Every artefact required by the Demo 1 rubric lives in the repo as either Markdown or PDF. No Google Drive, no external links.
 
@@ -108,11 +110,13 @@
 
 <br/>
 
-## <img src="docs/assets/icons/drone.svg" width="24" align="center"/> &nbsp;The Team. Codex Merchants
+## <img src="docs/assets/drone.svg" width="24" align="center"/> &nbsp;The Team. Codex Merchants
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 <div align="center">
 
-<a href="#-the-team-codex-merchants">
+<a href="#the-team-codex-merchants">
   <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=500&size=14&pause=1000&color=B1A7A6&center=true&vCenter=true&width=700&lines=Five+engineers+%C2%B7+One+stack+%C2%B7+Zero+compromises" alt="Team tagline"/>
 </a>
 
@@ -233,7 +237,9 @@ Considerable statistical and data analysis skills. UI engineering across React a
 
 <br/>
 
-## <img src="docs/assets/icons/reticle.svg" width="24" align="center"/> &nbsp;System Architecture
+## <img src="docs/assets/reticle.svg" width="24" align="center"/> &nbsp;System Architecture
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 <div align="center">
 
@@ -360,7 +366,9 @@ sequenceDiagram
 
 <br/>
 
-## <img src="docs/assets/icons/drone-side.svg" width="24" align="center"/> &nbsp;Repository Structure
+## <img src="docs/assets/drone-side.svg" width="24" align="center"/> &nbsp;Repository Structure
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 > Monorepo, trunk based. Below is the actual tree (depth 3).
 
@@ -425,7 +433,9 @@ gesture-drone-control/
 
 <br/>
 
-## <img src="docs/assets/icons/propeller.svg" width="24" align="center"/> &nbsp;Technology Stack
+## <img src="docs/assets/propeller.svg" width="24" align="center"/> &nbsp;Technology Stack
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 <div align="center">
 
@@ -520,7 +530,9 @@ gesture-drone-control/
 
 <br/>
 
-## <img src="docs/assets/icons/reticle.svg" width="24" align="center"/> &nbsp;Use Cases
+## <img src="docs/assets/reticle.svg" width="24" align="center"/> &nbsp;Use Cases
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 > Use cases are tracked as GitHub Issues and linked to the [Project Board](https://github.com/orgs/COS301-SE-2026/projects/70). Core cases target Demo 1. Optional cases extend toward Demo 2 and beyond.
 
@@ -571,7 +583,9 @@ gesture-drone-control/
 
 <br/>
 
-## <img src="docs/assets/icons/signal.svg" width="24" align="center"/> &nbsp;Getting Started
+## <img src="docs/assets/signal.svg" width="24" align="center"/> &nbsp;Getting Started
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 **Prerequisites**
 
@@ -664,7 +678,9 @@ make fix     # ruff --fix plus ruff format plus yarn format
 
 <br/>
 
-## <img src="docs/assets/icons/drone.svg" width="24" align="center"/> &nbsp;Branching Strategy
+## <img src="docs/assets/drone.svg" width="24" align="center"/> &nbsp;Branching Strategy
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 > Four tier model. `main` must always be in a deployable state. All merges happen before each demo. Aligns with the **Demo 1 spec configuration requirements**: every commit attributed via Git CLI, GitHub username matched `user.name`, no GUI Git clients. Full conventions in [GIT.md](docs/GIT.md).
 
@@ -729,7 +745,9 @@ gitGraph
 
 <br/>
 
-## <img src="docs/assets/icons/signal.svg" width="24" align="center"/> &nbsp;CI/CD and Code Quality
+## <img src="docs/assets/signal.svg" width="24" align="center"/> &nbsp;CI/CD and Code Quality
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 > Every shield below is a live status indicator. The repo's quality gates run on every push, on every PR, and before every merge to `main`.
 
@@ -776,7 +794,9 @@ gitGraph
 
 <br/>
 
-## <img src="docs/assets/icons/reticle.svg" width="24" align="center"/> &nbsp;Project Constraints
+## <img src="docs/assets/reticle.svg" width="24" align="center"/> &nbsp;Project Constraints
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 | Constraint | Detail |
 |:---|:---|
@@ -787,13 +807,17 @@ gitGraph
 
 <br/>
 
-## <img src="docs/assets/icons/propeller.svg" width="24" align="center"/> &nbsp;Methodology
+## <img src="docs/assets/propeller.svg" width="24" align="center"/> &nbsp;Methodology
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 We work **Agile** with **Feature Driven Development**: weekly sprint planning, twice weekly stand ups (5 to 15 minutes, logged on ClickUP per the COS 301 spec), and sprint review. New tech (xFly SDK, AirSim) is learned on the job alongside delivery.
 
 <br/>
 
-## <img src="docs/assets/icons/signal.svg" width="24" align="center"/> &nbsp;Contact
+## <img src="docs/assets/signal.svg" width="24" align="center"/> &nbsp;Contact
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
 
 | Role | Name | Email |
 |:---|:---|:---|
@@ -805,9 +829,44 @@ We work **Agile** with **Feature Driven Development**: weekly sprint planning, t
 
 <div align="center">
 
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
+
+<br/>
+
+### In Partnership With
+
+<br/>
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="https://www.up.ac.za/">
+  <img src="docs/assets/up-logo.svg" width="320" alt="University of Pretoria"/>
+</a>
+<br/><br/>
+<sub><b>Academic Host</b></sub><br/>
+<sub>COS 301 Software Engineering. Faculty of EBIT</sub>
+</td>
+<td align="center" width="50%">
+<a href="https://www.epiuselabs.com/">
+  <img src="docs/assets/epiuse-logo.svg" width="320" alt="EPI-USE Labs"/>
+</a>
+<br/><br/>
+<sub><b>Industry Sponsor and Client</b></sub><br/>
+<sub>Project owner and mentorship</sub>
+</td>
+</tr>
+</table>
+
+<br/>
+
+<img src="docs/assets/glowline.svg" width="100%" alt=""/>
+
+<br/>
+
 <img src="https://capsule-render.vercel.app/api?type=waving&color=A4161A&height=120&section=footer" width="100%"/>
 
-<sub><i>COS 301 Software Engineering. University of Pretoria. 2026. EPI-USE.</i></sub><br/>
+<sub><i>COS 301 Software Engineering. University of Pretoria. 2026. EPI-USE Labs.</i></sub><br/>
 <sub><i>Codex Merchants.</i></sub>
 
 <br/><br/>
