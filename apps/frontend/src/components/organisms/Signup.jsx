@@ -34,6 +34,7 @@ export default function Signup() {
 
   const validateForm = () => {
     const newErr = {}
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!formData.firstName.trim()) {
       newErr.firstName = "First Name is required"
     }
@@ -43,7 +44,7 @@ export default function Signup() {
     //valid email regex check
     if (!formData.email) {
       newErr.email = "Email is required"
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!emailRegex.test(formData.email)) {
       newErr.email = "Please enter a valid email"
     }
     if (!formData.dateOfBirth) {

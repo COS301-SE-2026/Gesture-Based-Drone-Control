@@ -30,11 +30,12 @@ export default function LoginPage() {
 
   const validateForm = () => {
     const newErr = {}
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!formData.email) {
       newErr.email = "Email is required"
     }
     //valid email regex check
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    else if (!emailRegex.test(formData.email)) {
       newErr.email = "Please enter a valid email"
     }
 
