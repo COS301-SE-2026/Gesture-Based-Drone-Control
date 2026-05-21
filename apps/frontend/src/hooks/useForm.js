@@ -18,7 +18,7 @@ export function useForm(initialState, onSuccess) {
 
   const handleSubmit = async (e, validateFn) => {
     e.preventDefault()
-    const newErr = validateFn() 
+    const newErr = validateFn()
     if (Object.keys(newErr).length > 0) {
       setErrors(newErr)
       return
@@ -30,5 +30,13 @@ export function useForm(initialState, onSuccess) {
     }, 1500)
   }
 
-  return { formData, setFormData, errors, setErrors, isLoading, handleChange, handleSubmit }
+  return {
+    formData,
+    setFormData,
+    errors,
+    setErrors,
+    isLoading,
+    handleChange,
+    handleSubmit,
+  }
 }

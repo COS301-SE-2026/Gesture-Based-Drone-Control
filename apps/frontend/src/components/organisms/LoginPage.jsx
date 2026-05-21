@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Mail, Lock } from "lucide-react"
 import Input from "../atoms/Input"
@@ -8,7 +7,7 @@ import { useForm } from "../../hooks/useForm"
 
 export default function LoginPage() {
   const navigate = useNavigate()
- 
+
   const { formData, errors, isLoading, handleChange, handleSubmit } = useForm(
     { email: "", password: "", rememberMe: false },
     () => navigate("/dashboard")
@@ -64,7 +63,10 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form onSubmit={(e)=>handleSubmit(e,validateForm)} className="space-y-5">
+          <form
+            onSubmit={(e) => handleSubmit(e, validateForm)}
+            className="space-y-5"
+          >
             {/* email */}
             <div>
               <label

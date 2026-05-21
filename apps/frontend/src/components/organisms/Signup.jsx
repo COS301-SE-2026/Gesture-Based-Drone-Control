@@ -179,7 +179,10 @@ export default function Signup() {
 
               {/* DOB */}
               <div className="col-span-2">
-                <label htmlFor="dateOfBirth" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+                <label
+                  htmlFor="dateOfBirth"
+                  className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2"
+                >
                   Date of Birth
                 </label>
                 <Input
