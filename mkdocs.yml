@@ -9,7 +9,6 @@ theme:
   name: material
   logo: assets/drone.svg
   favicon: assets/reticle.svg
-  custom_dir: docs/overrides
 
   palette:
     - scheme: default
