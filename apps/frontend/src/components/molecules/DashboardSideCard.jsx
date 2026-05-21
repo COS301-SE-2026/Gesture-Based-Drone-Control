@@ -19,12 +19,18 @@ export const DashboardSideCard = ({ userName = "User" }) => {
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <UserCircle size={30} className="text-OffBlack dark:text-Grey" />
-            <span className="text-xs text-OffBlack dark:text-Grey">{formattedDate}</span>
+            <span className="text-xs text-OffBlack dark:text-Grey">
+              {formattedDate}
+            </span>
           </div>
 
           <div className="mt-2">
-            <p className="text-sm text-OffBlack dark:text-OffWhite">Welcome back,</p>
-            <p className="text-lg text-OffBlack font-bold dark:text-OffWhite">{userName}</p>
+            <p className="text-sm text-OffBlack dark:text-OffWhite">
+              Welcome back,
+            </p>
+            <p className="text-lg text-OffBlack font-bold dark:text-OffWhite">
+              {userName}
+            </p>
           </div>
 
           <div className="flex gap-2 mt-2 pt-2 border-t border-Grey/20">

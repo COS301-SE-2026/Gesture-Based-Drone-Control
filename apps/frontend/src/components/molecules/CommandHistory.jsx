@@ -28,7 +28,9 @@ const CommandHistory = ({ commands = [], className = "" }) => {
               key={cmd.id || index}
               className="flex justify-between items-center text-sm border rounded border-Grey/20 pb-12"
             >
-              <span className="text-OffBlack/80 dark:text-OffWhite">{cmd.action}</span>
+              <span className="text-OffBlack/80 dark:text-OffWhite">
+                {cmd.action}
+              </span>
               <span className="text-xs text-DarkGrey">{cmd.timestamp}</span>
             </Card>
           ))}

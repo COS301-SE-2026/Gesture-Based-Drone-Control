@@ -36,8 +36,7 @@ const RootLayout = () => {
     <div className="flex min-h-screen bg-OffWhite dark:bg-OffBlack">
       <div className="flex flex-col">
         <SideBar items={menuItems} topContent={getTopContent()} />
-        <div className="w-80 px-4 pb-4">
-        </div>
+        <div className="w-80 px-4 pb-4"></div>
       </div>
       <main className="flex-1 overflow-y-auto">
         <Outlet />

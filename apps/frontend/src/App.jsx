@@ -1,8 +1,13 @@
-import { Routes, Route } from "react-router-dom" 
+import { Routes, Route } from "react-router-dom"
 import RootLayout from "./components/layouts/RootLayout.jsx"
-import { Dashboard, Gestures, Analytics, Settings, GPS } from "./components/organisms"
-import { ThemeProvider } from "./context/ThemeProvider.jsx" 
-
+import {
+  Dashboard,
+  Gestures,
+  Analytics,
+  Settings,
+  GPS,
+} from "./components/organisms"
+import { ThemeProvider } from "./context/ThemeProvider.jsx"
 
 function App() {
   return (

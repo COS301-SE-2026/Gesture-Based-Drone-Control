@@ -35,12 +35,16 @@ const DroneInfoCard = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-xs text-DarkGrey uppercase mb-1">Drone Name</p>
-              <p className="text-base text-OffBlack dark:text-OffWhite">{droneName}</p>
+              <p className="text-base text-OffBlack dark:text-OffWhite">
+                {droneName}
+              </p>
             </div>
 
             <div>
               <p className="text-xs text-DarkGrey uppercase mb-1">Model</p>
-              <p className="text-base text-OffBlack dark:text-OffWhite">{model}</p>
+              <p className="text-base text-OffBlack dark:text-OffWhite">
+                {model}
+              </p>
             </div>
           </div>
 

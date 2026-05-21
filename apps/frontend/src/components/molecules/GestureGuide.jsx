@@ -19,9 +19,13 @@ const GestureGuide = ({ className = "" }) => {
                   <kbd className="px-2 py-1 bg-OffBlack/50 rounded text-OffWhite font-mono text-xs border border-Grey/30">
                     ↑
                   </kbd>
-                  <span className="text-sm text-OffBlack/80 dark:text-OffWhite/80">Up Arrow</span>
+                  <span className="text-sm text-OffBlack/80 dark:text-OffWhite/80">
+                    Up Arrow
+                  </span>
                 </div>
-                <span className="text-xs text-OffBlack dark:text-Grey">Increase Altitude</span>
+                <span className="text-xs text-OffBlack dark:text-Grey">
+                  Increase Altitude
+                </span>
               </div>
 
               <div className="flex justify-between items-center">
@@ -29,9 +33,13 @@ const GestureGuide = ({ className = "" }) => {
                   <kbd className="px-2 py-1 bg-OffBlack/50 rounded text-OffWhite font-mono text-xs border border-Grey/30">
                     ↓
                   </kbd>
-                  <span className="text-sm text-OffBlack/80 dark:text-OffWhite/80">Down Arrow</span>
+                  <span className="text-sm text-OffBlack/80 dark:text-OffWhite/80">
+                    Down Arrow
+                  </span>
                 </div>
-                <span className="text-xs text-OffBlack dark:text-Grey">Decrease Altitude</span>
+                <span className="text-xs text-OffBlack dark:text-Grey">
+                  Decrease Altitude
+                </span>
               </div>
 
               <div className="flex justify-between items-center">
@@ -46,7 +54,9 @@ const GestureGuide = ({ className = "" }) => {
                     Left/Right Arrows
                   </span>
                 </div>
-                <span className="text-xs text-OffBlack dark:text-Grey">Move Laterally</span>
+                <span className="text-xs text-OffBlack dark:text-Grey">
+                  Move Laterally
+                </span>
               </div>
             </div>
           </div>

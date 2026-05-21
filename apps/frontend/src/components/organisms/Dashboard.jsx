@@ -35,9 +35,7 @@ const Dashboard = () => {
         <div className="col-span-1">
           <Card variant="glass" className="">
             <div className="flex flex-col gap-6">
-              <Label size="md">
-                Stats
-              </Label>
+              <Label size="md">Stats</Label>
               <div className="grid grid-cols-2 gap-6">
                 {/* battery */}
                 <div className="flex flex-cols items-center gap-6">
