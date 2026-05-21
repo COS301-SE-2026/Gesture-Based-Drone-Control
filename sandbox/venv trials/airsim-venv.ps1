@@ -34,6 +34,9 @@ pip install keyboard
 #for project airsim
 pip install pynput
 
+#demoing
+pip install termios
+
 Write-Host "installing airsim"
 
 pip install airsim --no-build-isolation
