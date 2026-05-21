@@ -33,13 +33,13 @@
 
 | Document | Link |
 |---|---|
-| ‣ Software Requirements Specification (SRS) | [View SRS →](docs/SRS.md) |
-| ‣ Architecture & Design | [View Design →](docs/DESIGN.md) |
-| ‣ API Reference | [View API →](docs/api/API_REFERENCE.md) |
-| ‣ Testing Strategy | [View Testing →](docs/testing/TESTING.md) |
-| ‣ CI/CD Pipeline | [View CI/CD →](docs/CICD.md) |
-| ‣ Git Conventions | [View Git Guide →](docs/GIT.md) |
-| ‣ GitHub Project Board | [View Board →](../../projects) |
+| ‣ Software Requirements Specification (SRS) | [View SRS ->](docs/SRS.md) |
+| ‣ Architecture & Design | [View Design ->](docs/DESIGN.md) |
+| ‣ API Reference | [View API ->](docs/api/API_REFERENCE.md) |
+| ‣ Testing Strategy | [View Testing ->](docs/testing/TESTING.md) |
+| ‣ CI/CD Pipeline | [View CI/CD ->](docs/CICD.md) |
+| ‣ Git Conventions | [View Git Guide ->](docs/GIT.md) |
+| ‣ GitHub Project Board | [View Board ->](../../projects) |
 
 ---
 
@@ -250,10 +250,10 @@ gesture-drone-control/
 |:---:|:---|:---:|
 | UC-01 | User Registration & Login | ◆ Core |
 | UC-02 | Live Hand Gesture Detection & Tracking | ◆ Core |
-| UC-03 | Gesture → Drone Command Mapping | ◆ Core |
+| UC-03 | Gesture -> Drone Command Mapping | ◆ Core |
 | UC-04 | Real-Time Dashboard (telemetry, status, feed) | ◆ Core |
 | UC-05 | Safety Logic (hover on tracking loss, emergency stop) | ◆ Core |
-| UC-06 | Manual Override (gesture → keyboard/controller) | ◇ Optional |
+| UC-06 | Manual Override (gesture -> keyboard/controller) | ◇ Optional |
 | UC-07 | Gesture Recording & Automated Playback | ◇ Optional |
 | UC-08 | Idle Detection Auto-Land | ◇ Optional |
 | UC-09 | Gesture-Activated Follow Mode | ◇ Optional |
