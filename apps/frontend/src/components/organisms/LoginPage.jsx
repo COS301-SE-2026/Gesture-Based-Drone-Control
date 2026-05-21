@@ -4,7 +4,6 @@ import { Mail, Lock } from "lucide-react"
 import Input from "../atoms/Input"
 import darkbg from "../../assets/darkMode.png"
 import validator from "validator"
-//BEGIN-NOSCAN
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -193,5 +192,4 @@ export default function LoginPage() {
       </div>
     </div>
   )
-  //END-NOSCAN
 }
