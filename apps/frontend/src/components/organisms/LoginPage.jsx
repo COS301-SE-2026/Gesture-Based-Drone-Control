@@ -4,30 +4,15 @@ import { Mail, Lock } from "lucide-react"
 import Input from "../atoms/Input"
 import darkbg from "../../assets/darkMode.png"
 import validator from "validator"
+const { handleSubmit } = useForm(initialState, () => navigate("/dashboard"))
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    rememberMe: false,
-  })
-  const [errors, setErrors] = useState({})
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }))
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }))
-    }
-  }
+ 
+  const { formData, errors, isLoading, handleChange, handleSubmit } = useForm(
+    { email: "", password: "", rememberMe: false },
+    () => navigate("/dashboard")
+  )
 
   const validateForm = () => {
     const newErr = {}
@@ -45,23 +30,6 @@ export default function LoginPage() {
       newErr.password = "Password needs to be at least 8 characters"
     }
     return newErr
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const newErr = validateForm()
-
-    if (Object.keys(newErr).length > 0) {
-      setErrors(newErr)
-      return
-    }
-
-    setIsLoading(true)
-    //sim api call
-    setTimeout(() => {
-      setIsLoading(false)
-      navigate("/dashboard")
-    }, 1500)
   }
 
   return (
