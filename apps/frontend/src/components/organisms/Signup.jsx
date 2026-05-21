@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { Mail, Lock, User, Calendar } from "lucide-react"
 import Input from "../atoms/Input"
 import darkbg from "../../assets/darkMode.png"
-import validator from 'validator'
+import validator from "validator"
 
 export default function Signup() {
   const navigate = useNavigate()
@@ -119,7 +119,10 @@ export default function Signup() {
             <div className="grid grid-cols-2 gap-3">
               {/* name */}
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2"
+                >
                   First Name
                 </label>
                 <Input
@@ -136,7 +139,10 @@ export default function Signup() {
 
               {/* surname */}
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2"
+                >
                   Last Name
                 </label>
                 <Input
@@ -153,7 +159,10 @@ export default function Signup() {
 
               {/* email */}
               <div className="col-span-2">
-                <label htmlFor="email" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2"
+                >
                   Email Address
                 </label>
                 <Input
@@ -186,7 +195,10 @@ export default function Signup() {
 
               {/* password */}
               <div className="col-span-2">
-                <label htmlFor="password" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2"
+                >
                   Password
                 </label>
                 <Input
@@ -203,7 +215,10 @@ export default function Signup() {
 
               {/* confirm password */}
               <div className="col-span-2">
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2"
+                >
                   Confirm Password
                 </label>
                 <Input
@@ -221,7 +236,10 @@ export default function Signup() {
 
             {/* terms */}
             <div className="pt-2">
-              <label htmlFor="agreeToTerms" className="flex items-start gap-3 cursor-pointer">
+              <label
+                htmlFor="agreeToTerms"
+                className="flex items-start gap-3 cursor-pointer"
+              >
                 <input
                   type="checkbox"
                   name="agreeToTerms"

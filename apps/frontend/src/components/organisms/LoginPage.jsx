@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom"
 import { Mail, Lock } from "lucide-react"
 import Input from "../atoms/Input"
 import darkbg from "../../assets/darkMode.png"
-import validator from 'validator'
+import validator from "validator"
+//BEGIN-NOSCAN
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -46,8 +47,6 @@ export default function LoginPage() {
     }
     return newErr
   }
-
-  //BEGIN-NOSCAN
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -101,7 +100,10 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2"
+              >
                 Email Address
               </label>
               <Input
@@ -118,7 +120,10 @@ export default function LoginPage() {
 
             {/* password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2"
+              >
                 Password
               </label>
               <Input
