@@ -12,7 +12,7 @@ const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
         "group",
         active
           ? "bg-Red text-OffWhite shadow-md"
-          : "text-DarkGrey text-OffBlack hover:bg-OffWhite/10",
+          : "text-OffBlack dark:text-OffWhite hover:bg-OffWhite/10",
         className,
       ]
         .filter(Boolean)
@@ -25,7 +25,7 @@ const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
           className={
             active
               ? "text-OffWhite"
-              : "text-OffBlack group-hover:text-OffBlack transition-colors"
+              : "text-OffBlack dark:text-OffWhite group-hover:text-OffBlack transition-colors"
           }
         />
       )}

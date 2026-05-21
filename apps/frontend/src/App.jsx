@@ -1,25 +1,28 @@
-import { Routes, Route } from "react-router-dom" // Remove BrowserRouter import
+import { Routes, Route } from "react-router-dom"
 import RootLayout from "./components/layouts/RootLayout.jsx"
-import Dashboard from "./components/organisms/Dashboard" // Import directly for now
 import {
-  Analytics,
+  Dashboard,
   Gestures,
+  Analytics,
   Settings,
   GPS,
-} from "./components/organisms/index.js"
+} from "./components/organisms"
+import { ThemeProvider } from "./context/ThemeProvider.jsx"
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<RootLayout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="gestures" element={<Gestures />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="settings" element={<Settings />} />
-        <Route path="gps" element={<GPS />} />
-      </Route>
-    </Routes>
+    <ThemeProvider>
+      <Routes>
+        <Route path="/" element={<RootLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="gestures" element={<Gestures />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="gps" element={<GPS />} />
+        </Route>
+      </Routes>
+    </ThemeProvider>
   )
 }
 

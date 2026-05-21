@@ -1,31 +1,14 @@
 import { Toggle } from "../atoms"
-import { useState, useEffect } from "react"
+import { useTheme } from "@/context/ThemeContext"
 import { Sun, Moon } from "lucide-react"
 
 const DarkModeToggle = () => {
-  const [isDark, setIsDark] = useState(() => {
-    return (
-      localStorage.getItem("theme") === "dark" ||
-      (!localStorage.getItem("theme") &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches)
-    )
-  })
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add("dark")
-      localStorage.setItem("theme", "dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-      localStorage.setItem("theme", "light")
-    }
-  }, [isDark])
-
+  const { isDark, toggleTheme } = useTheme()
   return (
     <div className="flex items-center gap-2">
-      <Sun className="w-8 h-8 text-OffWhite dark:text-OffBlack" />
-      <Toggle checked={isDark} onChange={() => setIsDark(!isDark)} />
-      <Moon className="w-8 h-8 text-OffWhite dark:text-OffBlack" />
+      <Sun className="w-6 h-6 text-OffBlack dark:text-OffWhite" />
+      <Toggle checked={isDark} onChange={toggleTheme} />
+      <Moon className="w-6 h-6 text-OffBlack dark:text-OffWhite" />
     </div>
   )
 }

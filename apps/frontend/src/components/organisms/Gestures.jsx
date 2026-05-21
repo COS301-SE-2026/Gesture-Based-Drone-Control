@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { CommandHistory, GestureGuide, GestureCalibration } from "../molecules"
-import { Card } from "../atoms"
+import { Card, Label } from "../atoms"
 import { Camera } from "lucide-react"
 
 const GestureControl = () => {
@@ -18,9 +18,9 @@ const GestureControl = () => {
           <Card variant="glass" className="h-full flex flex-col">
             <div className="flex flex-col gap-4 flex-1">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-OffBlack dark:text-Offline">
+                <Label className="text-lg font-semibold">
                   Gesture Detection
-                </h3>
+                </Label>
               </div>
 
               <div className="relative w-full flex-1 bg-OffBlack/50 rounded-lg border border-Grey/20 overflow-hidden min-h-[400px] flex items-center justify-center">

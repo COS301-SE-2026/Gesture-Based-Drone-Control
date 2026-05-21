@@ -35,15 +35,13 @@ const Dashboard = () => {
         <div className="col-span-1">
           <Card variant="glass" className="">
             <div className="flex flex-col gap-6">
-              <Label size="md" className="dark:text-OffWhite">
-                Stats
-              </Label>
+              <Label size="md">Stats</Label>
               <div className="grid grid-cols-2 gap-6">
                 {/* battery */}
                 <div className="flex flex-cols items-center gap-6">
                   <Battery className="w-8 h-8 text-Red" />
                   <div className="text-center">
-                    <p className="text-xs text-OffBlack uppercase mb-1">
+                    <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
                       Battery
                     </p>
                     <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
@@ -55,7 +53,7 @@ const Dashboard = () => {
                 <div className="flex flex-cols items-center gap-6">
                   <Wifi className="w-8 h-8 text-Red" />
                   <div className="text-center">
-                    <p className="text-xs text-OffBlack uppercase mb-1">
+                    <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
                       Signal
                     </p>
                     <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
@@ -67,7 +65,7 @@ const Dashboard = () => {
                 <div className="flex flex-cols items-center gap-6">
                   <Gauge className="w-8 h-8 text-Red" />
                   <div className="text-center">
-                    <p className="text-xs text-OffBlack uppercase mb-1">
+                    <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
                       Speed
                     </p>
                     <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
@@ -79,7 +77,7 @@ const Dashboard = () => {
                 <div className="flex flex-cols items-center gap-6">
                   <Mountain className="w-8 h-8 text-Red" />
                   <div className="text-center">
-                    <p className="text-xs text-OffBlack uppercase mb-1">
+                    <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
                       Altitude
                     </p>
                     <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
