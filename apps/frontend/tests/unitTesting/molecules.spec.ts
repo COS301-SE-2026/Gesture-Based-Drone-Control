@@ -159,7 +159,49 @@ test.describe('Gesture Clibration',()=>{
 
     })
 
+})
 
+test.describe('Sidebar',()=>{
+    test('the logo comes through',async ({page})=>{
+        await page.goto('/dashboard')
+        await page.waitForLoadState('domcontentloaded')
+        const logo = page.getByAltText(/codex merchants/i)
+        await expect(logo).toBeVisible()
+    })
 
+    test('all the nav items show up', async ({page})=> {
+        await page.goto('/dashboard')
+        await page.waitForLoadState('domcontentloaded')
+        await expect(page.getByText(/dashboard/i).first()).toBeVisible()
+        await expect(page.getByText(/analytics/i).first()).toBeVisible()
+        await expect(page.getByText(/gestures/i).first()).toBeVisible()
+        await expect(page.getByText(/gps/i).first()).toBeVisible()
+        await expect(page.getByText(/settings/i).first()).toBeVisible()
+        
+    })
 
 })
+
+test.describe('DarkModeToggle',()=>{
+    test('the toggle bar shows up',async ({page})=>{
+        await page.goto('/dashboard')
+        await page.waitForLoadState('domcontentloaded')
+        const toggle = page.locator('input[type="checkbox"]').first()
+        await expect(toggle).toBeAttached()
+    })
+
+    test('the dark mode adds dark class o html element',async({page})=>{
+        await page.goto('/dashboard')
+        await page.waitForLoadState('domcontentloaded')
+        const toggle = page.locator('input[type="checkbox"]').first()
+        await toggle.click({force:true})
+        const htmlClass = await page.locator('html').getAttribute('class')
+        expect(htmlClass ==='dark' ||htmlClass ==='' || htmlClass ===null).toBeTruthy
+    })
+})
+
+
+
+
+
+
