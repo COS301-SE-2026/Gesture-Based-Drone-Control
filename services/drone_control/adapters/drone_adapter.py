@@ -23,6 +23,7 @@ from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from typing import Any
 
 from services.commands.command import Command, CommandType
 
@@ -46,6 +47,24 @@ class TelemetryData:
 	is_flying: bool = False
 	source: str = 'unknown'
 	extra: dict = field(default_factory=dict)
+ 
+	def __init__(
+		self,
+		altitude_m: float = 0.0,
+		speed_ms: float = 0.0,
+		battery_pct: float = 100.0,
+		heading_deg: float = 0.0,
+		is_flying: bool = False,
+		source: str = "unknown",
+		extra: dict[str, Any] | None = None,
+	):
+		self.altitude_m = altitude_m
+		self.speed_ms = speed_ms
+		self.battery_pct = battery_pct
+		self.heading_deg = heading_deg
+		self.is_flying = is_flying
+		self.source = source
+		self.extra = extra if extra is not None else {}
 
 
 class DroneAdapter(ABC):

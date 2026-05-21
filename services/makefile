@@ -4,7 +4,7 @@ install:
 	uv sync --all-groups
 
 test:
-	uv run pytest tests/ --cov=services --cov-report=term-missing
+	PYTHONPATH=.. uv run pytest tests/ --cov=services --cov-report=term-missing
 
 lint:
 	uv run ruff check --output-format=github
