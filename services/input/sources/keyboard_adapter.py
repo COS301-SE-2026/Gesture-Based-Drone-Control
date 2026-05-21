@@ -42,8 +42,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from commands.command import Command, CommandType
-from input.sources.input_adapter import InputAdapter
+from services.commands.command import Command, CommandType
+from services.input.sources.input_adapter import InputAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ class KeyboardAdapter(InputAdapter):
 
 	"""
 
-	def start(self) -> None:
+	async def start(self) -> None:
 		"""
 		No initialization needed for this adapter
 		This one is entirely event driven with no background tasks

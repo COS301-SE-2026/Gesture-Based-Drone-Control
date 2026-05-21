@@ -12,6 +12,9 @@ Requires-Dist: backports.ssl-match-hostname
 Requires-Dist: pytest-asyncio>=1.3.0
 Requires-Dist: pytest-cov>=7.1.0
 Requires-Dist: ruff>=0.15.12
+Requires-Dist: projectairsim
+Requires-Dist: websockets>=16.0
+Requires-Dist: input
 Provides-Extra: airsim
 Requires-Dist: airsim; extra == "airsim"
 Provides-Extra: dev
