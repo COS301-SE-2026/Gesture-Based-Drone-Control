@@ -1,21 +1,15 @@
 ---
 hide:
-  - navigation
   - toc
 ---
 
-<div class="tx-hero">
-  <div class="tx-hero__eyebrow">Codex Merchants · COS 301 · 2026</div>
-  <h1>Gesture-Based<br><em>Drone Control</em></h1>
-  <p class="tx-hero__sub">
-    Hand gestures detected through a live camera feed, classified by a dual rule-based and ML engine,
-    translated directly into drone flight commands — no physical controller required.
-  </p>
-  <div class="tx-hero__actions">
-    <a href="SRS/" class="tx-btn tx-btn--primary">Get Started →</a>
-    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" class="tx-btn tx-btn--secondary">GitHub ↗</a>
-  </div>
-</div>
+# Gesture-Based Drone Control
+
+A real-time computer-vision system that eliminates the physical controller entirely. Hand gestures detected through a live camera feed, classified by a dual rule-based and ML engine, translated directly into drone flight commands — with safety fail-safes built in from the ground up.
+
+[Get Started](SRS/){ .md-button .md-button--primary } &nbsp; [GitHub ↗](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control){ .md-button }
+
+---
 
 <div class="tx-grid tx-grid--3">
   <div class="tx-card">
