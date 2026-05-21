@@ -57,9 +57,55 @@ test.describe('NavItem', ()=>{
     })
 
 
-    
+    test.describe('Button',()=>{
+        test('does it show the droneSim and the Hardware mode buttons on the dashboard??',async({page})=>{
+            await page.goto('/dashboard')
+            await page.waitForLoadState('networkidle')
+            await expect(page.getByRole('button',{name: /dronesim/i})).toBeVisible()
+            await expect(page.getByRole('button',{name: /hardware/i})).toBeVisible()
+        })
 
+        test(' Hardware Button clickable??', async({page})=>{
+            await page.goto('/dashboard')
+            await page.waitForLoadState('networkidle')
+            const hardwareBtn = page.getByRole('button',{name:/hardware/i })
+            await expect(hardwareBtn).toBeEnabled()
+            await hardwareBtn.click()
+            await expect(hardwareBtn).toBeVisible()//so like it shouldnt disappear like after we click it...
+        })
 
+    })
+
+    test.describe('Toggle', ()=> {
+        test('there must be a toggle box on the dashboard page', async ({page})=>{
+            await page.goto('/dashboard')
+            await page.waitForLoadState('networkidle')
+            const toggle=page.locator('input[type="checkbox"]').first()
+            await expect(toggle).toBeAttached()
+        })
+
+        test('the state must actually chnage when its clicked on',async ({page})=>{
+            await page.goto('/dashboard')
+            await page.waitForLoadState('domcontentloaded')
+            const toggle=page.locator('input[type="checkbox"]').first()
+            const initialState = await toggle.isChecked()
+            const toggleLabel= page.locator('label').filter({
+                has: page.locator('input[type="checkbob"]')
+            }).first()
+            await toggleLabel.click({force:true})
+            const newState = await toggle.isChecked()
+            expect(newState).toBe(!initialState)
+        })
+    })
+
+    test.describe('StatusDot',()=>{
+        test('shows if the state is connected or not ', async ({page})=>{
+            await page.goto('/dashboard')
+            await page.waitForLoadState('networkidle')
+            await expect(page.getByText(/connected/i)).toBeVisible()
+
+        })
+    })
 
 
 })
