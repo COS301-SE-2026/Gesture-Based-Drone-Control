@@ -14,7 +14,6 @@ This validates that:
 from unittest.mock import AsyncMock
 
 import pytest
-
 from services.commands.command import CommandType
 from services.drone_control.adapters.dummy_drone_adapter import DummyDroneAdapter
 from services.input.sources.keyboard_adapter import KeyboardAdapter
@@ -25,7 +24,7 @@ async def test_keyboard_takeoff_to_dummy_drone():
 	drone = DummyDroneAdapter()
 	await drone.connect()
 
-	#spy on actual implementation
+	# spy on actual implementation
 	drone.takeoff = AsyncMock()
 
 	adapter = KeyboardAdapter()
@@ -75,7 +74,7 @@ async def test_keyboard_land_to_dummy_drone():
 		await drone.execute(cmd)
 
 	adapter.set_handler(lambda cmd: asyncio.create_task(handler(cmd)))
-    
+
 	adapter.handle_message(
 		{
 			'key': 'l',
@@ -83,7 +82,7 @@ async def test_keyboard_land_to_dummy_drone():
 		}
 	)
 
-	await asyncio.sleep(0.01) #was an issue before, tiny wait needed
+	await asyncio.sleep(0.01)  # was an issue before, tiny wait needed
 
 	drone.land.assert_awaited_once()
 

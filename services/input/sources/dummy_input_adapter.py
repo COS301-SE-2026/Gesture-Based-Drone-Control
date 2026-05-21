@@ -63,8 +63,8 @@ class DummyInputAdapter(InputAdapter):
 
 	def _emit(self, command: Command) -> None:
 		"""
-		        Override only to capture emitted commands for testing
-		        Still fully respects parent behavior
+		Override only to capture emitted commands for testing
+		Still fully respects parent behavior
 		Just makes things easier
 		"""
 		self.emitted.append(command)

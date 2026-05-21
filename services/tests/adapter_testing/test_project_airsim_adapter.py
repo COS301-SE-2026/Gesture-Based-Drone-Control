@@ -1,10 +1,9 @@
-#tests/adapter_testing/test_project_airsim_adapter.py
+# tests/adapter_testing/test_project_airsim_adapter.py
 
 # i didnt even know the mocks could be async these know ball
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from services.commands.command import CommandType
 from services.drone_control.adapters.drone_adapter import TelemetryData
 from services.drone_control.adapters.project_airsim_adapter import (
@@ -13,7 +12,6 @@ from services.drone_control.adapters.project_airsim_adapter import (
 	ProjectAirSimAdapter,
 	_find_sim_config,
 )
-
 
 # Helpers
 
@@ -187,9 +185,7 @@ async def test_takeoff():
 async def test_land():
 	adapter, mock_drone, _ = make_connected_adapter()
 
-	adapter.get_telemetry = AsyncMock(
-		return_value=TelemetryData(is_flying=False)
-	)
+	adapter.get_telemetry = AsyncMock(return_value=TelemetryData(is_flying=False))
 
 	await adapter.land()
 
@@ -227,7 +223,9 @@ async def test_emergency_stop_without_drone(caplog):
 
 	assert 'drone is none' in caplog.text.lower()
 
+
 # movement
+
 
 @pytest.mark.asyncio
 async def test_move_forward():
@@ -278,7 +276,9 @@ async def test_move_invalid_direction(caplog):
 
 	mock_drone.move_by_velocity_body_frame_async.assert_not_called()
 
+
 # _rotate
+
 
 @pytest.mark.asyncio
 async def test_rotate_clockwise():
@@ -303,7 +303,9 @@ async def test_rotate_counterclockwise():
 
 	assert args[0] < 0
 
+
 # telemetry
+
 
 @pytest.mark.asyncio
 async def test_get_telemetry_disconnected():
@@ -362,9 +364,10 @@ async def test_get_telemetry_failure():
 	assert t.source == 'projectairsim-error'
 
 
-# quaternion helpers fancy big math probably buggy 
+# quaternion helpers fancy big math probably buggy
 
-#only scalar do nothing
+
+# only scalar do nothing
 def test_yaw_from_quaternion_dict_identity():
 	heading = ProjectAirSimAdapter._yaw_from_quaternion_dict(
 		{
@@ -377,7 +380,8 @@ def test_yaw_from_quaternion_dict_identity():
 
 	assert heading == 0.0
 
-#same but different font
+
+# same but different font
 def test_yaw_from_quaternion_alt_keys():
 	heading = ProjectAirSimAdapter._yaw_from_quaternion_dict(
 		{
@@ -396,8 +400,10 @@ def test_yaw_from_quaternion_invalid():
 
 	assert heading == 0.0
 
-#finding the sim config folder 
-#(this one actually important but should be ayt)
+
+# finding the sim config folder
+# (this one actually important but should be ayt)
+
 
 def test_find_sim_config_failure():
 	with (

@@ -47,7 +47,7 @@ class TelemetryData:
 	is_flying: bool = False
 	source: str = 'unknown'
 	extra: dict = field(default_factory=dict)
- 
+
 	def __init__(
 		self,
 		altitude_m: float = 0.0,
@@ -55,7 +55,7 @@ class TelemetryData:
 		battery_pct: float = 100.0,
 		heading_deg: float = 0.0,
 		is_flying: bool = False,
-		source: str = "unknown",
+		source: str = 'unknown',
 		extra: dict[str, Any] | None = None,
 	):
 		self.altitude_m = altitude_m

@@ -1,5 +1,4 @@
 import pytest
-
 from services.commands.command import Command, CommandType
 from services.input.sources.input_adapter import InputAdapter
 
@@ -25,7 +24,7 @@ def test_emit_without_handler_logs_warning(caplog):
 
 	adapter._emit(Command(type=CommandType.TAKEOFF))
 
-	assert "no handler" in caplog.text.lower()
+	assert 'no handler' in caplog.text.lower()
 
 
 def test_emit_with_handler_invokes_callback():

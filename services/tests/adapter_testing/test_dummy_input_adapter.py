@@ -1,5 +1,4 @@
 import pytest
-
 from services.commands.command import CommandType
 from services.input.sources.dummy_input_adapter import DummyInputAdapter
 
@@ -23,7 +22,7 @@ def test_dummy_input_adapter_emits_takeoff():
 
 	assert len(received) == 1
 	assert received[0].type == CommandType.TAKEOFF
-	assert received[0].source == "dummy-input"
+	assert received[0].source == 'dummy-input'
 	assert len(adapter.emitted) == 1
 
 

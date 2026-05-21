@@ -1,12 +1,11 @@
-import pytest
-from unittest.mock import MagicMock, patch #it really just lets anything do anything
+from unittest.mock import MagicMock, patch  # it really just lets anything do anything
 
+import pytest
 from services.commands.command import CommandType
 from services.drone_control.adapters.airsim_adapter import AirSimAdapter, TelemetryData
 
+# mock helpers
 
-
-#mock helpers 
 
 class FakeState:
 	class Kinematics:
@@ -40,39 +39,40 @@ class FakeClient:
 		return None
 
 
-#test connections
-
+# test connections
 
 
 @pytest.mark.asyncio
 async def test_connect_failure():
-    adapter = AirSimAdapter()
+	adapter = AirSimAdapter()
 
-    #this is necessary because airsim doesnt exist globally in the adapter
-    #rather its imported in a function, therefore we have to mock it
-    #even when not used airsim is a pain in the ass
-    fake_airsim = MagicMock()
-    fake_airsim.MultirotorClient.side_effect = Exception("fail")
+	# this is necessary because airsim doesnt exist globally in the adapter
+	# rather its imported in a function, therefore we have to mock it
+	# even when not used airsim is a pain in the ass
+	fake_airsim = MagicMock()
+	fake_airsim.MultirotorClient.side_effect = Exception('fail')
 
-    with patch.dict("sys.modules", {"airsim": fake_airsim}):
-        result = await adapter.connect()
+	with patch.dict('sys.modules', {'airsim': fake_airsim}):
+		result = await adapter.connect()
 
-    assert result is False
-    assert adapter._connected is False
+	assert result is False
+	assert adapter._connected is False
+
 
 @pytest.mark.asyncio
 async def test_connect_success():
 	adapter = AirSimAdapter()
 
-	with patch.dict("sys.modules", {"airsim": MagicMock()}):
-
+	with patch.dict('sys.modules', {'airsim': MagicMock()}):
 		result = await adapter.connect()
 
 		assert result is True
 		assert adapter._connected is True
 		assert adapter._client is not None
 
-#test telemetry
+
+# test telemetry
+
 
 @pytest.mark.asyncio
 async def test_get_telemetry_disconnected():
@@ -81,7 +81,7 @@ async def test_get_telemetry_disconnected():
 	t = await adapter.get_telemetry()
 
 	assert isinstance(t, TelemetryData)
-	assert t.source == "airsim-disconnected"
+	assert t.source == 'airsim-disconnected'
 
 
 @pytest.mark.asyncio
@@ -91,16 +91,17 @@ async def test_get_telemetry_connected():
 	adapter._connected = True
 	adapter._client = FakeClient()
 
-	with patch("services.drone_control.adapters.airsim_adapter.math.sqrt", return_value=3.0):
+	with patch('services.drone_control.adapters.airsim_adapter.math.sqrt', return_value=3.0):
 		t = await adapter.get_telemetry()
 
 	assert isinstance(t, TelemetryData)
-	assert t.source == "airsim"
+	assert t.source == 'airsim'
 	assert t.speed_ms == 3.0
 	assert t.altitude_m == 5.0
 
 
-#test movement (may be a bit wack since we cant have real airsim)
+# test movement (may be a bit wack since we cant have real airsim)
+
 
 @pytest.mark.asyncio
 async def test_move_forward_executes():
@@ -131,13 +132,14 @@ async def test_move_unknown_direction_logs_and_skips(caplog):
 	adapter._connected = True
 	adapter._client = FakeClient()
 
-	with caplog.at_level("WARNING"):
+	with caplog.at_level('WARNING'):
 		await adapter.move(CommandType.TAKEOFF)  # not a movement vector
 
-	assert "skipping" in caplog.text.lower()
+	assert 'skipping' in caplog.text.lower()
 
 
-#stop
+# stop
+
 
 @pytest.mark.asyncio
 async def test_emergency_stop():
