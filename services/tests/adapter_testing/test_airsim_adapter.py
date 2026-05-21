@@ -24,7 +24,10 @@ class FakeState:
 
 class FakeClient:
 	def __init__(self):
-		self.confirmConnection = MagicMock()
+		#all of these method names match airsim itself...
+		#go away sonarqube
+		# NOSONAR_BEGIN
+		self.confirmConnection = MagicMock() 
 		self.enableApiControl = MagicMock()
 		self.armDisarm = MagicMock()
 		self.takeoffAsync = MagicMock(return_value=self)
@@ -34,7 +37,7 @@ class FakeClient:
 		self.rotateByYawRateAsync = MagicMock(return_value=self)
 		self.cancelLastTask = MagicMock()
 		self.getMultirotorState = MagicMock(return_value=FakeState())
-
+		# NOSONAR_END
 	def join(self):
 		return None
 

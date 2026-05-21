@@ -40,7 +40,7 @@ async def test_keyboard_takeoff_to_dummy_drone():
 	def emit_handler(cmd):
 		import asyncio
 
-		asyncio.create_task(handler(cmd))
+		task = asyncio.create_task(handler(cmd))
 
 	adapter.set_handler(emit_handler)
 

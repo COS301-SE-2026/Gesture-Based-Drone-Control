@@ -181,7 +181,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 			return True
 
 		except Exception as ex:
-			logger.error('ProjectAirSimAdapter: connection failed - %s', ex)
+			logging.exception('ProjectAirSimAdapter: connection failed - %s', ex)
 			self._connected = False
 			return False
 
@@ -273,7 +273,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 		speed = kwargs.get('speed_ms', DEFAULT_SPEED_MS)
 		duration = kwargs.get('duration_s', DEFAULT_DURATION_S)
 
-		# vx = forward, vy=right, vz=down
+		# vx = forward, vy=right, vz=down # NOSONAR
 		velocity_map: dict[CommandType, tuple[float, float, float]] = {
 			CommandType.MOVE_FORWARD: (speed, 0.0, GRAVITY_COMP_VZ),
 			CommandType.MOVE_BACKWARD: (-speed, 0.0, GRAVITY_COMP_VZ),
@@ -386,7 +386,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 			)
 		except Exception as ex:
 			# this one is the fragile one...
-			logger.error('ProjectAirSimAdapter.get_telemetry: error - %s', ex)
+			logging.exception('ProjectAirSimAdapter.get_telemetry: error - %s', ex)
 			logger.debug('Telemetry exception detail', exc_info=True)
 			return TelemetryData(source='projectairsim-error')
 

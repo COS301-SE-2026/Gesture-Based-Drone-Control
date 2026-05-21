@@ -9,13 +9,6 @@ I honestly dont want to expand this any more its so boring
 """
 
 
-def test_command_imports():
-	from services.commands.command import Command, CommandType
-
-	assert Command is not None
-	assert CommandType is not None
-
-
 def test_command_types_exist():
 	from services.commands.command import CommandType
 

@@ -5,6 +5,7 @@ from services.input.sources.input_adapter import InputAdapter
 
 class ConcreteInputAdapter(InputAdapter):
 	async def start(self) -> None:
+		#issa stub
 		pass
 
 
@@ -12,6 +13,7 @@ def test_set_handler_stores_callable():
 	adapter = ConcreteInputAdapter()
 
 	def handler(cmd: Command):
+     	#issa stub
 		pass
 
 	adapter.set_handler(handler)

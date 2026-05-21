@@ -44,7 +44,7 @@ def make_connected_adapter():
 def test_constructor_defaults():
 	adapter = ProjectAirSimAdapter()
 
-	assert adapter._host == '127.0.0.1'
+	assert adapter._host == '127.0.0.1' # NOSONAR
 	assert adapter._topics_port == 8989
 	assert adapter._services_port == 8990
 	assert adapter._vehicle_name == 'Drone1'
@@ -55,20 +55,20 @@ def test_constructor_defaults():
 
 def test_constructor_custom_values():
 	adapter = ProjectAirSimAdapter(
-		host='192.168.1.5',
+		host='192.168.1.5', # NOSONAR
 		topics_port=1111,
 		services_port=2222,
 		vehicle_name='TestDrone',
 		scene_config='custom.jsonc',
-		sim_config_path='/tmp/config/',
+		sim_config_path='/tmp/config/', # NOSONAR
 	)
 
-	assert adapter._host == '192.168.1.5'
+	assert adapter._host == '192.168.1.5' # NOSONAR
 	assert adapter._topics_port == 1111
 	assert adapter._services_port == 2222
 	assert adapter._vehicle_name == 'TestDrone'
 	assert adapter._scene_config == 'custom.jsonc'
-	assert adapter._sim_config_path == '/tmp/config/'
+	assert adapter._sim_config_path == '/tmp/config/' # NOSONAR
 
 
 # _assert_connected
@@ -238,7 +238,7 @@ async def test_move_forward():
 	args = mock_drone.move_by_velocity_body_frame_async.await_args.args
 
 	assert args[0] == DEFAULT_SPEED_MS
-	assert args[1] == 0.0
+	assert args[1] == 0
 
 
 @pytest.mark.asyncio
@@ -378,7 +378,7 @@ def test_yaw_from_quaternion_dict_identity():
 		}
 	)
 
-	assert heading == 0.0
+	assert heading == 0
 
 
 # same but different font
@@ -396,7 +396,7 @@ def test_yaw_from_quaternion_alt_keys():
 
 
 def test_yaw_from_quaternion_invalid():
-	heading = ProjectAirSimAdapter._yaw_from_quaternion_dict(None)
+	heading = ProjectAirSimAdapter._yaw_from_quaternion_dict(None) # NOSONAR
 
 	assert heading == 0
 

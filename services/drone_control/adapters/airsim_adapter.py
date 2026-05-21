@@ -163,7 +163,7 @@ class AirSimAdapter(DroneAdapter):
 			return True
 
 		except Exception as ex:
-			logger.error('AirSimAdapter: connection failed - %s', ex)
+			logging.exception('AirSimAdapter: connection failed - %s', ex)
 			self._connected = False
 			return False
 
@@ -248,7 +248,7 @@ class AirSimAdapter(DroneAdapter):
 				)
 			)
 		except Exception as ex:
-			logger.error('AirSimAdapter: error during emergency_stop - %s', ex)
+			logging.exception('AirSimAdapter: error during emergency_stop - %s', ex)
 
 	async def move(self, direction: CommandType, **kwargs) -> None:
 		"""
@@ -287,7 +287,7 @@ class AirSimAdapter(DroneAdapter):
 			CommandType.MOVE_BACKWARD: (-speed, 0.0, 0.0),
 			CommandType.MOVE_RIGHT: (0.0, speed, 0.0),
 			CommandType.MOVE_LEFT: (0.0, -speed, 0.0),
-			CommandType.MOVE_UP: (0.0, 0.0, -speed),  # up = -z
+			CommandType.MOVE_UP: (0.0, 0.0, -speed),  #up => -z
 			CommandType.MOVE_DOWN: (0.0, 0.0, speed),
 		}
 
@@ -372,7 +372,7 @@ class AirSimAdapter(DroneAdapter):
 				source='airsim',
 			)
 		except Exception as ex:
-			logger.error('AirSimAdapter.get_telemetry: error - %s', ex)
+			logging.exception('AirSimAdapter.get_telemetry: error - %s', ex)
 			return TelemetryData(source='airsim-error')
 
 	# Private helpers only called internally
