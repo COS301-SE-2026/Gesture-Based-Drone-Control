@@ -75,9 +75,6 @@ def test_drone_flight_summary_returns_list():
     response = client.get('/drone/flight-summary')
     assert isinstance(response.json(), list)
 
-def test_drone_flight_summary_length():
-    response = client.get('/drone/flight-summary')
-    assert len(response.json()) == 8
 
 def test_drone_flight_summary_keys():
     response = client.get('/drone/flight-summary')
@@ -104,6 +101,45 @@ def test_drone_flight_summary_values():
 
 def test_drone_flight_summary_types():
     response = client.get('/drone/flight-summary')
+    for flight in response.json():
+        assert isinstance(flight['flight_id'],     int)
+        assert isinstance(flight['time'],          (int, float))
+        assert isinstance(flight['max_altitude'],  (int, float))
+        assert isinstance(flight['average_speed'], (int, float))
+
+def test_sim_flight_summary_status():
+    response = client.get('/sim/flight-summary')
+    assert response.status_code == 200
+
+def test_sim_flight_summary_returns_list():
+    response = client.get('/sim/flight-summary')
+    assert isinstance(response.json(), list)
+
+def test_sim_flight_summary_keys():
+    response = client.get('/sim/flight-summary')
+    for flight in response.json():
+        assert set(flight.keys()) == EXPECTED_KEYS
+
+def test_sim_flight_summary_flight_ids():
+    response = client.get('/sim/flight-summary')
+    ids = [f['flight_id'] for f in response.json()]
+    assert ids == FLIGHT_IDS
+
+def test_sim_flight_summary_values():
+    response = client.get('/sim/flight-summary')
+    assert response.json() == [
+        {'flight_id': 1, 'time': 20, 'max_altitude': 112, 'average_speed': 18.4},
+        {'flight_id': 2, 'time': 17, 'max_altitude': 98,  'average_speed': 21.7},
+        {'flight_id': 3, 'time': 25, 'max_altitude': 134, 'average_speed': 15.2},
+        {'flight_id': 4, 'time': 18, 'max_altitude': 87,  'average_speed': 23.9},
+        {'flight_id': 5, 'time': 21, 'max_altitude': 145, 'average_speed': 19.1},
+        {'flight_id': 6, 'time': 19, 'max_altitude': 103, 'average_speed': 17.6},
+        {'flight_id': 7, 'time': 22, 'max_altitude': 119, 'average_speed': 22.3},
+        {'flight_id': 8, 'time': 20, 'max_altitude': 91,  'average_speed': 20.8},
+    ]
+
+def test_sim_flight_summary_types():
+    response = client.get('/sim/flight-summary')
     for flight in response.json():
         assert isinstance(flight['flight_id'],     int)
         assert isinstance(flight['time'],          (int, float))
