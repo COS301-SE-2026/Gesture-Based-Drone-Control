@@ -126,4 +126,40 @@ test.describe('Gesture Guide',()=>{
     })
 })
 
+test.describe('Gesture Clibration',()=>{
+    test('the gesture caliberation label', async ({page})=>{
+        await page.goto('/gestures')
+        await page.waitForLoadState('domcontentloaded')
+        await expect(page.getByText(/gesture calibration/i)).toBeVisible()
+    })
 
+    test('the metric labels are rendered', async ({page})=> {
+        await page.goto('/gestures')
+        await page.waitForLoadState('domcontentloaded')
+        await expect (page.getByText(/visibility/i)).toBeVisible()
+        await expect (page.getByText(/confidence/i)).toBeVisible()
+        await expect (page.getByText(/stability/i)).toBeVisible()
+    })
+
+    test('the percentage values are also rendered', async ({page})=> {
+        await page.goto('/gestures')
+        await page.waitForLoadState('domcontentloaded')
+        await expect (page.getByText('80%')).toBeVisible()
+        await expect (page.getByText('45%')).toBeVisible()
+        await expect (page.getByText('60%')).toBeVisible()
+    })
+
+    test('the environment factors rendered', async ({page})=> {
+        await page.goto('/gestures')
+        await page.waitForLoadState('domcontentloaded')
+        await expect (page.getByText(/lighting/i)).toBeVisible()
+        await expect (page.getByText(/background/i)).toBeVisible()
+        await expect (page.getByText('Good')).toBeVisible()
+        await expect (page.getByText('Fair')).toBeVisible()
+
+    })
+
+
+
+
+})
