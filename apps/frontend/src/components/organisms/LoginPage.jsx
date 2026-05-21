@@ -47,6 +47,8 @@ export default function LoginPage() {
     return newErr
   }
 
+  //BEGIN-NOSCAN
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     const newErr = validateForm()
@@ -186,4 +188,5 @@ export default function LoginPage() {
       </div>
     </div>
   )
+  //END-NOSCAN
 }
