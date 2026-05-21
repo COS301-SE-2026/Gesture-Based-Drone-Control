@@ -6,7 +6,9 @@ Documentation related to the API is handled through Swagger docs. These can be a
 
 ## Prerequisites
  
-Ensure you have cloned the repository on your local device and run the installation using make install.
+Ensure you have cloned the repository on your local device and run the installation using   
+`make install`
+
 ---
 
 ## Usage
@@ -17,7 +19,10 @@ Start the development server in the project root by running
 You will then be able to access the Swagger Docs at  
 <http://127.0.0.1:3001/docs>.
 
-You will then see the Websocket endpoints that have been made listed first. As the Websocket endpoints cannot be tested on the web ui, they are not interactable.  
-You will then see the interactible Rest API endpoints which can be tested directly in the Web UI
+### Sections
+
+The Websockets section is displayed in plain text as these endpoints cannot be tested in the Web UI  
+
+The REST API section is displayed in the standard interactable format of Swagger Docs. These endpoints can be tested directly in the browser
 
 ---
