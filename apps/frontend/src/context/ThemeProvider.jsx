@@ -9,7 +9,7 @@ export const ThemeProvider = ({ children }) => {
     if (stored) {
       return stored === "dark"
     }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
+    return globalThis.matchMedia("(prefers-color-scheme: dark)").matches
   })
 
   //sync dom and localStorage when the theme changes
@@ -26,7 +26,7 @@ export const ThemeProvider = ({ children }) => {
 
   //this is for when the user changes system changes
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+    const mediaQuery = globalThis.matchMedia("(prefers-color-scheme: dark)")
     const handle = (e) => {
       if (!localStorage.getItem("theme")) {
         setIsDark(e.matches)
