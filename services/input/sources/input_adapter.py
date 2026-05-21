@@ -71,7 +71,7 @@ class InputAdapter(ABC):
 			(i.e asyncio integration)
 		"""
 		self._handler = handler
-		logger.debug('%s: handler registered → %s', self.__class__.__name__, handler)
+		logger.debug('%s: handler registered -> %s', self.__class__.__name__, handler)
 
 	@abstractmethod
 	async def start(self) -> None:
