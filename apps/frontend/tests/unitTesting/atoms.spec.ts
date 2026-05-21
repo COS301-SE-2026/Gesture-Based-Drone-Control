@@ -90,7 +90,7 @@ test.describe('NavItem', ()=>{
             const toggle=page.locator('input[type="checkbox"]').first()
             const initialState = await toggle.isChecked()
             const toggleLabel= page.locator('label').filter({
-                has: page.locator('input[type="checkbob"]')
+                has: page.locator('input[type="checkbox"]')
             }).first()
             await toggleLabel.click({force:true})
             const newState = await toggle.isChecked()
@@ -106,7 +106,6 @@ test.describe('NavItem', ()=>{
 
         })
     })
-
 
 })
 
