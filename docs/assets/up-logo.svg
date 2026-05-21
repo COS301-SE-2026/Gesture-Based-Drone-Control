@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90" role="img" aria-label="University of Pretoria">
+  <!-- Background plate -->
+  <rect width="320" height="90" rx="6" fill="#161A1D" stroke="#A4161A" stroke-width="1.5"/>
+
+  <!-- Shield crest on left -->
+  <g transform="translate(20,12)">
+    <!-- Shield outline -->
+    <path d="M30 0 L60 0 L60 38 Q60 58 30 66 Q0 58 0 38 L0 0 Z" fill="#0B090A" stroke="#A4161A" stroke-width="1.6"/>
+    <!-- Inner shield divisions: chevron / chief band -->
+    <path d="M0 14 L60 14" stroke="#A4161A" stroke-width="1.2"/>
+    <!-- Top chief: 3 dots representing stars -->
+    <circle cx="14" cy="7" r="2.2" fill="#E5383B"/>
+    <circle cx="30" cy="7" r="2.2" fill="#E5383B"/>
+    <circle cx="46" cy="7" r="2.2" fill="#E5383B"/>
+    <!-- Central tower/book element -->
+    <rect x="22" y="22" width="16" height="20" fill="none" stroke="#F5F3F4" stroke-width="1.3"/>
+    <line x1="30" y1="22" x2="30" y2="42" stroke="#F5F3F4" stroke-width="1.1"/>
+    <line x1="22" y1="32" x2="38" y2="32" stroke="#F5F3F4" stroke-width="1.1"/>
+    <!-- Lower flame/sun arc -->
+    <path d="M14 50 Q30 60 46 50" fill="none" stroke="#E5383B" stroke-width="1.6"/>
+    <circle cx="30" cy="54" r="2.4" fill="#E5383B"/>
+  </g>
+
+  <!-- Text block -->
+  <g transform="translate(100,22)">
+    <text x="0" y="14" font-family="Georgia, 'Times New Roman', serif" font-size="14" font-weight="700" fill="#F5F3F4" letter-spacing="0.5">UNIVERSITY</text>
+    <text x="0" y="32" font-family="Georgia, 'Times New Roman', serif" font-size="14" font-weight="700" fill="#F5F3F4" letter-spacing="0.5">OF PRETORIA</text>
+    <line x1="0" y1="40" x2="180" y2="40" stroke="#A4161A" stroke-width="0.8"/>
+    <text x="0" y="54" font-family="Georgia, serif" font-size="9" font-style="italic" fill="#B1A7A6" letter-spacing="0.8">UNIVERSITEIT VAN PRETORIA</text>
+    <text x="0" y="64" font-family="Georgia, serif" font-size="9" font-style="italic" fill="#B1A7A6" letter-spacing="0.8">YUNIBESITHI YA PRETORIA</text>
+  </g>
+</svg>
