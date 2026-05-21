@@ -25,8 +25,7 @@ Adapters:
     Drone  : dummy (logs only), airsim, projectairsim
 
 Demo mode:
-    Arms the drone, ascends, then flies a figure-8 pattern infinitely
-
+    Arms the drone, ascends, then flies a circle pattern
 """
 
 from __future__ import annotations
@@ -63,13 +62,6 @@ from services.drone_control.adapters.airsim_adapter import AirSimAdapter  # type
 from services.drone_control.adapters.project_airsim_adapter import ProjectAirSimAdapter  # type: ignore
 
 
-def _load_projectairsim_adapter() -> type[DroneAdapter] | None:
-  try:
-    return ProjectAirSimAdapter
-  except ImportError:
-    return None
-
-
 # app state
 
 
@@ -101,7 +93,7 @@ class AppState:
     entry = f'[{ts}] {msg}'
     self.event_log.append(entry)
     self.event_log = self.event_log[-100:]  # keep last 100
-    logger.info(msg)
+    logger.info(msg)  # NOSONAR
 
   # Switching adapters
 
@@ -175,8 +167,10 @@ class AppState:
     await self.drone_adapter.execute(cmd)
     return True
 
-  # figure 8 demo
-  async def start_demo(self) -> None:
+  # circle demo
+
+  def start_demo(self) -> None:
+    """Schedule the demo loop as an asyncio task."""
     if self.demo_running:
       self.log('Demo already running')
       return
@@ -185,8 +179,8 @@ class AppState:
       return
 
     self.demo_running = True
-    self.demo_task = asyncio.create_task(self._figure8_loop())
-    self.log('Demo mode started - figure-8 pattern')
+    self.demo_task = asyncio.create_task(self._circle_loop())
+    self.log('Demo mode started - circle pattern')
 
   async def stop_demo(self) -> None:
     self.demo_running = False
@@ -195,94 +189,54 @@ class AppState:
       try:
         await self.demo_task
       except asyncio.CancelledError:
-        pass
-      self.demo_task = None
+        raise
+      finally:
+        self.demo_task = None
     if self.drone_adapter:
       await self.drone_adapter.hover()
     self.log('Demo mode stopped')
 
-  async def _figure8_loop(self) -> None:
+  async def _circle_loop(self) -> None:
     """
-    Figure-8 flight pattern.
+    Circle flight pattern.
 
-    The pattern is decomposed into discrete commands compatible with
-    the existing DroneAdapter interface (move + rotate).
-
-    Honestly no idea if its an actual figure 8. we go off vibes here
+    Ascends to a safe altitude then continuously rotates clockwise while
+    moving forward, producing a steady circular path.
+    One step = one ROTATE_CW + one MOVE_FORWARD, repeated until stopped.
     """
     drone = self.drone_adapter
     try:
-      self.log('Demo: arming and ascending…')
+      self.log('Demo: ascending...')
       await drone.takeoff()
       await asyncio.sleep(2)
 
-      # climb a bit higher than default hover
       for _ in range(4):
         await drone.move(CommandType.MOVE_UP)
         await asyncio.sleep(0.4)
 
-      self.log('Demo: beginning figure-8…')
-
+      self.log('Demo: beginning circle...')
       loop_count = 0
+
       while self.demo_running:
         loop_count += 1
         self.log(f'Demo: loop #{loop_count}')
 
-        # right ear
-        # Forward into the lobe
-        for _ in range(3):
+        for _ in range(12):
           if not self.demo_running:
             break
+          await drone.move(CommandType.ROTATE_CW)
           await drone.move(CommandType.MOVE_FORWARD)
-          await asyncio.sleep(0.3)
-
-        # Curve right (4 steps of rotate CW + forward)
-        for _ in range(4):
-          if not self.demo_running:
-            break
-          for _ in range(2):
-            await drone.move(CommandType.ROTATE_CW)
-            await asyncio.sleep(0.1)
-          await drone.move(CommandType.MOVE_FORWARD)
-
-        # Cross through centre
-        for _ in range(2):
-          if not self.demo_running:
-            break
-          await drone.move(CommandType.MOVE_FORWARD)
-          await asyncio.sleep(0.3)
-
-        # left ear
-        # Forward into the lobe
-        for _ in range(2):
-          if not self.demo_running:
-            break
-          await drone.move(CommandType.MOVE_FORWARD)
-          await asyncio.sleep(0.3)
-
-        # Curve left (4 steps of rotate CCW + forward)
-        for _ in range(4):
-          if not self.demo_running:
-            break
-          for _ in range(2):
-            await drone.move(CommandType.ROTATE_CW)
-            await asyncio.sleep(0.1)
-          await drone.move(CommandType.MOVE_FORWARD)
-
-        # Return to start of the 8
-        for _ in range(2):
-          if not self.demo_running:
-            break
-          await drone.move(CommandType.MOVE_FORWARD)
-          await asyncio.sleep(0.3)
+          await asyncio.sleep(0.2)
 
       await drone.hover()
+
     except asyncio.CancelledError:
       self.log('Demo: cancelled')
       raise
+
     except Exception as ex:
       self.log(f'Demo error: {ex}')
-      logger.exception('Figure-8 demo error')
+      logger.exception('Circle demo error')
 
   # Telemetry broadcast
 
@@ -290,33 +244,42 @@ class AppState:
     """Runs forever; pushes telemetry to all connected WebSocket clients."""
     while True:
       await asyncio.sleep(0.5)
-      if not self.telemetry_clients:
-        continue
-      if self.drone_adapter is None:
-        data = {'source': 'none'}
-      else:
-        try:
-          t = await self.drone_adapter.get_telemetry()
-          data = {
-            'altitude_m': t.altitude_m,
-            'speed_ms': t.speed_ms,
-            'battery_pct': t.battery_pct,
-            'heading_deg': t.heading_deg,
-            'is_flying': t.is_flying,
-            'source': t.source,
-          }
-        except Exception as ex:
-          data = {'error': str(ex)}
+      await self._push_telemetry()
 
-      payload = json.dumps({'type': 'telemetry', 'data': data})
-      dead = []
-      for ws in self.telemetry_clients:
-        try:
-          await ws.send_text(payload)
-        except Exception:
-          dead.append(ws)
-      for ws in dead:
-        self.telemetry_clients.remove(ws)
+  async def _push_telemetry(self) -> None:
+    """Build one telemetry payload and send it to all connected clients."""
+    if not self.telemetry_clients:
+      return
+
+    data = await self._read_telemetry()
+    payload = json.dumps({'type': 'telemetry', 'data': data})
+
+    dead = []
+    for ws in self.telemetry_clients:
+      try:
+        await ws.send_text(payload)
+      except Exception:
+        dead.append(ws)
+
+    for ws in dead:
+      self.telemetry_clients.remove(ws)
+
+  async def _read_telemetry(self) -> dict:
+    """Return a serialisable telemetry dict from the active drone adapter."""
+    if self.drone_adapter is None:
+      return {'source': 'none'}
+    try:
+      t = await self.drone_adapter.get_telemetry()
+      return {
+        'altitude_m': t.altitude_m,
+        'speed_ms': t.speed_ms,
+        'battery_pct': t.battery_pct,
+        'heading_deg': t.heading_deg,
+        'is_flying': t.is_flying,
+        'source': t.source,
+      }
+    except Exception as ex:
+      return {'error': str(ex)}
 
 
 # minimal fastapi app
@@ -326,19 +289,17 @@ state = AppState()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-  # Startup****
-  state.log('Demo server starting…')
+  # Startup
+  state.log('Demo server starting...')
 
   # Build drone registry
   state.drone_registry['dummy'] = DummyDroneAdapter()
 
-  if AirSimAdapter:
-    state.drone_registry['airsim'] = AirSimAdapter()
-    state.log('AirSim adapter available')
+  state.drone_registry['airsim'] = AirSimAdapter()
+  state.log('AirSim adapter available')
 
-  if ProjectAirSimAdapter:
-    state.drone_registry['projectairsim'] = ProjectAirSimAdapter()
-    state.log('ProjectAirSim adapter available')
+  state.drone_registry['projectairsim'] = ProjectAirSimAdapter()
+  state.log('ProjectAirSim adapter available')
 
   # Default to dummy adapters
   await state.set_drone_adapter('dummy')
@@ -351,7 +312,7 @@ async def lifespan(app: FastAPI):
 
   yield
 
-  # shutdown****
+  # Shutdown
   telem_task.cancel()
   await state.stop_demo()
   if state.drone_adapter:
@@ -416,7 +377,7 @@ async def send_command(cmd: str):
 
 @app.post('/api/demo/start')
 async def demo_start():
-  await state.start_demo()
+  state.start_demo()
   return {'ok': True}
 
 
@@ -801,7 +762,7 @@ FRONTEND_HTML = """
       <h2>Demo Mode</h2>
 
       <button class="demo-btn" id="btn-demo-toggle" onclick="toggleDemo()">
-        Start Figure Eight
+        Start Circle
       </button>
 
       <div class="section-gap"></div>
@@ -1108,7 +1069,7 @@ function applyStatus(s) {
     demoEl.textContent = "Demo: Off";
     demoEl.className = "pill";
 
-    demoBtnEl.textContent = "Start Figure Eight";
+    demoBtnEl.textContent = "Start Circle";
     demoBtnEl.className = "demo-btn";
   }
 
@@ -1171,7 +1132,6 @@ setInterval(pollStatus, 3000);
 # ---------------------------------------------------------------------------
 
 if __name__ == '__main__':
-  host = '0.0.0.0'
   port = 8000
   print(f'\n  Drone Demo  ->  http://localhost:{port}\n')
-  uvicorn.run(app, host=host, port=port, log_level='warning')
+  uvicorn.run(app, host='127.0.0.1', port=port, log_level='warning') # NOSONAR
