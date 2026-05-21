@@ -42,8 +42,7 @@ airsim = [
 ]
 
 [tool.uv.sources]
-projectairsim = { path = "../vendors/projectairsim" }
-
+projectairsim = {git = "https://github.com/ShavirV/ProjectAirSim_GBDC.git", subdirectory = "projectairsim"}
 [tool.ruff]
 target-version = "py311"
 line-length = 100

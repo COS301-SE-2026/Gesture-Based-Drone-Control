@@ -44,7 +44,7 @@ def make_connected_adapter():
 def test_constructor_defaults():
 	adapter = ProjectAirSimAdapter()
 
-	assert adapter._host == '127.0.0.1' # NOSONAR
+	assert adapter._host == '127.0.0.1'  # NOSONAR
 	assert adapter._topics_port == 8989
 	assert adapter._services_port == 8990
 	assert adapter._vehicle_name == 'Drone1'
@@ -55,20 +55,20 @@ def test_constructor_defaults():
 
 def test_constructor_custom_values():
 	adapter = ProjectAirSimAdapter(
-		host='192.168.1.5', # NOSONAR
+		host='192.168.1.5',  # NOSONAR
 		topics_port=1111,
 		services_port=2222,
 		vehicle_name='TestDrone',
 		scene_config='custom.jsonc',
-		sim_config_path='/tmp/config/', # NOSONAR
+		sim_config_path='/tmp/config/',  # NOSONAR
 	)
 
-	assert adapter._host == '192.168.1.5' # NOSONAR
+	assert adapter._host == '192.168.1.5'  # NOSONAR
 	assert adapter._topics_port == 1111
 	assert adapter._services_port == 2222
 	assert adapter._vehicle_name == 'TestDrone'
 	assert adapter._scene_config == 'custom.jsonc'
-	assert adapter._sim_config_path == '/tmp/config/' # NOSONAR
+	assert adapter._sim_config_path == '/tmp/config/'  # NOSONAR
 
 
 # _assert_connected
@@ -396,7 +396,7 @@ def test_yaw_from_quaternion_alt_keys():
 
 
 def test_yaw_from_quaternion_invalid():
-	heading = ProjectAirSimAdapter._yaw_from_quaternion_dict(None) # NOSONAR
+	heading = ProjectAirSimAdapter._yaw_from_quaternion_dict(None)  # NOSONAR
 
 	assert heading == 0
 

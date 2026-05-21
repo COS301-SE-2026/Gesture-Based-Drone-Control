@@ -624,7 +624,7 @@ requires-dist = [
     { name = "msgpack-rpc-python" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "opencv-python", specifier = ">=4.8" },
-    { name = "projectairsim", directory = "../../vendors/projectairsim" },
+    { name = "projectairsim", git = "https://github.com/ShavirV/ProjectAirSim_GBDC.git?subdirectory=projectairsim" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "pytest-asyncio", specifier = ">=1.3.0" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23" },
@@ -1759,7 +1759,7 @@ wheels = [
 [[package]]
 name = "projectairsim"
 version = "0.1.1"
-source = { directory = "../../vendors/projectairsim" }
+source = { git = "https://github.com/ShavirV/ProjectAirSim_GBDC.git?subdirectory=projectairsim#5cb3ff33476e758eb4d6a58bdbd32b6883bd9a62" }
 dependencies = [
     { name = "azure-storage-blob" },
     { name = "commentjson" },
@@ -1777,42 +1777,6 @@ dependencies = [
     { name = "pynng" },
     { name = "shapely" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "albumentations", marker = "extra == 'datacollection'", specifier = "==1.3.0" },
-    { name = "azure-storage-blob" },
-    { name = "bonsai-cli", marker = "extra == 'bonsai'", specifier = "==1.0.8" },
-    { name = "commentjson", specifier = ">=0.9.0" },
-    { name = "cryptography" },
-    { name = "fastapi", marker = "extra == 'autonomy'" },
-    { name = "gym", marker = "extra == 'autonomy'", specifier = "==0.18.3" },
-    { name = "inputs" },
-    { name = "jsonlines" },
-    { name = "jsonschema", specifier = ">=4.4.0" },
-    { name = "junit-xml" },
-    { name = "matplotlib" },
-    { name = "microsoft-bonsai-api", marker = "extra == 'bonsai'", specifier = "==0.1.2" },
-    { name = "msal-extensions", marker = "extra == 'bonsai'", specifier = "==0.1.3" },
-    { name = "msgpack", specifier = ">=1.0.5" },
-    { name = "numpy" },
-    { name = "onnxruntime-gpu", marker = "extra == 'autonomy'" },
-    { name = "open3d", marker = "extra == 'lidar'", specifier = ">=0.16.0" },
-    { name = "opencv-python", specifier = ">=4.2.0.32" },
-    { name = "pillow", marker = "extra == 'autonomy'", specifier = "<=8.2.0" },
-    { name = "pqdict" },
-    { name = "pydantic", marker = "extra == 'autonomy'" },
-    { name = "pykml" },
-    { name = "pynng", specifier = ">=0.5.0" },
-    { name = "python-dotenv", marker = "extra == 'bonsai'", specifier = "==0.13.0" },
-    { name = "python-multipart", marker = "extra == 'autonomy'" },
-    { name = "scikit-image", marker = "extra == 'autonomy'", specifier = ">=0.18.1" },
-    { name = "shapely" },
-    { name = "torch", marker = "extra == 'autonomy'", specifier = ">=1.8.0" },
-    { name = "torchvision", marker = "extra == 'autonomy'", specifier = ">=0.9.0" },
-    { name = "uvicorn", marker = "extra == 'autonomy'" },
-]
-provides-extras = ["lidar", "autonomy", "bonsai", "datacollection"]
 
 [[package]]
 name = "pycparser"

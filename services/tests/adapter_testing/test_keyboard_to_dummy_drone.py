@@ -40,7 +40,7 @@ async def test_keyboard_takeoff_to_dummy_drone():
 	def emit_handler(cmd):
 		import asyncio
 
-		task = asyncio.create_task(handler(cmd))
+		asyncio.create_task(handler(cmd))  # NOSONAR if i assign to var lint fails
 
 	adapter.set_handler(emit_handler)
 

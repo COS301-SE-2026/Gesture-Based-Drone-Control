@@ -102,18 +102,18 @@ class ProjectAirSimAdapter(DroneAdapter):
 	Wraps projectairsim.Drone to implement DroneAdapter.
 
 	Parameters:
-	    host : str
-	        IP of the machine running Project AirSim. Default 127.0.0.1 localhost
-	    topics_port : int
-	        Pub-sub port. Default 8989.
-	    services_port : int
-	        RPC services port. Default 8990.
-	    vehicle_name : str
-	        Vehicle name as defined in the scene config. Default "Drone1".
-	    scene_config : str
-	        Scene config filename (not full path). Default "scene_basic_drone.jsonc".
-	    sim_config_path : str | None
-	        Override the sim_config directory. Auto-detected from the package if None.
+		host : str
+			IP of the machine running Project AirSim. Default 127.0.0.1 localhost
+		topics_port : int
+			Pub-sub port. Default 8989.
+		services_port : int
+			RPC services port. Default 8990.
+		vehicle_name : str
+			Vehicle name as defined in the scene config. Default "Drone1".
+		scene_config : str
+			Scene config filename (not full path). Default "scene_basic_drone.jsonc".
+		sim_config_path : str | None
+			Override the sim_config directory. Auto-detected from the package if None.
 	"""
 
 	# holy constructor
@@ -254,11 +254,11 @@ class ProjectAirSimAdapter(DroneAdapter):
 		orientation, rather than global. Controls more like you'd expect.
 
 		Params:
-		    direction : CommandType
-		    **kwargs:
-		        speed_ms : float m/s default 3.0
-		        duration_s : float seconds default 0.1
-		        degrees : float [ROTATE_CW/CCW] default 15.0
+			direction : CommandType
+			**kwargs:
+				speed_ms : float m/s default 3.0
+				duration_s : float seconds default 0.1
+				degrees : float [ROTATE_CW/CCW] default 15.0
 
 		This will need to be refactored at some point down the road to allow for analog movement.
 		Will likely require changes in CommandType
@@ -338,16 +338,16 @@ class ProjectAirSimAdapter(DroneAdapter):
 		synchronous RPC call that returns a dict. Shape taken from
 		rover.py:
 
-		    {
-		        "pose": {
-		            "position":    {"x": float, "y": float, "z": float},
-		            "orientation": {"w": float, "x": float, "y": float, "z": float}
-		        },
-		        "twist": {
-		            "linear":  {"x": float, "y": float, "z": float},
-		            "angular": {"x": float, "y": float, "z": float}
-		        }
-		    }
+			{
+				"pose": {
+					"position":    {"x": float, "y": float, "z": float},
+					"orientation": {"w": float, "x": float, "y": float, "z": float}
+				},
+				"twist": {
+					"linear":  {"x": float, "y": float, "z": float},
+					"angular": {"x": float, "y": float, "z": float}
+				}
+			}
 		"""
 
 		if not self._connected or self._drone is None:

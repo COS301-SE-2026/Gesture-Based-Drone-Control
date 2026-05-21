@@ -287,7 +287,7 @@ class AirSimAdapter(DroneAdapter):
 			CommandType.MOVE_BACKWARD: (-speed, 0.0, 0.0),
 			CommandType.MOVE_RIGHT: (0.0, speed, 0.0),
 			CommandType.MOVE_LEFT: (0.0, -speed, 0.0),
-			CommandType.MOVE_UP: (0.0, 0.0, -speed),  #up => -z
+			CommandType.MOVE_UP: (0.0, 0.0, -speed),  # up => -z
 			CommandType.MOVE_DOWN: (0.0, 0.0, speed),
 		}
 

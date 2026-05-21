@@ -75,7 +75,7 @@ def test_keyboard_handles_non_dict_input(caplog):
 	adapter = KeyboardAdapter()
 	adapter.set_handler(lambda x: None)
 
-	adapter.handle_message(None) # NOSONAR
+	adapter.handle_message(None)  # NOSONAR
 
 	assert 'non-dict' in caplog.text.lower()
 
