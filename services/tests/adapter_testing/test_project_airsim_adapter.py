@@ -347,8 +347,8 @@ async def test_get_telemetry_success():
 	t = await adapter.get_telemetry()
 
 	assert isinstance(t, TelemetryData)
-	assert t.altitude_m == 5.0
-	assert t.speed_ms == 5.0
+	assert t.altitude_m == 5
+	assert t.speed_ms == 5
 	assert t.is_flying is True
 	assert t.source == 'projectairsim'
 
@@ -392,13 +392,13 @@ def test_yaw_from_quaternion_alt_keys():
 		}
 	)
 
-	assert heading == 0.0
+	assert heading == 0
 
 
 def test_yaw_from_quaternion_invalid():
 	heading = ProjectAirSimAdapter._yaw_from_quaternion_dict(None)
 
-	assert heading == 0.0
+	assert heading == 0
 
 
 # finding the sim config folder

@@ -10,8 +10,8 @@ from services.drone_control.adapters.airsim_adapter import AirSimAdapter, Teleme
 class FakeState:
 	class Kinematics:
 		def __init__(self):
-			self.position = MagicMock(z_val=-5.0)
-			self.linear_velocity = MagicMock(x_val=1.0, y_val=2.0, z_val=2.0)
+			self.position = MagicMock(z_val=-5)
+			self.linear_velocity = MagicMock(x_val=1, y_val=2, z_val=2)
 			self.orientation = MagicMock()
 
 	class LandedState:
@@ -91,13 +91,13 @@ async def test_get_telemetry_connected():
 	adapter._connected = True
 	adapter._client = FakeClient()
 
-	with patch('services.drone_control.adapters.airsim_adapter.math.sqrt', return_value=3.0):
+	with patch('services.drone_control.adapters.airsim_adapter.math.sqrt', return_value=3):
 		t = await adapter.get_telemetry()
 
 	assert isinstance(t, TelemetryData)
 	assert t.source == 'airsim'
-	assert t.speed_ms == 3.0
-	assert t.altitude_m == 5.0
+	assert t.speed_ms == 3
+	assert t.altitude_m == 5
 
 
 # test movement (may be a bit wack since we cant have real airsim)
