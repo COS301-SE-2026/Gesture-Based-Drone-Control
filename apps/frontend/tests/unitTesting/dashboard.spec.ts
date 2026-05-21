@@ -38,6 +38,4 @@ test.describe('Dashboard', ()=> {
         await expect(page.getByText(/drone orientation/i)).toBeVisible()
         await expect(page.getByText('90')).toBeVisible()
     })
-
-
 })
