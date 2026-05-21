@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
-        "airsim"
+        "airsim",
+        "projectairsim"
     ],
     "python-envs.defaultEnvManager": "ms-python.python:system"
 }

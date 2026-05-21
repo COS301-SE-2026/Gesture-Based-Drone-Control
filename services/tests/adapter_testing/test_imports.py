@@ -4,18 +4,13 @@ are handled correctly.
 
 No logic is tested here, and classes are stubbed. Just check if modules
 and classes are accessible from the expected import paths.
+
+I honestly dont want to expand this any more its so boring
 """
 
 
-def test_command_imports():
-	from commands import Command, CommandType
-
-	assert Command is not None
-	assert CommandType is not None
-
-
 def test_command_types_exist():
-	from commands import CommandType
+	from services.commands.command import CommandType
 
 	# verify the commands we're relying on for basic flight actually exist (subject to change)
 	assert hasattr(CommandType, 'TAKEOFF')
@@ -23,10 +18,17 @@ def test_command_types_exist():
 	assert hasattr(CommandType, 'MOVE_UP')
 	assert hasattr(CommandType, 'MOVE_DOWN')
 	assert hasattr(CommandType, 'EMERGENCY_STOP')
+	assert hasattr(CommandType, 'MOVE_LEFT')
+	assert hasattr(CommandType, 'MOVE_RIGHT')
+	assert hasattr(CommandType, 'MOVE_FORWARD')
+	assert hasattr(CommandType, 'MOVE_BACKWARD')
+	assert hasattr(CommandType, 'ROTATE_CW')
+	assert hasattr(CommandType, 'ROTATE_CCW')
+	assert hasattr(CommandType, 'HOVER')
 
 
 def test_drone_adapter_imports():
-	from drone_control.adapters import DroneAdapter, TelemetryData
+	from services.drone_control.adapters import DroneAdapter, TelemetryData
 
 	assert DroneAdapter is not None
 	assert TelemetryData is not None
@@ -35,19 +37,19 @@ def test_drone_adapter_imports():
 def test_drone_adapter_is_abstract():
 	import inspect
 
-	from drone_control.adapters import DroneAdapter
+	from services.drone_control.adapters import DroneAdapter
 
 	assert inspect.isabstract(DroneAdapter), 'DroneAdapter should be abstract, remember ABC'
 
 
 def test_airsim_adapter_imports():
-	from drone_control.adapters import AirSimAdapter
+	from services.drone_control.adapters import AirSimAdapter
 
 	assert AirSimAdapter is not None
 
 
 def test_input_adapter_imports():
-	from input.sources import InputAdapter, KeyboardAdapter
+	from services.input.sources import InputAdapter, KeyboardAdapter
 
 	assert InputAdapter is not None
 	assert KeyboardAdapter is not None
@@ -56,19 +58,19 @@ def test_input_adapter_imports():
 def test_input_adapter_is_abstract():
 	import inspect
 
-	from input.sources import InputAdapter
+	from services.input.sources import InputAdapter
 
 	assert inspect.isabstract(InputAdapter), 'InputAdapter should be abstract, remember ABC'
 
 
 def test_keyboard_adapter_has_handle_message():
-	from input.sources import KeyboardAdapter
+	from services.input.sources import KeyboardAdapter
 
 	assert hasattr(KeyboardAdapter, 'handle_message'), 'KeyboardAdapter is missing handle_message()'
 
 
 def test_telemetry_data_fields():
-	from drone_control.adapters import TelemetryData
+	from services.drone_control.adapters import TelemetryData
 
 	data = TelemetryData()
 	assert hasattr(data, 'altitude_m')

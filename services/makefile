@@ -4,7 +4,7 @@ install:
 	uv sync --all-groups --python 3.11
 
 test:
-	uv run pytest tests/ --cov=services --cov-report=term-missing
+	PYTHONPATH=.. uv run pytest tests/ --cov=services --cov-report=term-missing
 
 lint:
 	uv run ruff check --output-format=github
@@ -15,3 +15,7 @@ dev:
 fix:
 	uv run ruff check --fix .
 	uv run ruff format .
+
+fix-services:
+	uv run ruff check --fix 
+	uv run ruff format 

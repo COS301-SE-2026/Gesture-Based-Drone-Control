@@ -21,6 +21,9 @@ dependencies = [
     "pytest-asyncio>=1.3.0",
     "pytest-cov>=7.1.0",
     "ruff>=0.15.12",
+    "projectairsim",
+    "websockets>=16.0",
+    "input",
 ]
 
 [project.optional-dependencies]
@@ -29,6 +32,7 @@ dev    = ["pytest>=8.0", "pytest-asyncio>=0.23", "ruff"]
 
 [tool.setuptools.packages.find]
 where = ["."]
+include = ["services", "services.*"]
 
 [tool.uv.extra-build-dependencies]
 airsim = [
@@ -37,6 +41,8 @@ airsim = [
     "backports.ssl-match-hostname",
 ]
 
+[tool.uv.sources]
+projectairsim = {git = "https://github.com/ShavirV/ProjectAirSim_GBDC.git", subdirectory = "projectairsim"}
 [tool.ruff]
 target-version = "py311"
 line-length = 100
@@ -58,3 +64,7 @@ indent-style = "tab"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 pythonpath = ["."]
+filterwarnings = [
+    "ignore:module 'sre_parse' is deprecated:DeprecationWarning",
+    "ignore:module 'sre_constants' is deprecated:DeprecationWarning",
+]

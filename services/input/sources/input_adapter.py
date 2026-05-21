@@ -29,7 +29,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Callable
 
-from commands.command import Command
+from services.commands.command import Command
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class InputAdapter(ABC):
 		logger.debug('%s: handler registered → %s', self.__class__.__name__, handler)
 
 	@abstractmethod
-	def start(self) -> None:
+	async def start(self) -> None:
 		"""
 		Begin listening for input
 
