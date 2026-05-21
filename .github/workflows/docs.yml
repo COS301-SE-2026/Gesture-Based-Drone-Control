@@ -1,7 +1,7 @@
 name: Deploy Docs
 
 on:
-  pull_request:
+  push:
     branches:
       - main
       - dev
@@ -9,18 +9,44 @@ on:
       - 'docs/**'
       - 'mkdocs.yml'
 
+# Required for GitHub Pages deployment from Actions
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          python-version: '3.11.x'
+          # Full history required for git-revision-date-localized plugin
+          fetch-depth: 0
 
-      - name: Install dependencies
-        run: pip install mkdocs mkdocs-material
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
 
-      - name: Deploy to GitHub Pages
-        run: mkdocs gh-deploy --force
+      - name: Install MkDocs and plugins
+        run: |
+          pip install --upgrade pip
+          pip install \
+            mkdocs \
+            mkdocs-material \
+            mkdocs-git-revision-date-localized-plugin \
+            pymdown-extensions \
+            pillow \
+            cairosvg
+
+      - name: Configure Git identity for gh-deploy
+        run: |
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Build and deploy to GitHub Pages
+        run: mkdocs gh-deploy --force --clean --verbose
