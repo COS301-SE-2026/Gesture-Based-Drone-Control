@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { Mail, Lock, User, Calendar } from "lucide-react"
 import Input from "../atoms/Input"
 import darkbg from "../../assets/darkMode.png"
+import validator from 'validator'
 
 export default function Signup() {
   const navigate = useNavigate()
@@ -34,7 +35,6 @@ export default function Signup() {
 
   const validateForm = () => {
     const newErr = {}
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!formData.firstName.trim()) {
       newErr.firstName = "First Name is required"
     }
@@ -44,7 +44,7 @@ export default function Signup() {
     //valid email regex check
     if (!formData.email) {
       newErr.email = "Email is required"
-    } else if (!emailRegex.test(formData.email)) {
+    } else if (!validator.isEmail(formData.email)) {
       newErr.email = "Please enter a valid email"
     }
     if (!formData.dateOfBirth) {

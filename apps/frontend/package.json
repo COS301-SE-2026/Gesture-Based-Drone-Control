@@ -21,7 +21,8 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-is": "18",
-    "react-router-dom": "^7.15.1"
+    "react-router-dom": "^7.15.1",
+    "validator": "^13.15.35"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

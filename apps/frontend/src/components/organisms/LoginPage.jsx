@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { Mail, Lock } from "lucide-react"
 import Input from "../atoms/Input"
 import darkbg from "../../assets/darkMode.png"
+import validator from 'validator'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -30,12 +31,11 @@ export default function LoginPage() {
 
   const validateForm = () => {
     const newErr = {}
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!formData.email) {
       newErr.email = "Email is required"
     }
-    //valid email regex check
-    else if (!emailRegex.test(formData.email)) {
+    //valid email check
+    else if (!validator.isEmail(formData.email)) {
       newErr.email = "Please enter a valid email"
     }
 
