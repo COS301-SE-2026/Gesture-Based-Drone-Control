@@ -69,7 +69,7 @@
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/propeller.svg" width="26" align="center" alt=""/> &nbsp;Documentation
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/propeller.svg" width="26" align="center" alt=""/> &nbsp;Documentation
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
@@ -110,7 +110,7 @@
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/drone.svg" width="26" align="center" alt=""/> &nbsp;The Team. Codex Merchants
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/drone.svg" width="26" align="center" alt=""/> &nbsp;The Team. Codex Merchants
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
@@ -237,7 +237,7 @@ Considerable statistical and data analysis skills. UI engineering across React a
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/reticle.svg" width="26" align="center" alt=""/> &nbsp;System Architecture
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/reticle.svg" width="26" align="center" alt=""/> &nbsp;System Architecture
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
@@ -366,7 +366,7 @@ sequenceDiagram
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/drone-side.svg" width="26" align="center" alt=""/> &nbsp;Repository Structure
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/drone-side.svg" width="26" align="center" alt=""/> &nbsp;Repository Structure
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
@@ -433,7 +433,7 @@ gesture-drone-control/
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/propeller.svg" width="26" align="center" alt=""/> &nbsp;Technology Stack
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/propeller.svg" width="26" align="center" alt=""/> &nbsp;Technology Stack
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
@@ -530,7 +530,7 @@ gesture-drone-control/
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/reticle.svg" width="26" align="center" alt=""/> &nbsp;Use Cases
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/reticle.svg" width="26" align="center" alt=""/> &nbsp;Use Cases
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
@@ -583,7 +583,7 @@ gesture-drone-control/
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/signal.svg" width="26" align="center" alt=""/> &nbsp;Getting Started
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/signal.svg" width="26" align="center" alt=""/> &nbsp;Getting Started
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
@@ -678,7 +678,7 @@ make fix     # ruff --fix plus ruff format plus yarn format
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/drone.svg" width="26" align="center" alt=""/> &nbsp;Branching Strategy
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/drone.svg" width="26" align="center" alt=""/> &nbsp;Branching Strategy
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
@@ -745,7 +745,7 @@ gitGraph
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/signal.svg" width="26" align="center" alt=""/> &nbsp;CI/CD and Code Quality
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/signal.svg" width="26" align="center" alt=""/> &nbsp;CI/CD and Code Quality
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
@@ -794,7 +794,7 @@ gitGraph
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/reticle.svg" width="26" align="center" alt=""/> &nbsp;Project Constraints
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/reticle.svg" width="26" align="center" alt=""/> &nbsp;Project Constraints
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
@@ -807,7 +807,7 @@ gitGraph
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/propeller.svg" width="26" align="center" alt=""/> &nbsp;Methodology
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/propeller.svg" width="26" align="center" alt=""/> &nbsp;Methodology
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
@@ -815,7 +815,7 @@ We work **Agile** with **Feature Driven Development**: weekly sprint planning, t
 
 <br/>
 
-## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/signal.svg" width="26" align="center" alt=""/> &nbsp;Contact
+## <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/icons/signal.svg" width="26" align="center" alt=""/> &nbsp;Contact
 
 <img src="https://raw.githubusercontent.com/COS301-SE-2026/Gesture-Based-Drone-Control/main/docs/assets/glowline.svg" width="100%" alt=""/>
 
