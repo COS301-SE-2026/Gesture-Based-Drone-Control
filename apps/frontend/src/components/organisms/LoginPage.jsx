@@ -4,7 +4,7 @@ import { Mail, Lock } from "lucide-react"
 import Input from "../atoms/Input"
 import darkbg from "../../assets/darkMode.png"
 import validator from "validator"
-const { handleSubmit } = useForm(initialState, () => navigate("/dashboard"))
+import { useForm } from "../../hooks/useForm"
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -64,7 +64,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={(e)=>handleSubmit(e,validateForm)} className="space-y-5">
             {/* email */}
             <div>
               <label
