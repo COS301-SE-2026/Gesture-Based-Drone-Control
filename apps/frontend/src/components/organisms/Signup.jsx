@@ -58,7 +58,7 @@ export default function Signup() {
     if (!formData.confirmPassword) {
       newErr.confirmPassword = "Please confirm your password"
     } else if (formData.password !== formData.confirmPassword) {
-      newErr.confirmPassword = "Password do not match"
+      newErr.confirmPassword = "Passwords do not match"
     }
 
     if (!formData.agreeToTerms) {
@@ -78,7 +78,6 @@ export default function Signup() {
     }
 
     setIsLoading(true)
-    //sim api call
     setTimeout(() => {
       setIsLoading(false)
       navigate("/login")
@@ -119,11 +118,11 @@ export default function Signup() {
             <div className="grid grid-cols-2 gap-3">
               {/* name */}
               <div>
-                <label className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+                <label htmlFor="firstName" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
                   First Name
                 </label>
                 <Input
-                  type="text"
+                  id="text"
                   name="firstName"
                   placeHolder="John"
                   icon={User}
@@ -136,11 +135,11 @@ export default function Signup() {
 
               {/* surname */}
               <div>
-                <label className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+                <label htmlFor="lastName" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
                   Last Name
                 </label>
                 <Input
-                  type="text"
+                  id="text"
                   name="lastName"
                   placeHolder="Doe"
                   icon={User}
@@ -153,11 +152,11 @@ export default function Signup() {
 
               {/* email */}
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
                   Email Address
                 </label>
                 <Input
-                  type="email"
+                  id="email"
                   name="email"
                   placeHolder="you@example.com"
                   icon={Mail}
@@ -169,12 +168,12 @@ export default function Signup() {
               </div>
 
               {/* DOB */}
-              <div className="col-span-2">
+              <div htmlFor="dateOfBirth" className="col-span-2">
                 <label className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
                   Date of Birth
                 </label>
                 <Input
-                  type="date"
+                  id="date"
                   name="dateOfBirth"
                   icon={Calendar}
                   value={formData.dateOfBirth}
@@ -186,11 +185,11 @@ export default function Signup() {
 
               {/* password */}
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
                   Password
                 </label>
                 <Input
-                  type="password"
+                  id="password"
                   name="password"
                   placeHolder="At least 8 characters"
                   icon={Lock}
@@ -203,11 +202,11 @@ export default function Signup() {
 
               {/* confirm password */}
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
                   Confirm Password
                 </label>
                 <Input
-                  type="password"
+                  id="password"
                   name="confirmPassword"
                   placeHolder="Confirm your password"
                   icon={Lock}
@@ -221,7 +220,7 @@ export default function Signup() {
 
             {/* terms */}
             <div className="pt-2">
-              <label className="flex items-start gap-3 cursor-pointer">
+              <label htmlFor="agreeToTerms" className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
                   name="agreeToTerms"

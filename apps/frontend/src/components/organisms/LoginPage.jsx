@@ -6,7 +6,7 @@ import darkbg from "../../assets/darkMode.png"
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const [formData, setformData] = useState({
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
@@ -16,7 +16,7 @@ export default function LoginPage() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
-    setformData((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }))
@@ -84,7 +84,7 @@ export default function LoginPage() {
       </div>
 
       {/* form */}
-      <div className="w-full lg:w-1/2 flex items-cente justify-center px-6 py-12">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8 text-center">
             <h2 className="text-3xl font-bold text-OffBlack dark:text-OffWhite mb-2">
@@ -98,11 +98,11 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* email */}
             <div>
-              <label className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
                 Email Address
               </label>
               <Input
-                type="email"
+                id="email"
                 name="email"
                 placeHolder="you@example.com"
                 icon={Mail}
@@ -115,11 +115,11 @@ export default function LoginPage() {
 
             {/* password */}
             <div>
-              <label className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2">
                 Password
               </label>
               <Input
-                type="password"
+                id="password"
                 name="password"
                 placeHolder="Enter your password"
                 icon={Lock}
@@ -132,7 +132,7 @@ export default function LoginPage() {
 
             {/* remember me and forgot password */}
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-p">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <Input
                   type="checkbox"
                   name="rememberMe"
