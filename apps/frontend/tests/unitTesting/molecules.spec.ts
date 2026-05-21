@@ -104,3 +104,26 @@ test.describe('Command History',()=>{
     })
 })
 
+test.describe('Gesture Guide',()=>{
+    test('the gesture guide gets rendered', async ({page})=>{
+        await page.goto('/gestures')
+        await page.waitForLoadState('domcontentloaded')
+        await expect(page.getByText(/gesture guide/i)).toBeVisible()
+    })
+
+    test('the altitude keys are rendered',async({page})=>{
+        await page.goto('/gestures')
+        await page.waitForLoadState('domcontentloaded')
+        await expect(page.getByText(/altitude keys/i)).toBeVisible()
+    })
+
+    test('descriptions of arrow keys', async ({page})=> {
+        await page.goto('/gestures')
+        await page.waitForLoadState('domcontentloaded')
+        await expect (page.getByText(/increase altitude/i)).toBeVisible()
+        await expect (page.getByText(/decrease altitude/i)).toBeVisible()
+        await expect (page.getByText(/move laterally/i)).toBeVisible()
+    })
+})
+
+
