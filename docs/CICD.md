@@ -8,7 +8,6 @@
 
 - [Overview](#overview)
 - [Pipeline Stages](#pipeline-stages)
-- [Prerequisites](#prerequisites)
 - [Branch Strategy](#branch-strategy)
 - [Running Locally](#running-locally)
 - [Troubleshooting](#troubleshooting)
@@ -63,13 +62,6 @@ graph TD
 - On `main`: publishes to <!-- e.g. GitHub Pages via `gh-deploy` -->
 - On PRs: build-only check (no publish)
 
----
-
-## Prerequisites
-
-- [ ] <!-- e.g. Python 3.11+ -->
-- [ ] <!-- e.g. Node.js 20+ -->
-- [ ] MkDocs installed: `pip install mkdocs-material 
 
 ---
 
