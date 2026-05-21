@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "allowJs": true,
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": ["./src/*"]
     }

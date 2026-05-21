@@ -6,6 +6,9 @@ import {
   Analytics,
   Settings,
   GPS,
+  Login,
+  Signup,
+  Terms,
 } from "./components/organisms"
 import { ThemeProvider } from "./context/ThemeProvider.jsx"
 
@@ -13,6 +16,9 @@ function App() {
   return (
     <ThemeProvider>
       <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
