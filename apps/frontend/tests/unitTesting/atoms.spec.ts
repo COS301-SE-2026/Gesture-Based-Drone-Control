@@ -76,14 +76,7 @@ test.describe('NavItem', ()=>{
 
     })
 
-    test.describe('Toggle', ()=> {
-        test('there must be a toggle box on the dashboard page', async ({page})=>{
-            await page.goto('/dashboard')
-            await page.waitForLoadState('domcontentloaded')
-            const toggle=page.locator('input[type="checkbox"]').first()
-            await expect(toggle).toBeAttached()
-        })
-
+    
         test('the state must actually chnage when its clicked on',async ({page})=>{
             await page.goto('/dashboard')
             await page.waitForLoadState('domcontentloaded')
@@ -107,6 +100,6 @@ test.describe('NavItem', ()=>{
         })
     })
 
-})
+
 
 

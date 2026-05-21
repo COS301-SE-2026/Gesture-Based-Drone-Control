@@ -1,5 +1,5 @@
 import{test,expect} from '@playwright/test'
-import { TestTube } from 'lucide-react'
+
 
 test.describe('DroneModeCard',()=> {
     test('the select drone label has to be rendered', async ({page})=> {
@@ -196,7 +196,7 @@ test.describe('DarkModeToggle',()=>{
         const toggle = page.locator('input[type="checkbox"]').first()
         await toggle.click({force:true})
         const htmlClass = await page.locator('html').getAttribute('class')
-        expect(htmlClass ==='dark' ||htmlClass ==='' || htmlClass ===null).toBeTruthy
+        expect(htmlClass ==='dark' ||htmlClass ==='' || htmlClass ===null).toBeTruthy()
     })
 })
 
