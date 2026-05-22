@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 100" role="img" aria-label="EPI-USE Labs">
+  <!-- EPI-USE Labs brand: dark navy wordmark, green/teal accent -->
+  <!-- Brand colours from their website: #1B3A6B (navy), #00A651 (green), #FFFFFF -->
+
+  <!-- Mark: stylised "E" with arc -->
+  <g transform="translate(16, 18)">
+    <!-- Outer circle arc (left 3/4) -->
+    <path d="M32 0 A32 32 0 1 0 32 64" fill="none" stroke="#00A651" stroke-width="4.5" stroke-linecap="round"/>
+    <!-- E letterform inside -->
+    <rect x="16" y="14" width="5" height="36" fill="#1B3A6B"/>
+    <rect x="16" y="14" width="26" height="5" fill="#1B3A6B"/>
+    <rect x="16" y="30" width="20" height="5" fill="#00A651"/>
+    <rect x="16" y="45" width="26" height="5" fill="#1B3A6B"/>
+  </g>
+
+  <!-- Vertical divider -->
+  <line x1="90" y1="14" x2="90" y2="86" stroke="#00A651" stroke-width="0.8" opacity="0.5"/>
+
+  <!-- Wordmark -->
+  <g transform="translate(104, 28)">
+    <text font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="28" fill="#1B3A6B" letter-spacing="1">EPI-USE</text>
+    <text x="152" y="0" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="300" font-size="28" fill="#00A651" letter-spacing="1">Labs</text>
+    <line x1="0" y1="10" x2="228" y2="10" stroke="#00A651" stroke-width="0.8"/>
+    <text y="28" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#555" letter-spacing="2.5">INDUSTRY SPONSOR &amp; CLIENT</text>
+  </g>
+</svg>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" role="img" aria-label="University of Pretoria">
+  <!-- UP brand colours: navy #003B71, gold #C9A84C, white -->
+  <defs>
+    <linearGradient id="shield-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#003B71"/>
+      <stop offset="1" stop-color="#002855"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Shield crest -->
+  <g transform="translate(14, 8)">
+    <!-- Shield body -->
+    <path d="M36 0 L72 0 L72 46 Q72 70 36 80 Q0 70 0 46 L0 0 Z" fill="url(#shield-bg)"/>
+    <!-- Shield border -->
+    <path d="M36 0 L72 0 L72 46 Q72 70 36 80 Q0 70 0 46 L0 0 Z" fill="none" stroke="#C9A84C" stroke-width="2"/>
+
+    <!-- Chief band (top stripe) -->
+    <rect x="0" y="0" width="72" height="18" fill="#C9A84C"/>
+
+    <!-- Three mullets (stars) in chief -->
+    <g fill="#003B71">
+      <polygon points="12,5 13.5,9.5 18,9.5 14.5,12 15.8,16.5 12,14 8.2,16.5 9.5,12 6,9.5 10.5,9.5" transform="scale(0.7) translate(3,1)"/>
+      <polygon points="36,5 37.5,9.5 42,9.5 38.5,12 39.8,16.5 36,14 32.2,16.5 33.5,12 30,9.5 34.5,9.5" transform="scale(0.7) translate(-3,1)"/>
+      <polygon points="60,5 61.5,9.5 66,9.5 62.5,12 63.8,16.5 60,14 56.2,16.5 57.5,12 54,9.5 58.5,9.5" transform="scale(0.7) translate(-9,1)"/>
+    </g>
+
+    <!-- Book/torch element in body -->
+    <rect x="26" y="26" width="20" height="26" rx="1" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+    <line x1="36" y1="26" x2="36" y2="52" stroke="#C9A84C" stroke-width="1.2"/>
+    <line x1="26" y1="38" x2="46" y2="38" stroke="#C9A84C" stroke-width="1.2"/>
+
+    <!-- Torch flame at top of book -->
+    <ellipse cx="36" cy="23" rx="3" ry="5" fill="#C9A84C" opacity="0.9"/>
+  </g>
+
+  <!-- Vertical divider -->
+  <line x1="105" y1="10" x2="105" y2="90" stroke="#C9A84C" stroke-width="0.8" opacity="0.6"/>
+
+  <!-- Text block -->
+  <g transform="translate(118, 18)">
+    <text font-family="Georgia, 'Times New Roman', serif" font-size="20" font-weight="700" fill="#003B71" letter-spacing="0.5">UNIVERSITY</text>
+    <text y="26" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-weight="700" fill="#003B71" letter-spacing="0.5">OF PRETORIA</text>
+    <line x1="0" y1="34" x2="262" y2="34" stroke="#C9A84C" stroke-width="1"/>
+    <text y="48" font-family="Georgia, serif" font-size="11" font-style="italic" fill="#555" letter-spacing="0.5">Universiteit van Pretoria</text>
+    <text y="62" font-family="Georgia, serif" font-size="11" font-style="italic" fill="#555" letter-spacing="0.5">Yunibesithi ya Pretoria</text>
+  </g>
+</svg>

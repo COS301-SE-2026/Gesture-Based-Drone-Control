@@ -1,6 +1,15 @@
 .env
-__pycache__/
 node_modules/
 dist/
 data/*.db
-.ruff_cache
+.venv
+.egg-info
+drone_services.egg-info
+services.egg-info
+__pycache__/
+.pytest_cache
+__pycache__
+.coverage
+.ruff*
+site/
+*.fig

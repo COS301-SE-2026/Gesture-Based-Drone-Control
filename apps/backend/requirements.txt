@@ -1,4 +1,4 @@
-#kinda obvious isnt it
+#use for api endpoints
 fastapi
 #asgi for use with fastapi
 uvicorn
