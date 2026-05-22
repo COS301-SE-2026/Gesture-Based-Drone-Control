@@ -1,14 +1,30 @@
+---
+hide:
+  - toc
+---
+
 # Gesture-Based Drone Control
 
-Control drones with hand gestures using computer vision.
+A real-time computer-vision system that eliminates the physical controller entirely. Hand gestures detected through a live camera feed, classified by a dual rule-based and ML engine, translated directly into drone flight commands — with safety fail-safes built in from the ground up.
 
-## Overview
+[Get Started](SRS/){ .md-button .md-button--primary } &nbsp; [GitHub ↗](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control){ .md-button }
 
-This project uses MediaPipe for hand detection, a CV pipeline for gesture recognition,
-and drone adapters for AirSim, Gazebo, and XFly.
+---
 
-## Quick Links
-
-- [System Design](DESIGN.md)
-- [API Reference](api/API_REFERENCE.md)
-- [Getting Started](demo/Deployment.md)
+<div class="tx-grid tx-grid--3">
+  <div class="tx-card">
+    <div class="tx-card__label">Core Intelligence</div>
+    <h3>Dual Recognition Engine</h3>
+    <p>MediaPipe 21-point landmark detection feeding a rule-based classifier and TFLite ML model.</p>
+  </div>
+  <div class="tx-card">
+    <div class="tx-card__label">Real-Time Pipeline</div>
+    <h3>Millisecond Latency</h3>
+    <p>Live camera → gesture classification → command translation → drone. FastAPI WebSocket backend.</p>
+  </div>
+  <div class="tx-card">
+    <div class="tx-card__label">Safety First</div>
+    <h3>Built-In Fail-Safes</h3>
+    <p>Hover on tracking loss, emergency stop gesture, idle detection auto-land — active by default.</p>
+  </div>
+</div>
