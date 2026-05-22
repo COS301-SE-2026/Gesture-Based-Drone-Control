@@ -14,8 +14,6 @@
 [![Lint](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/lint.yml?style=for-the-badge&logo=github-actions&logoColor=F5F3F4&label=LINT&color=BA181B&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/lint.yml)
 [![Docs](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/docs.yml?style=for-the-badge&logo=readthedocs&logoColor=F5F3F4&label=DOCS&color=A4161A&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/docs.yml)
 [![Issues](https://img.shields.io/github/issues/COS301-SE-2026/Gesture-Based-Drone-Control?style=for-the-badge&logo=github&logoColor=F5F3F4&label=ISSUES&color=E5383B&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/issues)
-[![License](https://img.shields.io/badge/LICENSE-MIT-660708?style=for-the-badge&labelColor=161A1D)](LICENSE)
-[![Uptime](https://img.shields.io/uptimerobot/status/m000000000-xxxxxxxxxxxx?style=for-the-badge&logo=statuspage&logoColor=F5F3F4&label=UPTIME&color=A4161A&labelColor=161A1D)](https://uptimerobot.com)
 
 <br/>
 
@@ -801,7 +799,6 @@ gitGraph
 | Constraint | Detail |
 |:---|:---|
 | Single User Operation | One operator tracked at a time. Reduces tracking complexity |
-| Indoor Only | Designed and tested for indoor, controlled lighting environments |
 | Fixed Gesture Set | Predefined commands only (take off, land, move, hover) |
 | CPU Bound Inference | No GPU assumed. Must run on developer grade laptops |
 
@@ -828,37 +825,6 @@ We work **Agile** with **Feature Driven Development**: weekly sprint planning, t
 <br/>
 
 <div align="center">
-
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
-
-<br/>
-
-### In Partnership With
-
-<br/>
-
-<table>
-<tr>
-<td align="center" width="50%">
-<a href="https://www.up.ac.za/">
-  <img src="docs/assets/up-logo.svg" width="320" alt="University of Pretoria"/>
-</a>
-<br/><br/>
-<sub><b>Academic Host</b></sub><br/>
-<sub>COS 301 Software Engineering. Faculty of EBIT</sub>
-</td>
-<td align="center" width="50%">
-<a href="https://www.epiuselabs.com/">
-  <img src="docs/assets/epiuse-logo.svg" width="320" alt="EPI-USE Labs"/>
-</a>
-<br/><br/>
-<sub><b>Industry Sponsor and Client</b></sub><br/>
-<sub>Project owner and mentorship</sub>
-</td>
-</tr>
-</table>
-
-<br/>
 
 <img src="docs/assets/glowline.svg" width="100%" alt=""/>
 

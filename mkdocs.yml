@@ -146,6 +146,15 @@ nav:
       - Molecules: frontend/molecules.md
       - Organisms: frontend/organisms.md
       - Routing: frontend/routing.md
+    - Services:
+      - AirSim Adapter: services/airsim_adapter.md
+      - Command: services/command.md
+      - Drone Adapter: services/drone_adapter.md
+      - Dummy Drone Adapter: services/dummy_drone_adapter.md
+      - Dummy Input Adapter: services/dummy_input_adapter.md
+      - Input Adapter: services/input_adapter.md
+      - Keyboard Adapter: services/keyboard_adapter.md
+      - Project AirSim Adapter: services/project_airsim_adapter.md
   - API Reference:
     - Overview: api/API_REFERENCE.md
   - Testing:
