@@ -7,12 +7,12 @@ Gesture recognition with real drone integration using existing adapter pattern
 
 ### Demo 2 Deliverables
 
-#### ✅ Already Complete
+#### Already Complete
 - Hand tracking system
 - Dashboard telemetry
 - Simulator adapter (AirSim/Gazebo)
 
-#### 🔄 In Progress
+#### In Progress
 - **Gesture Recognition** — Rule-based implementation on top of hand tracking
 - **Command Translation** — Gesture → adapter command pipeline
 - **Real Drone Adapter** — xFly SDK or DJI Tello (using same adapter interface)
