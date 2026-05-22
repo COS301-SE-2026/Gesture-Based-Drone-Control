@@ -58,7 +58,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_SPEED_MS: float = 8.0
 DEFAULT_DURATION_S: float = 0.5
 DEFAULT_ROTATE_DEG: float = 15.0
-DEFAULT_YAW_RATE_DPS: float = 120.0
+DEFAULT_YAW_RATE_DPS: float = 75.0
 
 # the drone drops like a rock, drift it up a lil every time we move horzontally
 GRAVITY_COMP_VZ: float = -0.3
