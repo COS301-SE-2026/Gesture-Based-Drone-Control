@@ -1,6 +1,6 @@
 # Project Plan: Gesture-Controlled Drone System
 
-## Demo 2: Gesture Recognition + Real Drone Integration (2 Weeks)
+## Demo 2: Gesture Recognition + Real Drone Integration
 
 ### Claim
 Gesture recognition with real drone integration using existing adapter pattern
@@ -79,13 +79,13 @@ Drone Command Execution
 ## Timeline Overview
 
 ```
-Week 0-2: Demo 2
+Demo 2
 ├── Gesture recognition (rule-based)
 ├── Command translation layer
 ├── Real drone adapter integration
 └── Safety validation
 
-Week 2-4: Demo 3
+Demo 3
 ├── End-to-end hardware testing
 ├── User calibration workflow
 ├── Flight data analytics
