@@ -119,3 +119,6 @@ Some functionality is deemed as a base feature and as such does not fall part of
   * Use Case 1: Hand Tracking and Gesture Recognition
   * Use Case 2: Dashboard Telemetry
   * Use Case 3: Drone Simulator and Adaptors
+
+## Use Case Diagram
+![Use Case Diagram](assets/GBDC-UseCase-Diagram.drawio.png)
