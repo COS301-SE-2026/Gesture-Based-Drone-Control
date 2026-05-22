@@ -107,3 +107,15 @@ The remainder of this SRS is organized as follows:
 
   * NFR-14: The codebase shall follow a modular architecture separating gesture recognition, command mapping, and drone communication.
   * NFR-15: Each module shall have a unit test suite with at least 80% code coverage.
+
+# Base Features
+Some functionality is deemed as a base feature and as such does not fall part of a use case
+  * Base Feature 1: Registration and Login System
+  * Base Feature 2: Basic Themes
+  * Base Feature 3: Form Validation
+
+# Use Cases 
+  
+  * Use Case 1: Hand Tracking and Gesture Recognition
+  * Use Case 2: Dashboard Telemetry
+  * Use Case 3: Drone Simulator and Adaptors
