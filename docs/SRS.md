@@ -121,4 +121,10 @@ Some functionality is deemed as a base feature and as such does not fall part of
   * Use Case 3: Drone Simulator and Adaptors
 
 ## Use Case Diagram
-![Use Case Diagram](assets/GBDC-UseCase-Diagram.drawio.png)
+![Use Case Diagram](diagrams/GBDC-UseCase-Diagram.drawio.png)
+
+## Domain Model
+![Domain Model](diagrams/Domain%20Model%20v1.1.drawio.svg)
+
+## Architecture Diagram
+![Architecture Diagram](diagrams/Architecture-Diagram.drawio.svg)
