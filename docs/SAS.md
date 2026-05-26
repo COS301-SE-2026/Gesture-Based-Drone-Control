@@ -17,6 +17,15 @@
     SRS, and adds the technology stack, API contracts, and deployment
     topology that did not previously have a home.
 
+!!! warning "Status of deployment content"
+    The architecture in §1–§4 is the **committed design** as of Demo 2.
+    The deployment topology in §5 is the **target topology planned for
+    Demo 2**: the diagrams describe how GBDCS will be deployed, but the
+    public-URL deployment is being stood up during the Demo 2 sprint
+    and is not yet live at the time of writing. Where a §5 claim is
+    aspirational rather than realised it is tagged
+    *(planned for Demo 2)*.
+
 ---
 
 ## 1. Introduction
@@ -32,12 +41,12 @@ documents:
   **mapping from quality requirements to architectural decisions**;
 - the **technology stack** chosen and justified;
 - the **API contracts** between subsystems;
-- the **deployment topology** of the production system, including the
-  **CI/CD pipeline** that builds and ships it.
+- the **deployment topology** planned for the production system,
+  including the **CI/CD pipeline** that builds and ships it.
 
 ### 1.2 Scope
 
-This document covers the system as it is deployed for Demo 2 and is
+This document covers the system as designed for Demo 2 and is
 maintained as a living document for subsequent demos. It complements:
 
 - [`SRS.md`](SRS.md) — *what* the system must do (functional
@@ -224,47 +233,10 @@ map to specific architectural decisions in this document.
 | Quality requirement | Target | Architectural decision |
 | --- | --- | --- |
 | **Performance** — gesture-to-command latency ≤ 200 ms p95 (`R7.1`); pipeline ≥ 30 FPS at ≤ 70 % CPU (`R7.2`); dashboard ≥ 24 FPS (`R7.3`) | < 200 ms p95 | (i) Pipes-and-Filters CV pipeline with **bounded queues** between stages so back-pressure is observable and stages can be tuned independently; (ii) **WebSocket push** from backend to dashboard (no polling); (iii) **rule-based recogniser by default** — TFLite is opt-in to avoid GPU dependence on the reference machine. |
-| **Security** — token-gated WS, no committed secrets, schema-validated APIs (`R8.1`–`R8.3`) | 30-min tokens; 0 secrets in repo; 100 % schema coverage | (i) **Token-gated WebSocket gateway** — short-lived JWT issued by `/auth/login`; (ii) **secrets loaded from environment** via the `.env.example` pattern, with `gitleaks` running in CI per [`CICD.md`](CICD.md); (iii) **JSON-schema validation** at the REST boundary, rejecting malformed payloads with `400 Bad Request`. |
+| **Security** — token-gated WS, no committed secrets, schema-validated APIs (`R8.1`–`R8.3`) | 30-min tokens; 0 secrets in repo; 100 % schema coverage | (i) **Token-gated WebSocket gateway** — short-lived JWT issued by `/auth/login`; (ii) **secrets loaded from environment** via the `.env.example` pattern, with a `gitleaks` scan **planned for Demo 2** to run on every PR per [`CICD.md`](CICD.md); (iii) **JSON-schema validation** at the REST boundary, rejecting malformed payloads with `400 Bad Request`. |
 | **Reliability** — ≥ 95 % classification accuracy (`R9.1`); ≤ 1 % false positives (`R9.2`); pipeline crash isolated, failsafe ≤ 1 s (`R9.3`) | ≥ 95 % / ≤ 1 % / ≤ 1 s | (i) **Strategy pattern** on the recogniser so a stronger classifier can be swapped in without disturbing the engine; (ii) **process isolation** between the CV pipeline and the backend — a pipeline crash trips a supervisor that puts the drone in `HOVER` and surfaces an error within 1 s; (iii) **Observer fan-out** on telemetry so the failsafe path does not block on dashboard delivery. |
-| **Maintainability** — declared imports only (`R10.1`); ≥ 80 % coverage (`R10.2`); ≤ 30-min merge-to-deploy (`R10.3`) | one-way imports; ≥ 80 %; ≤ 30 min | (i) **One-way package import graph** (Figure 2.1) — the GUI depends on the backend, the backend on the domain, the domain on infrastructure; never the reverse; (ii) **CI coverage gate** at 80 % per module in [`CICD.md`](CICD.md); (iii) **Push-triggered deploy** on `main` so the deploy step is at most a few minutes. |
+| **Maintainability** — declared imports only (`R10.1`); ≥ 80 % coverage (`R10.2`); ≤ 30-min merge-to-deploy (`R10.3`) | one-way imports; ≥ 80 %; ≤ 30 min | (i) **One-way package import graph** (Figure 2.1) — the GUI depends on the backend, the backend on the domain, the domain on infrastructure; never the reverse; (ii) **CI coverage gate** at 80 % per module in [`CICD.md`](CICD.md); (iii) **Push-triggered deploy** on `main` *(planned for Demo 2)* so the deploy step is at most a few minutes. |
 | **Usability** — first-flight in ≤ 5 min (`R11.1`); ≥ 85 % satisfaction (`R11.2`); 100 % actionable error messages (`R11.3`) | ≤ 5 min / ≥ 85 % / 100 % | (i) **In-product Help Menu** linked from the dashboard chrome (see Demo 2 brief §3.8); (ii) **single-view dashboard** — feed, gesture, telemetry, alerts visible without navigation, per the wireframes in [`BRAND.md`](BRAND.md); (iii) **error envelope contract** — every backend error returns a `cause` and a `suggestion` field, enforced by schema. |
-
-### 2.6 Design Principles Applied
-
-=== "Design for Change"
-
-    The two most likely change vectors — *which drone is connected*
-    and *which classification algorithm runs* — are absorbed by the
-    Adapter and Strategy patterns. Adding a new drone or recogniser
-    requires zero changes outside its own module.
-
-=== "Separation of Concerns"
-
-    The four logical tiers in Figure 2.1 map to four physical
-    package roots (`apps/frontend`, `apps/backend`, `services/`,
-    `packages/contracts`). The CV pipeline knows nothing about HTTP;
-    the dashboard knows nothing about MediaPipe; the storage layer
-    knows nothing about WebSockets.
-
-=== "Information Hiding"
-
-    Concrete adapter classes are accessible only through the
-    `DroneAdapter` interface; storage details are hidden inside
-    `StorageManager`; the WebSocket message envelope is the only
-    surface the dashboard sees.
-
-=== "High Cohesion & Low Coupling"
-
-    Each subsystem has one purpose; the package import graph is
-    acyclic and one-directional. The only cross-package vocabulary
-    is the small set of shared types in `packages/contracts`
-    (`GestureEvent`, `TelemetryFrame`, `DroneCommand`).
-
-=== "KISS"
-
-    Rule-based recognition ships first and remains the default; the
-    ML path is opt-in. The dummy adapter exists explicitly so the
-    pipeline can run without any SDK installed during development.
 
 ---
 
@@ -303,9 +275,9 @@ team considered and rejected.
 | CI runner | **GitHub Actions** | Lives next to the code; free for our usage class; matches the workflow already documented in [`CICD.md`](CICD.md). |
 | Docs site | **MkDocs Material** | Markdown-first, auto-deploy to GitHub Pages on push (`R15.1`). |
 | Container runtime | **Docker** | Reproducible builds (§5.3); the same image runs in CI, staging, and production. |
-| Hosting (frontend) | **Render Static Site** | Push-to-deploy from `main`; CDN-fronted; HTTPS by default. |
-| Hosting (backend) | **Render Web Service** | Runs the FastAPI container; provides an HTTPS endpoint with a managed certificate. |
-| Secrets manager | **GitHub Actions Secrets + Render Environment Groups** | Realises `C6` / `R8.2`. |
+| Hosting (frontend) *(planned for Demo 2)* | **Render Static Site** | Push-to-deploy from `main`; CDN-fronted; HTTPS by default. To be provisioned during the Demo 2 sprint. |
+| Hosting (backend) *(planned for Demo 2)* | **Render Web Service** | Runs the FastAPI container; provides an HTTPS endpoint with a managed certificate. To be provisioned during the Demo 2 sprint. |
+| Secrets manager | **GitHub Actions Secrets** *(in use)* + **Render Environment Groups** *(planned for Demo 2)* | Realises `C6` / `R8.2`. |
 
 ---
 
@@ -413,29 +385,31 @@ via codegen.
 
 ## 5. Deployment
 
-The deployment of GBDCS satisfies the Demo 2 brief's deployment
-requirements: a live, publicly accessible system; environment parity
-between development, staging, and production; reproducible deployment
-via containerisation; secrets kept out of the repository; and a
-documented rollback strategy.
+!!! warning "Demo 2 deployment status"
+    The deployment described in this section is the **target topology
+    planned for Demo 2**. At the time of writing the public-URL
+    deployment is in active provisioning; the diagrams below define the
+    end state the team is wiring up. Until provisioning completes,
+    GBDCS runs locally via the **Local deployment (Docker Compose)**
+    path documented in §5.3.
 
 ### 5.1 Environments
 
-| Environment | Branch | Hosting | Auto-deployed? |
-| --- | --- | --- | --- |
-| **Development** | `feature/*` | Local — Docker Compose | No |
-| **Staging** | `dev` | Render (separate service) | Yes — on every push to `dev` |
-| **Production** | `main` | Render | Yes — on every push to `main`, **gated by Lint + Test + manual approval** |
+| Environment | Branch | Hosting | Auto-deployed? | Status |
+| --- | --- | --- | --- | --- |
+| **Development** | `feature/*` | Local — Docker Compose | No | In use |
+| **Staging** *(planned for Demo 2)* | `dev` | Render (separate service) | Yes — on every push to `dev` | Planned |
+| **Production** *(planned for Demo 2)* | `main` | Render | Yes — on every push to `main`, gated by Lint + Test | Planned |
 
-The deployed production URL is announced in the repository README and
-in the Demo 2 slides.
+Once provisioned, the production URL will be announced in the
+repository README and in the Demo 2 slides.
 
 ### 5.2 Deployment Diagram
 
-The diagram below shows the **production** topology. The staging
-environment is materially identical — same artefact, different Render
-service and a separate database file — so a separate diagram is not
-warranted.
+The diagram below shows the **target production topology** *(planned
+for Demo 2)*. The staging environment is materially identical — same
+artefact, different Render service and a separate database file — so a
+separate diagram is not warranted.
 
 ```mermaid
 flowchart LR
@@ -449,7 +423,7 @@ flowchart LR
         PAGES[GitHub Pages<br/>docs site]
     end
 
-    subgraph RENDER[Render - production]
+    subgraph RENDER[Render - production - planned]
         FE[Static Site<br/>«artifact: React bundle»<br/>Node 22 build · NGINX serve]
         BE["Web Service<br/>«artifact: Docker image»<br/>Python 3.11 · FastAPI · uvicorn"]
         DB[("Persistent Disk<br/>«artifact: SQLite file»<br/>gbdcs.db")]
@@ -470,16 +444,17 @@ flowchart LR
     BROWSER -- "HTTPS :443" --> FE
     BROWSER -- "HTTPS :443" --> BE
     BROWSER -- "WSS :443 /ws/live" --> BE
-    BE -- "PostgreSQL wire / SQLite file" --> DB
+    BE -- "SQLite file I/O" --> DB
     CAM -- "USB UVC" --> BROWSER
     BROWSER -- "UDP :8889 (Tello) / RPC :41451 (AirSim)" --> DRONE
 ```
 
-*Figure 5.1 — Production deployment diagram. Nodes are runtime
-environments; artefacts are the deployed units; arrows are annotated
-with the protocol and port. The CV pipeline runs locally on the
-operator's workstation as part of the Electron shell — the cloud
-hosts only the backend, the static frontend, and the docs site.*
+*Figure 5.1 — Target production deployment topology (planned for
+Demo 2). Nodes are runtime environments; artefacts are the deployed
+units; arrows are annotated with the protocol and port. The CV
+pipeline runs locally on the operator's workstation as part of the
+Electron shell — the cloud will host only the backend, the static
+frontend, and the docs site.*
 
 #### 5.2.1 Why the CV pipeline is *not* in the cloud
 
@@ -492,22 +467,9 @@ sub-200 ms.
 ### 5.3 Reproducible deployment
 
 A fresh clone of the `main` branch can be brought up by either of two
-documented paths:
+documented paths.
 
-=== "Cloud deployment (Render)"
-
-    ```bash
-    # 1. Connect the repo to a Render account
-    # 2. Render reads `render.yaml` from the repo root
-    # 3. Push to main → Render builds the Docker image and the static
-    #    site automatically
-    git push origin main
-    ```
-
-    `render.yaml` declares both services and the persistent disk; no
-    click-ops required.
-
-=== "Local deployment (Docker Compose)"
+=== "Local deployment (Docker Compose) — available today"
 
     ```bash
     # 1. Clone & enter
@@ -525,12 +487,27 @@ documented paths:
     # Frontend on http://localhost:3000
     ```
 
+=== "Cloud deployment (Render) — planned for Demo 2"
+
+    ```bash
+    # 1. Connect the repo to a Render account
+    # 2. Render reads `render.yaml` from the repo root
+    # 3. Push to main → Render builds the Docker image and the static
+    #    site automatically
+    git push origin main
+    ```
+
+    `render.yaml` will declare both services and the persistent disk;
+    no click-ops required. This path becomes the default once
+    provisioning completes during the Demo 2 sprint.
+
 ### 5.4 CI/CD Pipeline
 
 The pipeline is documented in full in [`CICD.md`](CICD.md). The
 diagram below is the **Demo 2 deliverable view** of the same pipeline
 — commit-to-deployed-artefact, with the stages, the tools, and the
-artefacts produced.
+artefacts produced. The Lint / Test / Deploy-Docs stages are **live
+today**; the cloud Deploy stages are **planned for Demo 2**.
 
 ```mermaid
 flowchart LR
@@ -544,16 +521,14 @@ flowchart LR
     GATE1 -- yes --> REVIEW[Code review<br/>1–2 approvals]
     REVIEW --> MERGE([Merge to dev / main])
 
-    MERGE -->|push to dev| BUILD_STG[Build stage<br/>Docker image · React bundle<br/>tagged dev-«sha»]
-    MERGE -->|push to main| BUILD_PROD[Build stage<br/>Docker image · React bundle<br/>tagged main-«sha»]
+    MERGE -->|push to dev| BUILD_STG["Build stage (planned)<br/>Docker image · React bundle<br/>tagged dev-«sha»"]
+    MERGE -->|push to main| BUILD_PROD["Build stage (planned)<br/>Docker image · React bundle<br/>tagged main-«sha»"]
 
-    BUILD_STG --> ART1[(Artefact registry<br/>Render image · static bundle)]
-    BUILD_PROD --> ART2[(Artefact registry<br/>Render image · static bundle)]
+    BUILD_STG --> ART1[("Artefact registry (planned)<br/>Render image · static bundle")]
+    BUILD_PROD --> ART2[("Artefact registry (planned)<br/>Render image · static bundle")]
 
-    ART1 --> DEPLOY_STG[Deploy to staging<br/>Render — auto]
-    ART2 --> APPROVE{Manual approval}
-    APPROVE -- approve --> DEPLOY_PROD[Deploy to production<br/>Render — auto]
-    APPROVE -- reject --> HOLD([Hold])
+    ART1 --> DEPLOY_STG["Deploy to staging (planned)<br/>Render — auto"]
+    ART2 --> DEPLOY_PROD["Deploy to production (planned)<br/>Render — auto"]
 
     MERGE -->|docs/** or mkdocs.yml| DOCS[Deploy Docs<br/>GitHub Actions<br/>mkdocs gh-deploy]
     DOCS --> PAGES[(GitHub Pages)]
@@ -563,10 +538,11 @@ flowchart LR
 ```
 
 *Figure 5.2 — CI/CD pipeline from commit to deployed artefact.
-Trigger events are dashed at the left; pipeline stages are green;
-artefacts produced are tagged with the commit SHA; manual approval
-gates the production deploy; health-check failures invoke the
-rollback path.*
+Trigger events are dashed at the left; pipeline stages are sequential;
+artefacts produced are tagged with the commit SHA; health-check
+failures invoke the rollback path. Stages annotated *(planned)* are
+the cloud-deploy additions scheduled for the Demo 2 sprint; the
+Lint / Test / Deploy-Docs stages are live today.*
 
 ### 5.5 Secrets Management
 
@@ -575,17 +551,20 @@ rollback path.*
   placeholder value.
 - In CI, secrets are loaded from GitHub Actions Secrets and exposed
   to jobs only via the `env:` block where strictly needed.
-- In production, secrets live in Render Environment Groups and are
-  injected into the running container at start time.
-- A `gitleaks` scan runs on every PR; any leaked secret fails the
-  build.
+- In production, secrets will live in Render Environment Groups and
+  will be injected into the running container at start time
+  *(planned for Demo 2)*.
+- A `gitleaks` scan is **planned for Demo 2** as a new workflow under
+  `.github/workflows/secret-scan.yml`; once added it will run on every
+  PR and any leaked secret will fail the build.
 
 This satisfies the Demo 2 brief's Secrets Management requirement and
 `R8.2`.
 
 ### 5.6 Rollback Strategy
 
-Each successful build pushes a Docker image tagged with the commit
+*(planned for Demo 2 — applies once cloud deployment is provisioned.)*
+Each successful build will push a Docker image tagged with the commit
 SHA — for example `gbdcs-backend:main-9a3f7c2`. To roll back:
 
 1. Identify the last known-good SHA from the deploy history.
@@ -603,12 +582,15 @@ For documentation failures (broken MkDocs build), Pages serves the
 last successful `gh-pages` commit, so no extra rollback action is
 needed — the next green push to `docs/**` overwrites it.
 
+Until the cloud deployment lands, rollback is the simpler local
+procedure: `git revert <bad-sha>` on `main`, push, and re-deploy via
+`docker compose up --build`.
+
 ---
 
 ## 6. Architectural Review
 
-Per the design-process checklist, the architecture is reviewed against
-three lenses.
+The architecture is reviewed against three lenses.
 
 === "Meets requirements & objectives"
 
@@ -622,10 +604,13 @@ three lenses.
 
 === "Satisfies design principles"
 
-    All six principles from §2.6 (Design for Change, Separation of
-    Concerns, Information Hiding, High Cohesion, Low Coupling, KISS)
-    are realised by the patterns in §2.2 and the import graph in §2.4.
-    No principle is violated by the current design.
+    The design honours Design for Change (Adapter / Strategy / Observer
+    patterns absorb the two highest-volatility change vectors),
+    Separation of Concerns (four logical tiers map to four package
+    roots), Information Hiding (concrete adapters and storage hidden
+    behind interfaces), High Cohesion + Low Coupling (acyclic
+    one-directional import graph), and KISS (rule-based recogniser
+    ships first; ML and PostgreSQL are opt-in upgrades).
 
 === "Satisfies security constraints"
 
@@ -634,4 +619,4 @@ three lenses.
     - SQLite store is local-only (§3.1 — `R8.2`).
     - Adapter layer rejects pre-`READY` take-off (`R6.2.2`).
     - 100 % schema validation at the REST boundary (§4.1 — `R8.3`).
-    - `gitleaks` blocks any committed secret (§5.5 — `R8.2`).
+    - `gitleaks` workflow planned for Demo 2 (§5.5 — `R8.2`).

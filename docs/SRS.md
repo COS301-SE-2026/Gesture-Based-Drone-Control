@@ -62,28 +62,36 @@ A site-wide list of abbreviations is auto-appended on every page via
 ### 1.4 References
 
 1. Kung, D. C. *Software Engineering* (2nd ed.). McGraw-Hill, 2024.
-   Chapters 3 (System Engineering), 4 (Requirements Elicitation),
-   5 (Domain Modeling), 6 (Architectural Design), 7 (Use Cases).
-2. COS 301 Lectures — *System Engineering & Software Requirements Elicitation.*
-   University of Pretoria, 2026.
-3. EPI-USE Labs. *Gesture-Based Drone Control — Project Brief* (tender document, 2026).
-4. Codex Merchants. *Tender Response & Proposed Architecture*
+   Chapters 3–5 and 7 (System Engineering, Requirements Elicitation,
+   Domain Modeling, Use Cases). Architectural content (Ch. 6) is now
+   covered by [`SAS.md`](SAS.md).
+2. [`SAS.md`](SAS.md) — Software Architecture Specification (the
+   architectural, technological, and deployment counterpart to this
+   document).
+3. [`BRAND.md`](BRAND.md) — Brand & Design System (the visual and UX
+   counterpart to this document).
+4. COS 301 lecture material — *System Engineering & Software
+   Requirements Elicitation.* University of Pretoria, 2026.
+5. EPI-USE Labs. *Gesture-Based Drone Control — Project Brief* (tender
+   document, 2026).
+6. Codex Merchants. *Tender Response & Proposed Architecture*
    (`docs/reports/tender.pdf`).
-5. MediaPipe Hands documentation —
+7. MediaPipe Hands documentation —
    [google.github.io/mediapipe/solutions/hands](https://google.github.io/mediapipe/solutions/hands).
-6. xFly SDK / DJI Tello SDK product documentation.
-7. Microsoft AirSim — [microsoft.github.io/AirSim](https://microsoft.github.io/AirSim).
+8. xFly SDK / DJI Tello SDK product documentation.
+9. Microsoft AirSim — [microsoft.github.io/AirSim](https://microsoft.github.io/AirSim).
 
 ### 1.5 Overview
 
 The remainder of this document is organised as follows.
 
 - **Section 2 — Overall Description.** Product perspective, interfaces, operating
-  environment, assumptions, and dependencies.
+  environment, user characteristics, assumptions, and dependencies.
 - **Section 3 — Specific Requirements.** External-interface, functional, and
-  quality-attribute requirements, numbered using the hierarchical
-  `R<i>.<j>.<k>` scheme. Architectural and design-pattern decisions that
-  realise these requirements live in [`SAS.md`](SAS.md).
+  quality-attribute requirements, plus base features and process requirements,
+  numbered using the hierarchical `R<i>.<j>.<k>` scheme. Architectural and
+  technological decisions that realise these requirements live in
+  [`SAS.md`](SAS.md).
 - **Section 4 — Use Cases.** Use-case diagram and full use-case descriptions
   for the primary operational scenarios.
 - **Section 5 — Domain Model.** The analysis-level domain model that
@@ -99,8 +107,9 @@ The remainder of this document is organised as follows.
 
 GBDCS is a **self-contained, ground-based application** that interfaces with a
 detachable UAV (real or simulated) and a single human operator via a camera and a
-dashboard. It is structured into six tiers, applying the **top-down,
-divide-and-conquer decomposition**
+dashboard. It is structured into six tiers, applying a **top-down,
+divide-and-conquer decomposition** so that each tier is functionally cohesive and
+loosely coupled.
 
 ```mermaid
 flowchart LR
@@ -114,8 +123,6 @@ flowchart LR
 *Figure 2.1 — Six-tier logical decomposition of GBDCS. The corresponding
 architectural-style choices for each tier are documented in
 [`SAS.md` §2](SAS.md#2-architectural-requirements).*
-
-Each tier is functionally cohesive and loosely coupled.
 
 #### 2.1.1 System Interfaces
 
@@ -329,32 +336,6 @@ recognised:
   system event (start, stop, failsafe trip, error) with an ISO-8601
   timestamp in SQLite.
 
-#### R16: Base Features
-
-Base features are foundational capabilities shared by most modern
-applications and are therefore documented separately from the
-domain-specific use cases.
-
-- **R16.1:** The system shall provide a registration and login flow.
-    - **R16.1.1:** A new user shall be able to register an account using
-      an email address and a password.
-    - **R16.1.2:** Passwords shall be validated against a minimum-strength
-      policy at registration time.
-    - **R16.1.3:** Returning users shall be able to authenticate using
-      their email address and password and shall receive a short-lived
-      session token (see also `R8.1`).
-- **R16.2:** The system shall provide light and dark themes.
-    - **R16.2.1:** The dashboard shall offer a light and a dark colour
-      scheme, switchable by the operator at runtime.
-    - **R16.2.2:** The selected theme shall persist across sessions for
-      the same user.
-- **R16.3:** The system shall validate all user-submitted forms.
-    - **R16.3.1:** Form submissions shall be validated client-side before
-      being sent to the backend.
-    - **R16.3.2:** The backend shall re-validate every submission and
-      reject any payload that fails validation, returning a clear error
-      message (see also `R8.3`, `R10.3`).
-
 ### 3.3 Non-Functional (Quality) Requirements
 
 The Demo 2 brief targets *five* quantified quality requirements. The five
@@ -421,16 +402,6 @@ in [`SAS.md` §2.5](SAS.md#25-mapping-quality-requirements-to-architectural-deci
   suggest a corrective action; **100 %** of error states shall meet
   this rule in a quarterly UX audit.
 
-!!! note "Where the other quality attributes live"
-    The earlier draft of this SRS additionally enumerated *availability*
-    and *portability* as separate quality requirements. They are still
-    in scope for the project — availability is realised by the
-    deployment topology in [`SAS.md` §5](SAS.md#5-deployment) and
-    portability by the cross-platform stack chosen in
-    [`SAS.md` §3](SAS.md#3-technology-requirements) — but they are no
-    longer counted as headline NFRs to keep this section aligned with
-    the Demo 2 brief's five-NFR target.
-
 ### 3.4 Other Requirements
 
 #### R15: Process & Documentation
@@ -440,6 +411,32 @@ in [`SAS.md` §2.5](SAS.md#25-mapping-quality-requirements-to-architectural-deci
   push to `main` and `dev`.
 - **R15.2:** The project shall use **Conventional Commits** for all
   changes merged into shared branches.
+
+#### R16: Base Features
+
+Base features are foundational capabilities shared by most modern
+applications and are therefore documented separately from the
+domain-specific use cases.
+
+- **R16.1:** The system shall provide a registration and login flow.
+    - **R16.1.1:** A new user shall be able to register an account using
+      an email address and a password.
+    - **R16.1.2:** Passwords shall be validated against a minimum-strength
+      policy at registration time.
+    - **R16.1.3:** Returning users shall be able to authenticate using
+      their email address and password and shall receive a short-lived
+      session token (see also `R8.1`).
+- **R16.2:** The system shall provide light and dark themes.
+    - **R16.2.1:** The dashboard shall offer a light and a dark colour
+      scheme, switchable by the operator at runtime.
+    - **R16.2.2:** The selected theme shall persist across sessions for
+      the same user.
+- **R16.3:** The system shall validate all user-submitted forms.
+    - **R16.3.1:** Form submissions shall be validated client-side before
+      being sent to the backend.
+    - **R16.3.2:** The backend shall re-validate every submission and
+      reject any payload that fails validation, returning a clear error
+      message (see also `R8.3`, `R10.3`, `R11.3`).
 
 ---
 
@@ -464,7 +461,7 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
     user ends with confirming the drone has executed the
     corresponding command on the live dashboard.*
 
-    **Actors.** user (operator->primary), Drone (secondary, via adapter).
+    **Actors.** Operator (primary); Drone (secondary, via adapter).
 
     **Preconditions.**
 
@@ -505,7 +502,7 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
     with acknowledging the current drone status and any
     raised alerts on the dashboard.*
 
-    **Actor.** User (Operator).
+    **Actor.** Operator.
 
     **Preconditions.** Dashboard is open and connected to the backend
     WebSocket endpoint.
@@ -532,7 +529,7 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
     drone has performed the basic flight commands within the AirSim
     environment.*
 
-    **Actors.** User (operator->primary), AirSim Simulator (secondary, via
+    **Actors.** Operator (primary); AirSim Simulator (secondary, via
     `AirSimAdapter`).
 
     **Preconditions.**
@@ -571,7 +568,7 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
     login screen. The user ends with arriving on the operator dashboard
     with a valid short-lived session token.*
 
-    **Actor.** User (Operator).
+    **Actor.** Operator.
 
     **Preconditions.** The backend is reachable and the user has a
     registered account (`R16.1.1`).
@@ -648,8 +645,8 @@ problem and is the input to the design class diagram in
 ## Appendix A — Requirements Elicitation Methodology
 
 The requirements in this document were elicited following the five-step
-process. Following Demo 1, the team
-is now enforcing this process strictly for every subsequent demo.
+process. Following Demo 1, the team is now enforcing this process
+strictly for every subsequent demo.
 
 === "1. Collecting information"
 
@@ -704,13 +701,14 @@ is now enforcing this process strictly for every subsequent demo.
 
 | Requirement | Type | Verified by | Target demo | Status |
 | --- | --- | --- | --- | --- |
-| `R3.1.*`, `R3.2.*` | Capture & detection | `tests/cv_pipeline_testing` | Demo 1 | Delivered |
-| `R4.*` | Mapping | `services/tests/test_command.py` | Demo 1 | Delivered |
+| `R3.1.*`, `R3.2.1` | Capture & detection | `tests/cv_pipeline_testing` | Demo 1 | Delivered |
+| `R3.2.2`, `R3.2.3` | Gesture classification | Recogniser unit tests | Demo 1 | Delivered |
 | `R16.*` | Base features | Frontend unit + Playwright E2E | Demo 1 | Delivered |
-| `R5.*` | Drone comms | Adapter integration tests | Demo 2 | Delivered |
-| `R6.*` | Safety & failsafes | Manual + integration tests | Demo 2 | Delivered |
-| `R1.*` | Dashboard UI | Playwright E2E | Demo 2 | Delivered |
-| `R8.*` | Security | Backend auth + schema tests | Demo 2 | Delivered |
+| `R4.*` | Mapping | `services/tests/test_command.py` | Demo 2 | In progress |
+| `R5.*` | Drone comms | Adapter integration tests | Demo 2 | In progress |
+| `R6.*` | Safety & failsafes | Manual + integration tests | Demo 2 | In progress |
+| `R1.*` | Dashboard UI | Playwright E2E | Demo 2 | In progress |
+| `R8.*` | Security | Backend auth + schema tests | Demo 2 | In progress |
 | `R7.*` | Performance | Load / latency harness | Demo 3 | Planned |
 | `R9.*` | Reliability / accuracy | Labelled-set evaluation | Demo 3 | Planned |
 | `R10.*` | Maintainability | CI coverage gate | Continuous | Active |

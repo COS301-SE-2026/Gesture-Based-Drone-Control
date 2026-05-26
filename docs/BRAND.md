@@ -2,8 +2,8 @@
 
 <div class="tx-badges">
   <span class="tx-status"><span class="tx-status__dot"></span>Demo 2 — v2.0</span>
-  <span class="tx-status">Accessibility · WCAG 2.2 AA</span>
-  <span class="tx-status">Tokens · in code &amp; in docs</span>
+  <span class="tx-status">Accessibility · WCAG 2.2 AA target</span>
+  <span class="tx-status">Tokens · canonical in this document</span>
 </div>
 
 !!! abstract "What this document covers"
@@ -12,12 +12,17 @@
     wireframes to a working implementation, and the visual language
     has matured accordingly. This document is both a **brand guide**
     (palette, logo, voice) and a **design system** (tokens,
-    components, layout, accessibility). The deployed companion page
-    — a live, animated, responsive version of this document — sits
-    alongside the production application at `/style-guide`.
+    components, layout, accessibility). It is served as a
+    first-class page on the project documentation site and is the
+    canonical source for visual decisions across the implementation.
 
-    A copy of this document is exported as a PDF in the repository
-    under `docs/reports/BRAND.pdf` per the Demo 2 brief.
+!!! note "Demo-2 alignment"
+    Several deliverable expectations from the Demo 2 brief land
+    on this document. Items still in flight at the time of writing
+    are tagged *(planned for Demo 2)*. They include the standalone
+    deployed style-guide page alongside the production app, the
+    additional logo variants beyond the primary mark, and the
+    self-hosting of the font payload.
 
 ---
 
@@ -70,9 +75,10 @@ states.
 
 ### 2.3 WCAG 2.2 contrast ratios
 
-All foreground / background pairings used in the production UI have
-been audited with the WebAIM contrast checker. AA is the minimum;
-AAA is achieved for body text on both themes.
+All foreground / background pairings used in the production UI are
+designed to meet WCAG 2.2 AA at a minimum, with AAA achieved for body
+text on both themes. The values below are the design-time ratios; an
+automated audit (§8.6) verifies them per build.
 
 | Foreground | Background | Ratio | Level | Use |
 | --- | --- | --- | --- | --- |
@@ -116,13 +122,14 @@ code blocks.
 
 | Role | Family | Fallback stack | Source | Licence |
 | --- | --- | --- | --- | --- |
-| UI / body | **Inter** | `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif` | Self-hosted (`/static/fonts/inter/`) | SIL Open Font Licence 1.1 |
-| Display | **Inter Display** | (same as above) | Self-hosted | SIL OFL 1.1 |
-| Monospace | **JetBrains Mono** | `ui-monospace, "SF Mono", Menlo, Consolas, monospace` | Self-hosted | Apache 2.0 |
+| UI / body | **Inter** | `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif` | Google Fonts (self-hosting *planned for Demo 2*) | SIL Open Font Licence 1.1 |
+| Display | **Inter Display** | (same as above) | Google Fonts (self-hosting *planned for Demo 2*) | SIL OFL 1.1 |
+| Monospace | **JetBrains Mono** | `ui-monospace, "SF Mono", Menlo, Consolas, monospace` | Google Fonts (self-hosting *planned for Demo 2*) | Apache 2.0 |
 
-Self-hosting (rather than Google Fonts CDN) eliminates a third-party
-runtime dependency, which aligns with the SRS `R8.2` posture — no
-runtime telemetry to external services.
+Self-hosting (rather than the Google Fonts CDN) is planned for the
+Demo 2 sprint and aligns with the SRS `R8.2` posture — no runtime
+telemetry to external services. Until that lands, the fonts are
+loaded from the Google Fonts CDN at build time.
 
 ### 3.2 Typographic scale
 
@@ -144,7 +151,7 @@ A modular scale at ratio 1.2 anchored on 16 px body.
 
 400 (regular), 500 (medium), 600 (semibold), 700 (bold). The team
 does not ship 300, 800, or 900 — they would tempt overuse of
-decorative weights and increase the self-hosted font payload.
+decorative weights and increase the font payload.
 
 ---
 
@@ -152,19 +159,20 @@ decorative weights and increase the self-hosted font payload.
 
 ### 4.1 Logo
 
-The Codex Merchants logo is shipped in four forms.
+The Codex Merchants logo currently ships in one form, with the
+remaining variants planned for Demo 2.
 
-| Form | File | Use |
-| --- | --- | --- |
-| Full | `assets/codex_merchants_logo.svg` | Default. README, docs site header, landing-page hero. |
-| Monogram | `assets/codex_merchants_mark.svg` | Tight spaces — favicon, browser tab, app icon, ≤ 32 px usage. |
-| Monochrome | `assets/codex_merchants_mono.svg` | Print, single-colour contexts. |
-| Inverse | `assets/codex_merchants_inverse.svg` | On red brand surfaces only. |
+| Form | File | Use | Status |
+| --- | --- | --- | --- |
+| Full (colour) | `assets/codex_merchants_logo.png` | Default. README, docs site header, landing-page hero. | Available |
+| Monogram | `assets/codex_merchants_mark.svg` | Tight spaces — favicon, browser tab, app icon, ≤ 32 px usage. | *Planned for Demo 2* |
+| Monochrome | `assets/codex_merchants_mono.svg` | Print, single-colour contexts. | *Planned for Demo 2* |
+| Inverse | `assets/codex_merchants_inverse.svg` | On red brand surfaces only. | *Planned for Demo 2* |
 
 #### 4.1.1 Minimum size & clear space
 
 - Full logo: minimum **120 px wide** on screen.
-- Monogram: minimum **24 px wide**.
+- Monogram (once published): minimum **24 px wide**.
 - Clear space around the logo: at least the height of the monogram
   on all four sides. Other elements may not enter this zone.
 
@@ -197,11 +205,11 @@ naturally next to Lucide icons.
 
 ## 5. Design Tokens
 
-Tokens are the single source of truth for visual properties. They
-live in `packages/contracts/tokens.css` as CSS custom properties and
-are also exposed to TypeScript via a generated `tokens.ts`. **The
-tokens in this document and the tokens in code are kept in sync** —
-drift between the two is treated as a bug.
+Tokens are the single source of truth for visual properties. **This
+document is the canonical source** for token names and values; the
+implementation in `packages/contracts/tokens.css` and the generated
+`tokens.ts` are kept in sync with it during the Demo 2 sprint. Drift
+between the document and the code is treated as a bug.
 
 ### 5.1 Colour tokens
 
@@ -428,16 +436,21 @@ No information is conveyed by colour alone. Alerts also carry an
 icon and a text label; telemetry pills carry a text value alongside
 the colour.
 
-### 8.6 Audit scores
+### 8.6 Audit targets
 
-| Surface | Tool | Score |
-| --- | --- | --- |
-| Landing page | Lighthouse Accessibility | 100 |
-| Dashboard | axe DevTools | 0 violations |
-| Help menu | WAVE | 0 errors, 0 contrast errors |
+The team will audit each surface against the targets below before
+Demo 2. The audit table will be updated with measured scores as
+they land.
 
-These scores are re-run on every PR that touches `apps/frontend/**`
-via a CI job (see [`CICD.md`](CICD.md)).
+| Surface | Tool | Target | Status |
+| --- | --- | --- | --- |
+| Landing page | Lighthouse Accessibility | ≥ 90 | *Audit pending* |
+| Dashboard | axe DevTools | 0 violations | *Audit pending* |
+| Help menu | WAVE | 0 errors, 0 contrast errors | *Audit pending* |
+
+Once the cloud deployment is up (see [`SAS.md` §5](SAS.md#5-deployment)),
+these audits will be re-run on every PR that touches `apps/frontend/**`
+via a CI job. Until then they are run manually by the QA owner.
 
 ---
 
@@ -449,7 +462,7 @@ GBDCS speaks to pilots. The voice is **calm, direct, and specific**.
 | --- | --- | --- |
 | Button labels | Imperative verb, ≤ 3 words. | *"Take off"*, *"End session"*, *"Stop now"*. |
 | Empty states | Friendly, action-oriented. | *"No sessions yet — start a flight to see your history here."* |
-| Success messages | Quiet confirmation. | *"Drone connected."* (not *"🎉 Successfully connected to drone!"*) |
+| Success messages | Quiet confirmation. | *"Drone connected."* (Avoid: *"🎉 Successfully connected to drone!"* — too loud for an operational surface.) |
 | Errors | Cause first, then suggestion. | *"Camera not detected. Connect a webcam or check your browser permissions."* (cause + suggestion, per `R11.3`.) |
 | Critical alerts | Telegraphic, urgent, never alarmist. | *"Link lost. Hovering until link returns."* |
 
@@ -464,12 +477,12 @@ trying to be funny.
 
 | Area | Demo 1 | Demo 2 | Rationale |
 | --- | --- | --- | --- |
-| Format | Static section in `DESIGN.md` §9 | Standalone document + live deployed page at `/style-guide` + PDF in repo | Demo 2 brief explicitly requires the brand guide to evolve into a deployed page, not just a text section. |
+| Format | Brand section inside the (now-retired) `DESIGN.md` | Standalone document on the docs site; canonical reference for visual decisions | The retired `DESIGN.md` mixed brand and software-design content; splitting it gives each its own deliverable. A separately deployed live style-guide page alongside the app is *planned for Demo 2*. |
 | Palette | 7 colours (3 reds, off-black, 3 neutrals) | Same 7 + 4 semantic colours (success, warning, error, info) with full WCAG audit | The early UI lacked formal state colours; adding them gave the dashboard a vocabulary for telemetry and alerts. |
 | Typography | "Use a sans-serif" | Inter + Inter Display + JetBrains Mono with a 1.2 modular scale and named tokens | Implementation needed concrete sizes; the modular scale eliminated ad-hoc font sizes in code. |
-| Tokens | Implicit in code | Documented in §5 with the same names as the CSS vars | Drift between the docs and the code was happening; making the tokens explicit makes drift visible. |
+| Tokens | Implicit in code | Documented in §5 with the canonical names used by the CSS layer | Drift between docs and code was happening; making the document the canonical source makes drift visible. |
 | Components | Wireframes only | Full component spec (button, input, select, modal, toast, card, gesture indicator, telemetry pill) with all states | The system now exists, so the components have variants and states worth documenting. |
-| Accessibility | Not formally addressed | WCAG 2.2 AA conformance target with audit scores | Mentor feedback after Demo 1 flagged a11y as a gap; Lighthouse / axe are now in CI. |
+| Accessibility | Not formally addressed | WCAG 2.2 AA conformance target with audit targets and per-PR automation planned | Mentor feedback after Demo 1 flagged a11y as a gap; targets and audit cadence are now explicit. |
 | Voice & tone | Absent | Added §9 with examples per surface | Several Demo 1 error messages were unclear; making the tone rules explicit fixed the inconsistency. |
 | Iconography | "Lucide" mentioned in passing | Stroke width, sizing rules, ARIA rules, custom-illustration alignment | The Demo 1 iconography varied by view; the rules in §4.2 enforce a single visual language. |
 | Motion | Not addressed | Three named durations + `prefers-reduced-motion` rule | The dashboard's gesture pulse made some Demo 1 reviewers motion-sick; the reduced-motion rule resolves that. |

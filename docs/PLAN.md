@@ -11,9 +11,9 @@
     (GBDCS) is being delivered. It is built around **Agile** as the
     methodology and **Scrum** as the framework.
 
-    The plan is the bridge between the [SRS](SRS.md) (*what* we are
-    building) and the [Design](DESIGN.md) (*how* it is structured) — it
-    answers *when* and *in what order*.
+    The plan is the bridge between [SRS](SRS.md) (*what* we are
+    building), [SAS](SAS.md) (*how* it is structured), and [BRAND](BRAND.md)
+    (*what it looks like*) — it answers *when* and *in what order*.
 
 ---
 
@@ -21,12 +21,11 @@
 
 ### 1.1 Why Agile
 
-The team adopts **Agile** because the problem is wicked in the 
-sense: gesture recognition accuracy, drone-SDK behaviour, and operator
-expectations cannot be fully specified up front and will be discovered
-iteratively. The four values of the **Agile Manifesto** are
-adopted verbatim — the team values the items on the left more than the
-items on the right.
+The team adopts **Agile** because the problem is volatile: gesture
+recognition accuracy, drone-SDK behaviour, and operator expectations
+cannot be fully specified up front and will be discovered iteratively.
+The four values of the **Agile Manifesto** are adopted verbatim — the
+team values the items on the left more than the items on the right.
 
 | We value | … over |
 | --- | --- |
@@ -44,8 +43,8 @@ from short, predictable iterations.
 
 ### 1.3 Scrum values
 
-The five Scrum values guide every decision the framework
-itself does not cover:
+The five Scrum values guide every decision the framework itself does
+not cover:
 
 <div class="tx-grid tx-grid--3" markdown>
 <div class="tx-card" markdown>
@@ -71,29 +70,29 @@ itself does not cover:
 
 ### 2.1 Roles
 
-Three roles must be filled. The team's assignment:
+The team's role assignments. Role boundaries are intentionally
+permeable — every dev contributes across the stack and to testing.
 
 | Role | Member | Why |
 | --- | --- | --- |
-| **Product Owner** | *TBD — rotates demo-to-demo, primary contact with EPI-USE mentor* | Owns the backlog and priorities; agrees Definition of Done with the team. |
-| **Scrum Master and Dev** | Ayush Beekum | Strongest integration / cross-cutting experience; removes impediments and coaches the team on the process. |
-| **Dev Team — Frontend lead** | Chinmayi Santhosh | UI / UX, PWA, Playwright / Jest / Vitest experience. |
-| **Dev Team — Frontend + QA** | Diya Narotam | UI engineering and React/Tailwind background. |
-| **Dev Team — DevOps & CV** | Shavir Vallabh | TechTeam at UP, DevOps and HPC experience; owns deployment, containerisation, and adapter integration with hardware.|
-| **Dev Team — Infrastructure** | Jaitin Moodally | Homelab / multi-OS / low-level background;  owns the CI/CD pipeline and the CV/ML stack  |
-
-Role boundaries are intentionally permeable — every dev contributes across
-the stack and to testing 
+| **Product Owner** | *Rotates demo-to-demo; primary contact with the EPI-USE mentor* | Owns the backlog and priorities; agrees Definition of Done with the team. |
+| **Scrum Master + Dev** | Ayush Beekum | Strongest integration / cross-cutting experience; removes impediments and coaches the team on the process. |
+| **Dev Team — Frontend lead** | Chinmayi Santhosh | UI engineering and React / Tailwind background. |
+| **Dev Team — Frontend + QA** | Diya Narotam | UI / UX, PWA, Playwright / Jest / Vitest experience. |
+| **Dev Team — DevOps & Infrastructure** | Jaitin Moodally | Homelab / multi-OS / low-level background; owns the CI/CD pipeline, containerisation, and deployment. |
+| **Dev Team — CV & ML** | Shavir Vallabh | TechTeam at UP, ML and HPC experience; owns the CV pipeline, recogniser strategies, and drone-adapter integration. |
 
 ### 2.2 Ceremonies
 
-The team runs the full Scrum ceremony set on a two-week cadence.
+The team runs the full Scrum ceremony set on a two-week cadence. In
+addition to the in-sprint ceremonies, the team meets at least **twice
+weekly** for the COS 301-mandated stand-ups (see §2.4).
 
 ```mermaid
 flowchart LR
-    P[Sprint Planning<br/>~2&nbsp;hrs · Mon&nbsp;Wk1] --> S1[Daily Standup<br/>15&nbsp;min · every&nbsp;day]
+    P[Sprint Planning<br/>~2&nbsp;hrs · Mon&nbsp;Wk1] --> S1[Stand-ups<br/>15&nbsp;min · ≥&nbsp;2× / week]
     S1 --> BR[Backlog Refinement<br/>~1&nbsp;hr · Wed&nbsp;Wk1]
-    BR --> S2[Daily Standup<br/>continues]
+    BR --> S2[Stand-ups<br/>continue]
     S2 --> SR[Sprint Review<br/>~45&nbsp;min · Fri&nbsp;Wk2]
     SR --> RETRO[Retrospective<br/>~45&nbsp;min · Fri&nbsp;Wk2]
     RETRO -.->|next sprint| P
@@ -104,14 +103,15 @@ flowchart LR
 | Ceremony | Length | Cadence | Purpose |
 | --- | --- | --- | --- |
 | Sprint Planning | ~2 hrs | Monday, Week 1 | Agree the sprint goal and pull stories from the product backlog into the sprint backlog. |
-| Daily Standup | 15 min | Every weekday | "Yesterday / today / blockers." Asynchronous on Discord when the team can't meet live. |
+| Stand-up | 15 min | At least twice weekly | "Yesterday / today / blockers." Minutes logged in the Group Discussion on ClickUP (see §2.4). |
 | Backlog Refinement | ~1 hr | Wednesday, Week 1 | Clarify, size, and split upcoming PBIs before the next planning session. |
+| Mentor Meeting (lecturer) | ~30 min | Every second week | Alignment on documentation, scope, and team-dynamics issues. |
 | Sprint Review | ~45 min | Friday, Week 2 | Demo the increment to the EPI-USE and academic mentors. |
 | Retrospective | ~45 min | Friday, Week 2 | What worked, what didn't, what we commit to changing next sprint. |
 
 ### 2.3 Artifacts
 
-Three artifacts are maintained.
+Three Scrum artifacts are maintained.
 
 - **Product Backlog** — the master list of every PBI for GBDCS
   (see [§4](#4-product-backlog)). Lives in the GitHub Project board.
@@ -120,14 +120,29 @@ Three artifacts are maintained.
 - **Burndown Chart** — the open story-point total per day of the sprint
   (see [§7](#7-burndown--velocity)).
 
+### 2.4 Meeting cadence and minute-logging
+
+The COS 301 Demo 2 brief requires the team to maintain a documented
+meeting cadence. The team complies as follows.
+
+| Cadence | What | Where logged |
+| --- | --- | --- |
+| **At least twice weekly** | Stand-up (15 min). "Yesterday / today / blockers" per member. | Group Discussion on ClickUP for the current demo, with **date, time, and attendees**. |
+| **Every second week** | Lecturer-mentor meeting. Documentation alignment, scope, team dynamics. | Group Discussion on ClickUP, with **date, time, and attendees**. |
+| **As needed** | Industry-mentor check-in with EPI-USE. | Group Discussion on ClickUP, with **date, time, and attendees**. |
+
+The team leader is responsible for posting the minutes after every
+meeting. Missing minutes affect the team and individual marks per the
+Demo 2 brief — they are not optional.
+
 ---
 
 ## 3. Definition of Ready &amp; Definition of Done
 
-The Definition of Done is *agreed between the team and
-the PO, realistic, within the team's control, short (5–8 items), well
-understood, and visible*. Both DoR and DoD are pinned to the
-GitHub Project board.
+The Definition of Done is *agreed between the team and the PO,
+realistic, within the team's control, short (5–8 items), well
+understood, and visible*. Both DoR and DoD are pinned to the GitHub
+Project board.
 
 === "Definition of Ready (DoR)"
 
@@ -147,7 +162,7 @@ GitHub Project board.
 
     1. All acceptance criteria pass (manual + automated).
     2. Unit tests cover the new code at ≥ 80 % line coverage
-       (per `R12.2`).
+       (per `R10.2`).
     3. Code has been reviewed and merged into `dev` via a pull request
        conforming to [`GIT.md`](GIT.md).
     4. CI is green on the merge commit (lint, type-check, test).
@@ -159,34 +174,50 @@ GitHub Project board.
 
 ## 4. Product Backlog
 
-Per L16 slide 4, the product backlog is the flat, prioritised list of
-every PBI for the system. PBIs are derived directly from the SRS — each
-maps to one or more `R` identifiers.
+The product backlog is the flat, prioritised list of every PBI for the
+system. PBIs are derived directly from the SRS — each maps to one or
+more `R` identifiers and to one or more use cases.
 
-| # | PBI | Maps to | First targeted demo |
-| --- | --- | --- | --- |
-| PBI-01 | Hand tracking pipeline | `R3.1.*`, `R3.2.1` | Demo 1 |
-| PBI-02 | Telemetry dashboard | `R1.1.3`, `R5.1.2` | Demo 1 |
-| PBI-03 | AirSim simulator adapter | `R2.2`, `R8.2` | Demo 1 |
-| PBI-04 | Base features (login, themes, form validation) | `R16.*` | Demo 1 |
-| PBI-05 | Rule-based gesture recognition | `R3.2.2`, `R3.2.3`, `R8.3` | Demo 1 |
-| PBI-06 | Gesture → command translation | `R4.*` | Demo 2 |
-| PBI-07 | Real-drone adapter (Tello / xFly) | `R2.2`, `R5.*`, `R8.2` | Demo 2 |
-| PBI-08 | Safety layer (idle, link loss, low battery, emergency stop) | `R5.2.*`, `R6.*` | Demo 2 |
-| PBI-09 | Gesture overlay on dashboard feed | `R1.1.1`, `R1.1.2` | Demo 2 |
-| PBI-10 | Command + telemetry persistence | `R6.3` | Demo 2 |
+| # | PBI | Maps to | Use case | First targeted demo |
+| --- | --- | --- | --- | --- |
+| PBI-01 | Hand tracking pipeline | `R3.1.*`, `R3.2.1` | UC-1 | Demo 1 |
+| PBI-02 | Telemetry dashboard | `R1.1.3`, `R5.1.2` | UC-2 | Demo 1 |
+| PBI-03 | AirSim simulator adapter | `R2.2` | UC-3 | Demo 1 |
+| PBI-04 | Base features (login, themes, form validation) | `R16.*` | UC-4 | Demo 1 |
+| PBI-05 | Rule-based gesture recognition | `R3.2.2`, `R3.2.3` | UC-1 | Demo 2 |
+| PBI-06 | Gesture → command translation | `R4.*` | UC-1 | Demo 2 |
+| PBI-07 | Real-drone adapter (Tello / xFly) | `R2.2`, `R5.*` | UC-1 | Demo 2 |
+| PBI-08 | Safety layer (idle, link loss, low battery, emergency stop) | `R5.2.*`, `R6.*` | UC-1, UC-2 | Demo 2 |
+| PBI-09 | Gesture overlay on dashboard feed | `R1.1.1`, `R1.1.2` | UC-1 | Demo 2 |
+| PBI-10 | Command + telemetry persistence + replay | `R6.3` | UC-5 | Demo 2 |
 
 PBIs targeted at Demo 3 and Demo 4 will be added to the backlog as the
-team approaches them. Per the Scrum value of **Focus** (L15 slide 4), the
-team is not pre-planning work beyond the next demo.
+team approaches them. Per the Scrum value of **Focus**, the team is
+not pre-planning work beyond the next demo.
+
+### 4.1 Demo 2 — 5-use-case coverage
+
+The Demo 2 brief requires *five fully integrated use cases*. The
+mapping below shows how the active backlog satisfies that requirement.
+All five are existing use cases from [`SRS.md` §4](SRS.md#4-use-cases),
+brought to production-quality "no mocks, full integration, unit and
+E2E testing" status for Demo 2.
+
+| Use case | New for Demo 2? | Backed by |
+| --- | --- | --- |
+| UC-1 — Control Drone via Gesture | New (Demo 1 had hand tracking only; recognition + command dispatch land in Demo 2) | PBI-05, PBI-06, PBI-07, PBI-08, PBI-09 |
+| UC-2 — Monitor Telemetry &amp; Alerts | Extended (Demo 1 telemetry pipe; Demo 2 adds the alert overlay + acknowledgement) | PBI-08 |
+| UC-3 — AirSim Implementation | Extended (Demo 1 connectivity; Demo 2 closes the loop with command dispatch) | PBI-06, PBI-07 |
+| UC-4 — Authenticate Operator Session | Hardened (Demo 1 login + theme; Demo 2 wires the short-lived token into the WS handshake) | PBI-04 carry-over + PBI-08 |
+| UC-5 — Replay a Recorded Session | New | PBI-10 |
 
 ---
 
 ## 5. Epics &amp; User Stories
 
-The active backlog (PBI-05 through PBI-10) is broken down into epics
-following the L16 slide 5 pattern, then into user stories using the
-template from L15 slide 12 with Given / When / Then acceptance criteria.
+The active backlog (PBI-05 through PBI-10) is broken down into epics,
+then into user stories using the standard *"As a … I want … so that …"*
+template with Given / When / Then acceptance criteria.
 
 ### 5.1 Epic — Gesture Recognition (PBI-05, PBI-06)
 
@@ -209,7 +240,7 @@ template from L15 slide 12 with Given / When / Then acceptance criteria.
     - **Given** the lighting is below 200 lux,
       **when** the operator holds an open palm,
       **then** the dashboard shall surface a "low-light" warning
-      (`R14.3`).
+      (`R11.3`).
 
 !!! example "US-2 — Recognise directional pointer gestures"
     **Story.**
@@ -255,7 +286,7 @@ template from L15 slide 12 with Given / When / Then acceptance criteria.
     `DroneAdapter` interface as the simulator adapter so that the rest
     of the system requires no changes.*
 
-    **Value:** 50 &middot; **Size:** Large &middot; **Maps to:** `R2.2`, `R8.2`
+    **Value:** 50 &middot; **Size:** Large &middot; **Maps to:** `R2.2`
 
     **Acceptance criteria.**
 
@@ -267,7 +298,7 @@ template from L15 slide 12 with Given / When / Then acceptance criteria.
     - **Given** the physical drone is unreachable,
       **when** the adapter attempts to connect,
       **then** an error shall be surfaced on the dashboard and take-off
-      shall be refused (`R6.2.2`, `R14.3`).
+      shall be refused (`R6.2.2`, `R11.3`).
 
 ### 5.4 Epic — Safety Layer (PBI-08)
 
@@ -316,7 +347,7 @@ template from L15 slide 12 with Given / When / Then acceptance criteria.
       **then** the system shall command `HOVER` and surface a banner
       alert.
 
-### 5.5 Epic — Dashboard Live View (PBI-09, PBI-10)
+### 5.5 Epic — Dashboard Live View &amp; Replay (PBI-09, PBI-10)
 
 !!! example "US-8 — Live gesture overlay"
     **Story.**
@@ -346,41 +377,47 @@ template from L15 slide 12 with Given / When / Then acceptance criteria.
       **when** any command or telemetry frame is produced,
       **then** it shall be written to SQLite with an ISO-8601
       timestamp.
+    - **Given** a recorded session exists,
+      **when** the reviewer triggers replay,
+      **then** the dashboard shall reconstruct the original gesture and
+      telemetry stream at original cadence (UC-5).
 
 ---
 
 ## 6. Demo Plan
 
-### 6.1 Demo 1 — Foundations &nbsp;<small> Delivered</small>
+### 6.1 Demo 1 — Foundations &nbsp;<small>Delivered</small>
 
 | Goal | Demonstrate the system skeleton: tracking + telemetry + simulator adapter + base features. |
 | --- | --- |
 | **PBIs delivered** | PBI-01, PBI-02, PBI-03, PBI-04 |
-| **Requirements satisfied** | `R3.1.*`, `R3.2.1`, `R1.1.3`, `R5.1.2`, `R2.2`, `R8.2`, `R16.*` |
-| **Outcome** | Hand tracking, dashboard telemetry, AirSim adapter, and login/theme/validation features were all demonstrated. Mentor feedback called out documentation formatting — addressed in this round of rewrites. |
+| **Requirements satisfied** | `R3.1.*`, `R3.2.1`, `R1.1.3`, `R5.1.2`, `R2.2`, `R16.*` |
+| **Outcome** | Hand tracking, dashboard telemetry, AirSim adapter, and login / theme / validation features were demonstrated. Mentor feedback called out documentation formatting — addressed in this round of rewrites. |
 
-### 6.2 Demo 2 — Recognition, Real Drone, Safety &nbsp;<small> In flight</small>
+### 6.2 Demo 2 — Recognition, Real Drone, Safety, Replay &nbsp;<small>In flight</small>
 
-| Goal | Close the loop: recognise gestures, send commands to a real drone through the existing adapter interface, and arm the safety layer. |
+| Goal | Close the loop: recognise gestures, send commands to a real drone through the existing adapter interface, arm the safety layer, and demonstrate session replay — all five use cases fully integrated, no mocks. |
 | --- | --- |
-| **Sprint goal** | A live gesture demo on real hardware with the failsafes proven on stage. |
+| **Sprint goal** | A live gesture demo on real hardware with the failsafes proven on stage, plus replay of the demo run from the dashboard. |
 | **PBIs in scope** | PBI-05, PBI-06, PBI-07, PBI-08, PBI-09, PBI-10 |
-| **Requirements newly satisfied** | `R3.2.2`, `R3.2.3`, `R4.*`, `R5.*`, `R6.*`, `R1.1.1`, `R1.1.2`, `R1.2.*`, `R8.3` |
-| **Definition of Done (demo-level)** | Drone takes off, executes at least four distinct commands from gestures, hovers on idle, hovers on link loss, lands on low battery, and the session is reviewable in replay. |
+| **Use cases brought to integration** | UC-1, UC-2, UC-3, UC-4, UC-5 |
+| **Requirements newly satisfied** | `R3.2.2`, `R3.2.3`, `R4.*`, `R5.*`, `R6.*`, `R1.1.1`, `R1.1.2`, `R1.2.*`, `R8.1`, `R8.3` |
+| **Demo-level Definition of Done** | Drone takes off, executes at least four distinct commands from gestures, hovers on idle, hovers on link loss, lands on low battery, and the session is reviewable in replay — all on a live, publicly-accessible deployment per the SAS deployment section. |
 
 ### 6.3 Demos 3 &amp; 4 &nbsp;<small>To be planned</small>
 
 Per the Scrum value of **Focus**, the team is not pre-planning these.
-Backlog refinement at the end of the Demo 2 sprints will surface the
-Demo 3 PBIs from the SRS requirements that are not yet satisfied (chiefly
-the `R7.*` performance bar and the `R9.*` reliability bar). Demo 4 will
-be planned at the close of Demo 3 in the same way.
+Backlog refinement at the end of the Demo 2 sprint will surface the
+Demo 3 PBIs from the SRS requirements that are not yet satisfied —
+chiefly the `R7.*` performance bar, the `R9.*` reliability bar, and
+the `R11.*` usability targets. Demo 4 will be planned at the close of
+Demo 3 in the same way.
 
 ---
 
 ## 7. Burndown &amp; Velocity
 
-Two charts are tracked across the project, both per L15 slide 6 (artifacts).
+Two charts are tracked across the project.
 
 ### 7.1 Sprint burndown (Demo 2 sprint, current)
 
@@ -394,7 +431,7 @@ xychart-beta
 
 *Figure 7.1 — Burndown for the current Demo 2 sprint. The straight line
 from 50 → 0 over 10 working days is the ideal trajectory; the team's
-actual line is plotted against it. Updated daily at standup.*
+actual line is plotted against it. Updated daily at stand-up.*
 
 ### 7.2 Velocity (story points per sprint)
 
@@ -414,7 +451,7 @@ pull more story points into a sprint than the rolling average.*
 !!! note "Live updates"
     These charts are illustrative snapshots committed to the repo. The
     live burndown and velocity for each sprint are tracked on the
-    GitHub Project board and updated at every standup and sprint
+    GitHub Project board and updated at every stand-up and sprint
     review.
 
 ---
@@ -425,20 +462,21 @@ pull more story points into a sprint than the rolling average.*
 | --- | --- | --- | --- |
 | B1 | Real-drone SDK behaviour (xFly / Tello) differs from AirSim | Tracking | Adapter parity tests; vendor support thread open; `DummyDroneAdapter` covers offline development. |
 | B2 | Telemetry-format divergence between AirSim and physical drone | Tracking | Shared `TelemetryFrame` schema in `packages/contracts`; per-adapter translators map vendor payloads to the schema. |
-| B3 | Latency variability under load | Tracking | Bounded-queue pipeline (Design §4.4); CPU profile in CI; latency harness planned for Demo 3. |
-| B4 | Time zone of EPI-USE mentor relative to academic mentor for joint reviews | Resolved | Sprint Review scheduled in a window that suits both. |
+| B3 | Latency variability under load | Tracking | Bounded-queue pipeline (see [SAS §2.1](SAS.md#21-architectural-patterns)); CPU profile in CI; latency harness planned for Demo 3. |
+| B4 | Cloud-deployment provisioning not yet complete | Tracking | Render account being wired up during the Demo 2 sprint; local Docker-Compose path covers all dev and integration testing in the interim (see [SAS §5.3](SAS.md#53-reproducible-deployment)). |
+| B5 | Time-zone overlap for joint mentor reviews | Resolved | Sprint Review scheduled in a window that suits both mentors. |
 
 The Scrum Master logs every new impediment in the project board as it
-surfaces in standup.
+surfaces in stand-up.
 
 ---
 
 ## 9. Buzzword Reference (GBDCS-specific)
 
-A short reference of the terms used in this document, mapped to L15
-slide 11 and to how they apply on GBDCS.
+A short reference of the terms used in this document, mapped to how
+they apply on GBDCS.
 
-| Term | Slide-15 definition | What it looks like on GBDCS |
+| Term | Definition | What it looks like on GBDCS |
 | --- | --- | --- |
 | **PBI** | Product Backlog Item | A row in [§4](#4-product-backlog). |
 | **Epic** | A large PBI broken into smaller stories | Each subsection of [§5](#5-epics--user-stories). |
@@ -451,5 +489,3 @@ slide 11 and to how they apply on GBDCS.
 | **Impediment** | Anything blocking team progress | An entry in [§8](#8-blockers--mitigations). |
 | **MVP** | Smallest thing that delivers real value | Demo 1 — hand tracking + telemetry + simulator. |
 | **INVEST** | Independent · Negotiable · Valuable · Estimable · Small · Testable | Each story in §5 is checked against this before becoming Ready. |
-
----
