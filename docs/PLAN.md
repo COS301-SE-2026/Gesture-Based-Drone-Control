@@ -124,7 +124,7 @@ Three artifacts are maintained.
 
 ## 3. Definition of Ready &amp; Definition of Done
 
-Per L15 slide 13, the Definition of Done is *agreed between the team and
+The Definition of Done is *agreed between the team and
 the PO, realistic, within the team's control, short (5–8 items), well
 understood, and visible*. Both DoR and DoD are pinned to the
 GitHub Project board.

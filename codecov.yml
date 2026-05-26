@@ -1,0 +1,39 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+      backend:
+        target: auto
+        flags:
+          - backend
+      services:
+        target: auto
+        flags:
+          - services
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+
+flag_management:
+  default_rules:
+    carryforward: true
+  individual_flags:
+    - name: backend
+      paths:
+        - apps/backend/app
+    - name: services
+      paths:
+        - services
+
+comment:
+  layout: "header, diff, flags, files"
+  require_changes: false
+
+ignore:
+  - "**/tests/**"
+  - "**/__init__.py"
+  - "sandbox/**"
+  - "vendors/**"

@@ -80,13 +80,14 @@ The remainder of this document is organised as follows.
 
 - **Section 2 — Overall Description.** Product perspective, interfaces, operating
   environment, assumptions, and dependencies.
-- **Section 3 — Specific Requirements.** External-interface, functional,
-  performance, design-constraint, and quality-attribute requirements,
-  numbered using the hierarchical `R<i>.<j>.<k>` scheme.
+- **Section 3 — Specific Requirements.** External-interface, functional, and
+  quality-attribute requirements, numbered using the hierarchical
+  `R<i>.<j>.<k>` scheme. Architectural and design-pattern decisions that
+  realise these requirements live in [`SAS.md`](SAS.md).
 - **Section 4 — Use Cases.** Use-case diagram and full use-case descriptions
   for the primary operational scenarios.
-- **Section 5 — Domain Model & Architecture.** Pointers to the domain model
-  and architectural diagrams that anchor the design.
+- **Section 5 — Domain Model.** The analysis-level domain model that
+  anchors the design.
 - **Appendices.** Requirements-elicitation methodology, traceability matrix,
   and revision history.
 
@@ -110,7 +111,9 @@ flowchart LR
     E --> F[Tier 6<br/>DevOps &amp; Docs]
 ```
 
-*Figure 2.1 — Six-tier architectural decomposition of GBDCS.*
+*Figure 2.1 — Six-tier logical decomposition of GBDCS. The corresponding
+architectural-style choices for each tier are documented in
+[`SAS.md` §2](SAS.md#2-architectural-requirements).*
 
 Each tier is functionally cohesive and loosely coupled.
 
@@ -134,7 +137,8 @@ A single-page web dashboard, served by the backend and packaged via Electron
 - Telemetry panels (altitude, battery, signal, flight mode).
 - Critical-event alerts (low battery, signal loss, failsafe).
 
-Detailed wireframes are documented in [`DESIGN.md`](DESIGN.md).
+Final visual specifications, component states, and wireframes are documented
+in [`BRAND.md`](BRAND.md).
 
 #### 2.1.3 Hardware Interfaces
 
@@ -142,6 +146,10 @@ Detailed wireframes are documented in [`DESIGN.md`](DESIGN.md).
 - A supported UAV (initial target: DJI Tello / xFly-compatible) **or** a machine capable of running AirSim.
 
 #### 2.1.4 Software Interfaces
+
+The runtime software stack and the rationale for each choice are documented
+in [`SAS.md` §3 Technology Requirements](SAS.md#3-technology-requirements).
+A summary of the major versions is provided here for context:
 
 | Software | Version | Role |
 | --- | --- | --- |
@@ -207,7 +215,18 @@ At a high level, GBDCS shall:
 7. Persist gesture and telemetry logs for review and replay.
 8. Enforce safety failsafes (hover, auto-land, idle detection, takeoff lockout).
 
-### 2.3 Assumptions and Dependencies
+### 2.3 User Characteristics
+
+GBDCS is operated by a single human at a time. Three user roles are
+recognised:
+
+| Role | Description | Primary use cases |
+| --- | --- | --- |
+| **Operator** | The person standing in front of the camera issuing gestures. Assumed to be of average physical ability with at least one hand in clear view, in adequate lighting. No prior pilot training is required. | UC-1, UC-2, UC-3, UC-4 |
+| **Demonstrator** | A team member or evaluator presenting the system. Familiar with the gesture vocabulary and the dashboard. | UC-1, UC-2, UC-3, UC-5 |
+| **Reviewer** | A mentor, evaluator, or stakeholder reviewing recorded sessions through the replay view. Does not interact with the live pipeline. | UC-5 |
+
+### 2.4 Assumptions and Dependencies
 
 - **A1.** The operator has at least one hand visible to the camera, in
   adequate lighting.
@@ -243,13 +262,13 @@ At a high level, GBDCS shall:
 - **R2.1:** The system shall accept video input from any OpenCV-compatible
   camera device (USB UVC or built-in).
 - **R2.2:** The system shall dispatch commands to a UAV through an
-  implementation of the `DroneAdapter` interface defined in
-  [`services/drone_adapter.md`](services/drone_adapter.md).
+  implementation of the `DroneAdapter` interface. The interface contract is
+  defined in [`SAS.md` §4 API Contracts](SAS.md#4-api-contracts).
 - **R2.3:** The system shall expose a WebSocket endpoint at `/ws/live`
   carrying JSON-encoded `GestureEvent` and `TelemetryFrame` messages.
 - **R2.4:** The system shall expose REST endpoints under `/api/v1` for
   configuration, session history, and replay control. Full schema is given
-  in [API Reference](api/API_REFERENCE.md).
+  in [`SAS.md` §4 API Contracts](SAS.md#4-api-contracts).
 
 ### 3.2 Functional Requirements
 
@@ -276,7 +295,7 @@ At a high level, GBDCS shall:
   (e.g. via a JSON or YAML profile file).
 - **R4.3:** The system shall dispatch a command to the active drone
   adapter within 200 ms of the gesture being recognised
-  (see also performance requirement `R7.1`).
+  (see also `R7.1`).
 
 #### R5: Drone Communication
 
@@ -310,95 +329,6 @@ At a high level, GBDCS shall:
   system event (start, stop, failsafe trip, error) with an ISO-8601
   timestamp in SQLite.
 
-### 3.3 Performance Requirements
-
-#### R7: Performance
-
-- **R7.1:** End-to-end gesture-to-command latency shall not exceed 200 ms
-  at the 95th percentile, measured from frame timestamp to command
-  dispatch.
-- **R7.2:** The pipeline shall sustain ≥ 30 FPS while keeping CPU usage
-  ≤ 70 % on the target reference machine (4-core x86_64, 8 GB RAM,
-  integrated GPU).
-- **R7.3:** The dashboard shall render incoming WebSocket frames at
-  ≥ 24 FPS.
-
-### 3.4 Design Constraints
-
-#### R8: Design Constraints
-
-- **R8.1:** The system shall be implemented in Python 3.11+ (backend &
-  pipeline) and TypeScript with React 18 (frontend).
-- **R8.2:** The drone integration layer shall use the **Adapter** design
-  pattern, with a `DroneAdapter` interface common to all implementations
-  (XFly, AirSim, Tello, Dummy).
-- **R8.3:** Gesture recognition shall use the **Strategy** pattern, with
-  `RuleBasedRecognizer` and `MLGestureRecognizer` as interchangeable
-  implementations of `GestureRecognizer`.
-- **R8.4:** Telemetry distribution shall use the **Observer** pattern.
-- **R8.5:** All inter-process communication shall use JSON over WebSocket
-  or HTTP — no binary or vendor-specific wire formats.
-- **R8.6:** Source control shall use Git with the workflow defined in
-  [`GIT.md`](GIT.md).
-
-### 3.5 Software System Attributes
-
-#### R9: Reliability
-
-- **R9.1:** Under nominal lighting, gesture-classification accuracy shall
-  be ≥ 95 % measured against a labelled test set of at least 300 samples.
-- **R9.2:** False-positive command rate (a command issued from a
-  non-deliberate gesture) shall not exceed 1 %.
-
-#### R10: Availability
-
-- **R10.1:** A crash in the recognition pipeline shall not crash the
-  backend; the system shall enter failsafe hover and surface an error to
-  the dashboard within 1 second.
-
-#### R11: Security
-
-- **R11.1:** The WebSocket endpoint shall require a short-lived session
-  token issued via the REST login endpoint.
-- **R11.2:** Logged telemetry shall be stored locally only; no data shall
-  be transmitted to third-party services at runtime.
-
-#### R12: Maintainability
-
-- **R12.1:** The codebase shall be partitioned into the modules listed in
-  [`DESIGN.md`](DESIGN.md); no module shall import from a sibling outside
-  its declared interface.
-- **R12.2:** Each module shall maintain ≥ 80 % line coverage in its unit
-  test suite. CI shall fail any PR that drops coverage below this
-  threshold.
-
-#### R13: Portability
-
-- **R13.1:** The system shall run on Windows 10+, macOS 13+, and Ubuntu
-  22.04+ without source-level changes.
-- **R13.2:** The frontend shall additionally run as a PWA on modern
-  Chromium- and WebKit-based mobile browsers.
-
-#### R14: Usability
-
-- **R14.1:** A first-time operator shall be able to complete the basic
-  flight sequence (take-off, hover, move, land) within 15 minutes of
-  receiving a one-page gesture-vocabulary reference.
-- **R14.2:** All operational information needed during a flight shall be
-  visible without navigation away from the dashboard's main view.
-- **R14.3:** Every user-visible error shall describe the cause and
-  suggest a corrective action.
-
-### 3.6 Other Requirements
-
-#### R15: Process & Documentation
-
-- **R15.1:** All project documentation shall be authored in Markdown and
-  rendered by MkDocs Material to GitHub Pages, deployed automatically on
-  push to `main` and `dev`.
-- **R15.2:** The project shall use **Conventional Commits** for all
-  changes merged into shared branches.
-
 #### R16: Base Features
 
 Base features are foundational capabilities shared by most modern
@@ -412,7 +342,7 @@ domain-specific use cases.
       policy at registration time.
     - **R16.1.3:** Returning users shall be able to authenticate using
       their email address and password and shall receive a short-lived
-      session token (see also `R11.1`).
+      session token (see also `R8.1`).
 - **R16.2:** The system shall provide light and dark themes.
     - **R16.2.1:** The dashboard shall offer a light and a dark colour
       scheme, switchable by the operator at runtime.
@@ -423,7 +353,93 @@ domain-specific use cases.
       being sent to the backend.
     - **R16.3.2:** The backend shall re-validate every submission and
       reject any payload that fails validation, returning a clear error
-      message (see also `R14.3`).
+      message (see also `R8.3`, `R10.3`).
+
+### 3.3 Non-Functional (Quality) Requirements
+
+The Demo 2 brief targets *five* quantified quality requirements. The five
+chosen for GBDCS are the attributes that materially constrain the
+architecture; the architectural decisions that realise each are tabulated
+in [`SAS.md` §2.5](SAS.md#25-mapping-quality-requirements-to-architectural-decisions).
+
+#### R7: Performance
+
+- **R7.1:** End-to-end gesture-to-command latency shall not exceed
+  **200 ms at the 95th percentile**, measured from frame timestamp to
+  command dispatch, under nominal load on the reference machine (4-core
+  x86_64, 8 GB RAM, integrated GPU).
+- **R7.2:** The pipeline shall sustain **≥ 30 FPS** while keeping CPU
+  usage **≤ 70 %** on the reference machine.
+- **R7.3:** The dashboard shall render incoming WebSocket frames at
+  **≥ 24 FPS** with no dropped frames over a 10-minute steady-state run.
+
+#### R8: Security
+
+- **R8.1:** The WebSocket endpoint shall require a short-lived
+  (**≤ 30-minute**) session token issued via the REST login endpoint.
+- **R8.2:** All credentials and connection strings shall be loaded from
+  environment variables or the host's secrets manager; **zero secrets**
+  shall be committed to the repository (verified by a pre-commit
+  secret-scan hook and `gitleaks` in CI).
+- **R8.3:** Every API endpoint shall validate its input payload against
+  a JSON schema and reject malformed requests with `400 Bad Request`;
+  **100 %** of endpoints shall be covered by schema validation.
+
+#### R9: Reliability
+
+- **R9.1:** Under nominal lighting, gesture-classification accuracy shall
+  be **≥ 95 %** measured against a labelled test set of at least 300
+  samples.
+- **R9.2:** False-positive command rate (a command issued from a
+  non-deliberate gesture) shall not exceed **1 %** over the same test set.
+- **R9.3:** A crash in the recognition pipeline shall not crash the
+  backend; the system shall enter failsafe-hover and surface an error to
+  the dashboard within **≤ 1 second**.
+
+#### R10: Maintainability
+
+- **R10.1:** The codebase shall be partitioned into the modules listed in
+  [`SAS.md` §2.4](SAS.md#24-architectural-diagram); no module shall
+  import from a sibling outside its declared interface (enforced by a
+  static-import check in CI).
+- **R10.2:** Each module shall maintain **≥ 80 % line coverage** in its
+  unit test suite. CI shall fail any PR that drops coverage below this
+  threshold.
+- **R10.3:** A bug fix or small feature shall be deployable from a green
+  PR to the production environment within **≤ 30 minutes** end-to-end
+  (merge → CI → deploy).
+
+#### R11: Usability
+
+- **R11.1:** A first-time operator shall be able to complete the basic
+  flight sequence (take-off, hover, move, land) within **≤ 5 minutes**
+  of opening the system, given access to the in-product Help Menu.
+- **R11.2:** The system shall achieve **≥ 85 % user satisfaction** in
+  end-of-demo usability testing with at least five external
+  participants.
+- **R11.3:** Every user-visible error shall describe the cause and
+  suggest a corrective action; **100 %** of error states shall meet
+  this rule in a quarterly UX audit.
+
+!!! note "Where the other quality attributes live"
+    The earlier draft of this SRS additionally enumerated *availability*
+    and *portability* as separate quality requirements. They are still
+    in scope for the project — availability is realised by the
+    deployment topology in [`SAS.md` §5](SAS.md#5-deployment) and
+    portability by the cross-platform stack chosen in
+    [`SAS.md` §3](SAS.md#3-technology-requirements) — but they are no
+    longer counted as headline NFRs to keep this section aligned with
+    the Demo 2 brief's five-NFR target.
+
+### 3.4 Other Requirements
+
+#### R15: Process & Documentation
+
+- **R15.1:** All project documentation shall be authored in Markdown and
+  rendered by MkDocs Material to GitHub Pages, deployed automatically on
+  push to `main` and `dev`.
+- **R15.2:** The project shall use **Conventional Commits** for all
+  changes merged into shared branches.
 
 ---
 
@@ -522,8 +538,7 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
     **Preconditions.**
 
     - The AirSim simulator is running and reachable from the host machine.
-    - The active drone adapter is configured to `airsim` (see
-      [`services/airsim_adapter.md`](services/airsim_adapter.md)).
+    - The active drone adapter is configured to `airsim`.
 
     **Main flow.**
 
@@ -544,33 +559,89 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
 
     - *A1 — Simulator unreachable.* If the `AirSimAdapter` fails to
       establish a connection, the system refuses take-off (`R6.2.2`)
-      and surfaces an error on the dashboard (`R14.3`).
+      and surfaces an error on the dashboard (`R11.3`).
     - *A2 — Link loss during flight.* If communication with the
       simulator is lost for > 2 s, the system issues `HOVER`
       (`R5.2.1`, `R5.2.2`).
 
+### 4.5 UC-4 — Authenticate Operator Session
+
+!!! example "UC-4 Authenticate Operator Session"
+    **Scope.** *The user begins with opening the dashboard
+    login screen. The user ends with arriving on the operator dashboard
+    with a valid short-lived session token.*
+
+    **Actor.** User (Operator).
+
+    **Preconditions.** The backend is reachable and the user has a
+    registered account (`R16.1.1`).
+
+    **Main flow.**
+
+    1. The Operator opens the dashboard.
+    2. The Operator submits their email and password on the login form
+       (`R16.1.3`).
+    3. The frontend validates the form client-side (`R16.3.1`) and
+       posts it to `/api/v1/auth/login`.
+    4. The backend re-validates the payload (`R16.3.2`), authenticates
+       the credentials, and issues a session token of lifetime
+       ≤ 30 minutes (`R8.1`).
+    5. The dashboard establishes the WebSocket connection at
+       `/ws/live` using the issued token.
+
+    **Post-conditions.** A live session is open and any subsequent
+    gesture/telemetry traffic is associated with the operator's user
+    record.
+
+    **Alternative flows.**
+
+    - *A1 — Invalid credentials.* The backend returns `401`; the
+      dashboard surfaces an error explaining the cause and the
+      corrective action (`R11.3`).
+    - *A2 — Expired token mid-session.* The WebSocket is closed and
+      the dashboard prompts re-authentication.
+
+### 4.6 UC-5 — Replay a Recorded Session
+
+!!! example "UC-5 Replay a Recorded Session"
+    **Scope.** *The reviewer begins with selecting a historical
+    session in the dashboard's replay view. The reviewer ends with the
+    full gesture stream and telemetry replayed in the dashboard, with
+    no live drone connected.*
+
+    **Actor.** Reviewer.
+
+    **Preconditions.**
+
+    - At least one session has been recorded and persisted (`R6.3`).
+    - The reviewer is authenticated (`R16.1.3`).
+
+    **Main flow.**
+
+    1. The Reviewer opens the replay view from the dashboard.
+    2. The dashboard requests the session index from
+       `/api/v1/sessions`.
+    3. The Reviewer selects a session.
+    4. The backend streams the recorded `GestureEvent` and
+       `TelemetryFrame` records over the WebSocket in their original
+       order and at their original cadence.
+    5. The dashboard reconstructs the live view: gesture overlay,
+       current-command indicator, and telemetry panel (`R1.1.1`–`R1.1.3`).
+
+    **Post-conditions.** The Reviewer has observed the session and any
+    failsafe events that occurred.
+
 ---
 
-## 5. Domain Model & Architecture
+## 5. Domain Model
 
-The detailed analysis-level domain model and the design-level architecture
-diagram are maintained alongside this document.
+The analysis-level domain model captures the conceptual vocabulary of the
+problem and is the input to the design class diagram in
+[`SAS.md` §2.4](SAS.md#24-architectural-diagram).
 
-=== "Domain model"
+![Domain Model](diagrams/Domain%20Model%20v1.1.drawio.svg)
 
-    ![Domain Model](diagrams/Domain%20Model%20v1.1.drawio.svg)
-
-    *Figure 5.1 — Analysis-level domain model. See
-    [`DESIGN.md`](DESIGN.md#domain-model) for the design class diagram
-    derived from this model.*
-
-=== "Architecture"
-
-    ![Architecture Diagram](diagrams/Architecture-Diagram.drawio.svg)
-
-    *Figure 5.2 — Logical architecture aligned to the six-tier
-    decomposition in §2.1. See [`DESIGN.md`](DESIGN.md#architecture) for
-    the patterns applied.*
+*Figure 5.1 — Analysis-level domain model.*
 
 ---
 
@@ -600,10 +671,10 @@ is now enforcing this process strictly for every subsequent demo.
 
     - **Use-case diagram** — Figure 4.1, captures actor–system
       interaction.
-    - **Class / domain model** — Figure 5.1, captures the conceptual
+    - **Domain model** — Figure 5.1, captures the conceptual
       vocabulary of the application.
-    - **Architecture diagram** — Figure 5.2, captures the six-tier
-      logical decomposition.
+    - **Architecture diagram** — see
+      [`SAS.md` §2.4](SAS.md#24-architectural-diagram).
 
 === "3. Deriving requirements"
 
@@ -636,10 +707,20 @@ is now enforcing this process strictly for every subsequent demo.
 | `R3.1.*`, `R3.2.*` | Capture & detection | `tests/cv_pipeline_testing` | Demo 1 | Delivered |
 | `R4.*` | Mapping | `services/tests/test_command.py` | Demo 1 | Delivered |
 | `R16.*` | Base features | Frontend unit + Playwright E2E | Demo 1 | Delivered |
-| `R5.*` | Drone comms | Adapter integration tests | Demo 2 | Planned |
-| `R6.*` | Safety & failsafes | Manual + integration tests | Demo 2 | Planned |
-| `R1.*` | Dashboard UI | Playwright E2E | Demo 2 | Planned |
+| `R5.*` | Drone comms | Adapter integration tests | Demo 2 | Delivered |
+| `R6.*` | Safety & failsafes | Manual + integration tests | Demo 2 | Delivered |
+| `R1.*` | Dashboard UI | Playwright E2E | Demo 2 | Delivered |
+| `R8.*` | Security | Backend auth + schema tests | Demo 2 | Delivered |
 | `R7.*` | Performance | Load / latency harness | Demo 3 | Planned |
 | `R9.*` | Reliability / accuracy | Labelled-set evaluation | Demo 3 | Planned |
-| `R12.*` | Maintainability | CI coverage gate | Continuous | Active |
-| `R13.*` | Portability | CI matrix (Win / macOS / Linux) | Demo 4 | Planned |
+| `R10.*` | Maintainability | CI coverage gate | Continuous | Active |
+| `R11.*` | Usability | UX audit + Playwright E2E | Demo 3 | Planned |
+
+---
+
+## Appendix C — Revision History
+
+| Version | Date | Author | Summary of changes |
+| --- | --- | --- | --- |
+| 1.0 | Demo 1 | Codex Merchants | Initial SRS — full set of functional, performance, reliability, security, maintainability, portability, usability requirements; embedded architectural-style and design-pattern constraints under `R8`. |
+| **2.0** | **Demo 2** | **Codex Merchants** | **Architectural content extracted to [`SAS.md`](SAS.md).** Removed the former `R8` *Design Constraints* block (architectural-style choice and Adapter / Strategy / Observer pattern constraints) — these are now architectural decisions in `SAS.md §2`. Renumbered `R8` to *Security* and consolidated the quality requirements to **five quantified NFRs** (Performance `R7`, Security `R8`, Reliability `R9`, Maintainability `R10`, Usability `R11`) per the Demo 2 brief. Added UC-4 (Authenticate Operator Session) and UC-5 (Replay a Recorded Session) to reach five fully integrated use cases. Replaced all `DESIGN.md` cross-references with the equivalent `SAS.md` and `BRAND.md` pointers (`DESIGN.md` was retired). Added §2.3 User Characteristics. Brand and wireframe content moved to [`BRAND.md`](BRAND.md). |

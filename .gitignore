@@ -9,7 +9,9 @@ services.egg-info
 __pycache__/
 .pytest_cache
 __pycache__
-.coverage
 .ruff*
 site/
 *.fig
+coverage.xml
+.coverage
+htmlcov/

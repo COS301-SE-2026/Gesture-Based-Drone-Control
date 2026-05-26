@@ -29,6 +29,14 @@ jobs:
       - name: PyTest Testing
         run: make test
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: apps/backend/coverage.xml
+          flags: backend
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
   test-services:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -52,6 +60,13 @@ jobs:
       - name: PyTest Testing
         run: make test
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: services/coverage.xml
+          flags: services
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
 
 
   test-frontend:
@@ -87,5 +102,3 @@ jobs:
 
       - name: Run Playwright testing
         run: yarn test
-
-    

@@ -1,4 +1,4 @@
-.PHONY: install test lint dev build format
+.PHONY: install test lint dev build format clean
 
 FRONTEND_DIR := apps/frontend
 BACKEND_DIR := apps/backend
@@ -32,6 +32,11 @@ fix:
 	$(MAKE) -C $(SERVICES_DIR) fix
 	$(MAKE) -C $(BACKEND_DIR) fix
 	cd $(FRONTEND_DIR) && yarn format
+
+clean:
+	rm -f $(SERVICES_DIR)/coverage.xml $(SERVICES_DIR)/.coverage
+	rm -f $(BACKEND_DIR)/coverage.xml $(BACKEND_DIR)/.coverage
+	rm -rf $(SERVICES_DIR)/htmlcov $(BACKEND_DIR)/htmlcov
 
 #keeping services in its own corner as we're mocking everything for now
 

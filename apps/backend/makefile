@@ -1,4 +1,4 @@
-.Phony: install test lint
+.Phony: install test lint backend makefile
 
 PORT ?= 3001
 
@@ -6,7 +6,7 @@ install:
 	uv sync --all-groups
 
 test: 	
-	uv run pytest tests/ ../../tests --cov=app --cov-report=term-missing
+	uv run pytest tests/ ../../tests --cov=app --cov-report=term-missing --cov-report=xml
 	
 
 #--cov-fail-under=80
