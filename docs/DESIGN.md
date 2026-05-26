@@ -1,7 +1,3 @@
----
-title: Architectural Design
----
-
 # Architectural Design
 
 ## 1. Introduction

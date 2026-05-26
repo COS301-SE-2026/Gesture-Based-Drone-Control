@@ -1,7 +1,3 @@
----
-title: Software Requirements Specification
----
-
 # Software Requirements Specification
 
 ## 1. Introduction

@@ -1,8 +1,3 @@
----
-title: CI/CD Pipeline
-description: How automated checks gate every change to the Gesture-Based Drone Control System.
----
-
 # CI/CD Pipeline
 
 <div class="tx-badges">

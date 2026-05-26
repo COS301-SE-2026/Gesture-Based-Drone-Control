@@ -1,8 +1,3 @@
----
-title: Git Conventions
-description: Branch flow, commit conventions, and merge rules for the Gesture-Based Drone Control System.
----
-
 # Git Conventions
 
 <div class="tx-badges">
@@ -245,18 +240,18 @@ whether you use the command line or the VS Code source-control panel.
 
 === "VS Code source control"
 
-    1. Open the **Source Control** panel (`Ctrl/Cmd+Shift+G`).
+    1. Open the Source Control panel (`Ctrl/Cmd+Shift+G`).
     2. Use the branch indicator in the status bar (bottom-left) to
-       switch to your parent Use-Case branch, then **Pull** to refresh.
-    3. **Create new branch from…** → pick the Use-Case branch → name it
+       switch to your parent Use-Case branch, then PULL to refresh.
+    3. Create new branch from… → pick the Use-Case branch → name it
        `feature/UCn/short-name`.
     4. Stage files in the Source Control panel and commit using the
        Conventional-Commit form in the message box.
     5. Before opening the PR, open the Command Palette
-       (`Ctrl/Cmd+Shift+P`) → **Git: Merge Branch…** → select your
+       (`Ctrl/Cmd+Shift+P`) → Git: Merge Branch… → select your
        Use-Case branch. Resolve conflicts in the editor's three-way
        merge view.
-    6. **Sync Changes** to push, then click **Create Pull Request** in
+    6. Sync Changes to push, then click Create Pull Request in
        the panel (with the GitHub Pull Requests extension installed) or
        open the PR on GitHub.
 

@@ -1,8 +1,3 @@
----
-title: Project Plan
-description: Agile / Scrum delivery plan for the Gesture-Based Drone Control System.
----
-
 # Project Plan
 
 <div class="tx-badges">
