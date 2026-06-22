@@ -13,7 +13,7 @@ tasks:
   install:
     desc: Install backend + frontend deps
     cmds:
-      - uv sync --all-groups --python 3.11
+      - uv sync --all-groups --all-extras --python 3.11
       - cmd: yarn install
         dir: "{{.FRONTEND_DIR}}"
 
@@ -113,5 +113,29 @@ tasks:
     desc: Runs test cases in services
     cmds:
       - uv run pytest services/tests
+
+  sim-as:
+    desc: Runs the old pain in the ass sim
+    cmds:
+      - cmd: powershell -Command "Start-Process '{{.AS_PATH}}'"
+        platforms: [windows]
+
+  sim-pas: 
+    desc: Launches PAS, the UE5 version
+    cmds:
+      - cmd: powershell -Command "Start-Process '{{.PAS_PATH}}'"
+        platforms: [windows]
+  
+  sim-pas-demo:
+    desc: Launches PAS, and the drone adapter demo
+    cmds:
+      - cmd: powershell -Command "Start-Process '{{.PAS_PATH}}'"
+        platforms: [windows]
+      - cmd: uv run adapter_demo.py
+  
+  sim-beeg-demo:
+    deps:
+      - sim-pas-demo
+      - sim-as 
 
   
