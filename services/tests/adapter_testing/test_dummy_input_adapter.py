@@ -1,4 +1,5 @@
 import pytest
+
 from services.commands.command import CommandType
 from services.input.sources.dummy_input_adapter import DummyInputAdapter
 

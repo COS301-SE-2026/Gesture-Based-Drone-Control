@@ -14,6 +14,7 @@ This validates that:
 from unittest.mock import AsyncMock
 
 import pytest
+
 from services.commands.command import CommandType
 from services.drone_control.adapters.dummy_drone_adapter import DummyDroneAdapter
 from services.input.sources.keyboard_adapter import KeyboardAdapter

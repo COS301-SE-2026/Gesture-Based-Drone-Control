@@ -1,6 +1,7 @@
 import asyncio
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
 from services.telemetry import get_drone_telemetry, get_sim_telemetry
 
 router = APIRouter()
