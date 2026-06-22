@@ -6,6 +6,7 @@ data/*.db
 .egg-info
 drone_services.egg-info
 services.egg-info
+backend.egg-info
 __pycache__/
 .pytest_cache
 __pycache__
@@ -13,3 +14,4 @@ __pycache__
 .ruff*
 site/
 *.fig
+*.lock
