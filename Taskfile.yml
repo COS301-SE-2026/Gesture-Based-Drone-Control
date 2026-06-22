@@ -53,25 +53,56 @@ tasks:
 
   test:
     desc: Runs backend, frontend, and services testing
+    deps:
+      - backend-test
+      - frontend-test
+  
+  backend-test:
+    internal: true
+    desc: Runs backend testing
     cmds:
       - uv run pytest --cov --cov-report=term-missing
-      - cmd: yarn test
-        dir: "{{FRONTEND_DIR}}"
-  
+
+  frontend-test:
+    internal: true
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn test
+
   lint:
-    desc: Runs Ruff lint checks
+    desc: Runs lint checks
+    deps:
+      - backend-lint
+      - frontend-lint
+
+  backend-lint:
+    internal: true
     cmds:
       - uv run ruff check --output-format=github
-      - cmd: yarn lint
-        dir: "{{FRONTEND_DIR}}"
+
+  frontend-lint:
+    internal: true
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn lint
 
   fix:
     desc: Automatically fixes Ruff issues
+    deps:
+      - backend-fix
+      - frontend-fix
+  
+  backend-fix:
+    internal: true
     cmds:
       - uv run ruff format .
       - uv run ruff check --fix .
-      - cmd: yarn lint
-        dir: "{{FRONTEND_DIR}}"
+  
+  frontend-fix:
+    internal: true
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn format
   
   services-install:
     desc: Install services package
@@ -83,14 +114,4 @@ tasks:
     cmds:
       - uv run pytest services/tests
 
-  backend-test:
-    desc: Runs backend testing
-    cmds:
-      - uv run pytest --cov --cov-report=term-missing
-
-  frontend-test:
-    desc: Runs frontend testing
-    cmds:
-    - cmd: yarn test
-      dir: "{{FRONTEND_DIR}}"
   

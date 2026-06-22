@@ -45,6 +45,7 @@ projectairsim = { git = "https://github.com/ShavirV/ProjectAirSim_GBDC.git", sub
 airsim = ["setuptools", "wheel", "numpy", "msgpack-rpc-python", "backports.ssl-match-hostname"]
 
 [tool.ruff]
+exclude = ["vendors"]
 target-version = "py311"
 line-length = 100
 
@@ -63,7 +64,7 @@ indent-style = "tab"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-pythonpath = [".", "apps/backend", "services"]
+pythonpath = ["apps/backend", "services"]
 filterwarnings = [
     "ignore:module 'sre_parse' is deprecated:DeprecationWarning",
     "ignore:module 'sre_constants' is deprecated:DeprecationWarning",
