@@ -23,7 +23,6 @@ function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Dashboard />} />
-          <Route path="dashboard" element={<Dashboard />} />
           <Route path="gestures" element={<Gestures />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />

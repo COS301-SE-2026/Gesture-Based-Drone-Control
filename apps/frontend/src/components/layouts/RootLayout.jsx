@@ -10,7 +10,6 @@ import { Home, Hand, BarChart3, MapPin, Settings,HelpCircle } from "lucide-react
 const RootLayout = () => {
   const location = useLocation()
   const menuItems = [
-    { id: "home", label: "Home", icon: Home, path: "./dashboard" },
     { id: "gestures", label: "Gestures", icon: Hand, path: "./gestures" },
     {
       id: "analytics",
