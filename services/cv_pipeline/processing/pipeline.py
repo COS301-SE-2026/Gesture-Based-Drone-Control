@@ -42,8 +42,6 @@ class PipelineConfig:
 	detector: DetectorConfig = field(default_factory=DetectorConfig)
 	queue_size: int = 2
 
-
-# ----- metrics helpers -----
 class FpsMeter:
 	"""
 	Smoothed frames-per-second from frame timestamps.

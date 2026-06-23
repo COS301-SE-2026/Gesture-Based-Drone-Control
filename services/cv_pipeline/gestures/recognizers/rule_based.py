@@ -32,14 +32,21 @@ INDEX_MCP = 5
 INDEX_PIP = 6
 INDEX_TIP = 8
 
+MIDDLE_MCP = 9
 MIDDLE_PIP = 10
 MIDDLE_TIP = 12
 
+RING_MCP = 13
 RING_PIP = 14
 RING_TIP = 16
 
+PINKY_MCP = 17
 PINKY_PIP = 18
 PINKY_TIP = 20
+
+# angle number here now to say if a finger is up when its straight enough based on degree
+#can alter value if its too strict
+FINGER_STRAIGHT_DEG = 160.0
 
 
 # rule-based recognizer
@@ -64,10 +71,10 @@ class RuleBasedRecognizer(GestureRecognizer):
 
 		finger_state = FingerState(
 			thumb=self._is_thumb_up(lm),
-			index=self._is_finger_up(lm, INDEX_TIP, INDEX_PIP),
-			middle=self._is_finger_up(lm, MIDDLE_TIP, MIDDLE_PIP),
-			ring=self._is_finger_up(lm, RING_TIP, RING_PIP),
-			pinky=self._is_finger_up(lm, PINKY_TIP, PINKY_PIP),
+			index=self._is_finger_up(lm, INDEX_MCP, INDEX_TIP, INDEX_PIP,),
+			middle=self._is_finger_up(lm, MIDDLE_MCP, MIDDLE_TIP, MIDDLE_PIP),
+			ring=self._is_finger_up(lm, RING_MCP, RING_TIP, RING_PIP),
+			pinky=self._is_finger_up(lm, PINKY_MCP, PINKY_TIP, PINKY_PIP),
 		)
 
 		gesture = self._classify(finger_state)
@@ -80,13 +87,31 @@ class RuleBasedRecognizer(GestureRecognizer):
 		)
 
 	# finger state helpers
-	def _is_finger_up(self, landmarks, tip_idx: int, pip_idx: int) -> bool:
+	def _is_finger_up(self, landmarks, tip_idx: int, pip_idx: int, mcp_idx: int) -> bool:
 		"""
 		Returns True if the finger tip is above the pip joint.
 		y increases downward so tip.y < pip.y means extended
 		"""
+		angle = self._angle(landmarks[mcp_idx], landmarks[pip_idx],landmarks[tip_idx])
+		return angle >= FINGER_STRAIGHT_DEG
 
-		return landmarks[tip_idx].y < landmarks[pip_idx].y
+	def _angle(self, a, b, c) -> float:
+		"""
+		Angle 0-180 at vertex vfor med by points a,b,c
+		Dot product to construct b->a, b->c
+		"""
+		bax = a.x - b.x
+		bay = a.y - b.y
+		bcx = c.x - b.x
+		bcy = c.y - b.y
+
+		mag = math.hypot(bax, bay) * math.hypot(bcx, bcy)
+		if mag == 0:
+			return 0.0
+
+		cos = (bax * bcx + bay * bcy) / mag
+		cos = max(-1.0, min(1.0, cos))
+		return math.degrees(math.acos(cos))
 
 	def _is_thumb_up(self, landmarks) -> bool:
 		"""
