@@ -299,7 +299,23 @@ class CvPipeline:
 				detection = self._detector.detect_hands(frame)
 				engine_result = self._engine.process(detection)
 				fps = self._fps_meter.update(frame.timestamp)
-				event = PipelineEvent(frame=frame, engine_result=engine_result)
+    
+				metrics: list[HandMetrics] = []
+				present = set()
+				for hand in detection. hands:
+					present.add(hand.handedness)
+					wrist = hand.landmarks[0]
+					speed = self._motion.update(hand.handedness, wrist, frame, timestamp)
+					metrics.append(
+						HandMetrics(
+							handedness=hand.handedness,
+							confidence = hand.confidence,
+							speed = speed,
+						)
+					)
+				self._motion.forget_absent(present)
+				event = PipelineEvent(frame=frame, engine_result=engine_result, detection=detection, 
+                          fps=fps, hand_metrics=metrics,)
 				await self._event_queue.put(event)
 		except asyncio.CancelledError:
 			logger.debug('Consumer task cancelled')
@@ -317,25 +333,42 @@ if __name__ == '__main__':
 		async with CvPipeline() as pipe:
 			async for event in pipe.events():
 				# overlay gestures onto frame
-				annotated = event.frame.bgr_frame.copy()
-				y = 30
+				annotated = draw_landmarks(event.frame.bgr_frame,
+                               event.detection)
+				#fps top left
+				cv2.putText(
+					annotated,
+					f'FPS: {event.fps:1.f}',
+					(10,30),
+					cv2.FONT_HERSHEY_SIMPLEX,
+					0.7,
+					(0, 255, 255),
+					2,
+				)
+
+				metrics_by_hand = {m.handedness: m for m in event.hand_metrics}
+				y = 60
 				for gr in event.engine_result.hand_gestures:
-					text = f'{gr.handedness.name}: {gr.gesture.name}'
+					m = metrics_by_hand.get(gr.handedness)
+					conf = m.confidence * 100 if m else 0.0
+					speed = m.speed if m else 0.0
+					text = ( 
+						f'{gr.handedness.name}: {gr.gesture.name}'
+						f'{conf: .0f}% spd = {speed:.2f}'
+                    )
 					cv2.putText(
 						annotated,
 						text,
-						(10, y),
+						(10,y),
 						cv2.FONT_HERSHEY_SIMPLEX,
 						0.7,
 						(0, 255, 0),
 						2,
 					)
 					y += 30
-
-				cv2.imshow('pipeline smoke test', annotated)
-				if cv2.waitKey(1) & 0xFF == ord('q'):
-					break
-
+					cv2.imshow('pipeline smoke test', annotated)
+					if cv2.waitKey(1) & 0xFF == ord('q'):
+						break
+		
 		cv2.destroyAllWindows()
-
 	asyncio.run(main())
