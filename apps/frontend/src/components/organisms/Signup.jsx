@@ -89,7 +89,7 @@ export default function Signup() {
     <div className="flex min-h-screen bg-OffWhite dark:bg-OffBlack">
       {/* panel */}
       <div
-        className="hidden lg:flex lg:w-1/2 bg-cover bg-center relative"
+        className="hidden lg:flex lg:w-3/5 bg-cover bg-center relative"
         style={{
           backgroundImage: `url(${darkbg})`,
         }}
@@ -106,7 +106,7 @@ export default function Signup() {
       </div>
 
       {/* form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-8">
+      <div className="w-full lg:w-2/5 flex items-center justify-center px-6 py-8">
         <div className="w-full max-w-md max-h-screen overflow-y-auto">
           <div className="mb-8 text-center">
             <h2 className="text-3xl font-bold text-OffBlack dark:text-OffWhite mb-2">
@@ -205,7 +205,7 @@ export default function Signup() {
                   Password
                 </label>
                 <Input
-                  id="password"
+                  type="password"
                   name="password"
                   placeHolder="At least 8 characters"
                   icon={Lock}
@@ -225,7 +225,7 @@ export default function Signup() {
                   Confirm Password
                 </label>
                 <Input
-                  id="password"
+                  type="password"
                   name="confirmPassword"
                   placeHolder="Confirm your password"
                   icon={Lock}

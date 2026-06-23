@@ -96,7 +96,7 @@ export default function LoginPage() {
                 Password
               </label>
               <Input
-                id="password"
+                type="password"
                 name="password"
                 placeHolder="Enter your password"
                 icon={Lock}
