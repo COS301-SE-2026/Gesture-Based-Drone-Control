@@ -56,9 +56,16 @@ tasks:
     desc: Runs Frontend and Backend Unit Tests
 
   backend-unit-test:
-    desc: Runs backend unit tests
+    desc: Runs Backend Unit Tests
     cmds:
       - uv run pytest apps/backend/tests services/tests --cov  --cov-report=term-missing
+
+  frontend-unit-test:
+    desc: Runs Frontend Unit Tests
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn test
+
 
   test:
     desc: Runs backend, frontend, and services testing
