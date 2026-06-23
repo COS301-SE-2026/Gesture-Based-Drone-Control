@@ -35,7 +35,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen bg-OffWhite dark:bg-OffBlack">
       {/* panel */}
       <div
-        className="hidden lg:flex lg:w-1/2 bg-cover bg-center relative"
+        className="hidden lg:flex lg:w-3/5 bg-cover bg-center relative"
         style={{
           backgroundImage: `url(${darkbg})`,
         }}
@@ -52,8 +52,8 @@ export default function LoginPage() {
       </div>
 
       {/* form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-2/5 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
           <div className="mb-8 text-center">
             <h2 className="text-3xl font-bold text-OffBlack dark:text-OffWhite mb-2">
               Codex Merchants
