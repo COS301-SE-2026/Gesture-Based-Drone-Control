@@ -5,7 +5,7 @@ import {
   GestureSideContent,
   AnalyticsSideContent,
 } from "../molecules"
-import { Home, Hand, BarChart3, MapPin, Settings } from "lucide-react"
+import { Home, Hand, BarChart3, MapPin, Settings,HelpCircle } from "lucide-react"
 
 const RootLayout = () => {
   const location = useLocation()
@@ -20,6 +20,7 @@ const RootLayout = () => {
     },
     { id: "gps", label: "GPS", icon: MapPin, path: "./gps" },
     { id: "settings", label: "Settings", icon: Settings, path: "./settings" },
+    {id : "help", label: "Help", icon : HelpCircle ,path:"./help"},
   ]
 
   const getTopContent = () => {

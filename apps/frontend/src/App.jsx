@@ -9,12 +9,13 @@ import {
   Login,
   Signup,
   Terms,
+  Help,
 } from "./components/organisms"
 import { ThemeProvider } from "./context/ThemeProvider.jsx"
 
 function App() {
   return (
-    
+
     <ThemeProvider>
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -27,6 +28,7 @@ function App() {
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />
           <Route path="gps" element={<GPS />} />
+          <Route path="help"element = {<Help />} />
         </Route>
       </Routes>
     </ThemeProvider>

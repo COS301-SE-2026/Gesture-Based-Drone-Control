@@ -1,6 +1,6 @@
 import { Card, Button } from "../atoms"
 import { UserCircle } from "lucide-react"
-
+import AccountActions from "./AccountActions"
 export const DashboardSideCard = ({ userName = "User" }) => {
   const currentDate = new Date()
   const formattedDate = currentDate.toLocaleDateString("en-US", {
@@ -33,10 +33,7 @@ export const DashboardSideCard = ({ userName = "User" }) => {
             </p>
           </div>
 
-          <div className="flex gap-2 mt-2 pt-2 border-t border-Grey/20">
-            <Button variant="secondary">Switch Profile</Button>
-            <Button>Logout</Button>
-          </div>
+          <AccountActions />
         </div>
       </Card>
     </>
