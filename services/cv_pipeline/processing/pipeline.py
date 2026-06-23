@@ -21,7 +21,7 @@ from cv_pipeline.gestures.gesture_engine import GestureEngine, GestureEngineResu
 from cv_pipeline.hand_detection.mediapipe_detector import (
 	DetectorConfig,
 	HandDetectionPipeline,
- 	HandDetectionResult,
+	HandDetectionResult,
 	Handedness,
 	draw_landmarks,
 )
@@ -42,68 +42,75 @@ class PipelineConfig:
 	detector: DetectorConfig = field(default_factory=DetectorConfig)
 	queue_size: int = 2
 
+
+# ----- metrics helpers -----
 class FpsMeter:
-    """
-	Smoothed the fps from frame timestamps
-	EMA so # doesnt jitter on every frame
 	"""
-    def __init__(self, alpha: float =0.1) -> None:
-        self._alpha = alpha
-        self._fps = 0.0
-        self._last_ts: Optional[float] = None
-        
-    def update(self, timestamp: float) -> float:
-        if self._last_ts is not None:
-            dt = timestamp - self._last_ts
-            if dt > 0:
-                inst = 1.0 / dt
-                #seed on first sample then smooth
-                self._fps = inst if self._fps == 0.0 else (
-					self._alpha * inst + (1 - self._aplha) * self._fps
+	Smoothed frames-per-second from frame timestamps.
+	EMA so the number doesnt jitter every frame.
+	"""
+
+	def __init__(self, alpha: float = 0.1) -> None:
+		self._alpha = alpha
+		self._fps = 0.0
+		self._last_ts: Optional[float] = None
+
+	def update(self, timestamp: float) -> float:
+		if self._last_ts is not None:
+			dt = timestamp - self._last_ts
+			if dt > 0:
+				inst = 1.0 / dt
+				# seed on first sample, then smooth
+				self._fps = inst if self._fps == 0.0 else (
+					self._alpha * inst + (1 - self._alpha) * self._fps
 				)
-        self._last_ts = timestamp
-        return self._fps
-		
-    @property
-    def fps(self) -> float:
-        return self._fps
-	
+		self._last_ts = timestamp
+		return self._fps
+
+	@property
+	def fps(self) -> float:
+		return self._fps
+
+
 class MotionTracker:
-    """
-	Per hand wrist spend by units/seconds
-	Keyed by handedness so L/R tracked seperately
-	Multiply by frame width if we want pixels/sec
 	"""
-    def __init__(self) -> None:
-        #handedness -> x, y, timestamp
-        self._last: dict[Handedness, tuple[float, float, float]] = {}
-        
-        def update(self, handedness: Handedness, wrist, timestamp: float) -> float:
-            speed = 0.0
-            prev = self._last.get(handedness)
-            if prev is not None:
-                px, py, pt = prev
-                dt = timestamp - pt
-                if dt > 0:
-                    speed = math.hypot(wrist.x - px, wrist.y - py) / dt
-            self._last[handedness] = (wrist.x, wrist.y, timestamp)
-            return speed
-		
-        def forget_absent(self, present: set) -> None:
-            # drop hanfd that left frame so turning hand dont teleport
-            for h in list(self._last):
-                if h not in present:
-                    del self._last[h]
-                    
+	Per-hand wrist speed in normalised units/sec (landmarks are 0..1, so this
+	is resolution-independent). Keyed by handedness so left and right are
+	tracked separately. Multiply by frame width if you want pixels/sec.
+	"""
+
+	def __init__(self) -> None:
+		# handedness -> (x, y, timestamp)
+		self._last: dict[Handedness, tuple[float, float, float]] = {}
+
+	def update(self, handedness: Handedness, wrist, timestamp: float) -> float:
+		speed = 0.0
+		prev = self._last.get(handedness)
+		if prev is not None:
+			px, py, pt = prev
+			dt = timestamp - pt
+			if dt > 0:
+				speed = math.hypot(wrist.x - px, wrist.y - py) / dt
+		self._last[handedness] = (wrist.x, wrist.y, timestamp)
+		return speed
+
+	def forget_absent(self, present: set) -> None:
+		# drop hands that left the frame so a returning hand doesnt teleport
+		for h in list(self._last):
+			if h not in present:
+				del self._last[h]
+
+
 @dataclass
 class HandMetrics:
-    """
-    per hand # surfaced for UI & telemetry
-	"""
-    handedness: Handedness
-    confidence: float
-	#wrist speed, normalised units per second
-    speed: float			
+	"""Per-hand numbers surfaced for the UI / telemetry."""
+
+	handedness: Handedness
+	# mediapipe confidence as a 0..1 value (×100 for a percentage)
+	confidence: float
+	# wrist speed, normalised units per second
+	speed: float
+
 
 @dataclass
 class PipelineEvent:
@@ -111,13 +118,15 @@ class PipelineEvent:
 	One frame processed E2E
 	-> frame = captured frame
 	-> engine_result: per-hand gesture results
+	-> detection: raw hand landmarks (so callers can draw the skeleton)
+	-> fps / hand_metrics: live overlay + telemetry numbers
 	"""
+
 	frame: CapturedFrame
 	engine_result: GestureEngineResult
 	detection: Optional[HandDetectionResult] = None
 	fps: float = 0.0
-	hand_metrics: list[HandMetrics] = field(default_factory = list)
-
+	hand_metrics: list[HandMetrics] = field(default_factory=list)
 
 	@property
 	def frame_index(self) -> int:
@@ -146,7 +155,8 @@ class CvPipeline:
 		self._consumer_task: Optional[asyncio.Task] = None
 		self._stop_event = threading.Event()
 		self._running = False
-		#metrics reset on start
+
+		# metrics (reset on start)
 		self._fps_meter = FpsMeter()
 		self._motion = MotionTracker()
 
@@ -162,8 +172,8 @@ class CvPipeline:
 
 		self._frame_queue = BoundedFrameQueue[CapturedFrame](maxsize=self._config.queue_size)
 		self._event_queue = asyncio.Queue()
-  
-		#fresh metrics on each run
+
+		# fresh metrics for this run
 		self._fps_meter = FpsMeter()
 		self._motion = MotionTracker()
 
@@ -298,24 +308,34 @@ class CvPipeline:
 				frame = await self._frame_queue.get()
 				detection = self._detector.detect_hands(frame)
 				engine_result = self._engine.process(detection)
+
+				# fps from frame timestamps
 				fps = self._fps_meter.update(frame.timestamp)
-    
+
+				# per-hand speed + confidence
 				metrics: list[HandMetrics] = []
 				present = set()
-				for hand in detection. hands:
+				for hand in detection.hands:
 					present.add(hand.handedness)
 					wrist = hand.landmarks[0]
-					speed = self._motion.update(hand.handedness, wrist, frame, timestamp)
+					speed = self._motion.update(hand.handedness, wrist, frame.timestamp)
 					metrics.append(
 						HandMetrics(
 							handedness=hand.handedness,
-							confidence = hand.confidence,
-							speed = speed,
+							confidence=hand.confidence,
+							speed=speed,
 						)
 					)
+				# forget hands that left so they dont "jump" on return
 				self._motion.forget_absent(present)
-				event = PipelineEvent(frame=frame, engine_result=engine_result, detection=detection, 
-                          fps=fps, hand_metrics=metrics,)
+
+				event = PipelineEvent(
+					frame=frame,
+					engine_result=engine_result,
+					detection=detection,
+					fps=fps,
+					hand_metrics=metrics,
+				)
 				await self._event_queue.put(event)
 		except asyncio.CancelledError:
 			logger.debug('Consumer task cancelled')
@@ -332,43 +352,47 @@ if __name__ == '__main__':
 	async def main() -> None:
 		async with CvPipeline() as pipe:
 			async for event in pipe.events():
-				# overlay gestures onto frame
-				annotated = draw_landmarks(event.frame.bgr_frame,
-                               event.detection)
-				#fps top left
+				# draw the hand skeleton from the landmarks we already detected
+				annotated = draw_landmarks(event.frame.bgr_frame, event.detection)
+
+				# fps top-left
 				cv2.putText(
 					annotated,
-					f'FPS: {event.fps:1.f}',
-					(10,30),
+					f'FPS: {event.fps:.1f}',
+					(10, 30),
 					cv2.FONT_HERSHEY_SIMPLEX,
 					0.7,
 					(0, 255, 255),
 					2,
 				)
 
+				# join gesture results with their metrics by handedness
 				metrics_by_hand = {m.handedness: m for m in event.hand_metrics}
+
 				y = 60
 				for gr in event.engine_result.hand_gestures:
 					m = metrics_by_hand.get(gr.handedness)
 					conf = m.confidence * 100 if m else 0.0
 					speed = m.speed if m else 0.0
-					text = ( 
-						f'{gr.handedness.name}: {gr.gesture.name}'
-						f'{conf: .0f}% spd = {speed:.2f}'
-                    )
+					text = (
+						f'{gr.handedness.name}: {gr.gesture.name}  '
+						f'{conf:.0f}%  spd={speed:.2f}'
+					)
 					cv2.putText(
 						annotated,
 						text,
-						(10,y),
+						(10, y),
 						cv2.FONT_HERSHEY_SIMPLEX,
 						0.7,
 						(0, 255, 0),
 						2,
 					)
 					y += 30
-					cv2.imshow('pipeline smoke test', annotated)
-					if cv2.waitKey(1) & 0xFF == ord('q'):
-						break
-		
+
+				cv2.imshow('pipeline smoke test', annotated)
+				if cv2.waitKey(1) & 0xFF == ord('q'):
+					break
+
 		cv2.destroyAllWindows()
+
 	asyncio.run(main())
