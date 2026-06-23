@@ -6,7 +6,7 @@ on:
 
 
 jobs:
-  Backend Unit Tests:
+  Backend-Unit-Tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -42,7 +42,7 @@ jobs:
           fail_ci_if_error: false
 
 
-  Frontend Unit Tests:
+  Frontend-Unit-Tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults: 
@@ -76,11 +76,11 @@ jobs:
       - name: Run Playwright testing
         run: yarn test
 
-  Integration Tests:
+  Integration-Tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
-    needs: ["Frontend Unit Tests", "Backend Unit Tests"]
+    needs: ["Frontend-Unit-Tests", "Backend-Unit-Tests"]
 
     steps:
 
