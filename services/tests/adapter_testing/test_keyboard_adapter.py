@@ -1,6 +1,7 @@
 import logging
 
 import pytest
+
 from services.input.sources.keyboard_adapter import KEY_MAP, KeyboardAdapter
 
 
