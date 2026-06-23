@@ -13,7 +13,7 @@ tasks:
   install:
     desc: Install backend + frontend deps
     cmds:
-      - uv sync --all-groups --all-extras --python 3.11
+      - uv sync --all-groups --python 3.11 --no-build-isolation-package airsim
       - cmd: yarn install
         dir: "{{.FRONTEND_DIR}}"
 

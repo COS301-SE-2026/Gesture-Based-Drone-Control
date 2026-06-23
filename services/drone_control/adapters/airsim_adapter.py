@@ -135,7 +135,35 @@ class AirSimAdapter(DroneAdapter):
 		"""
 
 		try:
+			import inspect
+
 			import airsim  # type: ignore (the package does in fact exist...)
+			import msgpack
+
+			# this is the stupidest patch ever
+			# newer msgpack versions lack the encoding kewarg that msgpack-rpc-python uses
+			# patch the packer and unpacker to allow airsim and pas to work together in one env
+			# i hate it
+			# i hate it here
+			if 'encoding' not in inspect.signature(msgpack.Packer.__init__).parameters:
+				oldpacker = msgpack.Packer
+
+				class _PatchedPacker(oldpacker):
+					def __init__(self, *args, **kwargs):
+						kwargs.pop('encoding', None)  # get rid of it entirely
+						super().__init__(*args, **kwargs)  # and pass to parent
+
+				msgpack.Packer = _PatchedPacker
+
+			if 'encoding' not in inspect.signature(msgpack.Unpacker.__init__).parameters:
+				oldunpacker = msgpack.Unpacker
+
+				class _PatchedUnpacker(oldunpacker):
+					def __init__(self, *args, **kwargs):
+						kwargs.pop('encoding', None)  # get rid of it entirely
+						super().__init__(*args, **kwargs)  # and pass to parent
+
+				msgpack.Unpacker = _PatchedUnpacker
 
 			def _connect_blocking():
 				# AirSim's MultirotorClient may be broken.
