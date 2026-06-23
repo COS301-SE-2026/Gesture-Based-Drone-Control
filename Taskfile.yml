@@ -61,7 +61,7 @@ tasks:
   backend-unit-test:
     desc: Runs Backend Unit Tests
     cmds:
-      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=term-missing
+      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=xml:apps/backend/coverage.xml
 
   frontend-unit-test:
     desc: Runs Frontend Unit Tests
