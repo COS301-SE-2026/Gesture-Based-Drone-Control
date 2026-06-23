@@ -52,6 +52,12 @@ tasks:
     cmds:
       - yarn build
 
+  test:
+    desc: Runs Unit Tests, Integration and End to End tests
+    deps:
+      - unit-test
+      - integration-test
+
   unit-test:
     desc: Runs Frontend and Backend Unit Tests
     deps:
