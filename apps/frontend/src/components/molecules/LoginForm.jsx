@@ -48,11 +48,86 @@ const LoginForm = ({ forData, errors, islLoading,handleChange, handleSubmit }) =
             error={errors.email}
             errorMessage={errors.email}
             />
-        </form>
-        </div>
 
-    
-        
+            <FormSection
+            label = "Password"
+            name="password"
+            type="password"
+            placeholder = "Enter your password"
+            icon ={Lock}
+            value = {formData.password}
+            onChange = {handleChange}
+            error = {errors.password}
+            errorMessage = { errors.password}
+            />
+
+
+            {/* the forget password thingies below btw Jaitin */}
+            <div className = "flex items-center justify-between">
+                <label className = "flex items-center gap-2 cursor-pointer">
+                    <input
+                    type = "checkbox"
+                    name = "remember me"
+                    checked = { formData.rememberMe}
+                    onChange ={handleChange}
+                    className = "w-4 h-4 rounded border-Grey dark:border-DarkGrey accent-Red"
+                    />
+                    <span className ="text-sm text-Grey dark:text-DarkGrey">
+                        Remember Me
+                    </span>
+                </label>
+                <Link
+                to = "/forgot-password"
+                className = "text-sm text-Red hover:text-DarkRed transition-colors"
+                >
+                    Forgot password?
+                </Link>
+            </div>
+            <button
+            type = "submit"
+            disabled = {isLooading}
+            className = "w-full bg-Red hover:bg-DarkRed disabled:bg-Grey text-OffWhite font-semibold py-2.5 rounded-lg transition-colors duration-200"
+            >
+                {isLoading ? "Signing in ..." : "Sign In"}
+            
+            </button>
+        </form>
+        <div className= "mt-6 text-center">
+            <p className = "text-sm text-Grey dark:text-DarkGrey">
+                Don't have an account?{" "}
+                <Link
+                to = "/signup"
+                className = " text-Red hover:text-DarkRed font-semibold teansition-colors"
+                >
+                    Sign Up
+                </Link>
+            </p>
+        </div>
+        <div className = " mt-8 pt-6 border-t border-Grey/20 dark:border-DarkGrey/20">
+        <p className = "text-sm text-Grey dark:text-DarkGrey text-center">
+            By signing in, you agree to our {" "}
+            <Link to ="/terms" className ="text-Red hover:text-DarkRed">
+            Terms & Conditions
+            </Link>
+        </p>
+        </div>
+        </div>
         
     )
 }
+
+
+LoginForm.propType = {
+    formData: PropTypes.shape({
+        email: PropTypes.string.isRequired,
+        password: PropTypes.string.isRequired,
+        rememberMe: PropTypes.bool.isRequired,
+
+    }).isRequired,
+    errors: PropTypes.object.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+    handleChange: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func.isRequired,
+}
+
+export default LoginForm
