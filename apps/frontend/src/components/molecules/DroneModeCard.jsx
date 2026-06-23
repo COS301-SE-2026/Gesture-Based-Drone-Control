@@ -24,7 +24,7 @@ const DroneModeCard = ({
       <div className="flex flex-col gap-4">
         <Label size="md">Select Drone Mode</Label>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-3">
           {modes.map((mode) => (
             <Button
               key={mode.id}

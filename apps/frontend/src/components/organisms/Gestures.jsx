@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { CommandHistory, GestureGuide } from "../molecules"
+import { CommandHistory, GestureGuide, DroneModeCard } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge, Camera } from "lucide-react"
 
@@ -19,6 +19,8 @@ const GestureControl = () => {
     altitude: 72,
     signal: 71,
   }
+
+  const [droneMode, setDroneMode] = useState("DroneSim")
 
   return (
     <div className="p-6 space-y-6">
@@ -54,13 +56,19 @@ const GestureControl = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-[2fr_1fr] gap-6 items-stretch">
+        <div className="grid grid-cols-[1fr_auto] gap-6">
 
         {/* gesture controls */}
           <GestureGuide/>
-          
+
+        {/* drone mode selection */}
+          <DroneModeCard currentMode={droneMode} onModeChange={setDroneMode} className="w-44" />
+        </div>
+
         {/* stats card */}
-        <Card variant="glass">
+        
+        <Card variant="glass" className="h-full">
             <div className="flex flex-col gap-6">
               <Label size="md">Stats</Label>
               <div className="grid grid-cols-2 gap-6">
@@ -115,9 +123,10 @@ const GestureControl = () => {
               </div>
             </div>
           </Card>
+        </div>
           
       </div>
-    </div>
+    
   )
 }
 
