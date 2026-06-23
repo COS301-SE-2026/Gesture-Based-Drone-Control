@@ -6,8 +6,12 @@ import {
   AnalyticsSideContent,
 } from "../molecules"
 import { Home, Hand, BarChart3, MapPin, Settings } from "lucide-react"
+import bgLight from "../../assets/Lightbackground.png"
+import bgDark from "../../assets/darkbackground.png"
+import { useTheme } from "../../context/ThemeContext"
 
 const RootLayout = () => {
+  const { isDark } = useTheme()
   const location = useLocation()
   const menuItems = [
     { id: "home", label: "Home", icon: Home, path: "./dashboard" },
@@ -33,7 +37,17 @@ const RootLayout = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-OffWhite dark:bg-OffBlack">
+    <div
+      className="flex min-h-screen"
+      style={{
+        backgroundImage: `url(${isDark ? bgDark : bgLight})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
+
       <div className="flex flex-col">
         <SideBar items={menuItems} topContent={getTopContent()} />
         <div className="w-80 px-4 pb-4"></div>
@@ -42,6 +56,7 @@ const RootLayout = () => {
         <Outlet />
       </main>
     </div>
+    
   )
 }
 
