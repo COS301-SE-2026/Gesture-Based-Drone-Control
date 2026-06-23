@@ -21,7 +21,7 @@ jobs:
         with: 
           python-version: 3.11
 
-      - uses: arduino/setup-task@bd79c29a39b1fc4a7cdd0ef9f2c3cd2f06886e2a
+      - uses: arduino/setup-task@v3
         with:
           version: "3.51.1"
           enable-cache: true 
