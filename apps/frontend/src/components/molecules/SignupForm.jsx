@@ -58,7 +58,101 @@ const SignupForm = ({ formData,errors,isLoading,handleChange,handleSubmit})=> {
                     create your account
                 </p>
             </div>
-            
+            <form onSubmit ={handleSubmit } className = "space-y-4">
+                <div className = "grid grid-cols-2 gap-3">
+                    <FormSection
+                    label = "First Name"
+                    name = "firstName"
+                    type = "text"
+                    placeholder = "John"
+                    icon = {User}
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    error={errors.firstName}
+                    errorMessage={errors.firstName}
+                    />
+                    <FormSection
+                    label = "LastName"
+                    name = "lastName"
+                    type = "text"
+                    placeholder = "Cloe"
+                    icon = {User}
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    error={errors.lastName}
+                    errorMessage={errors.lastName}
+                    />
+                    <div className = "col-span-2">
+                        <FormSection
+                        label = "Email Address"
+                        name = "email"
+                        type = "email"
+                        placeholder = "cloe@example.com"
+                        icon = {Mail}
+                        value={formData.email}
+                        onChange={handleChange}
+                        error={errors.email}
+                        errorMessage={errors.email}
+                        />
+                    </div>
+
+                    <div className = "col-span-2">
+                        <FormSection
+                        label = "Date of Birth"
+                        name = "dateOfBirth"
+                        type = "date"
+                        icon={calender}
+                        value={formData.dateOfBirth}
+                        onChange={handleChange}
+                        error={errors.dateOfBirth}
+                        errorMessage={errors.dateOfBirth}
+                        />
+                    </div>
+
+                    <div className = "col-span-2">
+                        <FormSection
+                        label = "Password"
+                        name = "password"
+                        type = "password"
+                        placeholder ="At least 8 characters"
+                        icon={Lock}
+                        value={formData.password}
+                        onChange={handleChange}
+                        error={errors.password}
+                        errorMessage={errors.password}
+                        />
+                    </div>
+
+                    <div className = "col-span-2">
+                        <FormSection
+                        label = "Confirm Password"
+                        name = "confirmPassword"
+                        type = "password"
+                        placeholder = "Confirm your password"
+                        icon={Lock}
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        error={errors.confirmPassword}
+                        errorMessage={errors.confirmPassword}
+                        />
+                    </div>
+
+                </div>
+                <div className = "pt-2">
+                    <label
+                    htmlFor = "agreeToTerms"
+                    className = "flex items-start gap-3 cursor-pointer">
+                        <input
+                        type = "checkbox"
+                        name = "agreeToTerms"
+                        checked = {formData.agreeToTerms}
+                        onChange={handleChange}
+                        className = "w-4 h-4 rounded border-Grey dark:border=DarkGrey accent-Red mt-0.5 flex-shrink-0"
+                        />
+                        
+                    </label>
+                </div>
+            </form>
         </div>
     )
 }
