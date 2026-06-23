@@ -13,9 +13,10 @@ tasks:
   install:
     desc: Install backend + frontend deps
     cmds:
+      - uv venv --python 3.11
+      - uv pip install setuptools wheel numpy msgpack-rpc-python
       - uv sync --all-groups --python 3.11 --no-build-isolation-package airsim
-      - cmd: yarn install
-        dir: "{{.FRONTEND_DIR}}"
+      - cmd: cd {{.FRONTEND_DIR}} && yarn install
 
   dev:
     desc: Runs backend and frontend in dev mode
