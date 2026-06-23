@@ -2,6 +2,7 @@ import { useState } from "react"
 import PropTypes from "prop-types"
 import { Card, Label, Button } from "../atoms"
 import { Monitor, Keyboard, Gamepad2, Hand, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RotateCcw, RotateCw, ChevronUp, ChevronDown, PlaneLanding, PlaneTakeoff, CircleDot, OctagonX} from "lucide-react"
+import  { useDroneControls } from "../../hooks/useDroneControls"
 
 const tabs = [
   { id : "onscreen", label: "On Screen", icon: Monitor },
@@ -12,18 +13,18 @@ const tabs = [
 
 const controls = {
   onscreen: [
-    { icon: ArrowUp, label: "Move Forward", input:"↑ Button" },
-    { icon: ArrowDown, label: "Move Backward", input:"↓ Button" },
-    { icon: ArrowLeft, label: "Move Left", input:"← Button" },
-    { icon: ArrowRight, label: "Move Right", input:"→ Button" },
-    { icon: ChevronUp, label: "Increase Altitude", input:"▲ Button" },
-    { icon: ChevronDown, label: "Decrease Altitude", input:"▼ Button" },
-    { icon: RotateCcw, label: "Rotate Left", input:"⟲ Button" },
-    { icon: RotateCw, label: "Rotate Right", input:"⟳ Button" },
-    { icon: PlaneTakeoff, label: "Takeoff", input:"T Button" },
-    { icon: CircleDot, label: "Hover", input:"H Button" },
-    { icon: PlaneLanding, label: "Land", input:"L Button" },
-    { icon: OctagonX, label: "Emergency Stop", input:"X Button" },
+    { icon: ArrowUp, label: "Move Forward", input:"↑ Button", action: "moveForward" },
+    { icon: ArrowDown, label: "Move Backward", input:"↓ Button", action: "moveBackward" },
+    { icon: ArrowLeft, label: "Move Left", input:"← Button", action: "moveLeft" },
+    { icon: ArrowRight, label: "Move Right", input:"→ Button", action: "moveRight"},
+    { icon: ChevronUp, label: "Increase Altitude", input:"▲ Button", action: "goUp" },
+    { icon: ChevronDown, label: "Decrease Altitude", input:"▼ Button", action: "goDown" },
+    { icon: RotateCcw, label: "Rotate Left", input:"⟲ Button", action: "rotateLeft" },
+    { icon: RotateCw, label: "Rotate Right", input:"⟳ Button", action: "rotateRight" },
+    { icon: PlaneTakeoff, label: "Takeoff", input:"T Button", action: "takeoff" },
+    { icon: CircleDot, label: "Hover", input:"H Button", action: "hover" },
+    { icon: PlaneLanding, label: "Land", input:"L Button", action: "land" },
+    { icon: OctagonX, label: "Emergency Stop", input:"X Button", action: "emergencyStop" },
   ],
   keyboard: [
     { icon: ArrowUp, label: "Move Forward", input:"Up key" },
@@ -69,8 +70,9 @@ const controls = {
   ],
 }
 
-const GestureGuide = ({ className = "" }) => {
+const GestureGuide = ({ className = "", onControlAction }) => {
   const [activeTab, setActiveTab] = useState("onscreen")
+  const { handleControlPress, isControlActive } = useDroneControls(onControlAction)
 
   return (
     <Card variant="glass" className={className}>
@@ -94,19 +96,24 @@ const GestureGuide = ({ className = "" }) => {
 
         {/* control guide list */}
         <div className="grid grid-cols-3 gap-3">
-        {controls[activeTab].map(({ icon: Icon, label, input }) => (
-          <div
+        {controls[activeTab].map(({ icon: Icon, label, input, action }) => (
+          <button
             key={label}
-            className="flex items-center gap-3 bg-OffBlack/10 dark:bg-OffWhite/5 rounded-lg px-3 py-2 boarder boarder-Grey/10"
+            onClick={() => activeTab === "onscreen" && action && handleControlPress(action, label)}
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 border border-Grey/10 transition-all duration-150 ${
+              activeTab === "onscreen" ? "hover:border-Grey/30 hover:bg-OffBlack/5 dark:hover:bg-OffWhite/5 cursor-pointer active:scale-95" : "cursor-default"}
+              $ { isControlActive(label) ? "bg-OffBlack/20 dark:bg-OffWhite/20" : "bg-OffBlack/10 dark:bg-OffWhite/5"
+              }`
+            }
           >
             <Icon className="w-4 h-4 text-Red shrink-0" />
-            <span className="text-xs text-OffBlack/70 dark:text-OffWhite/70 flex-1">
+            <span className="text-xs text-OffBlack/70 dark:text-OffWhite/70 flex-1 text-left">
               {label}
             </span>
             <span className="text-xs font-mono font-semibold text-OffBlack dark:text-OffWhite bg-Grey/20 dark:bd-DarkGrey/40 px-2 py-0.5 rounded">
-              {input}
+              {input || "Not Mapped"}
             </span>
-          </div>
+          </button>
         ))}
       </div>
       </div>
@@ -116,10 +123,12 @@ const GestureGuide = ({ className = "" }) => {
 
 GestureGuide.PropTypes = {
   className: PropTypes.string,
+  onControlAction: PropTypes.func,
 }
 
 GestureGuide.defaultProps = {
   className: "",
+  onControlAction: null,
 }
 
 export default GestureGuide
