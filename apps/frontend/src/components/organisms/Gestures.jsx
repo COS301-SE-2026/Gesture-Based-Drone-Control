@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { CommandHistory } from "../molecules"
+import { CommandHistory, GestureGuide } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge, Camera } from "lucide-react"
 
@@ -55,6 +55,11 @@ const GestureControl = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* gesture controls */}
+          <GestureGuide/>
+          
+        {/* stats card */}
         <Card variant="glass">
             <div className="flex flex-col gap-6">
               <Label size="md">Stats</Label>
@@ -110,6 +115,7 @@ const GestureControl = () => {
               </div>
             </div>
           </Card>
+          
       </div>
     </div>
   )
