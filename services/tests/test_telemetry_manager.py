@@ -3,7 +3,6 @@ import sys
 from pathlib import Path
 
 import pytest
-
 from telemetry.manager import get_drone_telemetry, get_sim_telemetry
 
 project_root = Path(__file__).parent.parent.parent.parent

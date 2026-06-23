@@ -12,10 +12,7 @@ from app.api import router
 app = FastAPI(
 	title='Drone Control API',
 	description="""
-## REST Endpoints
-
-* `GET /health` – Health check
-
+##
 ## WebSocket Endpoints
 
 * `ws://localhost:3000/drone/telemetry` – Real‑time telemetry stream from live drone

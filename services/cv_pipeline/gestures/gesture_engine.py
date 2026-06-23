@@ -97,7 +97,6 @@ class GestureEngine:
 # smoke test, going for that second smoke now
 if __name__ == '__main__':
 	import cv2
-
 	from cv_pipeline.camera.camera_feed import CameraConfig, CameraFeed
 	from cv_pipeline.hand_detection.mediapipe_detector import HandDetectionPipeline
 
