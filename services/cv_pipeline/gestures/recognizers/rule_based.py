@@ -72,8 +72,9 @@ class RuleBasedRecognizer(GestureRecognizer):
 		finger_state = FingerState(
 			thumb=self._is_thumb_up(lm),
 			index=self._is_finger_up(lm, tip_idx=INDEX_TIP, pip_idx=INDEX_PIP, mcp_idx=INDEX_MCP),
-			middle=self._is_finger_up(lm, tip_idx=MIDDLE_TIP, pip_idx=MIDDLE_PIP, 
-                            mcp_idx=MIDDLE_MCP),
+			middle=self._is_finger_up(
+				lm, tip_idx=MIDDLE_TIP, pip_idx=MIDDLE_PIP, mcp_idx=MIDDLE_MCP
+			),
 			ring=self._is_finger_up(lm, tip_idx=RING_TIP, pip_idx=RING_PIP, mcp_idx=RING_MCP),
 			pinky=self._is_finger_up(lm, tip_idx=PINKY_TIP, pip_idx=PINKY_PIP, mcp_idx=PINKY_MCP),
 		)

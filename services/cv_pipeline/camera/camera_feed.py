@@ -6,6 +6,7 @@
 # return captured frame (api call possibly)
 
 import logging
+import time
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Optional
@@ -49,6 +50,8 @@ class CapturedFrame:
 	rgb_frame: np.ndarray
 	# monotonic counter
 	frame_index: int
+	# capture time in seconds
+	timestamp: float
 
 
 class CameraFeed:
@@ -143,6 +146,7 @@ class CameraFeed:
 			bgr_frame=raw,
 			rgb_frame=rgb,
 			frame_index=self._frame_idx,
+			timestamp=time.monotonic(),
 		)
 
 
