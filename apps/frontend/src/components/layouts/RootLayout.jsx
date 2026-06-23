@@ -5,7 +5,7 @@ import {
   GestureSideContent,
   AnalyticsSideContent,
 } from "../molecules"
-import { Home, Hand, BarChart3, MapPin, Settings,HelpCircle } from "lucide-react"
+import { Hand, BarChart3, MapPin, Settings,HelpCircle } from "lucide-react"
 
 const RootLayout = () => {
   const location = useLocation()
@@ -23,9 +23,7 @@ const RootLayout = () => {
   ]
 
   const getTopContent = () => {
-    if (location.pathname.includes("/dashboard")) {
-      return <DashboardSideCard userName="Bobby" />
-    } else if (location.pathname.includes("/gestures")) {
+    if(location.pathname.includes("/gestures")){
       return <GestureSideContent />
     } else if (location.pathname.includes("/analytics")) {
       return <AnalyticsSideContent />

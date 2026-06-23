@@ -1,4 +1,4 @@
-export { default as Dashboard } from "./Dashboard"
+// export { default as Dashboard } from "./Dashboard"
 export { default as Analytics } from "./Analytics"
 export { default as Gestures } from "./Gestures"
 export { default as GPS } from "./GPS"
