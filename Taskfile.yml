@@ -134,8 +134,21 @@ tasks:
       - cmd: uv run adapter_demo.py
   
   sim-beeg-demo:
+    desc: Test your laptop out 
     deps:
       - sim-pas-demo
       - sim-as 
-
+  
+  prereqs:
+    desc: install all prereqs (add more as identified)
+    cmds:
+      - cmd: winget install Python.Python.3.11 astral-sh.uv Microsoft.DirectX --accept-package-agreements --accept-source-agreements
+        platforms: [windows]
+      - cmd: npm install -g yarn
+        platforms:  [windows]
+      - cmd: |
+          sudo apt update && sudo apt install  -y python3.11 python3.11-venv nodejs npm curl
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          npm install -g yarn
+        platforms: [linux]
   
