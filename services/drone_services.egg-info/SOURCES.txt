@@ -41,6 +41,8 @@ telemetry/storage/sqlite_repo.py
 tests/test_adapters.py
 tests/test_imports.py
 tests/test_telemetry_manager.py
+tests/cv_pipeline_testing/test_async_queue.py
 tests/cv_pipeline_testing/test_camera_feed.py
 tests/cv_pipeline_testing/test_mediapipe_detector.py
+tests/cv_pipeline_testing/test_pipeline.py
 tests/cv_pipeline_testing/test_rule_based.py

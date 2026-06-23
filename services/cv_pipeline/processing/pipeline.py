@@ -11,6 +11,7 @@ camera (thread) -> bounded queue -> detector -> engine ->events
 
 import asyncio
 import logging
+import math
 import threading
 from dataclasses import dataclass, field
 from typing import AsyncIterator, Optional
@@ -20,6 +21,9 @@ from cv_pipeline.gestures.gesture_engine import GestureEngine, GestureEngineResu
 from cv_pipeline.hand_detection.mediapipe_detector import (
 	DetectorConfig,
 	HandDetectionPipeline,
+ 	HandDetectionResult,
+	Handedness,
+	draw_landmarks,
 )
 from cv_pipeline.processing.async_queue import BoundedFrameQueue
 
@@ -38,6 +42,68 @@ class PipelineConfig:
 	detector: DetectorConfig = field(default_factory=DetectorConfig)
 	queue_size: int = 2
 
+class FpsMeter:
+    """
+	Smoothed the fps from frame timestamps
+	EMA so # doesnt jitter on every frame
+	"""
+    def __init__(self, alpha: float =0.1) -> None:
+        self._alpha = alpha
+        self._fps = 0.0
+        self._last_ts: Optional[float] = None
+        
+    def update(self, timestamp: float) -> float:
+        if self._last_ts is not None:
+            dt = timestamp - self._last_ts
+            if dt > 0:
+                inst = 1.0 / dt
+                #seed on first sample then smooth
+                self._fps = inst if self._fps == 0.0 else (
+					self._alpha * inst + (1 - self._aplha) * self._fps
+				)
+        self._last_ts = timestamp
+        return self._fps
+		
+    @property
+    def fps(self) -> float:
+        return self._fps
+	
+class MotionTracker:
+    """
+	Per hand wrist spend by units/seconds
+	Keyed by handedness so L/R tracked seperately
+	Multiply by frame width if we want pixels/sec
+	"""
+    def __init__(self) -> None:
+        #handedness -> x, y, timestamp
+        self._last: dict[Handedness, tuple[float, float, float]] = {}
+        
+        def update(self, handedness: Handedness, wrist, timestamp: float) -> float:
+            speed = 0.0
+            prev = self._last.get(handedness)
+            if prev is not None:
+                px, py, pt = prev
+                dt = timestamp - pt
+                if dt > 0:
+                    speed = math.hypot(wrist.x - px, wrist.y - py) / dt
+            self._last[handedness] = (wrist.x, wrist.y, timestamp)
+            return speed
+		
+        def forget_absent(self, present: set) -> None:
+            # drop hanfd that left frame so turning hand dont teleport
+            for h in list(self._last):
+                if h not in present:
+                    del self._last[h]
+                    
+@dataclass
+class HandMetrics:
+    """
+    per hand # surfaced for UI & telemetry
+	"""
+    handedness: Handedness
+    confidence: float
+	#wrist speed, normalised units per second
+    speed: float			
 
 @dataclass
 class PipelineEvent:
@@ -46,9 +112,12 @@ class PipelineEvent:
 	-> frame = captured frame
 	-> engine_result: per-hand gesture results
 	"""
-
 	frame: CapturedFrame
 	engine_result: GestureEngineResult
+	detection: Optional[HandDetectionResult] = None
+	fps: float = 0.0
+	hand_metrics: list[HandMetrics] = field(default_factory = list)
+
 
 	@property
 	def frame_index(self) -> int:
@@ -77,6 +146,9 @@ class CvPipeline:
 		self._consumer_task: Optional[asyncio.Task] = None
 		self._stop_event = threading.Event()
 		self._running = False
+		#metrics reset on start
+		self._fps_meter = FpsMeter()
+		self._motion = MotionTracker()
 
 	# lifecycle
 	async def start(self) -> None:
@@ -90,6 +162,10 @@ class CvPipeline:
 
 		self._frame_queue = BoundedFrameQueue[CapturedFrame](maxsize=self._config.queue_size)
 		self._event_queue = asyncio.Queue()
+  
+		#fresh metrics on each run
+		self._fps_meter = FpsMeter()
+		self._motion = MotionTracker()
 
 		# open cam and detector
 		self._camera = CameraFeed(self._config.camera)
@@ -222,6 +298,7 @@ class CvPipeline:
 				frame = await self._frame_queue.get()
 				detection = self._detector.detect_hands(frame)
 				engine_result = self._engine.process(detection)
+				fps = self._fps_meter.update(frame.timestamp)
 				event = PipelineEvent(frame=frame, engine_result=engine_result)
 				await self._event_queue.put(event)
 		except asyncio.CancelledError:
