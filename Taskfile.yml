@@ -54,6 +54,9 @@ tasks:
 
   unit-test:
     desc: Runs Frontend and Backend Unit Tests
+    deps:
+      - backend-unit-test
+      - frontend-unit-test
 
   backend-unit-test:
     desc: Runs Backend Unit Tests
@@ -66,25 +69,10 @@ tasks:
     cmds:
       - yarn test
 
-
-  test:
-    desc: Runs backend, frontend, and services testing
-    deps:
-      - backend-test
-      - frontend-test
-  
-  backend-test:
-    internal: true
-    desc: Runs backend testing
+  integration-test:
+    desc: Runs Integration Tests
     cmds:
-      - uv run pytest --cov --cov-report=term-missing
-
-
-  frontend-test:
-    internal: true
-    dir: "{{.FRONTEND_DIR}}"
-    cmds:
-      - yarn test
+      - uv run pytest tests --cov --cov-report=term-missing
 
   lint:
     desc: Runs lint checks
@@ -93,12 +81,10 @@ tasks:
       - frontend-lint
 
   backend-lint:
-    internal: true
     cmds:
       - uv run ruff check --output-format=github
 
   frontend-lint:
-    internal: true
     dir: "{{.FRONTEND_DIR}}"
     cmds:
       - yarn lint
@@ -110,26 +96,14 @@ tasks:
       - frontend-fix
   
   backend-fix:
-    internal: true
     cmds:
       - uv run ruff format .
       - uv run ruff check --fix .
   
   frontend-fix:
-    internal: true
     dir: "{{.FRONTEND_DIR}}"
     cmds:
       - yarn format
-  
-  services-install:
-    desc: Install services package
-    cmds:
-      - pip install -e "{{.SERVICES_DIR}}[dev]" --break-system-packages
-  
-  services-test:
-    desc: Runs test cases in services
-    cmds:
-      - uv run pytest services/tests
 
   sim-as:
     desc: Runs the old pain in the ass sim
