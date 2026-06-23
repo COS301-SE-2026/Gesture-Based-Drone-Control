@@ -45,7 +45,7 @@ PINKY_PIP = 18
 PINKY_TIP = 20
 
 # angle number here now to say if a finger is up when its straight enough based on degree
-#can alter value if its too strict
+# can alter value if its too strict
 FINGER_STRAIGHT_DEG = 160.0
 
 
@@ -71,10 +71,11 @@ class RuleBasedRecognizer(GestureRecognizer):
 
 		finger_state = FingerState(
 			thumb=self._is_thumb_up(lm),
-			index=self._is_finger_up(lm, INDEX_MCP, INDEX_TIP, INDEX_PIP,),
-			middle=self._is_finger_up(lm, MIDDLE_MCP, MIDDLE_TIP, MIDDLE_PIP),
-			ring=self._is_finger_up(lm, RING_MCP, RING_TIP, RING_PIP),
-			pinky=self._is_finger_up(lm, PINKY_MCP, PINKY_TIP, PINKY_PIP),
+			index=self._is_finger_up(lm, tip_idx=INDEX_TIP, pip_idx=INDEX_PIP, mcp_idx=INDEX_MCP),
+			middle=self._is_finger_up(lm, tip_idx=MIDDLE_TIP, pip_idx=MIDDLE_PIP, 
+                            mcp_idx=MIDDLE_MCP),
+			ring=self._is_finger_up(lm, tip_idx=RING_TIP, pip_idx=RING_PIP, mcp_idx=RING_MCP),
+			pinky=self._is_finger_up(lm, tip_idx=PINKY_TIP, pip_idx=PINKY_PIP, mcp_idx=PINKY_MCP),
 		)
 
 		gesture = self._classify(finger_state)
@@ -92,7 +93,7 @@ class RuleBasedRecognizer(GestureRecognizer):
 		Returns True if the finger tip is above the pip joint.
 		y increases downward so tip.y < pip.y means extended
 		"""
-		angle = self._angle(landmarks[mcp_idx], landmarks[pip_idx],landmarks[tip_idx])
+		angle = self._angle(landmarks[mcp_idx], landmarks[pip_idx], landmarks[tip_idx])
 		return angle >= FINGER_STRAIGHT_DEG
 
 	def _angle(self, a, b, c) -> float:

@@ -42,6 +42,7 @@ class PipelineConfig:
 	detector: DetectorConfig = field(default_factory=DetectorConfig)
 	queue_size: int = 2
 
+
 class FpsMeter:
 	"""
 	Smoothed frames-per-second from frame timestamps.
@@ -59,8 +60,10 @@ class FpsMeter:
 			if dt > 0:
 				inst = 1.0 / dt
 				# seed on first sample, then smooth
-				self._fps = inst if self._fps == 0.0 else (
-					self._alpha * inst + (1 - self._alpha) * self._fps
+				self._fps = (
+					inst
+					if self._fps == 0.0
+					else (self._alpha * inst + (1 - self._alpha) * self._fps)
 				)
 		self._last_ts = timestamp
 		return self._fps
@@ -372,10 +375,7 @@ if __name__ == '__main__':
 					m = metrics_by_hand.get(gr.handedness)
 					conf = m.confidence * 100 if m else 0.0
 					speed = m.speed if m else 0.0
-					text = (
-						f'{gr.handedness.name}: {gr.gesture.name}  '
-						f'{conf:.0f}%  spd={speed:.2f}'
-					)
+					text = f'{gr.handedness.name}: {gr.gesture.name}  {conf:.0f}%  spd={speed:.2f}'
 					cv2.putText(
 						annotated,
 						text,
