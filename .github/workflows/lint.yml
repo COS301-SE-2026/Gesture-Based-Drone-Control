@@ -7,12 +7,9 @@ on:
 
 jobs:
 
-  lint-backend:
+  lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    defaults: 
-      run: 
-        working-directory: apps/backend
 
     steps:
       - uses: actions/checkout@v4
@@ -24,56 +21,13 @@ jobs:
         with: 
           python-version: 3.11
 
-      - name: Install Dependencies
-        run: make install
-
-      - name: Ruff Linter
-        run: make lint
-
-  lint-services:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    defaults: 
-      run: 
-        working-directory: services
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b        
-        with: 
-          version: "0.11.13"
-          enable-cache: true
-      - uses: actions/setup-python@v5
-        with: 
-          python-version: 3.11
-
-      - name: Install Dependencies
-        run: make install
-
-      - name: Ruff Linter
-        run: make lint
-
-
-  lint-frontend:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    defaults: 
-      run: 
-        working-directory: apps/frontend
-
-    steps: 
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: arduino/setup-task@bd79c29a39b1fc4a7cdd0ef9f2c3cd2f06886e2a
         with:
-          node-version: '22.22.0'
-          cache: 'yarn'
-          cache-dependency-path: 'apps/frontend/yarn.lock'
+          version: "3.51.1"
+          enable-cache: true 
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+      - name: Install Dependencies
+        run: task install
 
-      - name: Run ESLint
-        run: yarn lint
-
-      - name: Check Prettier formatting
-        run: yarn format:check
+      - name: Ruff Linter
+        run: task lint

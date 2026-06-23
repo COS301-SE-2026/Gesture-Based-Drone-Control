@@ -88,6 +88,7 @@ tasks:
     dir: "{{.FRONTEND_DIR}}"
     cmds:
       - yarn lint
+      - yarn format:check
 
   fix:
     desc: Automatically fixes Ruff issues
