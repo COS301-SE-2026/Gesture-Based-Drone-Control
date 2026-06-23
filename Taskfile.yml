@@ -52,6 +52,14 @@ tasks:
     cmds:
       - yarn build
 
+  unit-test:
+    desc: Runs Frontend and Backend Unit Tests
+
+  backend-unit-test:
+    desc: Runs backend unit tests
+    cmds:
+      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=term-missing
+
   test:
     desc: Runs backend, frontend, and services testing
     deps:
@@ -63,6 +71,7 @@ tasks:
     desc: Runs backend testing
     cmds:
       - uv run pytest --cov --cov-report=term-missing
+
 
   frontend-test:
     internal: true
