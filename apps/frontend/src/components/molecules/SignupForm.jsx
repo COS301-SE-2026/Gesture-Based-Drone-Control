@@ -149,10 +149,57 @@ const SignupForm = ({ formData,errors,isLoading,handleChange,handleSubmit})=> {
                         onChange={handleChange}
                         className = "w-4 h-4 rounded border-Grey dark:border=DarkGrey accent-Red mt-0.5 flex-shrink-0"
                         />
-                        
+                        <span className = "text-sm text-Grey dark:text-DarkGrey">
+                            I agree to the{" "}
+                            <Link to = "/terms" className = "text-Red hover:text-DarkRed">
+                            Terms & Conditions 
+                            </Link>
+                        </span>
                     </label>
+                    {errors.agreeToTerms && (
+                        <p className = "text-sm text-Red mt-1" >
+                            {errors.agreeToTerms}
+                        </p>
+                    )}
+
                 </div>
+                <button
+                type = "submit"
+                disabled ={isLoading}
+                className = "w-full bg-Red hover:bg-DarkRed disabled:bg-Grey text-OffWhite font-semibold py-2.5 rounded-lg transition-colors duration-200">
+                    {isLoading? "Creating account..." : "Sign Up"}
+
+                </button>
             </form>
+            <div className ="mt-6 text-center">
+                <p className = "text-sm text-Grey dark:text-DarkGrey">
+                    Already have an account?{" "}
+                    <Link
+                    to = "/login"
+                    className = "text-Red hover:text-DarkRed font-semibold transition-colors">
+                        Sign in
+                    </Link>
+                </p>
+            </div>
         </div>
     )
 }
+
+
+SignupForm.propTypes = {
+    formData: PropTypes.shape({
+        firstName: PropTypes.string.isRequired,
+        lastName: PropTypes.string.isRequired,
+        email: PropTypes.string.isRequired,
+        dateOfBirth: PropTypes.string.isRequired,
+        password: PropTypes.string.isRequired,
+        confirmPassword: PropTypes.string.isRequired,
+        agreeToTerms: PropTypes.bool.isRequired,
+    }).isRequired,
+    errors:PropTypes.object.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+    handleChange: PropTypes.func.isRequired,
+    handleSubmit : PropTypes.func.isRequired,
+}
+
+export default SignupForm
