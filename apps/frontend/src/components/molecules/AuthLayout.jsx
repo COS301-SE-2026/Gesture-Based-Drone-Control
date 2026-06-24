@@ -3,10 +3,10 @@ import AuthPanel from "../atoms/AuthPanel"
 
 const AuthLayout = ({panelTitle,panelSubtitle,children})=>{
     return(
-        <div className = "flex min-h-screen bg-Offwhite dark:bg-OffBlack">
+        <div className = "flex min-h-screen bg-OffWhite dark:bg-OffBlack">
             <AuthPanel title = {panelTitle} subtitle ={panelSubtitle} />
             <div className = "w-full lg:w-2/5 flex items-center justify-center px-6 py-12">
-            {ch8ildren}
+            {children}
             </div>
         </div>
     )

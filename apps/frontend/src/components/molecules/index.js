@@ -10,3 +10,7 @@ export { default as StatCard } from "./StatCard"
 export { default as DarkModeToggle } from "./DarkModeToggle"
 export { default as GestureSideContent } from "./GestureSideContent"
 export { default as AnalyticsSideContent } from "./AnalyticsSideContent"
+export {default as AuthLayout} from "./AuthLayout"
+export {default as LoginForm} from "./LoginForm"
+export {default as SignupForm} from "./SignupForm"
+

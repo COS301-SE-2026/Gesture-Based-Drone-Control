@@ -2,7 +2,7 @@ import PropTypes from "prop-types"
 import Input from "./Input"
 
 const FormSection = ({
-    lebel,
+    label,
     name,
     type = "text",
     placeholder,
@@ -26,7 +26,7 @@ const FormSection = ({
             type = {type}
             id = {htmlFor || name}
             name = {name}
-            placeHolder={placeHolder}
+            placeholder={placeholder}
             icon = {icon}
             value = { value}
             onChange= {onChange}
@@ -37,16 +37,16 @@ const FormSection = ({
     )
 }
 
-FormSection.prpTypes = {
+FormSection.propTypes = {
     label : PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     type: PropTypes.string,
     placeholder: PropTypes.string,
     icon:PropTypes.elementType,
-    value:PropTypes.oneOfTypes([PropTypes.string, PropTypes.number]),
+    value:PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     onChange: PropTypes.func.isRequired,
     error: PropTypes.bool,
-    errorMessages: PropTypes.string,
+    errorMessage: PropTypes.string,
     htmlFor: PropTypes.string,
 }
 

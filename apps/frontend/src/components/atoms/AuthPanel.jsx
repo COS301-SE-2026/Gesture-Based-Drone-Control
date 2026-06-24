@@ -1,10 +1,10 @@
 import PropTypes from "prop-types"
 import darkbg from "../../assets/darkMode.png"
 
-const AuthPanel = ({ttitle,subtitle}) => {
+const AuthPanel = ({title,subtitle}) => {
     return (
         <div
-        className = "hidden lg :flex lg :w-3/5 bg-cover bg-center relative"
+        className = "hidden lg:flex lg:w-3/5 bg-cover bg-center relative"
         style={{
             backgroundImage: `url(${darkbg})`,
         }}

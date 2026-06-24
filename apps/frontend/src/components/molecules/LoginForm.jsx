@@ -4,21 +4,21 @@ import FormSection from "../atoms/FormSection"
 import validator from "validator"
 import PropTypes from "prop-types"
 
-const LoginForm = ({ forData, errors, islLoading,handleChange, handleSubmit }) => {
+const LoginForm = ({ formData, errors, isLoading,handleChange, handleSubmit }) => {
     const validateForm = () => {
         const newErr ={}
-        if (!FormData.email){
+        if (!formData.email){
             newErr.email = "Email is required"
 
         }
-        else if (!validator.isEmail(FormData.email)){
+        else if (!validator.isEmail(formData.email)){
             newErr.email = "Please enter a valid email"
         }
 
-        if (!FormData.password){
+        if (!formData.password){
             newErr.password = "Password is required"
         }
-        else if (forData.password.length <8){
+        else if (formData.password.length <8){
             newErr.password = "Password needs to be atleast 8 characters"
         }
         return newErr
@@ -27,7 +27,7 @@ const LoginForm = ({ forData, errors, islLoading,handleChange, handleSubmit }) =
     return (
         <div className = "w-full max-w-sm">
             <div className = " mb-8 text-center">
-                <h2 className = "text-3xl font-bold text-OffBlack dark:text-Offwhite mb-2">
+                <h2 className = "text-3xl font-bold text-OffBlack dark:text-OffWhite mb-2">
                     Codex Merchants
                 </h2>
                 <p className = " text-Grey dark:text-DarkGrey">Sign in to your account</p>
@@ -43,7 +43,7 @@ const LoginForm = ({ forData, errors, islLoading,handleChange, handleSubmit }) =
             type = "email"
             placeHolder ="you@example.com"
             icon = {Mail}
-            value = {FormData.email}
+            value = {formData.email}
             onChange = {handleChange}
             error={errors.email}
             errorMessage={errors.email}
@@ -67,7 +67,7 @@ const LoginForm = ({ forData, errors, islLoading,handleChange, handleSubmit }) =
                 <label className = "flex items-center gap-2 cursor-pointer">
                     <input
                     type = "checkbox"
-                    name = "remember me"
+                    name = "rememberMe"
                     checked = { formData.rememberMe}
                     onChange ={handleChange}
                     className = "w-4 h-4 rounded border-Grey dark:border-DarkGrey accent-Red"
@@ -85,7 +85,7 @@ const LoginForm = ({ forData, errors, islLoading,handleChange, handleSubmit }) =
             </div>
             <button
             type = "submit"
-            disabled = {isLooading}
+            disabled = {isLoading}
             className = "w-full bg-Red hover:bg-DarkRed disabled:bg-Grey text-OffWhite font-semibold py-2.5 rounded-lg transition-colors duration-200"
             >
                 {isLoading ? "Signing in ..." : "Sign In"}
@@ -97,7 +97,7 @@ const LoginForm = ({ forData, errors, islLoading,handleChange, handleSubmit }) =
                 Don't have an account?{" "}
                 <Link
                 to = "/signup"
-                className = " text-Red hover:text-DarkRed font-semibold teansition-colors"
+                className = " text-Red hover:text-DarkRed font-semibold transition-colors"
                 >
                     Sign Up
                 </Link>
@@ -117,7 +117,7 @@ const LoginForm = ({ forData, errors, islLoading,handleChange, handleSubmit }) =
 }
 
 
-LoginForm.propType = {
+LoginForm.propTypes = {
     formData: PropTypes.shape({
         email: PropTypes.string.isRequired,
         password: PropTypes.string.isRequired,

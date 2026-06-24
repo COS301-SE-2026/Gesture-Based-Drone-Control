@@ -1,5 +1,5 @@
 import {Link} from "react-router-dom"
-import {Mail, Lock, User, Calender} from "lucide-react"
+import {Mail, Lock, User, Calendar} from "lucide-react"
 import FormSection from "../atoms/FormSection"
 import validator from "validator"
 import PropTypes from "prop-types"
@@ -9,11 +9,11 @@ const SignupForm = ({ formData,errors,isLoading,handleChange,handleSubmit})=> {
     const validateForm =() => {
         const newErr = {}
         if (!formData.firstName.trim()){
-            newErr.firstName = " First Nmae is required"
+            newErr.firstName = " First Name is required"
         }
 
         if (!formData.lastName.trim()){
-            newErr.lastName = "Lat name is required"
+            newErr.lastName = "Last name is required"
         }
 
         if(!formData.email){
@@ -35,7 +35,7 @@ const SignupForm = ({ formData,errors,isLoading,handleChange,handleSubmit})=> {
         }
 
         if(!formData.confirmPassword){
-            newErr.conformPassword = "Please confirm your password"
+            newErr.confirmPassword = "Please confirm your password"
         }
         else if(formData.password !== formData.confirmPassword){
             newErr.confirmPassword = "Passwords do not match"
@@ -51,14 +51,14 @@ const SignupForm = ({ formData,errors,isLoading,handleChange,handleSubmit})=> {
     return(
         <div className = "w-full max-w-md max-h-screen overflow-y-auto">
             <div className = "mb-8 text-center">
-                <h2 className = " text-3xl font-bold text-OffBlack dark:test-OffWhite mb-2">
+                <h2 className = " text-3xl font-bold text-OffBlack dark:text-OffWhite mb-2">
                     Codex Merchants
                 </h2>
                 <p className ="text-Grey dark:text-DarkGrey">
                     create your account
                 </p>
             </div>
-            <form onSubmit ={handleSubmit } className = "space-y-4">
+            <form onSubmit ={handleSubmit} className = "space-y-4">
                 <div className = "grid grid-cols-2 gap-3">
                     <FormSection
                     label = "First Name"
@@ -101,7 +101,7 @@ const SignupForm = ({ formData,errors,isLoading,handleChange,handleSubmit})=> {
                         label = "Date of Birth"
                         name = "dateOfBirth"
                         type = "date"
-                        icon={calender}
+                        icon={Calendar}
                         value={formData.dateOfBirth}
                         onChange={handleChange}
                         error={errors.dateOfBirth}
@@ -147,7 +147,7 @@ const SignupForm = ({ formData,errors,isLoading,handleChange,handleSubmit})=> {
                         name = "agreeToTerms"
                         checked = {formData.agreeToTerms}
                         onChange={handleChange}
-                        className = "w-4 h-4 rounded border-Grey dark:border=DarkGrey accent-Red mt-0.5 flex-shrink-0"
+                        className = "w-4 h-4 rounded border-Grey dark:border-DarkGrey accent-Red mt-0.5 flex-shrink-0"
                         />
                         <span className = "text-sm text-Grey dark:text-DarkGrey">
                             I agree to the{" "}

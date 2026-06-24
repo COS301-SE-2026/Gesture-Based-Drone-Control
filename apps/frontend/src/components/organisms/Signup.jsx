@@ -3,34 +3,35 @@ import { useNavigate } from "react-router-dom"
 import AuthLayout from "../molecules/AuthLayout"
 import SignupForm from "../molecules/SignupForm"
 
-export default function SignUp(){
+export default function Signup(){
   const navigate = useNavigate()
-  const[formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     firstName : "",
     lastName : "",
     email: "",
     dateOfBirth: "",
     password: "",
     confirmPassword: "",
-    agreeToTerms: "",
+    agreeToTerms: false,
   })
-  const[erors,setErrors]= useState({})
-  const [ isLoading,setIsLoading]= useState(false)
+  const[errors,setErrors]= useState({})
+  const [isLoading,setIsLoading]= useState(false)
 
   const handleChange = (e) => {
     const { name, value,type,checked} = e.target 
     setFormData((prev)=> ({
-      ...ProgressEvent,
+      ...prev,
       [name]:type === "checkbox"? checked : value,
     }))
-      if (error[name]){
+      if (errors[name]){
         setErrors((prev)=> ({
           ...prev,
           [name]:"",
 
         }))
       
-  }
+    }
+  
 }
 
 const handleSubmit = async (e) => {
@@ -45,6 +46,7 @@ const handleSubmit = async (e) => {
     agreeToTerms:!formData.agreeToTerms ? "You must agree to continue" : "",
 
   }
+
 
   const filteredErrors = Object.fromEntries(
     Object.entries(newErr).filter(([,v])=> v !== "")
@@ -68,7 +70,7 @@ return(
   panelSubtitle = "Start your adventure with Codex Merchants today"
   >
     <SignupForm
-    fromData = {formData}
+    formData = {formData}
     errors = {errors}
     isLoading = {isLoading}
     handleChange={handleChange}
