@@ -82,75 +82,10 @@ short-name segment.
 
 ---
 
-## 3. Commit Conventions
 
-The project uses [**Conventional Commits**](https://www.conventionalcommits.org/)
-per `R15.2`. Every commit message has the form:
+## 3. Pull Requests
 
-```
-<type>(<scope>): <short summary>
-
-<optional body>
-
-<optional footer(s)>
-```
-
-### 3.1 Types
-
-| Type | Use for | Example |
-| --- | --- | --- |
-| `feat` | A new user-facing capability. | `feat(recognizer): add open-palm gesture` |
-| `fix` | A bug fix. | `fix(telemetry): correct altitude unit conversion` |
-| `docs` | Documentation only — no code changes. | `docs(srs): adopt IEEE 830 structure` |
-| `test` | Adding or fixing tests. | `test(cv): add ambiguous-gesture rejection cases` |
-| `ci` | CI/CD configuration. | `ci: cache playwright browsers` |
-| `revert` | Reverts a previous commit. | `revert: feat(recognizer): add open-palm gesture` |
-
-### 3.2 Scopes
-
-Scopes match the top-level codebase folders or the user-facing area:
-`backend`, `frontend`, `services`, `cv`, `recognizer`, `adapters`,
-`telemetry`, `docs`, `ci`, `dependencies`. If a commit genuinely spans multiple
-scopes and cannot be split, the scope may be omitted.
-
-### 3.3 Examples
-
-=== "Good"
-
-    ```text
-    feat(recognizer): add open-palm gesture (R3.2.2)
-
-    Implements rule-based detection of an open palm and maps it to the
-    HOVER command. Adds a confidence threshold of 0.85 before emitting
-    the gesture.
-
-    Closes #42
-    ```
-
-=== "Acceptable"
-
-    ```text
-    fix(telemetry): correct altitude unit conversion
-    ```
-
-=== "Bad &mdash; rejected at review"
-
-    ```text
-    updates
-
-    final version
-
-    asdf
-    ```
-
-Citing the requirement ID (`R3.2.2`) and the issue (`Closes #42`) is
-encouraged whenever the commit clearly maps to one.
-
----
-
-## 4. Pull Requests
-
-### 4.1 Title
+### 3.1 Title
 
 The PR title follows the same Conventional-Commit form as the merge
 commit it will produce:
@@ -159,7 +94,7 @@ commit it will produce:
 feat(recognizer): add open-palm gesture (R3.2.2)
 ```
 
-### 4.2 Description template
+### 3.2 Description template
 
 ```markdown
 ## What
@@ -178,7 +113,7 @@ anything reviewers should know.
 Closes #<issue>
 ```
 
-### 4.3 Review requirements
+### 3.3 Review requirements
 
 | Target branch | Approving reviews | Required CI checks |
 | --- | --- | --- |
@@ -190,7 +125,7 @@ Closes #<issue>
 CI checks are enforced by GitHub branch protection — see
 [CI/CD §5](CICD.md#5-branch-protection--required-checks).
 
-### 4.4 Merge strategy
+### 3.4 Merge strategy
 
 PRs are merged with **"Create a merge commit"** &mdash; not squash, not
 rebase. Rationale:
@@ -209,7 +144,7 @@ team can recover if a problem surfaces immediately.
 
 ---
 
-## 5. Feature Development Workflow
+## 4. Feature Development Workflow
 
 The day-to-day workflow for a developer picking up a story is the same
 whether you use the command line or the VS Code source-control panel.
@@ -257,7 +192,7 @@ whether you use the command line or the VS Code source-control panel.
 
 ---
 
-## 6. Hotfix Flow
+## 5. Hotfix Flow
 
 For an emergency fix that must reach `main` *immediately* — typically
 discovered minutes before a demo — the team uses a shortened flow:
@@ -289,13 +224,13 @@ Rules:
 
 ---
 
-## 7. CLI Reference
+## 6. CLI Reference
 
 A copy-paste-ready cheatsheet for the most common operations on this
 repository. Every command is what you would actually type in a terminal
 opened at the repo root.
 
-### 7.1 First-time setup
+### 6.1 First-time setup
 
 ```bash
 # Clone the repository
@@ -310,7 +245,7 @@ git config --global user.email "your.email@example.com"
 git fetch --all --tags
 ```
 
-### 7.2 Daily — start a new feature
+### 6.2 Daily — start a new feature
 
 ```bash
 # 1. Sync the parent Use-Case branch
@@ -325,7 +260,7 @@ git branch --show-current
 # → feature/UC1/openpalm-recognizer
 ```
 
-### 7.3 Daily — commit and push
+### 6.3 Daily — commit and push
 
 ```bash
 # Inspect what changed
@@ -346,7 +281,7 @@ git commit -m "feat(recognizer): add open-palm gesture (R3.2.2)"
 git push
 ```
 
-### 7.4 Sync your Use-Case branch with `dev`
+### 6.4 Sync your Use-Case branch with `dev`
 
 Run this at least once a week on every active Use-Case branch.
 
@@ -362,7 +297,7 @@ git merge dev
 git push origin Use-Case-1
 ```
 
-### 7.5 Before opening a PR — merge the parent in
+### 6.5 Before opening a PR — merge the parent in
 
 ```bash
 # Make sure the parent Use-Case branch is fresh
@@ -374,7 +309,7 @@ git merge origin/Use-Case-1
 git push
 ```
 
-### 7.6 Promote a Use-Case branch to `dev`
+### 6.6 Promote a Use-Case branch to `dev`
 
 ```bash
 # Sync first
@@ -389,7 +324,7 @@ git push origin Use-Case-1
 # Then open the PR Use-Case-1 → dev on GitHub
 ```
 
-### 7.7 Promote `dev` to `main`
+### 6.7 Promote `dev` to `main`
 
 ```bash
 # Sync dev
@@ -400,7 +335,7 @@ git pull origin dev
 # (Two approving reviews required — see §4.3)
 ```
 
-### 7.8 Hotfix
+### 6.8 Hotfix
 
 ```bash
 # Branch off main, not dev
@@ -419,7 +354,7 @@ git merge origin/main
 git push origin dev
 ```
 
-### 7.9 Inspecting history
+### 6.9 Inspecting history
 
 ```bash
 # Last 10 commits, one line each, with branch graph
@@ -439,7 +374,7 @@ git bisect good demo-1
 git bisect reset
 ```
 
-### 7.10 Undoing things
+### 6.10 Undoing things
 
 ```bash
 # Discard unstaged changes in a file
@@ -466,7 +401,7 @@ git stash pop
     Only use these on your own feature branch, and only when you are
     certain nobody else has pulled it.
 
-## 8. Best Practices
+## 7. Best Practices
 
 A short list, in priority order:
 
