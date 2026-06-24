@@ -41,7 +41,7 @@ These constants define execution priority levels for commands.
 - PRIORITY_HIGH = 10
 - PRIORITY_CRITICAL = 999
 
-Higher values indicate higher priority.
+Higher values indicate higher priority. This is enforced by the handler.
 
 ---
 
@@ -50,6 +50,8 @@ Higher values indicate higher priority.
 ### Purpose
 
 Represents a single immutable command to be executed by the drone control pipeline.
+
+The optional payload can be used to configure custom commands, for instance subtly changing the speed and duration for more fluid or sensitive control.
 
 ---
 
@@ -70,6 +72,8 @@ Supported keys:
 - speed_ms: movement speed in metres per second
 - duration_s: duration of movement execution
 - degrees: rotation amount in degrees
+
+It is up to the DroneAdapter to implement support for these keys as kwargs in their respective handlers.
 
 ---
 
