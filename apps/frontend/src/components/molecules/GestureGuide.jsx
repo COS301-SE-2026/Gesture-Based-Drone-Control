@@ -28,114 +28,111 @@ const tabs = [
   { id: "controller", label: "Controller", icon: Gamepad2 },
 ]
 
-const controls = {
-  onscreen: [
+const commonControls =
+   [
     {
       icon: ArrowUp,
       label: "Move Forward",
-      input: "↑ Button",
       action: "moveForward",
     },
     {
       icon: ArrowDown,
       label: "Move Backward",
-      input: "↓ Button",
       action: "moveBackward",
     },
     {
       icon: ArrowLeft,
       label: "Move Left",
-      input: "← Button",
       action: "moveLeft",
     },
     {
       icon: ArrowRight,
       label: "Move Right",
-      input: "→ Button",
       action: "moveRight",
     },
     {
       icon: ChevronUp,
       label: "Increase Altitude",
-      input: "▲ Button",
       action: "goUp",
     },
     {
       icon: ChevronDown,
       label: "Decrease Altitude",
-      input: "▼ Button",
       action: "goDown",
     },
     {
       icon: RotateCcw,
       label: "Rotate Left",
-      input: "⟲ Button",
       action: "rotateLeft",
     },
     {
       icon: RotateCw,
       label: "Rotate Right",
-      input: "⟳ Button",
       action: "rotateRight",
     },
     {
       icon: PlaneTakeoff,
       label: "Takeoff",
-      input: "T Button",
       action: "takeoff",
     },
-    { icon: CircleDot, label: "Hover", input: "H Button", action: "hover" },
-    { icon: PlaneLanding, label: "Land", input: "L Button", action: "land" },
+    { 
+      icon: CircleDot,
+      label: "Hover",
+      action: "hover" 
+    },
+    { 
+      icon: PlaneLanding,
+      label: "Land",
+      action: "land" 
+    },
     {
       icon: OctagonX,
       label: "Emergency Stop",
-      input: "X Button",
       action: "emergencyStop",
     },
+  ]
+
+
+const inputMapping = {
+  onscreen: [
+    "↑ Button", "↓ Button", "← Button", "→ Button",
+    "▲ Button", "▼ Button", "⟲ Button", "⟳ Button",
+    "T Button", "H Button", "L Button", "X Button"
   ],
   keyboard: [
-    { icon: ArrowUp, label: "Move Forward", input: "Up key" },
-    { icon: ArrowDown, label: "Move Backward", input: "Down Key" },
-    { icon: ArrowLeft, label: "Move Left", input: "Left Key" },
-    { icon: ArrowRight, label: "Move Right", input: "Right Key" },
-    { icon: ChevronUp, label: "Increase Altitude", input: "W" },
-    { icon: ChevronDown, label: "Decrease Altitude", input: "S" },
-    { icon: RotateCcw, label: "Rotate Left", input: "A" },
-    { icon: RotateCw, label: "Rotate Right", input: "D" },
-    { icon: PlaneTakeoff, label: "Takeoff", input: "T" },
-    { icon: CircleDot, label: "Hover", input: "Space Key" },
-    { icon: PlaneLanding, label: "Land", input: "L" },
-    { icon: OctagonX, label: "Emergency Stop", input: "Escape Key" },
+    "Up Key", "Down Key", "Left key", "Right Key",
+    "W", "S", "A", "D",
+    "T", "Space Key", "L", "Escape Key"
   ],
   controller: [
-    { icon: ArrowUp, label: "Move Forward", input: "L Stick Up" },
-    { icon: ArrowDown, label: "Move Backward", input: "L Stick Down" },
-    { icon: ArrowLeft, label: "Move Left", input: "L Stick Left" },
-    { icon: ArrowRight, label: "Move Right", input: "L Stick Right" },
-    { icon: ChevronUp, label: "Increase Altitude", input: "R Stick Up" },
-    { icon: ChevronDown, label: "Decrease Altitude", input: "R Stick Down" },
-    { icon: RotateCcw, label: "Rotate Left", input: "R Stick Left" },
-    { icon: RotateCw, label: "Rotate Right", input: "R Stick Right" },
-    { icon: PlaneTakeoff, label: "Takeoff", input: "Y/triangle" },
-    { icon: CircleDot, label: "Hover", input: "X/square" },
-    { icon: PlaneLanding, label: "Land", input: "B/circle" },
-    { icon: OctagonX, label: "Emergency Stop", input: "A/X" },
+    "L Stick Up", "L Stick Down", "L Stick Left", "L Stick Right",
+    "R Stick Up", "R Stick Down", "R Stick Left", "R Stick Right",
+    "Triangle", "Square", "Circle", "Cross"
   ],
   gestures: [
-    //come back and fill in inputs once gestures have been mapped to inputs
-    { icon: ArrowUp, label: "Move Forward", input: "" },
-    { icon: ArrowDown, label: "Move Backward", input: "" },
-    { icon: ArrowLeft, label: "Move Left", input: "" },
-    { icon: ArrowRight, label: "Move Right", input: "" },
-    { icon: ChevronUp, label: "Increase Altitude", input: "" },
-    { icon: ChevronDown, label: "Decrease Altitude", input: "" },
-    { icon: RotateCcw, label: "Rotate Left", input: "" },
-    { icon: RotateCw, label: "Rotate Right", input: "" },
-    { icon: PlaneTakeoff, label: "Takeoff", input: "" },
-    { icon: CircleDot, label: "Hover", input: "" },
-    { icon: PlaneLanding, label: "Land", input: "" },
-    { icon: OctagonX, label: "Emergency Stop", input: "" },
+    "", "", "", "",
+    "", "", "", "",
+    "", "", "", ""
   ],
+}
+
+const controls = {
+  onscreen: commonControls.map((control, index) => ({
+    ...control,
+    input: inputMapping.onscreen[index] || "",
+  })),
+  keyboard: commonControls.map((control, index) => ({
+    ...control,
+    input: inputMapping.keyboard[index] || "",
+  })),
+  controller: commonControls.map((control, index) => ({
+    ...control,
+    input: inputMapping.controller[index] || "",
+  })),
+  gestures: commonControls.map((control, index) => ({
+    ...control,
+    input: inputMapping.gestures[index] || "",
+  })),
 }
 
 const GestureGuide = ({ className = "", onControlAction }) => {
