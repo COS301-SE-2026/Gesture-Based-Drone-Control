@@ -1,12 +1,17 @@
 import PropTypes from "prop-types"
 import darkbg from "../../assets/darkMode.png"
+import {useContext} from "react"
+import { ThemeContext} from "../../context/ThemeContext"
+import lightbg from "../../assets/lightMode.png"
 
 const AuthPanel = ({title,subtitle}) => {
+    const {isDark} = useContext(ThemeContext)
+
     return (
         <div
         className = "hidden lg:flex lg:w-3/5 bg-cover bg-center relative"
         style={{
-            backgroundImage: `url(${darkbg})`,
+            backgroundImage: `url(${isDark ? darkbg : lightbg})`,
         }}
         >
             <div className = "absolute inset-0 bg-OffBlack/40" />
