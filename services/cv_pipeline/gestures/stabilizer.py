@@ -51,9 +51,9 @@ class GestureStabilizer:
 			out.append(replace(r, gesture=stable_gesture))
 
 		# a hand that left the frame shouldnt keep dstable history
-		for hand in list(self._history):
-			if hand not in seen:
-				del self._history[hand]
-				self._stable.pop(hand, None)
+		stale = [hand for hand in self._history if hand not in seen]
+		for hand in stale:
+			del self._history[hand]
+			self._stable.pop(hand, None)
 
 		return out

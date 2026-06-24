@@ -51,7 +51,7 @@ class FpsMeter:
 
 	def __init__(self, alpha: float = 0.1) -> None:
 		self._alpha = alpha
-		self._fps = 0.0
+		self._fps = Optional[float] = None
 		self._last_ts: Optional[float] = None
 
 	def update(self, timestamp: float) -> float:
@@ -62,15 +62,15 @@ class FpsMeter:
 				# seed on first sample, then smooth
 				self._fps = (
 					inst
-					if self._fps == 0.0
+					if self._fps is None
 					else (self._alpha * inst + (1 - self._alpha) * self._fps)
 				)
 		self._last_ts = timestamp
-		return self._fps
+		return self._fps if self._fps is not None else 0.0
 
 	@property
 	def fps(self) -> float:
-		return self._fps
+		return self._fps if self._fps is not None else 0.0
 
 
 class MotionTracker:
@@ -97,9 +97,9 @@ class MotionTracker:
 
 	def forget_absent(self, present: set) -> None:
 		# drop hands that left the frame so a returning hand doesnt teleport
-		for h in list(self._last):
-			if h not in present:
-				del self._last[h]
+		stale = [h for h in self._last if h not in present]
+		for h in stale:
+			del self._last[h]
 
 
 @dataclass
