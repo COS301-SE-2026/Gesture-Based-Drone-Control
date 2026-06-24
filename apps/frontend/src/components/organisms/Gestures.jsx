@@ -11,8 +11,7 @@ const GestureControl = () => {
     { action: "swipe left - move left", timestamp: "18:50:42" },
   ])
 
-
-//mock data for drone status
+  //mock data for drone status
   const droneMetrics = {
     battery: 56,
     speed: 5.6,
@@ -58,75 +57,76 @@ const GestureControl = () => {
 
       <div className="grid grid-cols-[2fr_1fr] gap-6 items-stretch">
         <div className="grid grid-cols-[1fr_auto] gap-6">
+          {/* gesture controls */}
+          <GestureGuide />
 
-        {/* gesture controls */}
-          <GestureGuide/>
-
-        {/* drone mode selection */}
-          <DroneModeCard currentMode={droneMode} onModeChange={setDroneMode} className="w-44" />
+          {/* drone mode selection */}
+          <DroneModeCard
+            currentMode={droneMode}
+            onModeChange={setDroneMode}
+            className="w-44"
+          />
         </div>
 
         {/* stats card */}
-        
+
         <Card variant="glass" className="h-full">
-            <div className="flex flex-col gap-6">
-              <Label size="md">Stats</Label>
-              <div className="grid grid-cols-2 gap-6">
-                {/* battery */}
-                <div className="flex flex-cols items-center gap-6">
-                  <Battery className="w-8 h-8 text-Red" />
-                  <div className="text-center">
-                    <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
-                      Battery
-                    </p>
-                    <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
-                      {droneMetrics.battery}%
-                    </p>
-                  </div>
+          <div className="flex flex-col gap-6">
+            <Label size="md">Stats</Label>
+            <div className="grid grid-cols-2 gap-6">
+              {/* battery */}
+              <div className="flex flex-cols items-center gap-6">
+                <Battery className="w-8 h-8 text-Red" />
+                <div className="text-center">
+                  <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
+                    Battery
+                  </p>
+                  <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
+                    {droneMetrics.battery}%
+                  </p>
                 </div>
-                {/* signal */}
-                <div className="flex flex-cols items-center gap-6">
-                  <Wifi className="w-8 h-8 text-Red" />
-                  <div className="text-center">
-                    <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
-                      Signal
-                    </p>
-                    <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
-                      {droneMetrics.signal}%
-                    </p>
-                  </div>
+              </div>
+              {/* signal */}
+              <div className="flex flex-cols items-center gap-6">
+                <Wifi className="w-8 h-8 text-Red" />
+                <div className="text-center">
+                  <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
+                    Signal
+                  </p>
+                  <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
+                    {droneMetrics.signal}%
+                  </p>
                 </div>
-                {/* speed */}
-                <div className="flex flex-cols items-center gap-6">
-                  <Gauge className="w-8 h-8 text-Red" />
-                  <div className="text-center">
-                    <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
-                      Speed
-                    </p>
-                    <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
-                      {droneMetrics.speed} km/h
-                    </p>
-                  </div>
+              </div>
+              {/* speed */}
+              <div className="flex flex-cols items-center gap-6">
+                <Gauge className="w-8 h-8 text-Red" />
+                <div className="text-center">
+                  <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
+                    Speed
+                  </p>
+                  <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
+                    {droneMetrics.speed} km/h
+                  </p>
                 </div>
-                {/* altitude */}
-                <div className="flex flex-cols items-center gap-6">
-                  <Mountain className="w-8 h-8 text-Red" />
-                  <div className="text-center">
-                    <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
-                      Altitude
-                    </p>
-                    <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
-                      {droneMetrics.altitude}m
-                    </p>
-                  </div>
+              </div>
+              {/* altitude */}
+              <div className="flex flex-cols items-center gap-6">
+                <Mountain className="w-8 h-8 text-Red" />
+                <div className="text-center">
+                  <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
+                    Altitude
+                  </p>
+                  <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
+                    {droneMetrics.altitude}m
+                  </p>
                 </div>
               </div>
             </div>
-          </Card>
-        </div>
-          
+          </div>
+        </Card>
       </div>
-    
+    </div>
   )
 }
 

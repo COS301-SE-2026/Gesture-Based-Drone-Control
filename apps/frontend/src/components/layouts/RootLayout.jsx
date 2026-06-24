@@ -47,7 +47,6 @@ const RootLayout = () => {
         backgroundAttachment: "fixed",
       }}
     >
-
       <div className="flex flex-col">
         <SideBar items={menuItems} topContent={getTopContent()} />
         <div className="w-80 px-4 pb-4"></div>
@@ -56,7 +55,6 @@ const RootLayout = () => {
         <Outlet />
       </main>
     </div>
-    
   )
 }
 
