@@ -128,7 +128,7 @@ tasks:
     desc: Camera + detector + gesture engine
     dir: "{{.SERVICES_DIR}}"
     cmds:
-      - uv run python -m cv_pipeline.gesturess.gesture_engine
+      - uv run python -m cv_pipeline.gestures.gesture_engine
   
   cv-pipeline:
     desc: full async pipeline (landmarks + fps + speed + confidence)
