@@ -37,9 +37,10 @@ expensive test workflow runs only when a PR targets a long-lived branch
 ```mermaid
 flowchart LR
     PR([Pull Request opened]) --> LINT[Lint workflow<br/>always runs]
-    PR -->|target = dev / main / Use-Case*| TEST[Test workflow]
-    LINT --> CHECK{All checks<br/>green?}
-    TEST --> CHECK
+    PR -->|target = dev / main / Use-Case*| TEST[Unit Testing]
+    LINT --> INTEGRATION[Integration Testing]
+    TEST --> INTEGRATION
+    INTEGRATION --> CHECK{All checks<br/>green?}
     CHECK -- yes --> MERGE([Merge allowed])
     CHECK -- no  --> BLOCK([Merge blocked])
     MERGE --> PUSH([Push to dev / main])
@@ -60,9 +61,7 @@ times out after **5 minutes** to keep PR feedback fast.
 
 | Job | Working directory | Tooling | Command |
 | --- | --- | --- | --- |
-| `lint-backend` | `apps/backend` | Python 3.11 · `uv` 0.11.13 · Ruff | `make lint` |
-| `lint-services` | `services` | Python 3.11 · `uv` 0.11.13 · Ruff | `make lint` |
-| `lint-frontend` | `apps/frontend` | Node 22.22.0 · Yarn (frozen lockfile) · ESLint · Prettier | `yarn lint` &nbsp;then&nbsp; `yarn format:check` |
+| `lint` | `Project Root` | Python 3.11 · `uv` 0.11.13 · Ruff and Node 22.22.0 · Yarn (frozen lockfile) · ESLint · Prettier | `task lint` |
 
 !!! tip "Why `uv`?"
     `uv` is used in place of `pip` for the Python jobs because it
@@ -87,9 +86,9 @@ Test runs three jobs in parallel, each with a **10-minute** timeout.
 
 | Job | Working directory | Tooling | Command |
 | --- | --- | --- | --- |
-| `test-backend` | `apps/backend` | Python 3.11 · `uv` · pytest | `make test` |
-| `test-services` | `services` | Python 3.11 · `uv` · pytest | `make test` |
-| `test-frontend` | `apps/frontend` | Node 22.22.0 · Yarn · Playwright | `yarn test` |
+| `Backend-Unit-Tests` | `Project Root` | Python 3.11 · `uv` · pytest | `task backend-unit-test` |
+| `Frontend-Unit-Tests` | `services` | Node 22.22.0 · Yarn · Playwright | `yarn test` |
+| `Integration-Tests` | `Project Root` | Python 3.11 · `uv` · pytest | `task integration-test` |
 
 ### 3.1 Playwright browser caching
 
@@ -103,18 +102,22 @@ minutes per run.
 
 ### 3.2 What runs locally vs. in CI
 
-The same Make targets and yarn scripts that CI invokes are available
+The same Taskfile targets and yarn scripts that CI invokes are available
 locally:
 
 ```bash
 # Backend
-cd apps/backend && make install && make test
-
-# Services
-cd services && make install && make test
+task backend-unit-test
 
 # Frontend
-cd apps/frontend && yarn install --frozen-lockfile && yarn test
+cd apps/frontend && yarn test
+
+#Integration 
+task integration-test
+```
+Before executing any tests the repository must be correctly installed using
+```bash
+task install
 ```
 
 If a test passes locally but fails in CI, the cause is almost always a
@@ -169,8 +172,8 @@ pushed to directly. The repository enforces:
 
 Required status checks for a PR into `dev` or `main`:
 
-- `lint-backend`, `lint-services`, `lint-frontend`
-- `test-backend`, `test-services`, `test-frontend`
+- `lint`
+- `Backend-Unit-Tests`, `Frontend-Unit-Tests`, `Integration-Tests`
 
 The exact list of required checks is configured under
 *Settings → Branches → Branch protection rules* on GitHub and should
@@ -184,25 +187,34 @@ Before opening a PR, every team member is expected to reproduce the CI
 checks locally so that the pipeline is a safety net, not a primary
 discovery mechanism.
 
-=== "Backend &amp; services (Python)"
+The following steps do assume you have correctly installed the repo using
+```bash
+  task install
+```
+
+=== "Linting"
+  ```bash
+  task lint
+  ```
+
+=== "Backend Unit Testing"
 
     ```bash
-    # From repo root
-    cd apps/backend       # or `cd services`
-    make install          # installs deps via uv
-    make lint             # Ruff
-    make test             # pytest
+    task backend-unit-test             # pytest
     ```
 
 === "Frontend (TypeScript / React)"
 
     ```bash
     cd apps/frontend
-    yarn install --frozen-lockfile
-    yarn lint             # ESLint
-    yarn format:check     # Prettier --check
     yarn test             # Playwright
     ```
+
+=== "Integration Tests"
+
+```bash
+task integration-test
+```
 
 === "Docs site"
 
