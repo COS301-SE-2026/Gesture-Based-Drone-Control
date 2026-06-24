@@ -1,4 +1,4 @@
-import { Card, Button } from "../atoms"
+import { Card } from "../atoms"
 import { UserCircle } from "lucide-react"
 import AccountActions from "./AccountActions"
 export const DashboardSideCard = ({ userName = "User" }) => {

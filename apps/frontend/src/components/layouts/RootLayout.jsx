@@ -1,11 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom"
-import {
-  SideBar,
-  DashboardSideCard,
-  GestureSideContent,
-  AnalyticsSideContent,
-} from "../molecules"
-import { Hand, BarChart3, MapPin, Settings,HelpCircle } from "lucide-react"
+import { SideBar, GestureSideContent, AnalyticsSideContent } from "../molecules"
+import { Hand, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
 
 const RootLayout = () => {
   const location = useLocation()
@@ -19,11 +14,11 @@ const RootLayout = () => {
     },
     { id: "gps", label: "GPS", icon: MapPin, path: "./gps" },
     { id: "settings", label: "Settings", icon: Settings, path: "./settings" },
-    {id : "help", label: "Help", icon : HelpCircle ,path:"./help"},
+    { id: "help", label: "Help", icon: HelpCircle, path: "./help" },
   ]
 
   const getTopContent = () => {
-    if(location.pathname.includes("/gestures")){
+    if (location.pathname.includes("/gestures")) {
       return <GestureSideContent />
     } else if (location.pathname.includes("/analytics")) {
       return <AnalyticsSideContent />

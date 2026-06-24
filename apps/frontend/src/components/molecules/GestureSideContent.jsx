@@ -1,4 +1,4 @@
-import { Card, Button } from "../atoms"
+import { Card } from "../atoms"
 import AccountActions from "./AccountActions"
 export const GestureSideContent = () => {
   return (

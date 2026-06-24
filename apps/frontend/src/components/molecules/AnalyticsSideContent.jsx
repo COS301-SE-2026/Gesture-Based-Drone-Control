@@ -1,4 +1,4 @@
-import { Card, Button } from "../atoms"
+import { Card } from "../atoms"
 import AccountActiona from "./AccountActions"
 export const AnalyticsSideContent = () => {
   return (
@@ -20,7 +20,7 @@ export const AnalyticsSideContent = () => {
             <p className="text-xs text-DarkGrey">Today, 14:44</p>
           </div>
 
-          <AccountActiona/>
+          <AccountActiona />
         </div>
       </Card>
     </>
