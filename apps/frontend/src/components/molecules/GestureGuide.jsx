@@ -315,7 +315,7 @@ const GestureGuide = ({ className = "", onControlAction }) => {
   )
 }
 
-GestureGuide.PropTypes = {
+GestureGuide.propTypes = {
   className: PropTypes.string,
   onControlAction: PropTypes.func,
 }
