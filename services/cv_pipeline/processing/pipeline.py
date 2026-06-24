@@ -51,7 +51,7 @@ class FpsMeter:
 
 	def __init__(self, alpha: float = 0.1) -> None:
 		self._alpha = alpha
-		self._fps = Optional[float] = None
+		self._fps: Optional[float] = None
 		self._last_ts: Optional[float] = None
 
 	def update(self, timestamp: float) -> float:
