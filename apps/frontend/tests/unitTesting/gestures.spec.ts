@@ -21,15 +21,23 @@ test.describe('gesture', () =>{
         await expect(page.getByText(/swipe left - move left/i)). toBeVisible()
     })
 
-    test ('gesture guide section shows up', async ({page})=> {
-        await expect(page.getByText(/gesture guide/i)).toBeVisible()
-        await expect(page.getByText(/altitude keys/i)).toBeVisible()
+    test('stat labels returned' , async ({page})=>{
+        await expect(page.getByText(/battery/i)).toBeVisible()
+        await expect(page.getByText(/signal/i)).toBeVisible()
+        await expect(page.getByText(/speed/i)).toBeVisible()
+        await expect(page.getByText(/altitude/i)).toBeVisible()
     })
 
-    test('gesture calibration section shows up',async ({page})=>{
-        await expect(page.getByText(/gesture calibration/i)).toBeVisible()
-        await expect(page.getByText('80%')).toBeVisible()
-        await expect(page.getByText('45%')).toBeVisible()
-        await expect(page.getByText('60%')).toBeVisible()
+    test('the correct values are returned in the stats parts' , async ({page})=>{
+        await expect(page.getByText('56%')).toBeVisible()
+        await expect(page.getByText('71%')).toBeVisible()
+        await expect(page.getByText('5.6 km/h')).toBeVisible()
+        await expect(page.getByText('72m')).toBeVisible()
     })
+
+    test('selection buttons of the drone shows up',async ({page})=>{
+        await expect(page.getByRole('button', {name:/dronesim/i})).toBeVisible()
+        await expect(page.getByRole('button', {name:/hardware/i})).toBeVisible()
+    })
+
 })

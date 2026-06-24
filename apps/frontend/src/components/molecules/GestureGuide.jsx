@@ -28,92 +28,113 @@ const tabs = [
   { id: "controller", label: "Controller", icon: Gamepad2 },
 ]
 
-const commonControls =
-   [
-    {
-      icon: ArrowUp,
-      label: "Move Forward",
-      action: "moveForward",
-    },
-    {
-      icon: ArrowDown,
-      label: "Move Backward",
-      action: "moveBackward",
-    },
-    {
-      icon: ArrowLeft,
-      label: "Move Left",
-      action: "moveLeft",
-    },
-    {
-      icon: ArrowRight,
-      label: "Move Right",
-      action: "moveRight",
-    },
-    {
-      icon: ChevronUp,
-      label: "Increase Altitude",
-      action: "goUp",
-    },
-    {
-      icon: ChevronDown,
-      label: "Decrease Altitude",
-      action: "goDown",
-    },
-    {
-      icon: RotateCcw,
-      label: "Rotate Left",
-      action: "rotateLeft",
-    },
-    {
-      icon: RotateCw,
-      label: "Rotate Right",
-      action: "rotateRight",
-    },
-    {
-      icon: PlaneTakeoff,
-      label: "Takeoff",
-      action: "takeoff",
-    },
-    { 
-      icon: CircleDot,
-      label: "Hover",
-      action: "hover" 
-    },
-    { 
-      icon: PlaneLanding,
-      label: "Land",
-      action: "land" 
-    },
-    {
-      icon: OctagonX,
-      label: "Emergency Stop",
-      action: "emergencyStop",
-    },
-  ]
-
+const commonControls = [
+  {
+    icon: ArrowUp,
+    label: "Move Forward",
+    action: "moveForward",
+  },
+  {
+    icon: ArrowDown,
+    label: "Move Backward",
+    action: "moveBackward",
+  },
+  {
+    icon: ArrowLeft,
+    label: "Move Left",
+    action: "moveLeft",
+  },
+  {
+    icon: ArrowRight,
+    label: "Move Right",
+    action: "moveRight",
+  },
+  {
+    icon: ChevronUp,
+    label: "Increase Altitude",
+    action: "goUp",
+  },
+  {
+    icon: ChevronDown,
+    label: "Decrease Altitude",
+    action: "goDown",
+  },
+  {
+    icon: RotateCcw,
+    label: "Rotate Left",
+    action: "rotateLeft",
+  },
+  {
+    icon: RotateCw,
+    label: "Rotate Right",
+    action: "rotateRight",
+  },
+  {
+    icon: PlaneTakeoff,
+    label: "Takeoff",
+    action: "takeoff",
+  },
+  {
+    icon: CircleDot,
+    label: "Hover",
+    action: "hover",
+  },
+  {
+    icon: PlaneLanding,
+    label: "Land",
+    action: "land",
+  },
+  {
+    icon: OctagonX,
+    label: "Emergency Stop",
+    action: "emergencyStop",
+  },
+]
 
 const inputMapping = {
   onscreen: [
-    "↑ Button", "↓ Button", "← Button", "→ Button",
-    "▲ Button", "▼ Button", "⟲ Button", "⟳ Button",
-    "T Button", "H Button", "L Button", "X Button"
+    "↑ Button",
+    "↓ Button",
+    "← Button",
+    "→ Button",
+    "▲ Button",
+    "▼ Button",
+    "⟲ Button",
+    "⟳ Button",
+    "T Button",
+    "H Button",
+    "L Button",
+    "X Button",
   ],
   keyboard: [
-    "Up Key", "Down Key", "Left key", "Right Key",
-    "W", "S", "A", "D",
-    "T", "Space Key", "L", "Escape Key"
+    "Up Key",
+    "Down Key",
+    "Left key",
+    "Right Key",
+    "W",
+    "S",
+    "A",
+    "D",
+    "T",
+    "Space Key",
+    "L",
+    "Escape Key",
   ],
   controller: [
-    "L Stick Up", "L Stick Down", "L Stick Left", "L Stick Right",
-    "R Stick Up", "R Stick Down", "R Stick Left", "R Stick Right",
-    "Triangle", "Square", "Circle", "Cross"
+    "L Stick Up",
+    "L Stick Down",
+    "L Stick Left",
+    "L Stick Right",
+    "R Stick Up",
+    "R Stick Down",
+    "R Stick Left",
+    "R Stick Right",
+    "Triangle",
+    "Square",
+    "Circle",
+    "Cross",
   ],
-  gestures: [
-    "", "", "", "",
-    "", "", "", "",
-    "", "", "", ""
-  ],
+  gestures: ["", "", "", "", "", "", "", "", "", "", "", ""],
 }
 
 const controls = {
