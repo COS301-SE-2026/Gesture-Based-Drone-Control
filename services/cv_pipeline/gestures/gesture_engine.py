@@ -19,6 +19,7 @@ from cv_pipeline.hand_detection.mediapipe_detector import HandDetectionResult
 # recognizer imports — GestureResult lives with the interface now, not rule_based
 from .recognizers.gesture_recognizer import GestureRecognizer, GestureResult
 from .recognizers.rule_based import RuleBasedRecognizer
+from .stabilizer import GestureStabilizer
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +54,15 @@ class GestureEngine:
 	Default will be rule-based
 	"""
 
-	def __init__(self, recognizer: Optional[GestureRecognizer] = None) -> None:
+	def __init__(
+		self,
+		recognizer: Optional[GestureRecognizer] = None,
+		stabilizer: Optional[GestureStabilizer] = None,
+	) -> None:
+
 		self._recognizer = recognizer or RuleBasedRecognizer()
+		# smooths per-hand gesture flicker
+		self._stabilizer = stabilizer or GestureStabilizer()
 
 	def set_recognizer(self, recognizer: GestureRecognizer) -> None:
 		"""
@@ -74,6 +82,7 @@ class GestureEngine:
 				'No hands in frame %d - skipping gesture recognition',
 				detection_result.frame_index,
 			)
+			self._stabilizer.stabilize([])
 			return GestureEngineResult(frame_index=detection_result.frame_index)
 
 		hand_gestures = []
@@ -87,6 +96,8 @@ class GestureEngine:
 				gesture_result.gesture.name,
 				gesture_result.finger_state.count,
 			)
+
+		hand_gestures = self._stabilizer.stabilize(hand_gestures)
 
 		return GestureEngineResult(
 			hand_gestures=hand_gestures,
