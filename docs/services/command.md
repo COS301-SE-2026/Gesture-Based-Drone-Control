@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Command dataclass and CommandType enum define a standardised communication layer between input adapters (gesture, keyboard, etc.) and drone control adapters (AirSim, etc.).
+The `Command` dataclass and `CommandType` enum define a standardised communication layer between input adapters (gesture, keyboard, etc.) and drone control adapters (AirSim, etc.).
 
 A command represents an intent that an input system wants to execute. It is intentionally minimal to keep input systems decoupled from drone implementations.
 
@@ -65,7 +65,7 @@ Required. Specifies the action to perform.
 
 Optional dictionary of parameters that modify command behaviour.
 
-Supported keys (planned usage):
+Supported keys:
 - distance_m: movement distance
 - speed_ms: movement speed in metres per second
 - duration_s: duration of movement execution
@@ -115,7 +115,7 @@ Automatically adjusts priority for emergency stop commands.
 
 ### __repr__()
 
-Returns a compact string representation of the command.
+Returns a compact string representation of the command. Used for non-verbose logging.
 
 Only includes:
 - type
@@ -132,22 +132,24 @@ Command(type=MOVE_FORWARD, payload={'speed_ms': 2.0}, source='gesture')
 ## Example Usage
 
 ### Basic Takeoff
-
+```
 Command(type=CommandType.TAKEOFF, source="keyboard")
-
+```
 ---
 
-### Movement Command
-
+### Move forward for 3m at a custom speed
+```
 Command(
     type=CommandType.MOVE_FORWARD,
     payload={"distance_m": 3.0, "speed_ms": 1.5},
     source="gesture",
 )
-
+```
 ---
 
 ### Emergency Stop
 
+```
 cmd = Command(type=CommandType.EMERGENCY_STOP, source="keyboard")
 assert cmd.priority == PRIORITY_CRITICAL
+```
