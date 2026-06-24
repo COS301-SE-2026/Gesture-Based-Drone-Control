@@ -9,7 +9,9 @@
     "noUnusedParameters": true,
     "skipLibCheck": true,
     "allowJs": true,
+    "noEmit": true, 
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": ["./src/*"]
     }

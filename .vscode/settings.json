@@ -1,6 +1,9 @@
 {
     "cSpell.words": [
-        "airsim"
+        "airsim",
+        "projectairsim"
     ],
-    "python-envs.defaultEnvManager": "ms-python.python:system"
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    // so the mac errors stop screaming at me
+    "ruff.importStrategy": "fromEnvironment"
 }
