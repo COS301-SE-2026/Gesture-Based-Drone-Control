@@ -41,7 +41,10 @@ export default function Signup() {
       password: !formData.password ? " Password is required " : "",
       confirmPassword: !formData.confirmPassword
         ? " Please confirm your password "
-        : "",
+        : formData.password !== formData.confirmPassword
+          ? "Passwords do not match"
+          : "",
+
       agreeToTerms: !formData.agreeToTerms ? "You must agree to continue" : "",
     }
 
@@ -51,6 +54,9 @@ export default function Signup() {
 
     if (Object.keys(filteredErrors).length > 0) {
       setErrors(filteredErrors)
+      if (filteredErrors.agreeToTerms) {
+        alert(filteredErrors.agreeToTerms)
+      }
       return
     }
 
