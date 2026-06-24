@@ -14,7 +14,6 @@ const RootLayout = () => {
   const { isDark } = useTheme()
   const location = useLocation()
   const menuItems = [
-    { id: "home", label: "Home", icon: Home, path: "./dashboard" },
     { id: "gestures", label: "Gestures", icon: Hand, path: "./gestures" },
     {
       id: "analytics",
@@ -24,12 +23,11 @@ const RootLayout = () => {
     },
     { id: "gps", label: "GPS", icon: MapPin, path: "./gps" },
     { id: "settings", label: "Settings", icon: Settings, path: "./settings" },
+    { id: "help", label: "Help", icon: HelpCircle, path: "./help" },
   ]
 
   const getTopContent = () => {
-    if (location.pathname.includes("/dashboard")) {
-      return <DashboardSideCard userName="Bobby" />
-    } else if (location.pathname.includes("/gestures")) {
+    if (location.pathname.includes("/gestures")) {
       return <GestureSideContent />
     } else if (location.pathname.includes("/analytics")) {
       return <AnalyticsSideContent />
