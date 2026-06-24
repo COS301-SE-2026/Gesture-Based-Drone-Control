@@ -1,11 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom"
-import {
-  SideBar,
-  DashboardSideCard,
-  GestureSideContent,
-  AnalyticsSideContent,
-} from "../molecules"
-import { Home, Hand, BarChart3, MapPin, Settings } from "lucide-react"
+import { SideBar, GestureSideContent, AnalyticsSideContent } from "../molecules"
+import { Home, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
 import bgLight from "../../assets/Lightbackground.png"
 import bgDark from "../../assets/darkbackground.png"
 import { useTheme } from "../../context/ThemeContext"
@@ -14,7 +9,7 @@ const RootLayout = () => {
   const { isDark } = useTheme()
   const location = useLocation()
   const menuItems = [
-    { id: "gestures", label: "Gestures", icon: Hand, path: "./gestures" },
+    { id: "gestures", label: "Gestures", icon: Home, path: "./gestures" },
     {
       id: "analytics",
       label: "Analytics",
