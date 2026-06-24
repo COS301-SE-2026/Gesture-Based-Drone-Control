@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom"
-import { SideBar, GestureSideContent, AnalyticsSideContent } from "../molecules"
+import { SideBar, AnalyticsSideContent, DashboardSideCard } from "../molecules"
 import { Home, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
 import bgLight from "../../assets/Lightbackground.png"
 import bgDark from "../../assets/darkbackground.png"
@@ -9,21 +9,21 @@ const RootLayout = () => {
   const { isDark } = useTheme()
   const location = useLocation()
   const menuItems = [
-    { id: "gestures", label: "Gestures", icon: Home, path: "./gestures" },
+    { id: "gestures", label: "Gestures", icon: Home, path: "/gestures" },
     {
       id: "analytics",
       label: "Analytics",
       icon: BarChart3,
-      path: "./analytics",
+      path: "/analytics",
     },
-    { id: "gps", label: "GPS", icon: MapPin, path: "./gps" },
-    { id: "settings", label: "Settings", icon: Settings, path: "./settings" },
-    { id: "help", label: "Help", icon: HelpCircle, path: "./help" },
+    { id: "gps", label: "GPS", icon: MapPin, path: "/gps" },
+    { id: "settings", label: "Settings", icon: Settings, path: "/settings" },
+    { id: "help", label: "Help", icon: HelpCircle, path: "/help" },
   ]
 
   const getTopContent = () => {
-    if (location.pathname.includes("/gestures")) {
-      return <GestureSideContent />
+    if (location.pathname === "/" || location.pathname.includes("/gestures")) {
+      return <DashboardSideCard />
     } else if (location.pathname.includes("/analytics")) {
       return <AnalyticsSideContent />
     }
