@@ -317,18 +317,15 @@ Defined in `tailwind.config.js` under `theme.extend.backdropBlur`.
 ## 6. Component Library
 
 Visual specifications for every component used in the production
-system. Each component documents its **variants** (primary /
-secondary / ghost, sizes) and **states** (default, hover, focus,
-active, disabled, loading, error).
-
+system. 
 ### 6.1 Button
 
 | Variant | Background | Text | Use |
 | --- | --- | --- | --- |
-| Primary | `--color-primary` → `--color-primary-hover` on hover | `#F5F3F4` | The main action on a screen. Exactly one per view. |
-| Secondary | transparent · 1 px border `--color-primary` | `--color-primary` | Auxiliary action next to a primary. |
-| Ghost | transparent, no border | `--color-text-on-dark` | Tertiary action; toolbars. |
-| Danger | `--color-error` | `#F5F3F4` | Destructive action (emergency stop, delete session). |
+| Primary | `bg-Red` → `hover:bg-LightRed` | `text-OffWhite` | The main action on a screen. Exactly one per view. |
+| Secondary | `bg-transperant border border-Red` | `text-Red` | Auxiliary action next to a primary. |
+| Ghost | `bg-transperant` no border | `text-OffWhite` | Tertiary action; toolbars. |
+| Danger | `bg-Red`(same as primary) | `text-OffWhite` | Destructive action (emergency stop, delete session). |
 
 **Sizes.** sm (32 px height), md (40 px, default), lg (48 px,
 landing-page CTAs).
@@ -336,10 +333,10 @@ landing-page CTAs).
 **States.**
 
 - Default — flat fill at the listed colours.
-- Hover — fill steps to `--color-primary-hover`; `--shadow-md`.
-- Focus — `box-shadow: 0 0 0 3px rgba(186,24,27,0.4)` ring.
-- Active — fill steps to `--color-primary-pressed`.
-- Disabled — `opacity: 0.5`; `cursor: not-allowed`; no hover effect.
+- Hover — fill steps to `LightRed`; `shadow-md`.
+- Focus — `ring-2 ring-Red ring-opacity-40` (3 px equivalent).
+- Active — fill steps to `DarkRed`.
+- Disabled — `opacity-50`; `cursor-not-allowed`; no hover effect.
 - Loading — replace label with a 16 px spinner; button width
   preserved; click events suppressed.
 
@@ -348,37 +345,37 @@ landing-page CTAs).
 | Property | Value |
 | --- | --- |
 | Height | 40 px |
-| Padding | `--space-3` horizontal |
-| Border | 1 px `--color-muted` |
-| Background | `--color-surface-light` (light mode) / `rgba(255,255,255,0.04)` (dark mode) |
-| Focus ring | 3 px `rgba(186,24,27,0.4)` |
-| Error border | `--color-error` 1 px; helper text below in `--color-error` |
+| Padding | `px-3` (0.75 rem) horizontal |
+| Border | `border border-DarkGrey` |
+| Background | `bg-OffWhite` (light) / `bg-white/4` (dark) |
+| Focus ring | `focus:ring-2 focus:ring-Red/40` (achieved via Tailwind, `outline: none' is set globally in `index.css` ) |
+| Error border | `border-Red`; helper text below in `text-Red` |
 
 ### 6.3 Select / Dropdown
 
 Same shape as the Input. Caret is a Lucide `chevron-down` at 16 px.
-Open state shows a panel with `--shadow-lg` and `--radius-md`.
+Open state shows a panel with `shadow-lg` and `rounded-md`.
 
 ### 6.4 Modal
 
 | Property | Value |
 | --- | --- |
-| Width | up to 560 px |
-| Backdrop | `rgba(22,26,29,0.6)` with `backdrop-filter: blur(8px)` |
-| Surface | `--color-surface-light` (light) / `#1F2428` (dark) |
-| Radius | `--radius-lg` |
-| Shadow | `--shadow-lg` |
-| Open duration | `--motion-base` |
+| Width | up to 560 px (`max-w-lg`) |
+| Backdrop | `bg-OffBlack/60 backdrop-blur-md` |
+| Surface | `bg-OffWhite` (light) / ` bg-OffBlack` (dark) |
+| Radius | `rounded-xl` |
+| Shadow | `shadow-xl` |
+| Open duration | `animate` utilities / `transition` (respects `prefers-reduced-motion `) |
 | Escape key | Closes the modal; focus returns to the trigger. |
 
 ### 6.5 Toast
 
 | Variant | Surface | Border |
 | --- | --- | --- |
-| Success | rgba(27,127,58,0.12) | 1 px `--color-success` |
-| Warning | rgba(199,119,0,0.12) | 1 px `--color-warning` |
-| Error | rgba(164,22,26,0.12) | 1 px `--color-error` |
-| Info | rgba(31,111,179,0.12) | 1 px `--color-info` |
+| Success |`bg-green-600/12` | `border border-green-600` |
+| Warning | `bg-yellow-600/12` | `border border-yellow-600` |
+| Error | `bg-Red/12` | `border border-Red` |
+| Info | `bg-blue-600/12` | `border border-blue-600`|
 
 Toasts auto-dismiss after 5 s (warning) or 8 s (error). Critical
 alerts (link loss, battery < 15 %) **do not auto-dismiss** — they
@@ -386,21 +383,21 @@ remain until acknowledged per `R1.2.2`.
 
 ### 6.6 Card
 
-`--radius-md`, `--shadow-sm` at rest, `--shadow-md` on hover, padded
-with `--space-4`. The telemetry panel, gesture-indicator panel, and
+`rounded-lg shadow-sm` at rest, `shadow-md` on hover, padded
+with `p-sm` (1 rem). The telemetry panel, gesture-indicator panel, and
 session-list rows on the replay view are all Cards.
 
 ### 6.7 Gesture Indicator (domain-specific)
 
 A 96 × 96 px circular badge in the top-right of the dashboard,
-filled with `--color-primary` when a gesture is locked. Pulses at
-`--motion-base` when the gesture changes; static in
+filled with `bg-Red` when a gesture is locked. Pulses at
+`animate-pulse` when the gesture changes; static in
 `prefers-reduced-motion`. The current gesture name and its mapped
 command sit immediately below.
 
 ### 6.8 Telemetry Pill
 
-A pill (`--radius-full`) carrying the link status, flight mode, or
+A pill (`rounded-full`) carrying the link status, flight mode, or
 battery percentage. Background is the matching semantic colour at
 12 % opacity; foreground is the matching semantic colour at full
 opacity.
@@ -411,12 +408,11 @@ opacity.
 
 ### 7.1 Grid
 
-A 12-column grid with a `--space-5` (24 px) gutter on screens ≥ `--bp-md`
-and a `--space-4` (16 px) gutter below.
+Tailwind's built-in 12-column grid (`grid grid-cols-12`) with a 'gap-md` (1.5 rem / 24 px) gutter on screens >= `md: `and `gap-sm` ( 1rem / 16 px) below.
 
 ### 7.2 Responsive behaviour
 
-| Surface | < `--bp-md` | ≥ `--bp-md` | ≥ `--bp-lg` |
+| Surface | < `m:` (768 px) | ≥ `md:` | ≥ `g:` (1024 px) |
 | --- | --- | --- | --- |
 | Landing page | single column, hero stacks vertically | two-column feature grid | three-column feature grid |
 | Dashboard | video feed stacks above telemetry; gesture indicator floats top-right | side-by-side video and telemetry | full layout: feed + overlay + telemetry + replay timeline |
@@ -424,11 +420,11 @@ and a `--space-4` (16 px) gutter below.
 
 ### 7.3 Spacing rules
 
-- Inside a card: padding is `--space-4`; gap between elements is
-  `--space-3`.
-- Between cards in a grid: gap is `--space-5`.
-- Page-level horizontal padding: `--space-4` on mobile, `--space-6`
-  on tablet, `--space-7` on desktop.
+- Inside a card: padding is `p-sm` (1 rem); gap between elements is
+  `gap-xs`(1.5 rem).
+- Between cards in a grid: gap is `gap-md` (1.5 rem).
+- Page-level horizontal padding: `px-sm` on mobile, `px-lg`
+  on tablet, `px-xl` on desktop.
 
 ---
 
@@ -447,7 +443,7 @@ AAA is achieved for body-text contrast on both themes.
 
 ### 8.2 Focus indicator
 
-A 3 px `rgba(186,24,27,0.4)` ring on every focusable element. The
+A 3 px `ring-2 ring-Red/40` ring on every focusable element. The
 ring is **never** suppressed by `outline: none` without an
 equivalent visual replacement.
 
@@ -474,9 +470,6 @@ the colour.
 
 ### 8.6 Audit targets
 
-The team will audit each surface against the targets below before
-Demo 2. The audit table will be updated with measured scores as
-they land.
 
 | Surface | Tool | Target | Status |
 | --- | --- | --- | --- |
@@ -484,9 +477,6 @@ they land.
 | Dashboard | axe DevTools | 0 violations | *Audit pending* |
 | Help menu | WAVE | 0 errors, 0 contrast errors | *Audit pending* |
 
-Once the cloud deployment is up (see [`SAS.md` §5](SAS.md#5-deployment)),
-these audits will be re-run on every PR that touches `apps/frontend/**`
-via a CI job. Until then they are run manually by the QA owner.
 
 ---
 
