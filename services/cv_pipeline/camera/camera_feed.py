@@ -76,9 +76,10 @@ class CameraFeed:
 			raise RuntimeError('Failed to open camera')
 
 		# apply res and FPS
-		self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._config.frame_width)
-		self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._config.frame_height)
+		# self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._config.frame_width)
+		# self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._config.frame_height)
 		self._cap.set(cv2.CAP_PROP_FPS, self._config.target_fps)
+		self._cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
 		logger.info(
 			'Camera opened — source=%s, device=%s, target=%dx%d @ %dfps',

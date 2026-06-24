@@ -172,7 +172,7 @@ class CvPipeline:
 		await asyncio.sleep(0)
 
 		self._frame_queue = BoundedFrameQueue[CapturedFrame](maxsize=self._config.queue_size)
-		self._event_queue = asyncio.Queue()
+		self._event_queue = asyncio.Queue(maxsize=1)
 
 		# fresh metrics for this run
 		self._fps_meter = FpsMeter()
@@ -337,7 +337,16 @@ class CvPipeline:
 					fps=fps,
 					hand_metrics=metrics,
 				)
-				await self._event_queue.put(event)
+		# 		await self._event_queue.put(event)
+		# except asyncio.CancelledError:
+		# 	logger.debug('Consumer task cancelled')
+		# 	raise
+				if self._event_queue.full():
+					try:
+						self._event_queue.get_nowait()
+					except asyncio.QueueEmpty:
+						pass
+				self._event_queue.put_nowait(event)
 		except asyncio.CancelledError:
 			logger.debug('Consumer task cancelled')
 			raise
