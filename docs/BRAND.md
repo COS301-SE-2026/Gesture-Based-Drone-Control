@@ -494,16 +494,29 @@ trying to be funny.
 The two operator-facing surfaces. Both realise the requirements
 cited in their captions.
 
-=== "Gesture Control Dashboard"
+=== "Login Page"
 
-    ![Gesture Control Dashboard](assets/WF-Dashboard.png)
+    ![Login Page Light and dark](assets/WF-Login.png)
 
-    *Figure 11.1 — Gesture-control dashboard. Realises `R1.1.1`–`R1.1.3`
-    (live feed with overlay, current gesture, telemetry panel).*
+    *Figure 11.1 - Operator Authentication (UC-4, R16.1.3).Left panel with brand imagery; right form with email, password, remember me toggle and a sign up link.*
 
-=== "Telemetry Dashboard"
+=== "Signup Page"
 
-    ![Telemetry Dashboard](assets/WF-Telemetry.png)
+    ![Signup Page Light and Dark](assets/WF-Signup.png)
 
-    *Figure 11.2 — Telemetry dashboard. Realises `R1.1.3` and `R1.2.*`
-    (telemetry panel and critical alerts).*
+    *Figure 11.2 - New user registration (R16.1.1, R16.1.2).Mirrors login layout with additional fields: first name, last name , date of birth, password,password confirmation , terms acceptance.*
+
+=== "Gesture Dashboard"
+
+    ![Gesture Dashboard Light and Dark](assets/WF-GestureDashboard.png)
+
+    *Figure 11.3 - Live gesture control and telemetry (UC-1,R1.1.1-R1.1.3).Left sidebar with menu ;centre live video feed with hand-landmark overlay; right panels for gesture detection, command history, control guide, and status indicators.*
+
+=== "Analytics Page"
+
+    ![Analytics Light and Dark](assets/WF-Analytics.png)
+
+    *Figure 11.4 - Telemetry history and flight metrics (UC-2, R1.1.3). Key stats (flight time , avg speed, max altitude) at top; flight movements and battery health charts; performance metrices bar chart; summary pills for total distance, average duration and flight count.*
+
+  
+
