@@ -27,18 +27,9 @@ from cv_pipeline.gestures.recognizers.rule_based import (  # noqa: E402
 	INDEX_MCP,
 	INDEX_PIP,
 	INDEX_TIP,
-	MIDDLE_PIP,
-	MIDDLE_TIP,
-	PINKY_PIP,
-	PINKY_TIP,
-	RING_PIP,
-	RING_TIP,
-	THUMB_IP,
-	THUMB_TIP,
 	RuleBasedRecognizer,
 )
 from cv_pipeline.hand_detection.mediapipe_detector import (  # noqa: E402
-	NUM_LANDMARKS,
 	DetectedHand,
 	Handedness,
 	HandLandmark,
@@ -47,8 +38,13 @@ from cv_pipeline.hand_detection.mediapipe_detector import (  # noqa: E402
 
 # helpers
 def make_hand(
-	thumb_up=False, index_up=False, middle_up=False,
-	ring_up=False, pinky_up=False,
+	thumb_up=False,
+	index_up=False,
+	middle_up=False,
+	ring_up=False,
+	pinky_up=False,
+	handedness=Handedness.RIGHT,
+	confidence=0.95,
 ) -> DetectedHand:
 	"""
 	Builds a synthetic hand where 'up' fingers have collinear MCP-PIP-TIP
@@ -58,9 +54,7 @@ def make_hand(
 
 	def straight(mcp, pip, tip_lm):
 		# tip continues in same direction as pip->mcp reversed — ~180 deg at pip
-		return mcp, pip, HandLandmark(
-			2 * pip.x - mcp.x, 2 * pip.y - mcp.y, 0.0
-		)
+		return mcp, pip, HandLandmark(2 * pip.x - mcp.x, 2 * pip.y - mcp.y, 0.0)
 
 	def curled(mcp, pip, _):
 		# tip folds back toward mcp — sharp angle at pip
@@ -69,39 +63,49 @@ def make_hand(
 	# thumb: landmarks 2 (MCP), 3 (IP), 4 (TIP)
 	mcp = HandLandmark(0.42, 0.85, 0.0)
 	pip = HandLandmark(0.36, 0.80, 0.0)
-	builder = straight if thumb_up else curled
-	_, _, tip = builder(mcp, pip, None)
-	lm = list(lm); lm[2] = mcp; lm[3] = pip; lm[4] = tip
+	tip = HandLandmark(0.28, 0.74, 0.0) if thumb_up else HandLandmark(0.46, 0.68, 0.0)
+	lm = list(lm)
+	lm[2] = mcp
+	lm[3] = pip
+	lm[4] = tip
 
 	# index: 5 (MCP), 6 (PIP), 8 (TIP)
 	mcp = HandLandmark(0.45, 0.65, 0.0)
 	pip = HandLandmark(0.44, 0.50, 0.0)
 	builder = straight if index_up else curled
 	_, _, tip = builder(mcp, pip, None)
-	lm[5] = mcp; lm[6] = pip; lm[8] = tip
+	lm[5] = mcp
+	lm[6] = pip
+	lm[8] = tip
 
 	# middle: 9, 10, 12
 	mcp = HandLandmark(0.50, 0.64, 0.0)
 	pip = HandLandmark(0.50, 0.48, 0.0)
 	builder = straight if middle_up else curled
 	_, _, tip = builder(mcp, pip, None)
-	lm[9] = mcp; lm[10] = pip; lm[12] = tip
+	lm[9] = mcp
+	lm[10] = pip
+	lm[12] = tip
 
 	# ring: 13, 14, 16
 	mcp = HandLandmark(0.55, 0.65, 0.0)
 	pip = HandLandmark(0.55, 0.50, 0.0)
 	builder = straight if ring_up else curled
 	_, _, tip = builder(mcp, pip, None)
-	lm[13] = mcp; lm[14] = pip; lm[16] = tip
+	lm[13] = mcp
+	lm[14] = pip
+	lm[16] = tip
 
 	# pinky: 17, 18, 20
 	mcp = HandLandmark(0.60, 0.67, 0.0)
 	pip = HandLandmark(0.60, 0.54, 0.0)
 	builder = straight if pinky_up else curled
 	_, _, tip = builder(mcp, pip, None)
-	lm[17] = mcp; lm[18] = pip; lm[20] = tip
+	lm[17] = mcp
+	lm[18] = pip
+	lm[20] = tip
 
-	return DetectedHand(handedness=Handedness.RIGHT, landmarks=lm, confidence=0.95)
+	return DetectedHand(handedness=handedness, landmarks=lm, confidence=confidence)
 
 
 # finger stats

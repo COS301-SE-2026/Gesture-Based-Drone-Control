@@ -140,8 +140,8 @@ class TestCameraFeedOpen:
 		feed.open()
 
 		calls = {call.args[0]: call.args[1] for call in mock_cap.set.call_args_list}
-		# assert calls[cv2.CAP_PROP_FRAME_WIDTH] == 1280
-		# assert calls[cv2.CAP_PROP_FRAME_HEIGHT] == 720
+		assert calls[cv2.CAP_PROP_FRAME_WIDTH] == 1280
+		assert calls[cv2.CAP_PROP_FRAME_HEIGHT] == 720
 		assert calls[cv2.CAP_PROP_FPS] == 60
 		assert calls[cv2.CAP_PROP_BUFFERSIZE] == 1
 
