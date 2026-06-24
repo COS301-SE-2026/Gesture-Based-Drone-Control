@@ -47,6 +47,7 @@ PINKY_TIP = 20
 # angle number here now to say if a finger is up when its straight enough based on degree
 # can alter value if its too strict
 FINGER_STRAIGHT_DEG = 160.0
+# THUMB_STRAIGHT_DEG = 150.0
 
 
 # rule-based recognizer
@@ -128,14 +129,17 @@ class RuleBasedRecognizer(GestureRecognizer):
 		over the old tip.x vs ip.x rule
 		"""
 
-		index_mcp = landmarks[INDEX_MCP]
-		thumb_tip = landmarks[THUMB_TIP]
-		thumb_ip = landmarks[THUMB_IP]
+		# index_mcp = landmarks[INDEX_MCP]
+		# thumb_tip = landmarks[THUMB_TIP]
+		# thumb_ip = landmarks[THUMB_IP]
 
-		tip_dist = self._distance(thumb_tip, index_mcp)
-		ip_dist = self._distance(thumb_ip, index_mcp)
+		# tip_dist = self._distance(thumb_tip, index_mcp)
+		# ip_dist = self._distance(thumb_ip, index_mcp)
 
-		return tip_dist > ip_dist
+		# return tip_dist > ip_dist
+
+		angle = self._angle(landmarks[THUMB_MCP], landmarks[THUMB_IP], landmarks[THUMB_TIP])	
+		return angle >= THUMB_STRAIGHT_DEG
 
 	def _distance(self, a, b) -> float:
 		"""Euclidean distance between two landmarks in normalised x/y space"""
