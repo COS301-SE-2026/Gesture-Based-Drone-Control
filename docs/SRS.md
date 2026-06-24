@@ -291,7 +291,7 @@ recognised:
 
 ### 3.2 Functional Requirements
 
-#### R3: Capture & Detection
+#### R3: Camera Capture & Detection
 
 - **R3.1:** The system shall capture video for gesture recognition.
     - **R3.1.1:** The pipeline shall capture frames at a minimum of 30 FPS.
@@ -311,14 +311,15 @@ recognised:
 #### R4: Gesture–Command Mapping
 
 - **R4.1:** The system shall map each recognised gesture to exactly one
-  drone command via a deterministic mapping table.
+  drone command via a deterministic mapping table, defined in the Gesture class.
 - **R4.2:** The mapping table shall be configurable without code changes
   (e.g. via a JSON or YAML profile file).
 - **R4.3:** The system shall dispatch a command to the active drone
   adapter within 200 ms of the gesture being recognised
   (see also `NFR1.1`).
+- **R4.4:** All control inputs, regardless of the source, shall be encapsulated in a common object containing the command's type, a source identifier, and any optional payloads before dispatch.
 
-> This forms part of th CV pipeline, and is done by interpreting key landmarks on the users' hand. **R4.3** represents the handoff to the HID to Drone adapters subsystem.
+> This forms part of th CV pipeline, and is done by interpreting key landmarks on the users' hand. **R4.3-R4.4** represents the handoff to the HID to Drone adapters subsystem.
 
 #### R5: Drone Communication
 
@@ -333,10 +334,11 @@ recognised:
       than 2 seconds, the system shall command `HOVER`.
     - **R5.2.2:** Link-loss events shall be surfaced as a banner alert on
       the dashboard.
+- **R5.3:** All drone adapters must return normalised telemetry data of the same shape, containing at minimum altitude, speed, battery percentage, heading direction, and flight state.
 
 > This is handled entirely by the adapters subsystem. Each supported drone, i.e. every concrete DroneAdapter, implements these features.
 
-#### R6: Failsafes & Safety
+#### R6: Failsafes 
 
 - **R6.1:** The system shall hold a safe state in the absence of input.
     - **R6.1.1:** If no gesture is detected for more than 3 seconds, the
@@ -347,7 +349,7 @@ recognised:
     - **R6.2.1:** When reported battery falls below 15 %, the system shall
       initiate an auto-land sequence.
     - **R6.2.2:** The system shall reject any take-off command issued
-      before the gesture-recognition pipeline reports `READY`.
+      before the gesture-recognition pipeline reports a valid connection.
     - **R6.2.3:** The dashboard shall expose an emergency-stop control
       that commands an immediate landing.
     - **R6.2.4:** An emergency-landing or other safety-critical operations must override all pending operations of a lower level of importance.
@@ -368,6 +370,18 @@ recognised:
 
 > This is handled entirely in the adapter subsystem. Each input method is guarunteed to behave the same with every drone via the DroneAdapter interface. InputAdapters allow each input device to behave identically.
 
+#### R8: User Authentication and Preference Management
+  - **R8.1:** The system shall provide user registration and authentication.
+    - **R8.1.1:** A new user can register an account with an email address and a password
+    - **R8.1.2:** Passwords shall be validated against a minimum length / strength policy and stored using a cryptographic hashing function and salted.
+    - **R8.1.3:** Returning users shall be able to authenticate using their email address and password.
+    - **R8.1.4:** On logout, the WebSocket connection should be closed, and the dashboard should return the user to the login screen.
+  - **R8.2:** The system shall store user preferences.
+    - **R8.2.1:** Settings chosen by the user, such as theme (light/dark), and any other customization options, should be saved and loaded upon login
+    - **R8.2.2:** Stored settings may be modified at runtime, with any changes taking effect without any page reload
+    - **R8.2.3:** If a stored preference is unable to be fetched, a default value should be used in its place.
+
+> This is handled by its own subsystem, specifically for user management. 
 
 ### 3.3 Non-Functional (Quality) Requirements
 
@@ -437,39 +451,13 @@ in [`SAS.md` Section 2.5](SAS.md#25-mapping-quality-requirements-to-architectura
 
 ### 3.4 Other Requirements
 
-#### R15: Process & Documentation
+#### OR1: Process & Documentation
 
-- **R15.1:** All project documentation shall be authored in Markdown and
+- **OR1.1:** All project documentation shall be authored in Markdown and
   rendered by MkDocs Material to GitHub Pages, deployed automatically on
   push to `main` and `dev`.
-- **R15.2:** The project shall use **Conventional Commits** for all
+- **OR1.2:** The project shall use **Conventional Commits** for all
   changes merged into shared branches.
-
-#### R16: Base Features
-
-Base features are foundational capabilities shared by most modern
-applications and are therefore documented separately from the
-domain-specific use cases.
-
-- **R16.1:** The system shall provide a registration and login flow.
-    - **R16.1.1:** A new user shall be able to register an account using
-      an email address and a password.
-    - **R16.1.2:** Passwords shall be validated against a minimum-strength
-      policy at registration time.
-    - **R16.1.3:** Returning users shall be able to authenticate using
-      their email address and password and shall receive a short-lived
-      session token (see also `NFR2.1`).
-- **R16.2:** The system shall provide light and dark themes.
-    - **R16.2.1:** The dashboard shall offer a light and a dark colour
-      scheme, switchable by the operator at runtime.
-    - **R16.2.2:** The selected theme shall persist across sessions for
-      the same user.
-- **R16.3:** The system shall validate all user-submitted forms.
-    - **R16.3.1:** Form submissions shall be validated client-side before
-      being sent to the backend.
-    - **R16.3.2:** The backend shall re-validate every submission and
-      reject any payload that fails validation, returning a clear error
-      message (see also `NFR2.3`, `NFR4.3`, `NFR5.3`).
 
 ---
 
@@ -604,16 +592,16 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
     **Actor.** Operator.
 
     **Preconditions.** The backend is reachable and the user has a
-    registered account (`R16.1.1`).
+    registered account (`OR2.1.1`).
 
     **Main flow.**
 
     1. The Operator opens the dashboard.
     2. The Operator submits their email and password on the login form
-       (`R16.1.3`).
-    3. The frontend validates the form client-side (`R16.3.1`) and
+       (`OR2.1.3`).
+    3. The frontend validates the form client-side (`OR2.3.1`) and
        posts it to `/api/v1/auth/login`.
-    4. The backend re-validates the payload (`R16.3.2`), authenticates
+    4. The backend re-validates the payload (`OR2.3.2`), authenticates
        the credentials, and issues a session token of lifetime
        ≤ 30 minutes (`NFR2.1`).
     5. The dashboard establishes the WebSocket connection at
@@ -644,7 +632,7 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
     **Preconditions.**
 
     - At least one session has been recorded and persisted (`R6.3`).
-    - The reviewer is authenticated (`R16.1.3`).
+    - The reviewer is authenticated (`OR2.1.3`).
 
     **Main flow.**
 
@@ -736,7 +724,7 @@ strictly for every subsequent demo.
 | --- | --- | --- | --- | --- |
 | `R3.1.*`, `R3.2.1` | Capture & detection | `tests/cv_pipeline_testing` | Demo 1 | Delivered |
 | `R3.2.2`, `R3.2.3` | Gesture classification | Recogniser unit tests | Demo 1 | Delivered |
-| `R16.*` | Base features | Frontend unit + Playwright E2E | Demo 1 | Delivered |
+| `OR2.*` | Base features | Frontend unit + Playwright E2E | Demo 1 | Delivered |
 | `R4.*` | Mapping | `services/tests/test_command.py` | Demo 2 | In progress |
 | `R5.*` | Drone comms | Adapter integration tests | Demo 2 | In progress |
 | `R6.*` | Safety & failsafes | Manual + integration tests | Demo 2 | In progress |
