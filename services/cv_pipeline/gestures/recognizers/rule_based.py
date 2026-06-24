@@ -138,7 +138,7 @@ class RuleBasedRecognizer(GestureRecognizer):
 
 		return tip_dist > ip_dist
 
-		# angle = self._angle(landmarks[THUMB_MCP], landmarks[THUMB_IP], landmarks[THUMB_TIP])	
+		# angle = self._angle(landmarks[THUMB_MCP], landmarks[THUMB_IP], landmarks[THUMB_TIP])
 		# return angle >= THUMB_STRAIGHT_DEG
 
 	def _distance(self, a, b) -> float:

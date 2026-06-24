@@ -163,7 +163,7 @@ class HandDetectionPipeline:
 		self._hands = mp_hands.Hands(
 			static_image_mode=self._config.static_image_mode,
 			max_num_hands=MAX_HANDS,
-			model_complexity = self._config.model_complexity,
+			model_complexity=self._config.model_complexity,
 			min_detection_confidence=self._config.min_detection_confidence,
 			min_tracking_confidence=self._config.min_tracking_confidence,
 		)

@@ -337,10 +337,10 @@ class CvPipeline:
 					fps=fps,
 					hand_metrics=metrics,
 				)
-		# 		await self._event_queue.put(event)
-		# except asyncio.CancelledError:
-		# 	logger.debug('Consumer task cancelled')
-		# 	raise
+				# 		await self._event_queue.put(event)
+				# except asyncio.CancelledError:
+				# 	logger.debug('Consumer task cancelled')
+				# 	raise
 				if self._event_queue.full():
 					try:
 						self._event_queue.get_nowait()

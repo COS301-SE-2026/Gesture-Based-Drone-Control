@@ -143,6 +143,7 @@ class TestCameraFeedOpen:
 		assert calls[cv2.CAP_PROP_FRAME_WIDTH] == 1280
 		assert calls[cv2.CAP_PROP_FRAME_HEIGHT] == 720
 		assert calls[cv2.CAP_PROP_FPS] == 60
+		assert calls[cv2.CAP_PROP_BUFFERSIZE] == 1
 
 
 # closed cam feed testing

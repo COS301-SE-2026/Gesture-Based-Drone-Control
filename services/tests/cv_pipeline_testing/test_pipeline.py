@@ -44,6 +44,7 @@ def make_frame(idx: int = 1) -> CapturedFrame:
 		bgr_frame=np.zeros((480, 640, 3), dtype=np.uint8),
 		rgb_frame=np.zeros((480, 640, 3), dtype=np.uint8),
 		frame_index=idx,
+		timestamp=0.0,
 	)
 
 
