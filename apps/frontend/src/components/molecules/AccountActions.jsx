@@ -5,7 +5,7 @@ const AccountActions = () => {
     const navigate = useNavigate()
 
     return  (
-        <div className = "flex gap-2 mt-2 pt-2 border -t border-Grey/20">
+        <div className = "flex gap-2 mt-2 pt-2 border-t border-Grey/20">
             <Button variant ="secondary" onClick={() =>navigate ("/login")}>
                 Switch Profile
             </Button>
