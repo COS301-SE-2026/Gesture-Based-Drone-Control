@@ -47,31 +47,31 @@ new operator wants to try**.
 
 The palette is anchored on a red core (the action colour), an
 off-black surface, and a small set of neutrals. Accent semantic
-colours are added only for **success**, **warning**, and **error**
+colours are added only for **success**, **warning**, **info** and **error**
 states.
 
 ### 2.1 Core palette
 
 | Role | Token | HEX | RGB | HSL | Usage |
 | --- | --- | --- | --- | --- | --- |
-| Primary | `--color-primary` | `#A4161A` | 164, 22, 26 | 358°, 76%, 36% | Primary buttons, links, active states, brand surfaces. |
-| Primary (hover) | `--color-primary-hover` | `#BA181B` | 186, 24, 27 | 359°, 77%, 41% | Hover and pressed states on primary actions. |
-| Primary (pressed) | `--color-primary-pressed` | `#660708` | 102, 7, 8 | 359°, 87%, 21% | Pressed state on primary; never used as a fill colour for body areas. |
-| Surface (dark) | `--color-surface` | `#161A1D` | 22, 26, 29 | 206°, 14%, 10% | Dark-mode backgrounds, hero sections, dashboard chrome. |
-| Surface (light) | `--color-surface-light` | `#F5F3F4` | 245, 243, 244 | 330°, 14%, 96% | Light-mode page background. |
-| Text (on dark) | `--color-text-on-dark` | `#F5F3F4` | 245, 243, 244 | 330°, 14%, 96% | Body text on dark surfaces. |
-| Text (on light) | `--color-text-on-light` | `#161A1D` | 22, 26, 29 | 206°, 14%, 10% | Body text on light surfaces. |
-| Muted | `--color-muted` | `#B1A7A6` | 177, 167, 166 | 5°, 6%, 67% | Placeholders, borders, disabled, captions. |
-| Hairline | `--color-hairline` | `#D3D3D3` | 211, 211, 211 | 0°, 0%, 83% | Dividers, table rules in light mode. |
+| Primary | `Red` | `#A4161A` | 164, 22, 26 | 358°, 76%, 36% | Primary buttons, links, active states, brand surfaces. |
+| Primary (hover) | `LightRed` | `#BA181B` | 186, 24, 27 | 359°, 77%, 41% | Hover and pressed states on primary actions. |
+| Primary (pressed) | `DarkRed` | `#660708` | 102, 7, 8 | 359°, 87%, 21% | Pressed state on primary; never used as a fill colour for body areas. |
+| Surface (dark) | `OffBlack` | `#161A1D` | 22, 26, 29 | 206°, 14%, 10% | Light-mode page text, hero sections, dashboard chrome. |
+| Surface (light) | `OffWhite` | `#F5F3F4` | 245, 243, 244 | 330°, 14%, 96% | Dark-mode page text. |
+| Muted | `DarkGrey` | `#B1A7A6` | 177, 167, 166 | 5°, 6%, 67% | Placeholders, borders, disabled, captions. |
+| Hairline | `Grey` | `#D3D3D3` | 211, 211, 211 | 0°, 0%, 83% | Dividers, table rules in light mode. |
+
+> **How colours are referenced in code:** Colours live in `tailwind.config.js` under `theme.extend.colors` and are used via the Tailwind utility classes (e.g. `bg-Red`, `text-OffWhite`). Dark mode is toggled via the `dark` class on the root element (`darkMode: 'class'` in tailwind config).
 
 ### 2.2 Semantic palette
 
 | Role | Token | HEX | Usage |
 | --- | --- | --- | --- |
-| Success | `--color-success` | `#1B7F3A` | Confirmation toasts, telemetry "OK" pill, take-off complete. |
-| Warning | `--color-warning` | `#C77700` | Battery 15–25 %, link flapping, soft failsafe. |
-| Error | `--color-error` | `#A4161A` | Critical alerts, validation errors, emergency-stop activation. (Re-uses primary red on purpose — failure is a system-level state.) |
-| Info | `--color-info` | `#1F6FB3` | Tutorial overlays, help menu highlights. |
+| Success | `#1B7F3A` | Confirmation toasts, telemetry "OK" pill, take-off complete. |
+| Warning | `#C77700` | Battery 15–25 %, link flapping, soft failsafe. |
+| Error | `#A4161A` | Critical alerts, validation errors, emergency-stop activation. (Re-uses primary red on purpose — failure is a system-level state.) |
+| Info | `#1F6FB3` | Tutorial overlays, help menu highlights. |
 
 ### 2.3 WCAG 2.2 contrast ratios
 
@@ -92,11 +92,6 @@ automated audit (§8.6) verifies them per build.
 | `#F5F3F4` text | `#1B7F3A` success | **4.8 : 1** | AA | Success pill. |
 | `#161A1D` text | `#C77700` warning | **6.4 : 1** | AA | Warning toast (text on amber). |
 
-!!! warning "Never do this"
-    Red text on dark-red background (`#A4161A` on `#660708`) measures
-    **1.7 : 1** — far below AA. Never place red text on a red
-    surface; the pressed state is for outlines and button-press
-    feedback only.
 
 ### 2.4 Usage rules
 
@@ -105,7 +100,7 @@ automated audit (§8.6) verifies them per build.
 - **Off-black is the surface colour.** Pair with off-white text
   (never pure white — `#FFFFFF` on `#161A1D` is harsh).
 - **Muted grey carries hierarchy.** Captions, placeholders, and
-  disabled states use it; avoid using it for body text.
+  disabled states use `DarkGrey`; avoid using it for body text.
 - **Semantic colours are reserved for state.** A green pill always
   means "OK"; an amber pill always means "warning". Never use them
   for emphasis.
@@ -122,9 +117,10 @@ code blocks.
 
 | Role | Family | Fallback stack | Source | Licence |
 | --- | --- | --- | --- | --- |
-| UI / body | **Inter** | `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif` | Google Fonts (self-hosting *planned for Demo 2*) | SIL Open Font Licence 1.1 |
-| Display | **Inter Display** | (same as above) | Google Fonts (self-hosting *planned for Demo 2*) | SIL OFL 1.1 |
-| Monospace | **JetBrains Mono** | `ui-monospace, "SF Mono", Menlo, Consolas, monospace` | Google Fonts (self-hosting *planned for Demo 2*) | Apache 2.0 |
+| UI / body | **Inter** | `system-ui, "Segoe UI", Roboto, sans-serif` | `font-sans` | Google Fonts (self-hosting *planned for Demo 2*) | SIL Open Font Licence 1.1 |
+| Display | **Geist** | `Inter, sans-serif` | `font-display` | Google Fonts (self-hosting *planned for Demo 2*) | SIL OFL 1.1 |
+| Monospace | System mono | `ui-monospace, Consolas, monospace` | - | System stack | - |
+
 
 Self-hosting (rather than the Google Fonts CDN) is planned for the
 Demo 2 sprint and aligns with the SRS `R8.2` posture — no runtime
@@ -137,15 +133,17 @@ A modular scale at ratio 1.2 anchored on 16 px body.
 
 | Token | Size | Line height | Weight | Letter spacing | Use |
 | --- | --- | --- | --- | --- | --- |
-| `--font-display` | 48 px / 3 rem | 1.1 | 700 | -0.02em | Landing-page hero, splash. |
-| `--font-h1` | 36 px / 2.25 rem | 1.2 | 700 | -0.015em | Page titles. |
-| `--font-h2` | 28 px / 1.75 rem | 1.25 | 600 | -0.01em | Section headings on dashboard. |
-| `--font-h3` | 22 px / 1.375 rem | 1.3 | 600 | normal | Card titles. |
-| `--font-h4` | 18 px / 1.125 rem | 1.35 | 600 | normal | Group labels. |
-| `--font-body` | 16 px / 1 rem | 1.5 | 400 | normal | Default text. |
-| `--font-body-sm` | 14 px / 0.875 rem | 1.5 | 400 | normal | Secondary text. |
-| `--font-caption` | 12 px / 0.75 rem | 1.4 | 500 | 0.02em | Labels, axis ticks. |
-| `--font-mono` | 14 px / 0.875 rem | 1.45 | 500 | normal | Telemetry numbers, code. |
+| `h1` | 32 px / 2 rem | 1.2 | 700 | -0.02em | Page titles. |
+| `h2` | 24 px / 1.5 rem | 1.2 | 700 | -0.01 rem | Section Headings. |
+| `h3` | 20 px / 1.25 rem | 1.2 | 700 | normal | Card titles. |
+| `h4` | 18 px / 1.125 rem | 1.2 | 700 | normal | Group labels. |
+| `h5` | 16 px / 1 rem | 1.2 | 700 | normal | Minor headings. |
+| `h6` | 14 px / 0.875 rem | 1.2 | 700 | normal | Smallest heading level. |
+| Body (`p`) | -15 px / 0.95 rem | 1.6 | 400 | normal | Default paragraph text. |
+| small | -14 px / 0.85 rem | - | 400 | normal | secondary/ helper paragraph text. |
+| Code / mono | 14 px / 0.875 rem | - | - | normal | Telemetry numbers, code. |
+
+> All `h1`–`h6` elements share weight 700 and line-height 1.2 as set in `index.css`. Individual components may override weight with Tailwind utilities (e.g. `font-semibold`) where a lighter heading better suits the context.
 
 ### 3.3 Weights used
 
@@ -187,8 +185,7 @@ remaining variants planned for Demo 2.
 ### 4.2 Iconography
 
 The system uses **[Lucide](https://lucide.dev/)** as the single icon
-library (MIT-licensed). It is wide enough to cover the dashboard's
-needs without bringing in a second family.
+library (MIT-licensed).
 
 | Property | Rule |
 | --- | --- |
@@ -205,94 +202,130 @@ naturally next to Lucide icons.
 
 ## 5. Design Tokens
 
-Tokens are the single source of truth for visual properties. **This
-document is the canonical source** for token names and values; the
-implementation in `packages/contracts/tokens.css` and the generated
-`tokens.ts` are kept in sync with it during the Demo 2 sprint. Drift
-between the document and the code is treated as a bug.
+Tokens are the single source of truth for visual properties. The implementation lives in `tailwind.config.js` — this document reflects those values exactly. Drift between the guide and the code is treated as a bug.
 
 ### 5.1 Colour tokens
 
-See §2 for values. Each role has a CSS custom property of the form
-`--color-<role>` (e.g. `--color-primary`).
+See §2 for values. Colours are defined in `tailwind.config.js` under `theme.extend.colors` and consumed via Tailwind utility classes.
+
+| Token (Tailwind key) | HEX | CSS class examples |
+|---|---|---|
+| `Red` | `#A4161A` | `bg-Red`, `text-Red`, `border-Red` |
+| `LightRed` | `#BA181B` | `bg-LightRed`, `hover:bg-LightRed` |
+| `DarkRed` | `#660708` | `bg-DarkRed`, `active:bg-DarkRed` |
+| `OffBlack` | `#161A1D` | `bg-OffBlack`, `text-OffBlack` |
+| `OffWhite` | `#F5F3F4` | `bg-OffWhite`, `text-OffWhite` |
+| `DarkGrey` | `#B1A7A6` | `text-DarkGrey`, `border-DarkGrey` |
+| `Grey` | `#D3D3D3` | `border-Grey`, `divide-Grey` |
 
 ### 5.2 Spacing scale
 
-A 4 px base. Every spacing decision in the system must use a token.
+Defined in `tailwind.config.js` under `theme.extend.spacing`. Used via Tailwind's `p-`, `m-`, `gap-` utilities.
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--space-0` | 0 | Reset. |
-| `--space-1` | 4 px | Tight grouping; icon to label. |
-| `--space-2` | 8 px | Form-field internal padding. |
-| `--space-3` | 12 px | Default vertical rhythm between paragraphs. |
-| `--space-4` | 16 px | Card padding, list-item gap. |
-| `--space-5` | 24 px | Section gap. |
-| `--space-6` | 32 px | Major section divider. |
-| `--space-7` | 48 px | Landing-page section padding. |
-| `--space-8` | 64 px | Hero padding. |
+| `xs` | 0.5 rem (8 px) | Tight grouping; icon to label. |
+| `sm` | 1 rem (16 px) | Form-field internal padding, list-item gap. |
+| `md` | 1.5 rem (24 px) | Card padding, section gap. |
+| `lg` | 2 rem (32 px) | Major section divider. |
+| `xl` | 3 rem (48 px) | Landing-page section padding, hero padding. |
 
 ### 5.3 Radius
 
+Defined in `tailwind.config.js` under `theme.extend.borderRadius`.
+ 
 | Token | Value | Use |
-| --- | --- | --- |
-| `--radius-sm` | 4 px | Tags, pills. |
-| `--radius-md` | 8 px | Buttons, inputs, cards. |
-| `--radius-lg` | 16 px | Modals, hero surfaces. |
-| `--radius-full` | 9999 px | Avatars, badges. |
+|---|---|---|
+| `sm` | 0.375 rem (6 px) | Tags, pills. |
+| `md` | 0.5 rem (8 px) | Buttons, inputs. |
+| `lg` | 0.75 rem (12 px) | Cards. |
+| `xl` | 1 rem (16 px) | Modals, hero surfaces. |
+| `2xl` | 1.5 rem (24 px) | Large panels. |
+| `3xl` | 2 rem (32 px) | Full-bleed surfaces. |
 
 ### 5.4 Shadow
 
+Defined in `tailwind.config.js` under `theme.extend.boxShadow`. The glass variant requires `backdrop-filter: blur(12px)`.
+ 
 | Token | Value | Use |
-| --- | --- | --- |
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.08)` | Cards at rest. |
-| `--shadow-md` | `0 4px 8px rgba(0,0,0,0.12)` | Cards on hover. |
-| `--shadow-lg` | `0 12px 24px rgba(0,0,0,0.18)` | Modals, popovers. |
-| `--shadow-glass` | `0 1px 0 rgba(255,255,255,0.06) inset, 0 8px 24px rgba(0,0,0,0.25)` | Glass surfaces over `#161A1D`. Requires `backdrop-filter: blur(12px)`. |
+|---|---|---|
+| `sm` | `0 1px 2px 0 rgb(0 0 0 / 0.05)` | Cards at rest. |
+| `md` | `0 4px 6px -1px rgb(0 0 0 / 0.1)` | Cards on hover. |
+| `lg` | `0 10px 15px -3px rgb(0 0 0 / 0.1)` | Modals, popovers. |
+| `xl` | `0 20px 25px -5px rgb(0 0 0 / 0.1)` | Elevated panels. |
+| `2xl` | `0 25px 50px -12px rgb(0 0 0 / 0.25)` | Hero cards. |
+| `glass` | `0 8px 32px rgba(31, 38, 135, 0.37)` | Glass surfaces (light). |
+| `glass-dark` | `0 8px 32px rgba(0, 0, 0, 0.5)` | Glass surfaces over `OffBlack`. |
 
 ### 5.5 Motion
 
-Motion is functional, not decorative. Three named durations cover
-every animation in the system.
-
-| Token | Value | Easing | Use |
-| --- | --- | --- | --- |
-| `--motion-instant` | 80 ms | `ease-out` | Hover state changes. |
-| `--motion-fast` | 160 ms | `cubic-bezier(0.2, 0.8, 0.2, 1)` | Button press, toggle. |
-| `--motion-base` | 240 ms | `cubic-bezier(0.2, 0.8, 0.2, 1)` | Modal open / close, page transitions. |
+Motion is functional, not decorative. Defined in `tailwind.config.js` under `theme.extend.animation` and implemented via Tailwind's built-in `transition-*` and `animate-*` utilities.
+ 
+| Utility | Duration | Use |
+|---|---|---|
+| `animate-spin` | 1 s linear | Loading spinner. |
+| `animate-ping` | 1 s | Live-status pulse. |
+| `animate-pulse` | 2 s | Gesture indicator heartbeat. |
+| `animate-bounce` | 1 s | Attention-draw on empty states. |
+| `transition` (default) | 150 ms | Hover state changes (Tailwind default). |
+ 
+All motion respects `prefers-reduced-motion: reduce` — the global rule in `index.css` collapses all animation and transition durations to `0.01ms` when the user has requested reduced motion.
 
 All motion respects `prefers-reduced-motion: reduce` — animations
 collapse to a 0 ms duration when the user has requested reduced
 motion. The gesture pulse on the dashboard fades to a static badge
 in this mode.
 
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+> `0.01ms` rather than `0ms` is intentional — it avoids a flash-of-unstyled-content on some browsers while still being imperceptibly fast.
+
 ### 5.6 Breakpoints
+
+Tailwind defaults are in use (no custom breakpoints defined in `tailwind.config.js`).
 
 | Token | Value | Target |
 | --- | --- | --- |
-| `--bp-sm` | 640 px | Mobile landscape, small tablets. |
-| `--bp-md` | 768 px | Tablets. |
-| `--bp-lg` | 1024 px | Laptops; the dashboard's primary target. |
-| `--bp-xl` | 1280 px | Desktop. |
-| `--bp-2xl` | 1536 px | Operator workstation, large monitors. |
+| `sm:` | 640 px | Mobile landscape, small tablets. |
+| `md:` | 768 px | Tablets. |
+| `lg:` | 1024 px | Laptops; the dashboard's primary target. |
+| `xl:` | 1280 px | Desktop. |
+| `2xl:` | 1536 px | Operator workstation, large monitors. |
+
+### 5.7 Backdrop blur
+ 
+Defined in `tailwind.config.js` under `theme.extend.backdropBlur`.
+ 
+| Token | Value | Use |
+|---|---|---|
+| `xs` | 2 px | Subtle frosting. |
+| `sm` | 4 px | Light glass panels. |
+| `md` | 12 px | Modal backdrops. |
+| `lg` | 16 px | Dashboard overlays. |
+| `xl` | 24 px | Full-screen glass. |
 
 ---
 
 ## 6. Component Library
 
 Visual specifications for every component used in the production
-system. Each component documents its **variants** (primary /
-secondary / ghost, sizes) and **states** (default, hover, focus,
-active, disabled, loading, error).
-
+system. 
 ### 6.1 Button
 
 | Variant | Background | Text | Use |
 | --- | --- | --- | --- |
-| Primary | `--color-primary` → `--color-primary-hover` on hover | `#F5F3F4` | The main action on a screen. Exactly one per view. |
-| Secondary | transparent · 1 px border `--color-primary` | `--color-primary` | Auxiliary action next to a primary. |
-| Ghost | transparent, no border | `--color-text-on-dark` | Tertiary action; toolbars. |
-| Danger | `--color-error` | `#F5F3F4` | Destructive action (emergency stop, delete session). |
+| Primary | `bg-Red` → `hover:bg-LightRed` | `text-OffWhite` | The main action on a screen. Exactly one per view. |
+| Secondary | `bg-transperant border border-Red` | `text-Red` | Auxiliary action next to a primary. |
+| Ghost | `bg-transperant` no border | `text-OffWhite` | Tertiary action; toolbars. |
+| Danger | `bg-Red`(same as primary) | `text-OffWhite` | Destructive action (emergency stop, delete session). |
 
 **Sizes.** sm (32 px height), md (40 px, default), lg (48 px,
 landing-page CTAs).
@@ -300,10 +333,10 @@ landing-page CTAs).
 **States.**
 
 - Default — flat fill at the listed colours.
-- Hover — fill steps to `--color-primary-hover`; `--shadow-md`.
-- Focus — `box-shadow: 0 0 0 3px rgba(186,24,27,0.4)` ring.
-- Active — fill steps to `--color-primary-pressed`.
-- Disabled — `opacity: 0.5`; `cursor: not-allowed`; no hover effect.
+- Hover — fill steps to `LightRed`; `shadow-md`.
+- Focus — `ring-2 ring-Red ring-opacity-40` (3 px equivalent).
+- Active — fill steps to `DarkRed`.
+- Disabled — `opacity-50`; `cursor-not-allowed`; no hover effect.
 - Loading — replace label with a 16 px spinner; button width
   preserved; click events suppressed.
 
@@ -312,37 +345,37 @@ landing-page CTAs).
 | Property | Value |
 | --- | --- |
 | Height | 40 px |
-| Padding | `--space-3` horizontal |
-| Border | 1 px `--color-muted` |
-| Background | `--color-surface-light` (light mode) / `rgba(255,255,255,0.04)` (dark mode) |
-| Focus ring | 3 px `rgba(186,24,27,0.4)` |
-| Error border | `--color-error` 1 px; helper text below in `--color-error` |
+| Padding | `px-3` (0.75 rem) horizontal |
+| Border | `border border-DarkGrey` |
+| Background | `bg-OffWhite` (light) / `bg-white/4` (dark) |
+| Focus ring | `focus:ring-2 focus:ring-Red/40` (achieved via Tailwind, `outline: none' is set globally in `index.css` ) |
+| Error border | `border-Red`; helper text below in `text-Red` |
 
 ### 6.3 Select / Dropdown
 
 Same shape as the Input. Caret is a Lucide `chevron-down` at 16 px.
-Open state shows a panel with `--shadow-lg` and `--radius-md`.
+Open state shows a panel with `shadow-lg` and `rounded-md`.
 
 ### 6.4 Modal
 
 | Property | Value |
 | --- | --- |
-| Width | up to 560 px |
-| Backdrop | `rgba(22,26,29,0.6)` with `backdrop-filter: blur(8px)` |
-| Surface | `--color-surface-light` (light) / `#1F2428` (dark) |
-| Radius | `--radius-lg` |
-| Shadow | `--shadow-lg` |
-| Open duration | `--motion-base` |
+| Width | up to 560 px (`max-w-lg`) |
+| Backdrop | `bg-OffBlack/60 backdrop-blur-md` |
+| Surface | `bg-OffWhite` (light) / ` bg-OffBlack` (dark) |
+| Radius | `rounded-xl` |
+| Shadow | `shadow-xl` |
+| Open duration | `animate` utilities / `transition` (respects `prefers-reduced-motion `) |
 | Escape key | Closes the modal; focus returns to the trigger. |
 
 ### 6.5 Toast
 
 | Variant | Surface | Border |
 | --- | --- | --- |
-| Success | rgba(27,127,58,0.12) | 1 px `--color-success` |
-| Warning | rgba(199,119,0,0.12) | 1 px `--color-warning` |
-| Error | rgba(164,22,26,0.12) | 1 px `--color-error` |
-| Info | rgba(31,111,179,0.12) | 1 px `--color-info` |
+| Success |`bg-green-600/12` | `border border-green-600` |
+| Warning | `bg-yellow-600/12` | `border border-yellow-600` |
+| Error | `bg-Red/12` | `border border-Red` |
+| Info | `bg-blue-600/12` | `border border-blue-600`|
 
 Toasts auto-dismiss after 5 s (warning) or 8 s (error). Critical
 alerts (link loss, battery < 15 %) **do not auto-dismiss** — they
@@ -350,21 +383,21 @@ remain until acknowledged per `R1.2.2`.
 
 ### 6.6 Card
 
-`--radius-md`, `--shadow-sm` at rest, `--shadow-md` on hover, padded
-with `--space-4`. The telemetry panel, gesture-indicator panel, and
+`rounded-lg shadow-sm` at rest, `shadow-md` on hover, padded
+with `p-sm` (1 rem). The telemetry panel, gesture-indicator panel, and
 session-list rows on the replay view are all Cards.
 
 ### 6.7 Gesture Indicator (domain-specific)
 
 A 96 × 96 px circular badge in the top-right of the dashboard,
-filled with `--color-primary` when a gesture is locked. Pulses at
-`--motion-base` when the gesture changes; static in
+filled with `bg-Red` when a gesture is locked. Pulses at
+`animate-pulse` when the gesture changes; static in
 `prefers-reduced-motion`. The current gesture name and its mapped
 command sit immediately below.
 
 ### 6.8 Telemetry Pill
 
-A pill (`--radius-full`) carrying the link status, flight mode, or
+A pill (`rounded-full`) carrying the link status, flight mode, or
 battery percentage. Background is the matching semantic colour at
 12 % opacity; foreground is the matching semantic colour at full
 opacity.
@@ -375,12 +408,11 @@ opacity.
 
 ### 7.1 Grid
 
-A 12-column grid with a `--space-5` (24 px) gutter on screens ≥ `--bp-md`
-and a `--space-4` (16 px) gutter below.
+Tailwind's built-in 12-column grid (`grid grid-cols-12`) with a 'gap-md` (1.5 rem / 24 px) gutter on screens >= `md: `and `gap-sm` ( 1rem / 16 px) below.
 
 ### 7.2 Responsive behaviour
 
-| Surface | < `--bp-md` | ≥ `--bp-md` | ≥ `--bp-lg` |
+| Surface | < `m:` (768 px) | ≥ `md:` | ≥ `g:` (1024 px) |
 | --- | --- | --- | --- |
 | Landing page | single column, hero stacks vertically | two-column feature grid | three-column feature grid |
 | Dashboard | video feed stacks above telemetry; gesture indicator floats top-right | side-by-side video and telemetry | full layout: feed + overlay + telemetry + replay timeline |
@@ -388,11 +420,11 @@ and a `--space-4` (16 px) gutter below.
 
 ### 7.3 Spacing rules
 
-- Inside a card: padding is `--space-4`; gap between elements is
-  `--space-3`.
-- Between cards in a grid: gap is `--space-5`.
-- Page-level horizontal padding: `--space-4` on mobile, `--space-6`
-  on tablet, `--space-7` on desktop.
+- Inside a card: padding is `p-sm` (1 rem); gap between elements is
+  `gap-xs`(1.5 rem).
+- Between cards in a grid: gap is `gap-md` (1.5 rem).
+- Page-level horizontal padding: `px-sm` on mobile, `px-lg`
+  on tablet, `px-xl` on desktop.
 
 ---
 
@@ -411,7 +443,7 @@ AAA is achieved for body-text contrast on both themes.
 
 ### 8.2 Focus indicator
 
-A 3 px `rgba(186,24,27,0.4)` ring on every focusable element. The
+A 3 px `ring-2 ring-Red/40` ring on every focusable element. The
 ring is **never** suppressed by `outline: none` without an
 equivalent visual replacement.
 
@@ -438,9 +470,6 @@ the colour.
 
 ### 8.6 Audit targets
 
-The team will audit each surface against the targets below before
-Demo 2. The audit table will be updated with measured scores as
-they land.
 
 | Surface | Tool | Target | Status |
 | --- | --- | --- | --- |
@@ -448,9 +477,6 @@ they land.
 | Dashboard | axe DevTools | 0 violations | *Audit pending* |
 | Help menu | WAVE | 0 errors, 0 contrast errors | *Audit pending* |
 
-Once the cloud deployment is up (see [`SAS.md` §5](SAS.md#5-deployment)),
-these audits will be re-run on every PR that touches `apps/frontend/**`
-via a CI job. Until then they are run manually by the QA owner.
 
 ---
 

@@ -7,12 +7,12 @@ data/*.db
 drone_services.egg-info
 backend.egg-info
 services.egg-info
+backend.egg-info
 __pycache__/
 .pytest_cache
 __pycache__
+.coverage
 .ruff*
 site/
 *.fig
-coverage.xml
-.coverage
-htmlcov/
+:Zone.Identifier
