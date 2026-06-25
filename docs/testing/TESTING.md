@@ -24,36 +24,13 @@ The repository keeps tests next to the code they exercise, mirroring
 the source layout under a `tests/` folder per sub-codebase.
 
 ```
-apps/backend/
-└── tests/
-    ├── conftest.py            ← path-setup shim (see §3.10)
-    └── test_api.py            ← FastAPI + WebSocket tests
+apps/backend/tests/
 
-services/
-└── tests/
-    ├── adapter_testing/
-    │   ├── test_airsim_adapter.py
-    │   ├── test_command.py
-    │   ├── test_dummy_input_adapter.py
-    │   ├── test_imports.py
-    │   ├── test_input_adapter_abc.py
-    │   ├── test_keyboard_adapter.py
-    │   ├── test_keyboard_to_dummy_drone.py    ← integration
-    │   └── test_project_airsim_adapter.py
-    └── cv_pipeline_testing/
-        ├── test_async_queue.py
-        ├── test_camera_feed.py
-        ├── test_mediapipe_detector.py
-        ├── test_pipeline.py
-        └── test_rule_based.py
+services/tests/
 
-apps/frontend/
-└── tests/
-    ├── analytics.spec.ts
-    ├── atoms.spec.ts
-    ├── dashboard.spec.ts
-    ├── gestures.spec.ts
-    └── molecules.spec.ts
+apps/frontend/tests/
+
+tests/
 ```
 
 ### 1.1 Naming and discovery
@@ -90,13 +67,17 @@ the matching doc — it usually states the contract you are verifying.
 ---
 
 ## 2. Running Tests Locally
+In order to run tests locally the repository needs to be correctly cloned and installed with 
+
+```bash
+task install 
+```
+An env also needs to be created with the appropriate ports
 
 ### 2.1 Backend (Python · pytest)
 
 ```bash
-cd apps/backend
-make install     # uv sync --all-groups (once)
-make test        # pytest with coverage
+        # pytest with coverage
 ```
 
 What `make test` runs:
