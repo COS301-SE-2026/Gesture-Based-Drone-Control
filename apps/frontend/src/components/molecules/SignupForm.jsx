@@ -32,7 +32,7 @@ const SignupForm = ({
             errorMessage={errors.firstName}
           />
           <FormSection
-            label="LastName"
+            label="Last Name"
             name="lastName"
             type="text"
             placeholder="Cloe"
@@ -104,6 +104,7 @@ const SignupForm = ({
           >
             <input
               type="checkbox"
+              id="agreeToTerms"
               name="agreeToTerms"
               checked={formData.agreeToTerms}
               onChange={handleChange}
