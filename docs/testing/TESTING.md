@@ -182,29 +182,7 @@ def make_blank_frame(): ...
 class TestConstruction:
     def test_default_maxsize(self): ...
 ```
-
-### 3.2 `sys.path` for `cv_pipeline` tests
-
-Tests under `services/tests/cv_pipeline_testing/` need to import
-`cv_pipeline.*`, but pytest is launched from `services/` (where the
-package root is). The fix is the same `sys.path` insert in every
-file:
-
-```python
-import os
-import sys
-
-# services/ is three levels up: tests/cv_pipeline_testing/<file>.py -> services/
-_services_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-sys.path.insert(0, _services_dir)
-
-from cv_pipeline.processing.async_queue import BoundedFrameQueue  # noqa: E402
-```
-
-The `noqa: E402` is intentional — the import has to come after the
-`sys.path` mutation, which Ruff would otherwise flag.
-
-### 3.3 Pre-mocking heavy or unstable imports
+### 3.2 Pre-mocking heavy or unstable imports
 
 Two libraries — **mediapipe** and **airsim** — are heavy or unstable
 to import in a test environment. The team's convention is to replace
@@ -243,7 +221,7 @@ them in `sys.modules` *before* the code under test gets to its own
         assert result is True
     ```
 
-### 3.4 Class-based grouping
+### 3.3 Class-based grouping
 
 Pytest auto-discovers `class Test*` containers without needing
 `unittest.TestCase`. The team uses these to group related
@@ -268,7 +246,7 @@ class TestDropCount:
 Use a class when you have more than two related tests; a flat
 function is fine for one-off cases.
 
-### 3.5 Helper factories
+### 3.4 Helper factories
 
 When the same setup recurs across many tests, define a top-level
 helper rather than a fixture. The team's convention:
@@ -307,7 +285,7 @@ Other factories already in the suite:
 - `make_connected_adapter()` returning `(adapter, mock_drone, mock_client)` — `test_project_airsim_adapter.py`
 - `make_mock_handedness(label, score)` — `test_mediapipe_detector.py`
 
-### 3.6 Async tests
+### 3.5 Async tests
 
 Both `pyproject.toml` files set `asyncio_mode = "auto"`, so any
 `async def test_…` is treated as an asyncio test automatically — no
@@ -329,7 +307,7 @@ async def test_connect_success():
 Keep this explicit-marker style for new tests — it makes the async
 intent obvious to a reviewer scanning the file.
 
-### 3.7 `AsyncMock` for drone-side methods
+### 3.6 `AsyncMock` for drone-side methods
 
 When testing code that *awaits* a drone adapter method, replace the
 method with `AsyncMock` and assert against `assert_awaited_once`:
@@ -360,7 +338,7 @@ assert args[0] == CommandType.MOVE_FORWARD
 The decorator form (`@patch(..., new_callable=AsyncMock)`) is also
 used at the backend boundary — see §3.11.
 
-### 3.8 `caplog` for log-driven side effects
+### 3.7 `caplog` for log-driven side effects
 
 Some code paths *log* rather than *return* (e.g. unrecognised
 commands, missing handlers). Verify them with pytest's `caplog`:
@@ -383,7 +361,7 @@ async def test_keyboard_adapter_start_noop(caplog):
 Set the level explicitly if you need DEBUG / INFO; the default
 threshold is WARNING.
 
-### 3.9 Bridging sync handlers and async drone methods
+### 3.8 Bridging sync handlers and async drone methods
 
 `InputAdapter._emit` is **synchronous** but the drone-side methods
 are **asynchronous**. The team has converged on this bridge pattern
@@ -410,7 +388,7 @@ The 10 ms sleep is empirical — long enough for the event loop to
 run the task once, short enough not to slow the suite. Don't make
 it longer "just to be safe".
 
-### 3.10 `conftest.py` — path shim only, no shared fixtures
+### 3.9 `conftest.py` — path shim only, no shared fixtures
 
 There is exactly one `conftest.py` in the suite — at
 `apps/backend/tests/conftest.py`:
@@ -446,7 +424,7 @@ promotion to a shared fixture. The likely first three:
 2. A blank `CapturedFrame` factory.
 3. `make_connected_adapter()` for ProjectAirSim.
 
-### 3.11 Backend — FastAPI `TestClient` + WebSocket
+### 3.10 Backend — FastAPI `TestClient` + WebSocket
 
 `test_api.py` exercises the backend over the wire using FastAPI's
 `TestClient`. This is its own pattern, distinct from the
@@ -465,7 +443,7 @@ client = TestClient(app)
 The router is mounted on a *fresh* app instance so the test doesn't
 depend on the production-app startup wiring.
 
-#### 3.11.1 REST endpoints
+#### 3.10.1 REST endpoints
 
 ```python
 def test_health_returns_200():
@@ -483,7 +461,7 @@ team's convention: don't bundle status-code + body assertions in a
 single test, so when one fails you know exactly which contract
 broke.
 
-#### 3.11.2 WebSocket endpoints
+#### 3.10.2 WebSocket endpoints
 
 WebSocket tests use the `websocket_connect` context manager:
 
