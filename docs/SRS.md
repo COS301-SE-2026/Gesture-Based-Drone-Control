@@ -474,113 +474,91 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
 
 *Figure 4.1 - Primary use cases and actors.*
 
-### 4.2 UC-1 - Control Drone via Gesture
+### 4.2 UC-1 - Hand Tracking & Gesture Recognition
 
-!!! example "UC-1 Control Drone via Gesture"
-    **Scope.** *The user begins with performing a hand
-    gesture in front of the camera at the ground control station. The
-    user ends with confirming the drone has executed the
-    corresponding command on the live dashboard.*
+This use case represents the core entrypoint for the system and the basis of the Computer Vision pipeline. Gesture detection must be reliable and have low latency, as all downstream drone commands depend entirely on the output of this stage.
 
-    **Actors.** Operator (primary); Drone (secondary, via adapter).
+**Actors.** Operator (primary)
 
-    **Preconditions.**
+**Preconditions.**
 
-    - The system is launched and the pipeline reports `READY`.
-    - A drone adapter is connected and reports healthy telemetry.
+- The system is launched and the drone adapter is connected.
+- The drone adapter reports healthy telemetry data.
 
-    **Main flow.**
+**Main flow.**
 
-    1. The Operator performs a gesture in view of the camera.
-    2. The pipeline detects the hand and classifies the gesture
-       (`R3.2.1`, `R3.2.2`).
-    3. The command translator maps the gesture to a drone command
-       (`R4.1`).
-    4. The backend dispatches the command via the drone adapter within
-       200 ms (`R4.3`, `NFR1.1`).
-    5. The drone executes the command; telemetry is streamed back
-       (`R5.1.1`).
-    6. The dashboard reflects the new gesture, command, and resulting
-       telemetry (`R1.1.1`–`R1.1.3`).
+1. The Operator positions their hand in view of the camera.
+2. OpenCV captures the live video and preprocesses each frame; adjusting contrast, colours, and saturation to improve detection
+    (`R3.1.1`, `R3.1.2`).
+3. Each preprocessed frame is passed to MediaPipe Hands, which detects and tracks the hand landmarks in real time (`R3.2.1`).
+4. The landmark array is passed to a rule-based gesture recogniser, which classifies the hand position against a fixed ruleset to determine a confidence level for the current action (`R3.2.2`).
+5. The recognised gesture, confidence score, and timestamp are emitted to the dashboard via a WebSocket endpoint (`R2.3`).
+6. The landmark skeleton and the aforementioned info points are rendered as an overlay on the live camera feed on the dashboard (`R1.1.1`, `R1.1.2`).
 
-    **Post-conditions.** The drone is in the new commanded state and the
-    event is logged (`R6.3`).
+**Post-conditions.** A drone command has been dispatched, and the details of the gesture is visible on the dashboard. All events are logged with a timestamp (`R6.3`).
 
-    **Alternative flows.**
+**Alternative flows.**
 
-    - *A1 - Unrecognised gesture.* If the classifier rejects the input
-      (`R3.2.3`), no command is issued; the last command persists.
-    - *A2 - Link loss.* If telemetry stops for > 2 s, the system issues
-      `HOVER` and surfaces a banner (`R5.2.1`, `R5.2.2`).
-    - *A3 - Idle.* If no gesture is seen for > 3 s, the system issues
-      `HOVER` (`R6.1.1`).
+- *A1 - Unrecognised or ambiguous gesture.* If the classifier cannot confidently classify the hand pose (`R3.2.3`), no command is issued,
+the landmark overlay continues to be rendered, and the gesture indicator displays an unknown state. The last issued command remains in effect.
 
-### 4.3 UC-2 - Monitor Telemetry & Alerts in Frontend
+### 4.3 UC-2 - Statistics Dashboard and Telemetry Logging
 
-!!! example "UC-2 Monitor Telemetry & Alerts"
-    **Scope.** *The user begins with opening the telemetry
-    panel on the dashboard at the ground control station. The user ends
-    with acknowledging the current drone status and any
-    raised alerts on the dashboard.*
+This use case validates the full data pipeline from backend to frontend and serves as the primary visual centrepiece for system demonstrations.
+The charts and visualisations produced here are central to validating full integration once a physical drone is involved.
 
-    **Actor.** Operator.
+**Actors.** Operator (priamry).
 
-    **Preconditions.** Dashboard is open and connected to the backend
-    WebSocket endpoint.
+**Preconditions.**
 
-    **Main flow.**
+- The system is launched and the drone adapter is connected.
+- The drone adapter reports healthy telemetry data.
+- The operator has an active browser session open on the dashboard.
 
-    1. The Operator focuses the telemetry panel.
-    2. The backend streams telemetry frames at ≥ 5 Hz (`R5.1.1`).
-    3. The dashboard updates altitude, battery, link, and flight-mode
-       indicators in real time (`R1.1.3`).
-    4. When a threshold trips (e.g. battery < 15 %), the dashboard
-       raises a visual + audible alert (`R1.2.1`) and the backend
-       initiates auto-land (`R6.2.1`).
+**Main flow.**
 
-    **Post-conditions.** Operator is aware of all critical state changes;
-    failsafes are armed and visible.
+1. The drone adapter begins producing telemetry at a fixed polling interval, covering altitude, speed, heading, battery percentage, and signal strength (`R2.1`).
+2. The backend telemetry emitter packages each reading into a timestamped payload and broadcasts it to all connected clients over a WebSocket endpoint (`R2.3`).
+3. The dashboard receives the WebSocket stream and updates the live altitude and speed line charts in real time (`R1.2.1`).
+4. The battery and signal strength gauge components update on each received payload (`R1.2.2`).
+5. On session end, the backend aggregates the telemetry rows for that session and writes a summary record to the flight log table (`R6.2`).
+6. The operator may request a flight summary at any time via a REST endpoint, which returns the aggregated statistics for the current or prior session (`R2.2`).
 
-### 4.4 UC-3 - AirSim Implementation with Basic Drone Controls
+**Post-conditions.** All telemetry readings for the session are stored in the telemetry log table. 
+A flight summary record exists in the flight log table. 
+The dashboard reflects the final known state of all live components.
+All events are logged with a timestamp (`R6.3`).
 
-!!! example "UC-3 AirSim Implementation with Basic Drone Controls"
-    **Scope.** *The user begins with launching the AirSim
-    simulator alongside the GBDC application on the ground control
-    station. The user ends with confirming the simulated
-    drone has performed the basic flight commands within the AirSim
-    environment.*
+### 4.4 UC-3 - Drone Simulator Controls and Adapter
 
-    **Actors.** Operator (primary); AirSim Simulator (secondary, via
-    `AirSimAdapter`).
+This use case establishes the two-way adapter pattern that all future drone integrations, including real hardware, will follow. Correctness here means that swapping in a physical drone later requires a configuration change rather than an architectural one.
 
-    **Preconditions.**
+**Actors.** Operator (primary)
 
-    - The AirSim simulator is running and reachable from the host machine.
-    - The active drone adapter is configured to `airsim`.
+**Preconditions.**
 
-    **Main flow.**
+- A simulator or real drone is available.
+- A DroneAdapter is running to establish a connection to the drone.
+- The dashboard is open in the operator's browser.
+- The backend is running and ready to accept inputs.
 
-    1. The Operator selects the AirSim adapter and starts the system.
-    2. The `AirSimAdapter` establishes a connection with the simulator
-       and reports `READY` (`R2.2`).
-    3. The Operator issues a basic command (take-off, hover, directional
-       move, land) via a recognised gesture (`R3.2.2`, `R4.1`).
-    4. The backend dispatches the command to the simulator through the
-       adapter (`R4.3`).
-    5. The simulated drone executes the command and streams telemetry
-       back to the dashboard (`R5.1.1`, `R5.1.2`).
+**Main flow.**
 
-    **Post-conditions.** The simulated drone is in the new commanded
-    state and the event is logged (`R6.3`).
+1. On startup, the backend instantiates the configured concrete DroneAdapter (`R4.1`).
+2. The adapter calls `connect()`, establishing a connection to the AirSim RPC endpoint and enabling API control of the UAV (`R4.2`).
+3. The dashboard polls the simulator status indicator, which reflects the active adapter name, connection state, and telemetry. (`R1.3.1`).
+4. A recognised event is received, and this is delegated to the correct InputAdapter to package into a Command (`R3.3.1`, `R7.1`).
+5. The adapter translates the method call into the appropriate API/SDK call and dispatches it to the simulator (`R4.3`).
+6. The simulator executes the command and the drone state updates accordingly.
+7. The adapter asynchronously retrieves updated telemetry via `get_telemetry()` and returns it to the telemetry pipeline for broadcasting and persistence (`R2.1`).
 
-    **Alternative flows.**
+**Post-conditions.** The drone has responded to the issued command. Updated telemetry reflects the new state. The dashboard status indicator shows the adapter as connected. All commands and state transitions are logged with a timestamp (`R6.3`).
 
-    - *A1 - Simulator unreachable.* If the `AirSimAdapter` fails to
-      establish a connection, the system refuses take-off (`R6.2.2`)
-      and surfaces an error on the dashboard (`NFR5.3`).
-    - *A2 - Link loss during flight.* If communication with the
-      simulator is lost for > 2 s, the system issues `HOVER`
-      (`R5.2.1`, `R5.2.2`).
+**Alternative flows.**
+
+- *A1 - Simulator unreachable on connect.* If `connect()` fails to reach the drone instance, the adapter returns a failed connection status without raising an unhandled exception. The dashboard status indicator reflects the disconnected state. No commands are dispatched until a successful connection is established. The user may repeat the process.
+- *A2 - Command issued while adapter is disconnected.* If a gesture event triggers a command translation while the adapter is not connected, the Command is logged as dropped and no further action is taken. Nothing is sent to the simulator
+- *A3 - Adapter swap at runtime.* If the active adapter is changed while the system is running, the previous adapter calls `disconnect()` to release API control before the new adapter is initialised and connected. The status indicator updates to reflect the new adapter. In-flight commands from the previous adapter are not forwarded to the replacement. This process should take a couple seconds at most.
 
 ### 4.5 UC-4 - Authenticate Operator Session
 
