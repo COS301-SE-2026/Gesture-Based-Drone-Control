@@ -33,26 +33,27 @@ test.describe('Labels', ()=>{
 })
 
 test.describe('NavItem', ()=>{
-    test('the nav items in the siide bar are rendered', async({page})=>{
+    test('the nav items in the side bar are rendered', async({page})=>{
         await page.goto('/')
         await page.waitForLoadState('domcontentloaded')
         //await expect(page.getByText(/dashboard/i)).toBeVisible()
-        await expect(page.getByText(/analytics/i)).toBeVisible()
-        await expect(page.getByText(/gestures/i)).toBeVisible()
+        const sidebar = page.getByRole('navigation')
+        await expect(sidebar.getByText(/analytics/i)).toBeVisible()
+        await expect(sidebar.getByText(/gestures/i)).toBeVisible()
 
     })
 
     test('when the analytics button in the navbar is clicked, it navigates to the analytics page', async({page})=>{
         await page.goto('/')
         await page.waitForLoadState('domcontentloaded')
-        await page.getByRole('button',{name:/analytics/i }).click()
+        await page.getByRole('navigation').getByRole('button',{name:/analytics/i }).click()
         await expect(page).toHaveURL(/analytics/)
     })
 
     test('when the gestures item is clicked it goes into the gestures page', async({page})=>{
         await page.goto('/')
         await page.waitForLoadState('domcontentloaded')
-        await page.getByRole('button',{name:/gestures/i }).click()
+        await page.getByRole('navigation').getByRole('button',{name:/gestures/i }).click()
         await expect(page).toHaveURL(/gestures/)
     })
 
