@@ -1,0 +1,176 @@
+# basically a makefile for windows 
+version: "3"
+
+dotenv: [".env"]
+
+vars:
+  FRONTEND_DIR: apps/frontend
+  BACKEND_APP: apps/backend/app/main.py
+  SERVICES_DIR: services
+
+tasks:
+
+  install:
+    desc: Install backend + frontend deps
+    cmds:
+      - uv venv --python 3.11
+      - uv pip install setuptools wheel numpy msgpack-rpc-python
+      - uv sync --all-groups --python 3.11 --no-build-isolation-package airsim
+      - cmd: cd {{.FRONTEND_DIR}} && yarn install
+
+  dev:
+    desc: Runs backend and frontend in dev mode
+    deps:
+      - backend-dev
+      - frontend-dev
+    
+  backend-dev:
+    internal: true # not possible to call outside
+    cmds:
+      - uv run fastapi dev {{.BACKEND_APP}}  --port {{.BACKENDPORT}}
+
+  frontend-dev:
+    internal: true
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn dev
+  
+  build:
+    desc: Builds the backend and frontend
+    deps:
+      - backend-build
+      - frontend-build
+  
+  backend-build:
+    internal: true
+    cmds:
+      - uv run fastapi run  {{.BACKEND_APP}} --port {{.BACKENDPORT}}
+  
+  frontend-build:
+    internal: true
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn build
+
+  test:
+    desc: Runs Unit Tests, Integration and End to End tests
+    deps:
+      - unit-test
+      - integration-test
+
+  unit-test:
+    desc: Runs Frontend and Backend Unit Tests
+    deps:
+      - backend-unit-test
+      - frontend-unit-test
+
+  backend-unit-test:
+    desc: Runs Backend Unit Tests
+    cmds:
+      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=xml:apps/backend/coverage.xml
+
+  frontend-unit-test:
+    desc: Runs Frontend Unit Tests
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn test
+
+  integration-test:
+    desc: Runs Integration Tests
+    cmds:
+      - uv run pytest tests --cov --cov-report=term-missing
+
+  lint:
+    desc: Runs lint checks
+    deps:
+      - backend-lint
+      - frontend-lint
+
+  backend-lint:
+    cmds:
+      - uv run ruff check --output-format=github
+
+  frontend-lint:
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn lint
+      - yarn format:check
+
+  fix:
+    desc: Automatically fixes Ruff issues
+    deps:
+      - backend-fix
+      - frontend-fix
+  
+  backend-fix:
+    cmds:
+      - uv run ruff format .
+      - uv run ruff check --fix .
+  
+  frontend-fix:
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn format
+
+  cv-camera:
+    desc: Camera feed only
+    dir: "{{.SERVICES_DIR}}"
+    cmds:
+      - uv run python -m cv_pipeline.camera.camera_feed
+
+  cv-detector:
+    desc: Camera + hand detection
+    dir: "{{.SERVICES_DIR}}"
+    cmds:
+      - uv run python -m cv_pipeline.hand_detection.mediapipe_detector
+
+  cv-engine:
+    desc: Camera + detector + gesture engine
+    dir: "{{.SERVICES_DIR}}"
+    cmds:
+      - uv run python -m cv_pipeline.gestures.gesture_engine
+  
+  cv-pipeline:
+    desc: full async pipeline (landmarks + fps + speed + confidence)
+    dir: "{{.SERVICES_DIR}}"
+    cmds:
+      - uv run python -m cv_pipeline.processing.pipeline
+
+  sim-as:
+    desc: Runs the old pain in the ass sim
+    cmds:
+      - cmd: powershell -Command "Start-Process '{{.AS_PATH}}'"
+        platforms: [windows]
+
+  sim-pas: 
+    desc: Launches PAS, the UE5 version
+    cmds:
+      - cmd: powershell -Command "Start-Process '{{.PAS_PATH}}'"
+        platforms: [windows]
+  
+  sim-pas-demo:
+    desc: Launches PAS, and the drone adapter demo
+    cmds:
+      - cmd: powershell -Command "Start-Process '{{.PAS_PATH}}'"
+        platforms: [windows]
+      - cmd: uv run adapter_demo.py
+  
+  sim-beeg-demo:
+    desc: Test your laptop out 
+    deps:
+      - sim-pas-demo
+      - sim-as 
+  
+  prereqs:
+    desc: install all prereqs (add more as identified)
+    cmds:
+      - cmd: winget install Python.Python.3.11 astral-sh.uv Microsoft.DirectX --accept-package-agreements --accept-source-agreements
+        platforms: [windows]
+      - cmd: npm install -g yarn
+        platforms:  [windows]
+      - cmd: |
+          sudo apt update && sudo apt install  -y python3.11 python3.11-venv nodejs npm curl
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          npm install -g yarn
+        platforms: [linux]
+  
