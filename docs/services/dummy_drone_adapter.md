@@ -12,6 +12,8 @@ It is used as:
 
 It performs no real drone operations. All methods only log actions or return fixed values.
 
+It is intended mainly to be used as the first adapter a new input method is tested with.
+
 ---
 
 ## Purpose
@@ -54,12 +56,12 @@ Behavior:
 
 - If already connected:
   - logs message
-  - returns False
+  - returns `False`
 
 - If not connected:
-  - sets _connected = True
+  - sets _connected = `True`
   - logs successful connection
-  - returns True
+  - returns `True`
 
 ---
 
@@ -73,7 +75,7 @@ Behavior:
   - logs message and exits
 
 - If connected:
-  - sets _connected = False
+  - sets _connected = `False`
   - logs disconnection
 
 ---
@@ -97,7 +99,7 @@ Simulates landing operation.
 
 Behavior:
 
-- requires connection via _assert_connected()
+- requires connection via `_assert_connected()`
 - logs landing event
 
 ---
@@ -113,7 +115,7 @@ Parameters:
 
 Behavior:
 
-- requires connection via _assert_connected()
+- requires connection via `_assert_connected()`
 - logs movement command with direction name
 
 ---
@@ -122,15 +124,13 @@ Behavior:
 
 Not implemented.
 
-Currently a no-op placeholder.
+- Simply logs a success message when called
 
 ---
 
 ### emergency_stop() -> None
 
-Not implemented.
-
-Currently a no-op placeholder.
+- Simply logs a success message when called
 
 ---
 
@@ -142,12 +142,12 @@ Returns a fixed dummy telemetry snapshot.
 
 ### Returned values
 
-- altitude_m: 1
-- speed_ms: 2
-- battery_pct: 300.0 (intentionally invalid for testing edge cases)
-- heading_deg: 0
-- is_flying: True
-- source: "dummy"
+- `altitude_m`: 1
+- `speed_ms`: 2
+- `battery_pct`: 300.0 (intentionally invalid to for endpoint testing)
+- `heading_deg`: 0
+- `is_flying`: True
+- `source`: "dummy"
 
 ---
 
@@ -171,6 +171,6 @@ Message:
 
 ## Notes
 
-- This adapter does not interact with any external system
+- This adapter is for use mainly as a placeholder for testing
 - It is safe to use in unit tests and CI pipelines
-- hover() and emergency_stop() are intentionally unimplemented placeholders
+- This should be the first adapter any new input method is vetted with

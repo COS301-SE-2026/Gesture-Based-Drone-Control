@@ -71,14 +71,18 @@ class DummyDroneAdapter(DroneAdapter):
 		Cancel any active movement and hold a specified position
 		Should take prioriy over all commands except an emergency landing
 		"""
-		...
+		logger.info(
+			'DummyDroneAdapter: Hover called)',
+		)
 
 	async def emergency_stop(self) -> None:
 		"""
 		Cancel any active movement and hold current position
 		Maybe initiate a landing, not sure what would be best
 		"""
-		...
+		logger.info(
+			'DummyDroneAdapter: Emergency stop called.)',
+		)
 
 	async def get_telemetry(self) -> TelemetryData:
 		"""
