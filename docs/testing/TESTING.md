@@ -77,50 +77,38 @@ An env also needs to be created with the appropriate ports
 ### 2.1 Backend (Python · pytest)
 
 ```bash
-        # pytest with coverage
+# pytest with coverage
+task backend-unit-test
 ```
+generates an xml coverage report at apps/backend/coverage.xml
 
-What `make test` runs:
+What `task backend-unit-test` runs:
 
 ```bash
-uv run pytest tests/ ../../tests \
-    --cov=app --cov-report=term-missing --cov-report=xml
+uv run pytest apps/backend/tests services/tests --cov=apps/backend/src --cov=services  --cov-report=xml:apps/backend/coverage.xml --cov-report=term-missing
 ```
 
 Two things to notice:
 
-- It also picks up `../../tests` — the repo-root integration tests.
 - Coverage is reported to the terminal *and* written to `coverage.xml`
   for the CI coverage gate ([`POLICY.md` §5](POLICY.md#5-acceptance-criteria)).
 
-### 2.2 Services (Python · pytest)
-
-```bash
-cd services
-make install     # uv sync --all-groups --python 3.11
-make test        # pytest with coverage on the services package
-```
-
-Equivalent to:
-
-```bash
-PYTHONPATH=.. uv run pytest tests/ \
-    --cov=services --cov-report=term-missing --cov-report=xml
-```
-
-The `PYTHONPATH=..` makes the parent directory importable so that
-tests reach `services.*` cleanly.
-
-### 2.3 Frontend (TypeScript · Playwright)
+### 2.2 Frontend (TypeScript · Playwright)
 
 ```bash
 cd apps/frontend
-yarn install --frozen-lockfile   # once
 yarn test                        # playwright test
 ```
 
 `yarn test` runs the full Playwright suite headlessly. In CI the
-browser binaries are cached — see [`CICD.md` §3.1](CICD.md#31-playwright-browser-caching).
+browser binaries are cached - see [`CICD.md` §3.1](CICD.md#31-playwright-browser-caching).
+
+### 2.3 Integration (Python · Pytest)
+```bash
+task integration-test
+```
+`task integration-test` runs all integration tests found at tests/ *and* writes 
+to `coverage.xml` for the CI coverage gate ([`POLICY.md` §5](POLICY.md#5-acceptance-criteria)).
 
 ### 2.4 Running one file or one test
 
@@ -156,13 +144,11 @@ browser binaries are cached — see [`CICD.md` §3.1](CICD.md#31-playwright-brow
 
 ### 2.5 Autofix lint while writing tests
 
-Both Python codebases expose a `make fix` target that runs Ruff in
-autofix mode and then formats. Run it before pushing so CI doesn't
-fail on something a one-liner would have caught:
-
 ```bash
-make fix   # uv run ruff check --fix . && uv run ruff format .
+task fix   # uv run ruff check --fix . && uv run ruff format .
 ```
+Python is corrected via the ruff linter using its `format` and `check --fix` options
+Typescript is corrected via EsLint and Prettier using `eslint .` and `prettier --check src/`
 
 ---
 
