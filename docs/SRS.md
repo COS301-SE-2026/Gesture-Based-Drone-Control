@@ -34,7 +34,7 @@ gesture-overlay video, and command auditing.
 
 **Benefits.** Removal of the physical controller barrier improves accessibility for
 novices and users with limited fine-motor capability, and creates a natural
-human–computer interaction model suitable for educational, demonstration, and
+human-computer interaction model suitable for educational, demonstration, and
 experiential settings.
 
 ### 1.3 Definitions, Acronyms, and Abbreviations
@@ -69,7 +69,7 @@ A site-wide list of abbreviations is auto-appended on every page via
 ### 1.4 References
 
 1. Kung, D. C. *Software Engineering* (2nd ed.). McGraw-Hill, 2024.
-   Chapters 3–5 and 7 (System Engineering, Requirements Elicitation,
+   Chapters 3-5 and 7 (System Engineering, Requirements Elicitation,
    Domain Modeling, Use Cases). Architectural content (Ch. 6) is now
    covered by [`SAS.md`](SAS.md).
 2. [`SAS.md`](SAS.md) - Software Architecture Specification (the
@@ -308,7 +308,7 @@ recognised:
 
 > This entire requirement remains the responsibility of the CV pipeline, and is accomplished using OpenCV for preprocessing **(R3.1)**, in conjunction with MediaPipe Hands **(R3.2)**.
 
-#### R4: Gesture–Command Mapping
+#### R4: Gesture-Command Mapping
 
 - **R4.1:** The system shall map each recognised gesture to exactly one
   drone command via a deterministic mapping table, defined in the Gesture class.
@@ -425,8 +425,7 @@ in [`SAS.md` Section 2.5](SAS.md#25-mapping-quality-requirements-to-architectura
   (**≤ 30-minute**) session token issued via the REST login endpoint.
 - **NFR2.2:** All credentials and connection strings shall be loaded from
   environment variables or the host's secrets manager; **zero secrets**
-  shall be committed to the repository (verified by a pre-commit
-  secret-scan hook and `gitleaks` in CI).
+  shall be committed to the repository. This is done in our CI pipeline.
 - **NFR2.3:** Every API endpoint shall validate its input payload against
   a JSON schema and reject malformed requests with `400 Bad Request`;
   **100 %** of endpoints shall be covered by schema validation.
@@ -791,7 +790,7 @@ The analysis-level domain model captures the conceptual vocabulary of the
 problem and is the input to the design class diagram in
 [`SAS.md` Section 2.4](SAS.md#24-architectural-diagram).
 
-![Domain Model](diagrams/Domain%20Model%20v1.1.drawio.svg)
+![Domain Model](diagrams/Domain%20Model%20v2.0.svg)
 
 *Figure 5.1 - Analysis-level domain model.*
 
@@ -822,7 +821,7 @@ strictly for every subsequent demo.
     More descriptive diagrams will be provided through the continuous
     development of the project:
 
-    - **Use-case diagram** - Figure 4.1, captures actor–system
+    - **Use-case diagram** - Figure 4.1, captures actor-system
       interaction.
     - **Domain model** - Figure 5.1, captures the conceptual
       vocabulary of the application.
@@ -855,20 +854,22 @@ strictly for every subsequent demo.
 
 ## Appendix B - Requirements Traceability Matrix
 
-| Requirement | Type | Verified by | Target demo | Status |
-| --- | --- | --- | --- | --- |
-| `R3.1.*`, `R3.2.1` | Capture & detection | `tests/cv_pipeline_testing` | Demo 1 | Delivered |
-| `R3.2.2`, `R3.2.3` | Gesture classification | Recogniser unit tests | Demo 1 | Delivered |
-| `OR2.*` | Base features | Frontend unit + Playwright E2E | Demo 1 | Delivered |
-| `R4.*` | Mapping | `services/tests/test_command.py` | Demo 2 | In progress |
-| `R5.*` | Drone comms | Adapter integration tests | Demo 2 | In progress |
-| `R6.*` | Safety & failsafes | Manual + integration tests | Demo 2 | In progress |
-| `R1.*` | Dashboard UI | Playwright E2E | Demo 2 | In progress |
-| `NFR2.*` | Security | Backend auth + schema tests | Demo 2 | In progress |
-| `NFR1.*` | Performance | Load / latency harness | Demo 3 | Planned |
-| `NFR3.*` | Reliability / accuracy | Labelled-set evaluation | Demo 3 | Planned |
-| `NFR4.*` | Maintainability | CI coverage gate | Continuous | Active |
-| `NFR5.*` | Usability | UX audit + Playwright E2E | Demo 3 | Planned |
+| Requirement | Description | Use Case(s) | Verified By | Target Demo | Status |
+| --- | --- | --- | --- | --- | --- |
+| R1.* | Dashboard UI (video feed, telemetry, alerts) | UC-1, UC-2, UC-3, UC-4, UC-7 | Playwright E2E + UI tests | Demo 2 | In progress |
+| R2.1-R2.4 | System interfaces (camera, WS, REST, adapters) | UC-2, UC-3, UC-4, UC-5, UC-8 | Integration + contract tests | Demo 2 | In progress |
+| R3.1-R3.2 | CV pipeline (capture + gesture recognition) | UC-1, UC-8 | CV unit + pipeline tests | Demo 1 | Delivered |
+| R4.1-R4.4 | Gesture → command mapping | UC-1, UC-3, UC-4 | Command mapping tests | Demo 2 | In progress |
+| R5.1-R5.3 | Drone communication + telemetry ingestion | UC-2, UC-3, UC-5, UC-6 | Adapter integration tests | Demo 2 | In progress |
+| R6.1-R6.3 | Failsafes + logging system | UC-1, UC-3, UC-5, UC-8 | Fault injection + logging tests | Demo 2 | In progress |
+| R7.1-R7.2 | Alternative input systems (keyboard/gamepad) | UC-4 | Input adapter tests | Demo 2 | In progress |
+| R8.1-R8.2 | Authentication + preference management | UC-5, UC-7, UC-8 | Auth + security tests | Demo 2 | In progress |
+| R9.1-R9.2 | Tutorial + Assist Mode subsystem | UC-7 | End-to-end tutorial flow tests | Demo 2 | In progress |
+| NFR1.* | Performance (latency, FPS, throughput) | CV pipeline, backend, frontend | Load testing + profiling | Demo 3 | Planned |
+| NFR2.* | Security (auth, validation, secrets handling) | Backend, auth service | Security + CI tests | Demo 2 | In progress |
+| NFR3.* | Reliability (accuracy, robustness, fault tolerance) | CV pipeline, adapters | Dataset evaluation + fault tests | Demo 3 | Planned |
+| NFR4.* | Maintainability (modularity, CI coverage) | Entire system | CI coverage + static analysis | Continuous | Active |
+| NFR5.* | Usability (onboarding, tutorial completion) | UC-7, dashboard | UX testing | Demo 3 | Planned |
 
 ---
 
