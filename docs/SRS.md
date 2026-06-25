@@ -383,6 +383,24 @@ recognised:
 
 > This is handled by its own subsystem, specifically for user management. 
 
+#### R9: Tutorial and Assist Mode
+
+  - **R9.1** The system shall provide an interactive tutorial.
+    - **R9.1.1** The tutorial must be accessible from the dashboard or triggered on first login.
+    - **R9.1.2** The system shall retrieve tutorial steps from the backend through a REST endpoint.
+    - **R9.1.3** Each tutorial step shall define an instruction payload and a completion condition.
+    - **R9.1.4** the system shall enforce sequential progression.
+    - **R9.1.5** The frontend shall render tutorial content using overlays, highlighting, and animations to guide user actions.
+    - **R9.1.6** The tutorial may be revisited or restarted at any time.
+  - **R9.2** The system must provide an 'assist mode' for safety
+    - **R9.2.1** Assist Mode needs to modify drone behaviour during tutorial sessions.
+    - **R9.2.2** Assist Mode must be toggleable at will during normal drone operation.
+    - **R9.2.3** Max altitude, speed, and sensitivity contraints must be enforced by assist mode.
+    - **R9.2.4** The frontend shall clearly indicate Assist Mode status in the dashboard UI
+
+> This is once again its own subsystem, that when in use, acts as a 'filter' for the general CV pipeline.
+> This tutorial subsystem is not standalone, but rather interfaces heavily with the rest of the system, similar to training wheels.
+
 ### 3.3 Non-Functional (Quality) Requirements
 
 The Demo 2 brief targets *five* quantified quality requirements. The five
@@ -456,8 +474,6 @@ in [`SAS.md` Section 2.5](SAS.md#25-mapping-quality-requirements-to-architectura
 - **OR1.1:** All project documentation shall be authored in Markdown and
   rendered by MkDocs Material to GitHub Pages, deployed automatically on
   push to `main` and `dev`.
-- **OR1.2:** The project shall use **Conventional Commits** for all
-  changes merged into shared branches.
 
 ---
 
@@ -556,76 +572,152 @@ This use case establishes the two-way adapter pattern that all future drone inte
 
 **Alternative flows.**
 
-- *A1 - Simulator unreachable on connect.* If `connect()` fails to reach the drone instance, the adapter returns a failed connection status without raising an unhandled exception. The dashboard status indicator reflects the disconnected state. No commands are dispatched until a successful connection is established. The user may repeat the process.
+- *A1 - Simulator unreachable on connect.* If `connect()` fails to reach the drone instance,
+the adapter returns a failed connection status without raising an unhandled exception.
+The dashboard status indicator reflects the disconnected state. No commands are dispatched until a successful connection is established.
+The user may repeat the process.
 - *A2 - Command issued while adapter is disconnected.* If a gesture event triggers a command translation while the adapter is not connected, the Command is logged as dropped and no further action is taken. Nothing is sent to the simulator
-- *A3 - Adapter swap at runtime.* If the active adapter is changed while the system is running, the previous adapter calls `disconnect()` to release API control before the new adapter is initialised and connected. The status indicator updates to reflect the new adapter. In-flight commands from the previous adapter are not forwarded to the replacement. This process should take a couple seconds at most.
+- *A3 - Adapter swap at runtime.* If the active adapter is changed while the system is running,
+the previous adapter calls `disconnect()` to release API control before the new adapter is initialised and connected.
+The status indicator updates to reflect the new adapter. In-flight commands from the previous adapter are not forwarded to the replacement.
+This process should take a couple seconds at most.
 
-### 4.5 UC-4 - Authenticate Operator Session
+### 4.5 UC-4 - Controller-Based Drone Control.
 
-!!! example "UC-4 Authenticate Operator Session"
-    **Scope.** *The user begins with opening the dashboard
-    login screen. The user ends with arriving on the operator dashboard
-    with a valid short-lived session token.*
+This use case provides an alternative control mechanism to gesture recognition by allowing an operator to fly the drone using a gamepad.
+The controller input path uses the same Command abstraction and DroneAdapter pipeline as all other input methods,
+ensuring that new control mechanisms can be added without modifying the drone-control subsystem.
+This is its own use case due to the intricacies of analog controls, making this a much more complex input method than most.
 
-    **Actor.** Operator.
+**Actors.** Operator (primary)
 
-    **Preconditions.** The backend is reachable and the user has a
-    registered account (`OR2.1.1`).
+**Preconditions.**
 
-    **Main flow.**
+- A supported controller is connected to the operator's device, either via bluetooth or USB.
+- The dashboard is open in the operator's browser and is fully up and running
+- The DroneAdapter is connected to a simulator or a physical drone
+- The `Controller` input method is selected on the dashboard.
 
-    1. The Operator opens the dashboard.
-    2. The Operator submits their email and password on the login form
-       (`OR2.1.3`).
-    3. The frontend validates the form client-side (`OR2.3.1`) and
-       posts it to `/api/v1/auth/login`.
-    4. The backend re-validates the payload (`OR2.3.2`), authenticates
-       the credentials, and issues a session token of lifetime
-       ≤ 30 minutes (`NFR2.1`).
-    5. The dashboard establishes the WebSocket connection at
-       `/ws/live` using the issued token.
+**Main flow.**
 
-    **Post-conditions.** A live session is open and any subsequent
-    gesture/telemetry traffic is associated with the operator's user
-    record.
+1. The operator connects a controller to the host device.
+2. The dashboard detects the controller and displays the current controller status (`R7.2.1`).
+3. A high-frequency polling service continuously samples the controller state, via WebSockets (`R7.2.2`).
+4. Raw controller readings are normalised, 
+applying deadzone filtering and sensitivity adjustments to analog inputs (`R7.2.3`).
+5. The processed controller state is transmitted to the backend through a dedicated WebSocket endpoint (`R2.3`, `R7.2.4`).
+6. The ControllerInputAdapter receives the controller payload and converts it into one or more Command objects using the shared command vocabulary (`R7.1`).
+7. Use case 3 is invoked. The resulting Command objects are forwarded to the active DroneAdapter (`R2.2`).
+8. The dashboard updates the controller visualisation component to reflect 
+the current stick positions, button states, and generated commands (`R1.1`, `R7.2.5`).
 
-    **Alternative flows.**
+**Post-conditions.**
 
-    - *A1 - Invalid credentials.* The backend returns `401`; the
-      dashboard surfaces an error explaining the cause and the
-      corrective action (`NFR5.3`).
-    - *A2 - Expired token mid-session.* The WebSocket is closed and
-      the dashboard prompts re-authentication.
+The drone has responded to the issued controller commands. The dashboard displays the current controller state and updated telemetry.
+All controller inputs and resulting commands are logged with timestamps (`R6.3`).
 
-### 4.6 UC-5 - Replay a Recorded Session
+**Alternative flows.**
 
-!!! example "UC-5 Replay a Recorded Session"
-    **Scope.** *The reviewer begins with selecting a historical
-    session in the dashboard's replay view. The reviewer ends with the
-    full gesture stream and telemetry replayed in the dashboard, with
-    no live drone connected.*
+- *A1 - Controller disconnected during operation.* If the controller becomes unavailable while a session is active,
+the polling service reports the disconnect, no further controller commands are created,
+and the dashboard displays a controller-disconnected warning.
+The drone remains in its last valid state until another command source becomes active.
+- *A2 - Invalid controller payload.* If the backend receives malformed controller data,
+the payload is rejected by backend validation (`NFR2.3`). No command is generated and the error is logged.
+- *A3 - Analog input inside deadzone.* If an analog stick remains within the configured deadzone (`R7.2.3`),
+no movement command is generated and the drone maintains its current state.
 
-    **Actor.** Reviewer.
+### 4.6 UC-5 - Real Telemetry Logging and Analytics
 
-    **Preconditions.**
+This use case enables the collection, storage, and analysis of telemetry data originating from physical drones. Telemetry is continuously streamed from the active drone connection, persisted for historical analysis, and aggregated into user-specific statistics that provide operational insights across multiple flights. The focus of this use case is on the physical drone, which does not provide a built-in way to collect telemetry data.
 
-    - At least one session has been recorded and persisted (`R6.3`).
-    - The reviewer is authenticated (`OR2.1.3`).
+**Actors.** Operator (primary), Physical Drone (supporting)
 
-    **Main flow.**
+**Preconditions.**
 
-    1. The Reviewer opens the replay view from the dashboard.
-    2. The dashboard requests the session index from
-       `/api/v1/sessions`.
-    3. The Reviewer selects a session.
-    4. The backend streams the recorded `GestureEvent` and
-       `TelemetryFrame` records over the WebSocket in their original
-       order and at their original cadence.
-    5. The dashboard reconstructs the live view: gesture overlay,
-       current-command indicator, and telemetry panel (`R1.1.1`–`R1.1.3`).
+- The physical drone is powered on and connected through a supported DroneAdapter.
+- The telemetry subsystem is operational.
+- A valid database for storage is available.
 
-    **Post-conditions.** The Reviewer has observed the session and any
-    failsafe events that occurred.
+**Main flow.**
+
+1. The operator establishes a connection to a physical drone through the dashboard (`R8.1`).
+2. The DroneAdapter begins receiving live telemetry from the drone SDK (`R8.2`).
+3. Telemetry measurements are streamed to the dashboard for real-time display (`R2.1`).
+4. The system continuously aggregates telemetry data during  the flight session (`R8.5`).
+5. The operator performs one or more flight operations.
+6. The telemetry subsystem updates aggregate statistics as new data arrives (`R8.5`).
+7. When the flight session ends, the system finalises and stores a flight summary (`R8.6`).
+8. The operator views historical flight records and personal performance statistics through the dashboard (`R8.7`).
+
+**Post-conditions.**
+
+- Telemetry data has been stored for the completed flight session.
+- A flight summary has been generated.
+- User-specific aggregate statistics have been updated.
+
+**Alternative flows.**
+
+- *A1 - Packet loss.* If telemetry packets are lost, the system ignores the loss up to a specified threshold,
+                      since polling happens at such a high rate (`R8.8`).
+
+- *A2 - Database unavailable.* If telemetry cannot be persisted, the system continues displaying live telemetry while logging storage failures.
+                                      The operator is notified of the issue (`R8.9`).
+
+- *A3 - Drone disconnects unexpectedly.* If communication with the drone is lost during flight, telemetry collection stops and the session is logged as incomplete (`R8.10`).
+
+- *A4 - Invalid telemetry received.* If malformed telemetry data is received from the drone SDK, 
+the packet is discarded and an error is logged. Normal collection continues for subsequent valid packets (`NFR2.3`).
+
+### 4.7 UC-6 - 
+
+### 4.8 UC-7 - Interactive User Tutorial and Assist Mode
+
+This use case provides a guided onboarding experience for new operators.
+The system presents an interactive tutorial that teaches users how to use the dashboard, connect to a drone, understand telemetry,
+and execute flight commands safely.
+During the tutorial, an optional Assist Mode can be enabled to reduce flight risk by limiting drone performance and providing additional stabilisation between commands.
+
+**Actors.** Operator (primary)
+
+**Preconditions.**
+
+- The operator is authenticated.
+- The dashboard is accessible.
+- A DroneAdapter is available and connected.
+
+**Main flow.**
+
+1. The operator selects the "Start Tutorial" option from the dashboard, or
+accepts the tutorial prompt when creating a new account. (`R9.1.1`)
+2. The system retrieves the ordered list of tutorial steps from the backend. (`R9.1.2`, `R9.1.3`)
+3.  The dashboard displays a tutorial overlay explaining the current objective. (`R9.1.6`)
+4. The tutorial guides the operator through basic dashboard functionality, including telemetry displays and drone status indicators. (`R9.1.3`, `R9.1.4`)
+5. When the completion condition is satisfied, the frontend notifies the backend via a REST endpoint. (`R9.1.5`)
+6. The backend updates tutorial progression state and returns the next step in sequence.
+7. The tutorial continues iteratively until all steps are completed, covering:
+  - Dashbrad navigation
+  - Telemetry interpretation
+  - Drone connection
+  - Command execution
+8. The system optionally enables **Assist Mode** when required by the tutorial flow or user selection.
+9. If the system detects that the user is struggling to progress (e.g. repeated invalid actions or inactivity beyond a threshold),
+contextual hints are displayed to guide the user. (`R9.1.7`)
+10. Upon completion of all tutorial steps, the system displays a completion screen summarising progress. (`R9.1.8`)
+
+**Post-conditions.**
+
+- The user has completed the full onboarding sequence.
+- The operator is capable of basic drone control and hopefully won't crash the drone.
+
+**Alternative flows.**
+
+- *A1 - Tutorial resumed after interruption.* If the user exits the tutorial mid-sequence,
+progress is persisted. On return, the system resumes from the last incomplete step (`R9.1.4`).
+- *A2 - Completion condition not met.*  If a step condition is not satisfied,
+the system remains on the current step and provides additional contextual hints (`R9.1.7`).
+
+### 4.6 UC-8 - 
 
 ---
 
@@ -655,8 +747,9 @@ strictly for every subsequent demo.
       kickoff meeting.
     - **Literature survey** - MediaPipe Hands documentation, AirSim
       and drone SDK documentation, prior gesture-control research.
-    - **Stakeholder survey** - bi-weekly meetings with our capstone
+    - **Stakeholder survey** - bi-monthly meetings with our capstone
       mentor.
+    - **Standups** - Frequent meetings between members of the team.
     - **User stories** - drafted by the team from the perspective of
       operator, demonstrator, and reviewer roles.
 
@@ -720,4 +813,5 @@ strictly for every subsequent demo.
 | Version | Date | Author | Summary of changes |
 | --- | --- | --- | --- |
 | 1.0 | Demo 1 | Codex Merchants | Initial SRS - full set of functional, performance, reliability, security, maintainability, portability, usability requirements; embedded architectural-style and design-pattern constraints under `NFR2`. |
-| **2.0** | **Demo 2** | **Codex Merchants** | **Architectural content extracted to [`SAS.md`](SAS.md).** Removed the former `NFR2` *Design Constraints* block (architectural-style choice and Adapter / Strategy / Observer pattern constraints) - these are now architectural decisions in `SAS.md Section 2`. Renumbered `NFR2` to *Security* and consolidated the quality requirements to **five quantified NFRs** (Performance `NFR1`, Security `NFR2`, Reliability `NFR3`, Maintainability `NFR4`, Usability `NFR5`) per the Demo 2 brief. Added UC-4 (Authenticate Operator Session) and UC-5 (Replay a Recorded Session) to reach five fully integrated use cases. Replaced all `DESIGN.md` cross-references with the equivalent `SAS.md` and `BRAND.md` pointers (`DESIGN.md` was retired). Added Section 2.3 User Characteristics. Brand and wireframe content moved to [`BRAND.md`](BRAND.md). |
+| **2.0** | **Late May** | **Ayush** | **Architectural content extracted to [`SAS.md`](SAS.md).** Removed the former `NFR2` *Design Constraints* block (architectural-style choice and Adapter / Strategy / Observer pattern constraints) - these are now architectural decisions in `SAS.md Section 2`. Renumbered `NFR2` to *Security* and consolidated the quality requirements to **five quantified NFRs** (Performance `NFR1`, Security `NFR2`, Reliability `NFR3`, Maintainability `NFR4`, Usability `NFR5`) per the Demo 2 brief. Added UC-4 (Authenticate Operator Session) and UC-5 (Replay a Recorded Session) to reach five fully integrated use cases. Replaced all `DESIGN.md` cross-references with the equivalent `SAS.md` and `BRAND.md` pointers (`DESIGN.md` was retired). Added Section 2.3 User Characteristics. Brand and wireframe content moved to [`BRAND.md`](BRAND.md). |
+| **2.1** | **25 June** | **Shavir** | Complete refactor, with a focus on diagrams, requirements, and use cases to line up with Demo 2 goals.  |
