@@ -1,11 +1,15 @@
 import {test,expect, Page} from '@playwright/test'
+ interface SignupFormData {
+    firstName? :string
+    lastName? :string
+    email? : string
+    dateOfBirth? : string
+    password? :string
+    confirmPassword? :string
+    agreeToTerms? :boolean
+ }
 
-const fillLoginForm = async (page: Page , email:string = '' , password:string = '') => {
-    if (email) await page.getByLabel(/email address/i).fill(email)
-    if(password) await page.getByLabel(/password/i).fill(password)
-}
-
-const fillSignupForm = async (page: Page , data: any) => {
+const fillSignupForm = async (page: Page , data: SignupFormData) => {
     if (data.firstName) await page.getByLabel(/first name/i).fill(data.firstName)
     if (data.lastName) await page.getByLabel(/last name/i).fill(data.lastName)
     if (data.email) await page.getByLabel(/email address/i).fill(data.email)

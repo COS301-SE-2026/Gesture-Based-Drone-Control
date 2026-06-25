@@ -1,5 +1,5 @@
 import { Card } from "../atoms"
-import AccountActiona from "./AccountActions"
+import AccountActions from "./AccountActions"
 export const AnalyticsSideContent = () => {
   return (
     <>
@@ -20,7 +20,7 @@ export const AnalyticsSideContent = () => {
             <p className="text-xs text-DarkGrey">Today, 14:44</p>
           </div>
 
-          <AccountActiona />
+          <AccountActions />
         </div>
       </Card>
     </>
