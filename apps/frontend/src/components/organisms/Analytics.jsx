@@ -60,7 +60,7 @@ const Analytics = () => {
         <Card variant="glass">
           <div className="flex flex-col gap-3">
             <Clock className="w-6 h-6 text-Red" />
-            <p className="text-xs text-DarkGrey uppercase">Flight time</p>
+            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">Flight time</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
                 {metrics.flightTime}
@@ -74,7 +74,7 @@ const Analytics = () => {
         <Card variant="glass">
           <div className="flex flex-col gap-3">
             <Gauge className="w-6 h-6 text-Red" />
-            <p className="text-xs text-DarkGrey uppercase">Average speed</p>
+            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">Average speed</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
                 {metrics.avgSpeed}
@@ -88,7 +88,7 @@ const Analytics = () => {
         <Card variant="glass">
           <div className="flex flex-col gap-3">
             <Mountain className="w-6 h-6 text-Red" />
-            <p className="text-xs text-DarkGrey uppercase">Max Altitude</p>
+            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">Max Altitude</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
                 {metrics.maxAltitude}
@@ -206,7 +206,7 @@ const Analytics = () => {
         {/* Total distance */}
         <Card variant="glass">
           <div className="text-center">
-            <p className="text-xs text-DarkGrey uppercase">Total Distance</p>
+            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">Total Distance</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
                 {metrics.totalDistance}
@@ -219,7 +219,7 @@ const Analytics = () => {
         {/* avg flight timee */}
         <Card variant="glass">
           <div className="text-center">
-            <p className="text-xs text-DarkGrey uppercase">
+            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
               Average Flight Duration
             </p>
             <div className="flex items-baseline gap-1">
@@ -234,7 +234,7 @@ const Analytics = () => {
         {/* total flights */}
         <Card variant="glass">
           <div className="text-center">
-            <p className="text-xs text-DarkGrey uppercase">Total Flights</p>
+            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">Total Flights</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
                 {metrics.totalFlights}

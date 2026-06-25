@@ -9,7 +9,7 @@ const Label = ({ children, size = "xs", className = "" }) => {
   return (
     <span
       className={[
-        "font-Inter font-semibold uppercase text-DarkGrey",
+        "font-Inter font-semibold uppercase text-OffBlack dark:text-DarkGrey",
         sizes[size],
         className,
       ]
