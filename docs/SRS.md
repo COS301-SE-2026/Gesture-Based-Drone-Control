@@ -669,7 +669,34 @@ This use case enables the collection, storage, and analysis of telemetry data or
 - *A4 - Invalid telemetry received.* If malformed telemetry data is received from the drone SDK, 
 the packet is discarded and an error is logged. Normal collection continues for subsequent valid packets (`NFR2.3`).
 
-### 4.7 UC-6 - 
+### 4.7 UC-6 - GPS Tracking and Path Visualisation (Stubbed until real drone is tested)
+
+This use case provides a visualisation layer for drone movement by converting
+telemetry-derived positional data into a mapped trajectory.
+The system supports a simulated GPS mapping by a simulated 2D grid.
+
+The feature uses Leaflet to render real-time drone movement as a marker on the map.
+
+This use case is currently defined at a **high-level stub** and will be expanded on.
+
+**Actors.** Operator (primary)
+
+**Preconditions.**
+- The system is running and telemetry is being received from a DroneAdapter.
+- A base reference coordinate (a global origin) is defined for the session.
+
+**Main flow.**
+
+1. The drone executes movement commands via the active DroneAdapter.
+2. The backend returns a positional change `(x, y, z)` as part of telemetry output.
+3. The frontend converts received x, y values into coordinates that fit on the grid.
+4. The visualisation layer (Leaflet) updates a live marker representing the drone’s position.
+5. A path history is optionally drawn to represent movement over time.
+
+**Post-conditions.**
+
+- A live visual representation of drone movement is displayed on the dashboard.
+- positional history is retained for the duration of the session.
 
 ### 4.8 UC-7 - Interactive User Tutorial and Assist Mode
 
@@ -717,7 +744,44 @@ progress is persisted. On return, the system resumes from the last incomplete st
 - *A2 - Completion condition not met.*  If a step condition is not satisfied,
 the system remains on the current step and provides additional contextual hints (`R9.1.7`).
 
-### 4.6 UC-8 - 
+### 4.6 UC-8 - Pre-Flight Gesture Calibration
+
+This use case provides a pre-flight calibration feature that tunes and validates gesture
+regognition performance before live drone control. The system evaluates the operators gestures,
+evaluates confidence, and produces a pass/fail based on the results. This is intended as a main 
+safety feature by preventing input acceptance in sub-optimal conditions, and also aims to increase
+the accuracy of the system by optimizing preprocessing functions.
+
+**Actors.** Operator (primary)
+
+**Preconditions.**
+
+- The operator is authenticated (`R8.1`).
+- The camera pipeline is active and streaming frames (`R3.1`).
+- No active flight commands are being executed, we're in an idle state.
+
+**Main flow.**
+
+1. The operator initiates calibration via the dashboard, or is prompted before their flight.
+The frontend issues a request to start calibration.
+2. The backend activates calibration mode via a REST endpoint.
+3. The system transitions the CV pipeline into calibration mode, prompting the user to perform a predefined sequence of gestures.
+4. For each gesture performed, the CV pipeline records confidence per frame.
+5. An aggregated confidence score is derived.
+6. The system determines whether or not the results are satisfactory, returning a pass or fail.
+
+**Post-Conditions.**
+
+- Calibration results are stored for the current session.
+- Gesture recognition thresholds or preprocessing parameters may be adjusted based on results.
+- The system is either given the all clear to fly, or blocked from entering flight until recalibration.
+
+**Alternative flows.**
+
+- *A1 - Poor lighting or occlusion detected.* the system requests recalibration or environmental adjustment before continuing (`R3.2.1`, `NFR3.1`).
+- *A2 - Gesture not recognised during calibration.* It is marked as failed and the operator is prompted to retry that specific gesture.
+- *A33 - Calibration failure.* If enough gestures fail, the user is blocked from flying the drone until
+recalibration is completed successfully.
 
 ---
 
