@@ -3,7 +3,6 @@ import {test,expect} from '@playwright/test'
 test.describe('Atom components', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/test');
-        await page.waitForLoadState('networkidle');
         await page.waitForSelector('h1:has-text("Welcome")');
     });
 
@@ -124,29 +123,29 @@ test.describe('Atom components', () => {
 
     test.describe('MetricValue', () => {
         test('renders values with units', async ({ page }) => {
-            await expect(page.locator('span:has-text("42")')).toBeVisible();
-            await expect(page.locator('span:has-text("%")')).toBeVisible();
-            await expect(page.locator('span:has-text("6769")')).toBeVisible();
-            await expect(page.locator('span:has-text("ms")')).toBeVisible();
-            await expect(page.locator('span:has-text("67")')).toBeVisible();
-            await expect(page.locator('span:has-text("mins")')).toBeVisible();
+            await expect(page.getByText('42', { exact: true })).toBeVisible();
+            await expect(page.getByText('%', { exact: true })).toBeVisible();
+            await expect(page.getByText('6769', { exact: true })).toBeVisible();
+            await expect(page.getByText('ms', { exact: true })).toBeVisible();
+            await expect(page.getByText('67', { exact: true })).toBeVisible();
+            await expect(page.getByText('mins', { exact: true })).toBeVisible();
         });
 
         test('metrics show with diff sizes', async ({ page }) => {
-            const smValue = page.locator('span:has-text("42")');
+            const smValue = page.getByText('42', { exact: true });
             await expect(smValue).toHaveClass(/text-lg/);
-            const mdValue = page.locator('span:has-text("6769")');
+            const mdValue = page.getByText('6769', { exact: true });
             await expect(mdValue).toHaveClass(/text-2xl/);
-            const lgValue = page.locator('span:has-text("67")');
+            const lgValue = page.getByText('67', { exact: true });
             await expect(lgValue).toHaveClass(/text-3xl/);
         });
     });
 
     test.describe('NavItem', () => {
         test('the nav items in the side bar are rendered', async ({ page }) => {
-            await expect(page.locator('button:has-text("Home")')).toBeVisible();
-            await expect(page.locator('button:has-text("Analytics")')).toBeVisible();
-            await expect(page.locator('button:has-text("Settings")')).toBeVisible();
+            await expect(page.locator('button:has-text("Home")').first()).toBeVisible();
+            await expect(page.locator('button:has-text("Analytics")').first()).toBeVisible();
+            await expect(page.locator('button:has-text("Settings")').first()).toBeVisible();
         });
 
         test('shows active page with red background', async ({ page }) => {
@@ -170,14 +169,35 @@ test.describe('Atom components', () => {
     
     });
 
-    // test.describe('StatusDot',()=>{
-    //     test('shows if the state is connected or not ', async ({page})=>{
-    //         await page.goto('/')
-    //         await page.waitForLoadState('domcontentloaded')
-    //         await expect(page.getByText(/connected/i)).toBeVisible()
+    test.describe('StatusDot',() => { 
+        test('shows if the state is connected ', async ({page}) => {
+            const connected = page.locator('span.bg-green-400').first();
+            await expect(connected).toBeVisible();
+            const pingplong = connected.locator('..').locator('span.animate-ping');
+            await expect(pingplong).toBeVisible();
+        });
 
-    //     })
-    // })
+        test('renders disconnected status', async ({ page }) => {
+            const disconnected = page.locator('span.bg-Red').first();
+            await expect(disconnected).toBeVisible();
+            const bingbong = disconnected.locator('..').locator('span.animate-ping');
+            await expect(bingbong).toBeVisible();
+        });
+
+        test('renders idle status without ping', async ({ page }) => {
+            const idle = page.locator('span.bg-DarkGrey.opacity-30').first();
+            await expect(idle).toBeVisible();
+            //no ping
+            const dingdong = idle.locator('..').locator('span.animate-ping');
+            await expect(dingdong).not.toBeVisible();
+        });
+
+        test('redners statusdot w medium size', async ({ page }) => {
+            const dot = page.locator('span.h-2\\.5.w-2\\.5').first();
+            await expect(dot).toBeVisible();
+        });
+    });
+
 
 
 
