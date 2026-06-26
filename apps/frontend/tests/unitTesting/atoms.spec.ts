@@ -101,81 +101,74 @@ test.describe('Atom components', () => {
     });
 
 
-    test.describe('Labels', ()=>{
-    // test('stats table rendering on the dashboard page', async({page})=>{
-    //     await page.goto('/')
-    //     await page.waitForLoadState('domcontentloaded')
-    //     await expect(page.getByText(/stats/i)).toBeVisible()// the /..../i thing like checks for differnt capitalizations
-    // })
+    test.describe('Labels', () => {
+        test('xs size label', async ({ page }) => {
+            const lebel = page.locator('span:has-text("Xtra small")');
+            await expect(lebel).toBeVisible();
+            await expect(lebel).toHaveClass(/text-\[11px\]/);
+        });
+        
+        test('sm size label renders', async ({ page }) => {
+            const label= page.locator('span:has-text("Small label")');
+            await expect(label).toBeVisible();
+            await expect(label).toHaveClass(/text-xs/);
+        });
 
-    test('The CommandHistory label shows up on the gesture page',async({page})=>{
-        await page.goto('/gestures')
-        await page.waitForLoadState('domcontentloaded')
-        await expect(page.getByText(/command history/i)).toBeVisible()
-    })
+        test('labels have correct font styles', async ({ page }) => {
+            const label = page.locator('span:has-text("Xtra small")');
+            await expect(label).toHaveClass(/font-Inter/);
+            await expect(label).toHaveClass(/font-semibold/);
+            await expect(label).toHaveClass(/uppercase/);
+        });
+    });
 
-})
+    test.describe('MetricValue', () => {
+        test('renders values with units', async ({ page }) => {
+            await expect(page.locator('span:has-text("42")')).toBeVisible();
+            await expect(page.locator('span:has-text("%")')).toBeVisible();
+            await expect(page.locator('span:has-text("6769")')).toBeVisible();
+            await expect(page.locator('span:has-text("ms")')).toBeVisible();
+            await expect(page.locator('span:has-text("67")')).toBeVisible();
+            await expect(page.locator('span:has-text("mins")')).toBeVisible();
+        });
 
-test.describe('NavItem', ()=>{
-    test('the nav items in the side bar are rendered', async({page})=>{
-        await page.goto('/')
-        await page.waitForLoadState('domcontentloaded')
-        //await expect(page.getByText(/dashboard/i)).toBeVisible()
-        const sidebar = page.getByRole('navigation')
-        await expect(sidebar.getByText(/analytics/i)).toBeVisible()
-        await expect(sidebar.getByText(/gestures/i)).toBeVisible()
+        test('metrics show with diff sizes', async ({ page }) => {
+            const smValue = page.locator('span:has-text("42")');
+            await expect(smValue).toHaveClass(/text-lg/);
+            const mdValue = page.locator('span:has-text("6769")');
+            await expect(mdValue).toHaveClass(/text-2xl/);
+            const lgValue = page.locator('span:has-text("67")');
+            await expect(lgValue).toHaveClass(/text-3xl/);
+        });
+    });
 
-    })
+    test.describe('NavItem', () => {
+        test('the nav items in the side bar are rendered', async ({ page }) => {
+            await expect(page.locator('button:has-text("Home")')).toBeVisible();
+            await expect(page.locator('button:has-text("Analytics")')).toBeVisible();
+            await expect(page.locator('button:has-text("Settings")')).toBeVisible();
+        });
 
-    test('when the analytics button in the navbar is clicked, it navigates to the analytics page', async({page})=>{
-        await page.goto('/')
-        await page.waitForLoadState('domcontentloaded')
-        await page.getByRole('navigation').getByRole('button',{name:/analytics/i }).click()
-        await expect(page).toHaveURL(/analytics/)
-    })
+        test('shows active page with red background', async ({ page }) => {
+            const active = page.locator('button.bg-Red:has-text("Home")');
+            await expect(active).toBeVisible();
+            await expect(active).toHaveClass(/bg-Red/);
+            await expect(active).toHaveClass(/text-OffWhite/);
+        });
 
-    test('when the gestures item is clicked it goes into the gestures page', async({page})=>{
-        await page.goto('/')
-        await page.waitForLoadState('domcontentloaded')
-        await page.getByRole('navigation').getByRole('button',{name:/gestures/i }).click()
-        await expect(page).toHaveURL(/gestures/)
-    })
+        test('renders nav with icons', async ({ page }) => {
+            const item = page.locator('button:has-text("Home")');
+            const icon = item.locator('svg');
+            await expect(icon).toBeVisible();
+        });
 
-
-    // test.describe('Button',()=>{
-    //     test('does it show the droneSim and the Hardware mode buttons on the dashboard??',async({page})=>{
-    //         await page.goto('/')
-    //         await page.waitForLoadState('domcontentloaded')
-    //         await expect(page.getByRole('button',{name: /dronesim/i})).toBeVisible()
-    //         await expect(page.getByRole('button',{name: /hardware/i})).toBeVisible()
-    //     })
-
-    //     test(' Hardware Button clickable??', async({page})=>{
-    //         await page.goto('/')
-    //         await page.waitForLoadState('domcontentloaded')
-    //         const hardwareBtn = page.getByRole('button',{name:/hardware/i })
-    //         await expect(hardwareBtn).toBeEnabled()
-    //         await hardwareBtn.click()
-    //         await expect(hardwareBtn).toBeVisible()//so like it shouldnt disappear like after we click it...
-    //     })
-
-    //}
-//)
-
+        test('active nav card is more visible', async ({ page }) => {
+            const active = page.locator('button.bg-Red:has-text("Home")');
+            const icon =  active.locator('svg');
+            await expect(icon).toHaveAttribute('stroke-width', '2');
+        });
     
-        test('the state must actually chnage when its clicked on',async ({page})=>{
-            await page.goto('/')
-            await page.waitForLoadState('domcontentloaded')
-            const toggle=page.locator('input[type="checkbox"]').first()
-            const initialState = await toggle.isChecked()
-            const toggleLabel= page.locator('label').filter({
-                has: page.locator('input[type="checkbox"]')
-            }).first()
-            await toggleLabel.click({force:true})
-            const newState = await toggle.isChecked()
-            expect(newState).toBe(!initialState)
-        })
-    })
+    });
 
     // test.describe('StatusDot',()=>{
     //     test('shows if the state is connected or not ', async ({page})=>{
