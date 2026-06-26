@@ -198,7 +198,57 @@ test.describe('Atom components', () => {
         });
     });
 
+    test.describe('Toggle', () => {
+        test('toggles on', async ({ page }) => {
+            const toggle = page.locator('input[type="checkbox"]').first();
+            const initState = await toggle.isChecked();
+            const toglabel = page.locator('label').filter({
+                has: page.locator('input[type="checkbox"]')
+            }).first();
+            await toglabel.click({force: true});
+            const newState = await toggle.isChecked();
+            expect(newState).toBe(!initState);
+        });
 
+        // test('shows right text based on state', async ({ page }) => {
+        //     const toggle = page.locator('input[type="checkbox"]').first();
+        //     const toglabel = page.locator('label').filter({
+        //         has: page.locator('input[type="checkbox"]')
+        //     }).first();
+        //     await toggle.uncheck({force: true});
+        //     await expect(page.locator('span:has-text("OFF")')).toBeVisible();
+        //     await toglabel.click({force: true});
+        //     await page.waitForTimeout(100);
+        //     await expect(page.locator('span:has-text("ON")')).toBeVisible();
+        //     await expect(page.locator('span:has-text("OFF")')).not.toBeVisible();
 
+        // });
+
+        test('renders disabed tog', async ({ page }) => {
+            const downy = page.locator('input[type="checkbox"]:disabled').last();
+            await expect(downy).toBeDisabled();
+            const label = page.locator('label').filter({
+                has: downy
+            }).first();
+            const init = await downy.isChecked();
+            await label.click({ force: true });
+            const neww = await downy.isChecked();
+            expect(neww).toBe(init);
+            
+        });
+
+        // test('slider moves when toggled', async ({ page }) => {
+        //     // const toggle = page.locator('input[type="checkbox"]').first();
+        //     const label = page.locator('label').filter({
+        //         has: page.locator('input[type="checkbox"]')
+        //     }).first();
+        //     const slider = label.locator('span.inline-block.h-4.w-4');
+        //     await label.click( {force: true});
+        //     await expect(slider).toHaveClass(/translate-x-1/);
+        //     await label.click({force: true});
+        //     await expect(slider).toHaveClass(/translate-x-6/);
+
+        // });
+    });
 
 });
