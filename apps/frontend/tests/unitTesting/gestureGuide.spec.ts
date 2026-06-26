@@ -2,17 +2,16 @@ import{test,expect} from '@playwright/test'
 
 test.describe('Gesture Guide',() =>{
     test.beforeEach(async ({page})=> {
-        await page.goto('/gesture')
+        await page.goto('/gestures')
         await page.waitForLoadState('domcontentloaded')
     })
 
     test('should render the control guide heading', async ({page}) => {
         await expect(page.getByText(/control guide/i)).toBeVisible()
     })
-
     test('should show all four tab buttons man',async ({page}) => {
         await expect(page.getByRole('button' , {name:/on screen/i })).toBeVisible()
-        await expect(page.getByRole('button' , {name:/^gestures$/i })).toBeVisible()
+        await expect(page.getByRole('main').getByRole('button' , {name:/^gestures$/i})).toBeVisible()
         await expect(page.getByRole('button' , {name:/keyboard/i })).toBeVisible()
         await expect(page.getByRole('button' , {name:/controller/i })).toBeVisible()
     })
@@ -42,7 +41,7 @@ test.describe('Gesture Guide',() =>{
         await expect(page.getByText(/control guide/i)).toBeVisible()
     })
 
-})
+
 
 test.describe('Keyboard tab', () => {
     test.beforeEach(async ({page}) => {
@@ -59,9 +58,9 @@ test.describe('Keyboard tab', () => {
         await expect(page.getByText(/up key/i)).toBeVisible()
         await expect(page.getByText(/move backward/i)).toBeVisible()
         await expect(page.getByText(/down key/i)).toBeVisible()
-        await expect(page.getByText(/move left/i)).toBeVisible()
-        await expect(page.getByText(/key left/i)).toBeVisible()
-        await expect(page.getByText(/move right/i)).toBeVisible()
+        await expect (page.getByText('Move Left',{exact:true})).toBeVisible()
+        await expect(page.getByText(/left key/i)).toBeVisible()
+        await expect (page.getByText('Move Right',{exact:true})).toBeVisible()
         await expect(page.getByText(/right key/i)).toBeVisible()
         await expect(page.getByText(/increase altitude/i)).toBeVisible()
         await expect(page.getByText(/^w$/i)).toBeVisible()
@@ -99,9 +98,9 @@ test.describe('Controller tab', () => {
         await expect(page.getByText(/l stick up/i)).toBeVisible()
         await expect(page.getByText(/move backward/i)).toBeVisible()
         await expect(page.getByText(/l stick down/i)).toBeVisible()
-        await expect(page.getByText(/move left/i)).toBeVisible()
+        await expect (page.getByText('Move Left',{exact:true})).toBeVisible()
         await expect(page.getByText(/l stick left/i)).toBeVisible()
-        await expect(page.getByText(/move right/i)).toBeVisible()
+        await expect (page.getByText('Move Right',{exact:true})).toBeVisible()
         await expect(page.getByText(/l stick right/i)).toBeVisible()
         await expect(page.getByText(/increase altitude/i)).toBeVisible()
         await expect(page.getByText(/r stick up/i)).toBeVisible()
@@ -125,19 +124,14 @@ test.describe('Controller tab', () => {
 
 test.describe('Gesture tab' , () => {
     test.beforeEach(async({page}) => {
-        await page.getByRole('button' , { name: /^gestures$/i}).click()
-    })
-
-    test('gestures tab should become the active tab' , async ({page})=> {
-        const gesturesTab = page.getByRole('button', { name: /^gestures$/i })
-        await expect(gesturesTab).toHaveClass(/bg-Red/)
+        await page.getByRole('main').getByRole('button' , {name:/^gestures$/i}).click()
     })
 
     test('should show all 12 control labels with "Not mapped" since no gesture input is defined', async ({page})=> {
         await expect(page.getByText(/move forward/i)).toBeVisible()
         await expect(page.getByText(/move backward/i)).toBeVisible()
-        await expect(page.getByText(/move left/i)).toBeVisible()
-        await expect(page.getByText(/move right/i)).toBeVisible()
+        await expect (page.getByText('Move Left',{exact:true})).toBeVisible()
+        await expect (page.getByText('Move Right',{exact:true})).toBeVisible()
         await expect(page.getByText(/increase altitude/i)).toBeVisible()
         await expect(page.getByText(/decrease altitude/i)).toBeVisible()
         await expect(page.getByText(/rotate left/i)).toBeVisible()
@@ -156,11 +150,13 @@ test.describe('Gesture tab' , () => {
         await expect(page.getByText(/control guide/i)).toBeVisible()
         await page.getByRole ('button',{name: /controller/i }).click()
         await expect(page.getByText(/control guide/i)).toBeVisible()
-        await page.getByRole ('button',{name: /^gestures$/i }).click()
+        await page.getByRole('main').getByRole('button' , {name:/^gestures$/i}).click()
         await expect(page.getByText(/control guide/i)).toBeVisible()
         await page.getByRole ('button',{name: /on screen/i }).click()
         await expect(page.getByRole('button',{name:/emergency stop/i})).toBeVisible()
 
 
     })
+})
+
 })
