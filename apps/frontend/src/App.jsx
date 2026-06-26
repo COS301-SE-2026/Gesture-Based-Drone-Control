@@ -11,6 +11,7 @@ import {
   Help,
 } from "./components/organisms"
 import { ThemeProvider } from "./context/ThemeProvider.jsx"
+import  TestPage  from "@/components/testPageForAtoms/TestPage.jsx"
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="gps" element={<GPS />} />
           <Route path="help" element={<Help />} />
+          <Route path="test" element={<TestPage />} />
         </Route>
       </Routes>
     </ThemeProvider>
