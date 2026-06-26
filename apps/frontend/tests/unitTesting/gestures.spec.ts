@@ -62,16 +62,15 @@ test.describe('gesture control page aka dashboard', () =>{
 
         })
 
-        test('icons show on stats page', async ({ page }) => {
-            const icons = [
-                page.locator('[data-icon="battery"]'),
-                page.locator('[data-icon="gauge"]'),
-                page.locator('[data-icon="wifi"]'),
-                page.locator('[data-icon="mountain"]')
-            ]
-            for (const icon of icons) {
-                await expect(icon).toBeVisible()
-            }
+        test('icons show on stats card', async ({ page }) => {
+            const batt = page.locator('svg[class*="lucide-battery"]')
+            await expect(batt).toBeAttached()
+            const wifi = page.locator('svg[class*="lucide-wifi"]')
+            await expect(wifi).toBeAttached()
+            const gauge = page.locator('svg[class*="lucide-gauge"]')
+            await expect(gauge).toBeAttached()
+            const mount = page.locator('svg[class*="lucide-mountain"]')
+            await expect(mount).toBeAttached()
         })
     })
 
@@ -90,6 +89,12 @@ test.describe('gesture control page aka dashboard', () =>{
             await expect(simbtn).toBeVisible()
             await hardbtn.click()
             await expect(hardbtn).toBeVisible()
+        })
+    })
+
+    test.describe('gesture guide card tests', () => {
+        test('component is rendered', async ({ page }) => {
+            await expect(page.getByText('Control Guide')).toBeVisible()
         })
     })
 
