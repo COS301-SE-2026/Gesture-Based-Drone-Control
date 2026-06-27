@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch  # it really just lets anything do anything
 
 import pytest
+
 from services.commands.command import CommandType
 from services.drone_control.adapters.airsim_adapter import AirSimAdapter, TelemetryData
 
