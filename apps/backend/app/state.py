@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AppState:
 	# currently connected drone adapter
-	adapter: DroneAdapter
+	adapter: DroneAdapter | None = None
 
 	# str() of drone adapter ("airsim, xfly...)
 	adapter_name: str | None = None
