@@ -3,6 +3,7 @@ Tests that i set up the API correctly
 mount router, appstate, dependencies
 """
 
+from typing import Annotated
 from unittest.mock import MagicMock
 
 from fastapi import Depends, FastAPI
@@ -75,7 +76,7 @@ def test_get_adapter_raises_409_when_no_adapter():
 	app.dependency_overrides[get_state] = lambda: app_state
 
 	@app.get('/test-adapter')
-	def _test(adapter: DroneAdapter = Depends(get_adapter)):
+	def _test(adapter: Annotated[DroneAdapter, Depends(get_adapter)]):
 		return {'ok': True}
 
 	client = TestClient(app, raise_server_exceptions=False)

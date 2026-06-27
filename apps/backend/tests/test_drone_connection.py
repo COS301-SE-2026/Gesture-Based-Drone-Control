@@ -94,7 +94,7 @@ async def test_connect_airsim():
 
 
 # test failures
-async def test_connect_adapter_connect_fails():
+async def test_connect_adapter_connect_fails():  # NOSONAR
 	"""should get a 200 with connected==False"""
 	state = AppState()
 	client = TestClient(make_app(state))

@@ -10,6 +10,7 @@ real chat just look at the docs or source files i cant be bothered
 from __future__ import annotations
 
 import logging
+from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
@@ -74,7 +75,8 @@ def _build_adapter(body: ConnectRequest) -> DroneAdapter:
 
 # REST endpoints
 @router.post('/connect', response_model=ConnectResponse)
-async def connect(body: ConnectRequest, state: AppState = Depends(get_state)):
+async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
+	# fuckass sonarqube would break this... dependencies are supposed to be injected like this
 	"""
 	connect to a drone adapter.
 	if there is already an adapter connected, this endpoint handles disconnecting it
@@ -104,7 +106,7 @@ async def connect(body: ConnectRequest, state: AppState = Depends(get_state)):
 	# start telemetry loop
 	# TODO: add telemetry endpoint
 
-	logger.info('/drone/connect: connected via %s', body.adapter)
+	logger.info('/drone/connect: connected via %s', state.adapter)
 	return ConnectResponse(
 		connected=True,
 		adapter=body.adapter,
