@@ -12,21 +12,27 @@ Entry point for FastAPI
 from __future__ import annotations # prevents typeerrors
 
 import logging
-import sys
-from pathlib import Path
+
 from contextlib import asynccontextmanager
-from pathlib import Path
 from fastapi import FastAPI
+
 from app.api import router
+from app.state import AppState
+
+logging.basicConfig(
+  level=logging.INFO,
+  format="%(asctime)s  %(levelname)-8s  %(name)s: %(message)s",
+  datefmt='%H:%M:%S',
+)
 
 logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app : FastAPI):
   logger.info('Starting API...')
+  app.state.app = AppState()
   yield
-  logger.info('Stopping api')
-  
+  logger.info('Stopping API...')
 
 app = FastAPI(title="GBDC API", version="1.0",
               description="""
