@@ -112,6 +112,22 @@ async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_s
 		adapter=body.adapter,
 		message=f'Connected to {body.adapter} at {body.host}',
 	)
+ 
+class DisconnectResponse(BaseModel):
+	success: bool
+	message: str
+ 
+@router.post('/disconnect', response_model=DisonnectResponse)
+async def disconnect(state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
+	"""
+	Simply disconnects from the connected drone if there is one connected.
+	Returns a false for failure cases
+ 	"""
+	if state.adapter is None:
+		return DisconnectResponse(success=False, message="There is no drone connected.")
 
+	# there is an adapter connected, simply call disconnect and see if it works
+	await state.adapter.disconnect()
+	return DisconnectResponse(success=True, message="Adapter successfully disconnected")
 
 # WebSockets endpoints
