@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 from typing import Annotated
+from dataclasses import asdict
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
@@ -117,7 +118,7 @@ class DisconnectResponse(BaseModel):
 	success: bool
 	message: str
  
-@router.post('/disconnect', response_model=DisonnectResponse)
+@router.post('/disconnect', response_model=DisconnectResponse)
 async def disconnect(state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
 	"""
 	Simply disconnects from the connected drone if there is one connected.
@@ -127,7 +128,25 @@ async def disconnect(state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
 		return DisconnectResponse(success=False, message="There is no drone connected.")
 
 	# there is an adapter connected, simply call disconnect and see if it works
+	name = state.adapter_name
 	await state.adapter.disconnect()
-	return DisconnectResponse(success=True, message="Adapter successfully disconnected")
+	return DisconnectResponse(success=True, message=f"{name} adapter successfully disconnected")
+
+
+@router.get('/status')
+async def status(state: Annotated[AppState, Depends(get_state)]):
+	"""
+	GET implementation of some basic telemetry data and general 
+	drone info. probably not too important but its here as an option
+	"""
+	if not state.is_connected or state.adapter is None:
+		return {'connected': False, 'adapter': None}
+	
+	telemetry = await state.adapter.get_telemetry()
+	return {
+		'connected': True,
+		'adapter': state.adapter_name,
+		'telemetry': asdict(telemetry),
+	}
 
 # WebSockets endpoints
