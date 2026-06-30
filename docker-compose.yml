@@ -6,7 +6,7 @@ services:
     container_name: gbdc-postgres-db
     restart: unless-stopped
 
-    environemnt:
+    environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -36,11 +36,13 @@ services:
       - "5050:80"
 
     volumes: 
-      - pgadmin_data: /var/lib/pgadmin
+      - pgadmin_data:/var/lib/pgadmin
 
     depends_on:
       postgres:
         condition: service_healthy
-  volumes:
-      postgres_data:
-      pgadmin_data: 
+
+        
+volumes:
+    postgres_data:
+    pgadmin_data: 
