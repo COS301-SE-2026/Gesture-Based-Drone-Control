@@ -35,7 +35,10 @@ class TelemetryData:
 	"""
 	All drone adapters return this shape from get_telemetry()
 	x_displacement / y_displacement : float
-		local position offset in metres from wherever the drone took off (its origin) x = forward/north-style axis, y = right/east-style axis, consistent with each adapters own body/world frame. Used to plot the drone on the leaflet CRS.Simple indoor map.
+		local position offset in metres from wherever the drone took off (its origin)
+		x = forward/north-style axis, y = right/east-style axis,
+		consistent with each adapters own body/world frame.
+		Used to plot the drone on the leaflet CRS.Simple indoor map.
 	extra : dict
 		Escape hatch for adapter-specific values that don't belong in
 		the standard fields. Use sparingly. Consumers must not depend
