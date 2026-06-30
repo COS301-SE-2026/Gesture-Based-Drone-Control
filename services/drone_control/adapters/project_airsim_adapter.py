@@ -382,6 +382,8 @@ class ProjectAirSimAdapter(DroneAdapter):
 				battery_pct=100.0,
 				heading_deg=heading,
 				is_flying=is_flying,
+				x_displacement=round(position.get('x', 0.0), 3),
+				y_displacement=round(position.get('y', 0.0), 3),
 				source='projectairsim',
 			)
 		except Exception as ex:

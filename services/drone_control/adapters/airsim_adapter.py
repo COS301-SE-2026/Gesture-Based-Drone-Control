@@ -397,6 +397,8 @@ class AirSimAdapter(DroneAdapter):
 				battery_pct=100.0,  # AirSim has no battery model
 				heading_deg=self._get_heading_deg(),
 				is_flying=is_flying,
+				x_displacement=round(pos.x_val, 3), #north offset from sim origin
+				y_displacement=round(pos.y_val, 3), #east offset form sim origin
 				source='airsim',
 			)
 		except Exception as ex:
