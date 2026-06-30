@@ -1,5 +1,5 @@
-import { Card, Button } from "../atoms"
-
+import { Card } from "../atoms"
+import AccountActions from "./AccountActions"
 export const GestureSideContent = () => {
   return (
     <>
@@ -18,10 +18,7 @@ export const GestureSideContent = () => {
             <p className="text-xs text-DarkGrey">Today, 14:44</p>
           </div>
 
-          <div className="flex gap-2 mt-2 pt-2 border-t border-Grey/20">
-            <Button variant="secondary">Switch Profile</Button>
-            <Button>Logout</Button>
-          </div>
+          <AccountActions />
         </div>
       </Card>
     </>
