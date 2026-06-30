@@ -273,6 +273,8 @@ class AppState:
 				'battery_pct': t.battery_pct,
 				'heading_deg': t.heading_deg,
 				'is_flying': t.is_flying,
+				'x_displacement': t.x_displacement,
+				'y_displacement': t.y_displacement,
 				'source': t.source,
 			}
 		except Exception as ex:
