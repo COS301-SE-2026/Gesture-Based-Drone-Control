@@ -12,5 +12,5 @@ from app.api import drone, gestures
 
 router = APIRouter()
 
-router.include_router(drone.router, prefix='/drone', tags=['drone'])
+router.include_router(drone.router)
 router.include_router(gestures.router)
