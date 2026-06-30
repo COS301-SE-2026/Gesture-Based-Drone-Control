@@ -1,6 +1,7 @@
 """
 Turns event(s) into a small JSON-able dict:
 """
+
 from cv_pipeline.processing.pipeline import PipelineEvent
 
 
