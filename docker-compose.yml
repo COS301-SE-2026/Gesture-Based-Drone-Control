@@ -1,26 +1,48 @@
-version: "3.9"
-
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: ./infrastructure/docker/backend.Dockerfile
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./apps/backend:/app
-      - ./data:/app/data
-    env_file:
-      - .env
-    devices:
-      - "/dev/video0:/dev/video0"
+  postgres:
+    image: postgres:16-alpine
+    container_name: gbdc-postgres-db
+    restart: unless-stopped
 
-  frontend:
-    build:
-      context: .
-      dockerfile: ./infrastructure/docker/frontend.Dockerfile
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
     ports:
-      - "5173:5173"
+      - "${POSTGRES_PORT}:5432"
+
     volumes:
-      - ./apps/frontend:/app
-      - /app/node_modules
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+
+    ports: 
+      - "5050:80"
+
+    volumes: 
+      - pgadmin_data:/var/lib/pgadmin
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
+volumes:
+    postgres_data:
+    pgadmin_data: 
