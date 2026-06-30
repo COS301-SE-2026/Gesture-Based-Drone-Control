@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS Drones(
+    id INTEGER PRIMARY KEY,
+    display_name VARCHAR NOT NULL,
+    is_simulated BOOLEAN NOT NULL,
+);
