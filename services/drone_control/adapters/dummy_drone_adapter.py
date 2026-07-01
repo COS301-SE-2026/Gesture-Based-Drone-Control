@@ -94,7 +94,7 @@ class DummyDroneAdapter(DroneAdapter):
 		elif direction is CommandType.MOVE_UP:
 			self._altitude_m += DEFAULT_ALT_STEP_M
 		elif direction is CommandType.MOVE_DOWN:
-			self._altitude_m = max(0.0, self._altitude_m - DEFAULT_ALT_STEP_M)
+			self._altitude_m -= DEFAULT_ALT_STEP_M
 		else:
 			body_vec = {
 				CommandType.MOVE_FORWARD: (1, 0),

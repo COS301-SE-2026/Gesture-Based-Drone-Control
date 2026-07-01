@@ -383,7 +383,7 @@ class AirSimAdapter(DroneAdapter):
 			speed = math.sqrt(vel.x_val**2 + vel.y_val**2 + vel.z_val**2)
 
 			# NED: z is negative when airborne, so negate for a positive altitude
-			altitude = max(0.0, -pos.z_val)
+			altitude = -pos.z_val
 
 			# LandedState.Landed == 1, Flying == 0 (check AirSim source)
 			# airsim is stupid and uses either a plain int or enum depending on version.

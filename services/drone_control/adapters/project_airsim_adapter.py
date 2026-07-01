@@ -364,7 +364,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 			linear_vel = twist.get('linear', {})
 
 			z = position.get('z', 0.0)
-			altitude = max(0.0, -z)
+			altitude = -z
 
 			vx = linear_vel.get('x', 0.0)
 			vy = linear_vel.get('y', 0.0)
@@ -374,7 +374,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 
 			# this where scary math happens
 			heading = self._yaw_from_quaternion_dict(orientation)
-			is_flying = altitude > 0.1
+			is_flying = abs(altitude) > 0.1
 
 			return TelemetryData(
 				altitude_m=round(altitude, 3),

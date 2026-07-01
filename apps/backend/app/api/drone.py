@@ -37,10 +37,6 @@ class ConnectRequest(BaseModel):
 	# pas specific
 	topics_port: int = 8989
 	services_port: int = 8990
-	# a way to know the rooms pysical bounds for leaflets fitBounds -
-	# wasnt sure how big the room is for now :(
-	room_width_m: float = 10.0
-	room_height_m: float = 10.0
 
 
 class ConnectResponse(BaseModel):
