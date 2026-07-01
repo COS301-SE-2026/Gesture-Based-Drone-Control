@@ -24,13 +24,13 @@ const DroneModeCard = ({
       <div className="flex flex-col gap-4">
         <Label size="md">Select Drone Mode</Label>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex gap-3">
           {modes.map((mode) => (
             <Button
               key={mode.id}
               variant={currentMode === mode.id ? "default" : "secondary"}
               onClick={() => onModeChange?.(mode.id)}
-              className="w-full h-32"
+              className="flex-1 h-16"
             >
               {mode.label}
             </Button>
