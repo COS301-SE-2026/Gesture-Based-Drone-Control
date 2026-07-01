@@ -774,6 +774,16 @@ FRONTEND_HTML = """
           <div class="telem-label">Altitude</div>
           <div class="telem-value" id="t-alt">-</div>
         </div>
+		
+        <div class="telem-cell">
+          <div class="telem-label">X Displacement</div>
+          <div class="telem-value" id="t-x">-</div>
+        </div>
+		
+		    <div class="telem-cell">
+          <div class="telem-label">Y Displacement</div>
+          <div class="telem-value" id="t-y">-</div>
+        </div>
 
         <div class="telem-cell">
           <div class="telem-label">Speed</div>
@@ -941,6 +951,16 @@ function updateTelemetry(d) {
   setText(
     "t-alt",
     d.altitude_m !== undefined ? d.altitude_m.toFixed(2) : "-"
+  );
+
+  setText(
+    "t-x",
+    d.x_displacement !== undefined ? d.x_displacement.toFixed(2) : "-"
+  );
+
+  setText(
+    "t-y",
+    d.y_displacement !== undefined ? d.y_displacement.toFixed(2) : "-"
   );
 
   setText(

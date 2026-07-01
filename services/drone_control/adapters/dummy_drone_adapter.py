@@ -9,7 +9,7 @@ leaflet CRS.Simple map without a real sim or hardware connected
 """
 
 import logging
-import math 
+import math
 
 from services.commands.command import CommandType
 from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
@@ -22,7 +22,6 @@ DEFAULT_ROTATE_DEG: float = 15.0
 DEFAULT_ALT_STEP_M: float = 0.5
 
 
-
 class DummyDroneAdapter(DroneAdapter):
 	"""
 	Simulates a drone moving in local 3d space. no real sim or hardware
@@ -33,7 +32,7 @@ class DummyDroneAdapter(DroneAdapter):
 	def __init__(self) -> None:
 		self._connected: bool = False
 
-		#simulate the local state, origin(0,0,0)
+		# simulate the local state, origin(0,0,0)
 		self._x_displacement: float = 0.0
 		self._y_displacement: float = 0.0
 		self._altitude_m: float = 0.0
@@ -98,19 +97,23 @@ class DummyDroneAdapter(DroneAdapter):
 			self._altitude_m = max(0.0, self._altitude_m - DEFAULT_ALT_STEP_M)
 		else:
 			body_vec = {
-				CommandType.MOVE_FORWARD:(1, 0),
-				CommandType.MOVE_BACKWARD:(-1, 0),
-				CommandType.MOVE_RIGHT:(0, 1),
-				CommandType.MOVE_LEFT:(0, -1),
+				CommandType.MOVE_FORWARD: (1, 0),
+				CommandType.MOVE_BACKWARD: (-1, 0),
+				CommandType.MOVE_RIGHT: (0, 1),
+				CommandType.MOVE_LEFT: (0, -1),
 			}.get(direction)
 
 			if body_vec:
 				dist = DEFAULT_SPEED_MS * DEFAULT_DURATION_S
 				heading_rad = math.radians(self._heading_deg)
 				fwd, right = body_vec
-				#rotate body frame vect into the world frame by the current heading
-				self._x_displacement += dist * (fwd * math.cos(heading_rad) - right * math.sin(heading_rad))
-				self._y_displacement += dist * (fwd * math.sin(heading_rad) + right * math.cos(heading_rad))
+				# rotate body frame vect into the world frame by the current heading
+				self._x_displacement += dist * (
+					fwd * math.cos(heading_rad) - right * math.sin(heading_rad)
+				)
+				self._y_displacement += dist * (
+					fwd * math.sin(heading_rad) + right * math.cos(heading_rad)
+				)
 
 		logger.info(
 			'DummyDroneAdapter: move %s)',
