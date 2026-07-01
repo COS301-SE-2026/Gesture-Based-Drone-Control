@@ -1,7 +1,7 @@
 import { useState } from "react"
-import { CommandHistory, GestureGuide, GestureCalibration } from "../molecules"
+import { CommandHistory, GestureGuide, DroneModeCard } from "../molecules"
 import { Card, Label } from "../atoms"
-import { Camera } from "lucide-react"
+import { Battery, Mountain, Wifi, Gauge, Camera } from "lucide-react"
 
 const GestureControl = () => {
   const [commands] = useState([
@@ -10,6 +10,16 @@ const GestureControl = () => {
     { action: "swipe down - move down", timestamp: "18:50:43" },
     { action: "swipe left - move left", timestamp: "18:50:42" },
   ])
+
+  //mock data for drone status
+  const droneMetrics = {
+    battery: 56,
+    speed: 5.6,
+    altitude: 72,
+    signal: 71,
+  }
+
+  const [droneMode, setDroneMode] = useState("DroneSim")
 
   return (
     <div className="p-6 space-y-6">
@@ -32,7 +42,7 @@ const GestureControl = () => {
                 {/* status indicator */}
                 <div className="absolute top-4 right-4 flex items-center gap-2 bg-OffBlack/60 px-3 py-1 rounded-full text-xs text-OffWhite">
                   <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  <spane>Active</spane>
+                  <span>Active</span>
                 </div>
               </div>
             </div>
@@ -45,15 +55,76 @@ const GestureControl = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <GestureGuide />
-        <GestureCalibration
-          visibility={80}
-          confidence={45}
-          stability={60}
-          lighting="Good"
-          background="Fair"
-        />
+      <div className="grid grid-cols-[2fr_1fr] gap-6 items-stretch">
+        <div className="grid grid-cols-[1fr_auto] gap-6">
+          {/* gesture controls */}
+          <GestureGuide />
+
+          {/* drone mode selection */}
+          <DroneModeCard
+            currentMode={droneMode}
+            onModeChange={setDroneMode}
+            className="w-44"
+          />
+        </div>
+
+        {/* stats card */}
+
+        <Card variant="glass" className="h-full">
+          <div className="flex flex-col gap-6">
+            <Label size="md">Stats</Label>
+            <div className="grid grid-cols-2 gap-6">
+              {/* battery */}
+              <div className="flex flex-cols items-center gap-6">
+                <Battery className="w-8 h-8 text-Red" />
+                <div className="text-center">
+                  <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
+                    Battery
+                  </p>
+                  <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
+                    {droneMetrics.battery}%
+                  </p>
+                </div>
+              </div>
+              {/* signal */}
+              <div className="flex flex-cols items-center gap-6">
+                <Wifi className="w-8 h-8 text-Red" />
+                <div className="text-center">
+                  <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
+                    Signal
+                  </p>
+                  <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
+                    {droneMetrics.signal}%
+                  </p>
+                </div>
+              </div>
+              {/* speed */}
+              <div className="flex flex-cols items-center gap-6">
+                <Gauge className="w-8 h-8 text-Red" />
+                <div className="text-center">
+                  <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
+                    Speed
+                  </p>
+                  <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
+                    {droneMetrics.speed} km/h
+                  </p>
+                </div>
+              </div>
+              {/* altitude */}
+              <div className="flex flex-cols items-center gap-6">
+                <Mountain className="w-8 h-8 text-Red" />
+                <div className="text-center">
+                  <p className="text-xs text-OffBlack dark:text-Grey uppercase mb-1">
+                    Altitude
+                  </p>
+                  <p className="text-xl font-bold text-OffBlack dark:text-OffWhite">
+                    {droneMetrics.altitude}m
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
       </div>
     </div>
   )

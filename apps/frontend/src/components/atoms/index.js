@@ -5,4 +5,6 @@ export { default as MetricValue } from "./MetricValue"
 export { default as NavItem } from "./NavItem"
 export { default as StatusDot } from "./StatusDot"
 export { default as Toggle } from "./Toggle"
+export { default as AuthPanel } from "./AuthPanel"
+export { default as FormSection } from "./FormSection"
 // export { default as Input } from './Input';

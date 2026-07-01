@@ -41,245 +41,242 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 
 logging.basicConfig(
-  level=logging.INFO,
-  format='%(asctime)s  %(levelname)-8s  %(name)s - %(message)s',
+	level=logging.INFO,
+	format='%(asctime)s  %(levelname)-8s  %(name)s - %(message)s',
 )
 
 logger = logging.getLogger('demo')
 
-import airsim  # daniel
-import projectairsim  # the cooler daniel
 
 from services.commands.command import Command, CommandType  # type: ignore
+from services.drone_control.adapters.airsim_adapter import AirSimAdapter  # type: ignore
+from services.drone_control.adapters.drone_adapter import DroneAdapter  # type: ignore
+from services.drone_control.adapters.dummy_drone_adapter import DummyDroneAdapter
+from services.drone_control.adapters.project_airsim_adapter import (
+	ProjectAirSimAdapter,  # type: ignore
+)
+from services.input.sources.dummy_input_adapter import DummyInputAdapter
 from services.input.sources.input_adapter import InputAdapter  # type: ignore
 from services.input.sources.keyboard_adapter import KeyboardAdapter  # type: ignore
-
-from services.input.sources.dummy_input_adapter import DummyInputAdapter
-from services.drone_control.adapters.dummy_drone_adapter import DummyDroneAdapter
-
-from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData  # type: ignore
-from services.drone_control.adapters.airsim_adapter import AirSimAdapter  # type: ignore
-from services.drone_control.adapters.project_airsim_adapter import ProjectAirSimAdapter  # type: ignore
-
 
 # app state
 
 
 class AppState:
-  def __init__(self) -> None:
-    # Lazy init for adapters, wait until called
-    self.input_adapter: InputAdapter | None = None
-    self.drone_adapter: DroneAdapter | None = None
+	def __init__(self) -> None:
+		# Lazy init for adapters, wait until called
+		self.input_adapter: InputAdapter | None = None
+		self.drone_adapter: DroneAdapter | None = None
 
-    # input options not optional
-    self.dummy_input = DummyInputAdapter()
-    self.keyboard_input = KeyboardAdapter()
+		# input options not optional
+		self.dummy_input = DummyInputAdapter()
+		self.keyboard_input = KeyboardAdapter()
 
-    # Drone adapter registry - populated at startup
-    self.drone_registry: dict[str, DroneAdapter] = {}
+		# Drone adapter registry - populated at startup
+		self.drone_registry: dict[str, DroneAdapter] = {}
 
-    # Demo mode
-    self.demo_task: asyncio.Task | None = None
-    self.demo_running: bool = False
+		# Demo mode
+		self.demo_task: asyncio.Task | None = None
+		self.demo_running: bool = False
 
-    # Telemetry broadcast connections
-    self.telemetry_clients: list[WebSocket] = []
+		# Telemetry broadcast connections
+		self.telemetry_clients: list[WebSocket] = []
 
-    # Event log (last N entries sent to UI)
-    self.event_log: list[str] = []
+		# Event log (last N entries sent to UI)
+		self.event_log: list[str] = []
 
-  def log(self, msg: str) -> None:
-    ts = time.strftime('%H:%M:%S')
-    entry = f'[{ts}] {msg}'
-    self.event_log.append(entry)
-    self.event_log = self.event_log[-100:]  # keep last 100
-    logger.info(msg)  # NOSONAR
+	def log(self, msg: str) -> None:
+		ts = time.strftime('%H:%M:%S')
+		entry = f'[{ts}] {msg}'
+		self.event_log.append(entry)
+		self.event_log = self.event_log[-100:]  # keep last 100
+		logger.info(msg)  # NOSONAR
 
-  # Switching adapters
+	# Switching adapters
 
-  async def set_drone_adapter(self, name: str) -> bool:
-    if name not in self.drone_registry:
-      self.log(f'Unknown drone adapter: {name}')
-      return False
+	async def set_drone_adapter(self, name: str) -> bool:
+		if name not in self.drone_registry:
+			self.log(f'Unknown drone adapter: {name}')
+			return False
 
-    new_adapter = self.drone_registry[name]
-    if new_adapter is self.drone_adapter:
-      self.log(f'Drone adapter already set to {name}')
-      return True
+		new_adapter = self.drone_registry[name]
+		if new_adapter is self.drone_adapter:
+			self.log(f'Drone adapter already set to {name}')
+			return True
 
-    # Disconnect old
-    if self.drone_adapter is not None:
-      try:
-        await self.drone_adapter.disconnect()
-      except Exception as ex:
-        self.log(f'Disconnect error: {ex}')
+		# Disconnect old
+		if self.drone_adapter is not None:
+			try:
+				await self.drone_adapter.disconnect()
+			except Exception as ex:
+				self.log(f'Disconnect error: {ex}')
 
-    self.drone_adapter = new_adapter
-    ok = await new_adapter.connect()
-    if ok:
-      self.log(f'Drone adapter switched -> {name}')
-      # Re-wire input handler
-      if self.input_adapter is not None:
-        self.input_adapter.set_handler(
-          lambda cmd: asyncio.create_task(self.drone_adapter.execute(cmd))
-        )
-    else:
-      self.log(f'Drone adapter {name} failed to connect')
-    return ok
+		self.drone_adapter = new_adapter
+		ok = await new_adapter.connect()
+		if ok:
+			self.log(f'Drone adapter switched -> {name}')
+			# Re-wire input handler
+			if self.input_adapter is not None:
+				self.input_adapter.set_handler(
+					lambda cmd: asyncio.create_task(self.drone_adapter.execute(cmd))
+				)
+		else:
+			self.log(f'Drone adapter {name} failed to connect')
+		return ok
 
-  async def set_input_adapter(self, name: str) -> bool:
-    adapter_map = {
-      'dummy': self.dummy_input,
-      'keyboard': self.keyboard_input,
-    }
-    if name not in adapter_map:
-      self.log(f'Unknown input adapter: {name}')
-      return False
+	async def set_input_adapter(self, name: str) -> bool:
+		adapter_map = {
+			'dummy': self.dummy_input,
+			'keyboard': self.keyboard_input,
+		}
+		if name not in adapter_map:
+			self.log(f'Unknown input adapter: {name}')
+			return False
 
-    new_adapter = adapter_map[name]
-    if new_adapter is self.input_adapter:
-      self.log(f'Input adapter already set to {name}')
-      return True
+		new_adapter = adapter_map[name]
+		if new_adapter is self.input_adapter:
+			self.log(f'Input adapter already set to {name}')
+			return True
 
-    if self.drone_adapter is not None:
-      new_adapter.set_handler(
-        lambda cmd: asyncio.create_task(self.drone_adapter.execute(cmd))
-      )
-    await new_adapter.start()
-    self.input_adapter = new_adapter
-    self.log(f'Input adapter switched -> {name}')
-    return True
+		if self.drone_adapter is not None:
+			new_adapter.set_handler(
+				lambda cmd: asyncio.create_task(self.drone_adapter.execute(cmd))
+			)
+		await new_adapter.start()
+		self.input_adapter = new_adapter
+		self.log(f'Input adapter switched -> {name}')
+		return True
 
-  # command passthrough for dummyinputadapter
+	# command passthrough for dummyinputadapter
 
-  async def send_command(self, cmd_name: str) -> bool:
-    if self.drone_adapter is None:
-      self.log('No drone adapter connected')
-      return False
-    try:
-      cmd_type = CommandType[cmd_name.upper()]
-    except KeyError:
-      self.log(f'Unknown command: {cmd_name}')
-      return False
+	async def send_command(self, cmd_name: str) -> bool:
+		if self.drone_adapter is None:
+			self.log('No drone adapter connected')
+			return False
+		try:
+			cmd_type = CommandType[cmd_name.upper()]
+		except KeyError:
+			self.log(f'Unknown command: {cmd_name}')
+			return False
 
-    cmd = Command(type=cmd_type, source='ui-button')
-    self.log(f'CMD -> {cmd_type.name}')
-    await self.drone_adapter.execute(cmd)
-    return True
+		cmd = Command(type=cmd_type, source='ui-button')
+		self.log(f'CMD -> {cmd_type.name}')
+		await self.drone_adapter.execute(cmd)
+		return True
 
-  # circle demo
+	# circle demo
 
-  def start_demo(self) -> None:
-    """Schedule the demo loop as an asyncio task."""
-    if self.demo_running:
-      self.log('Demo already running')
-      return
-    if self.drone_adapter is None:
-      self.log('No drone adapter - cannot start demo')
-      return
+	def start_demo(self) -> None:
+		"""Schedule the demo loop as an asyncio task."""
+		if self.demo_running:
+			self.log('Demo already running')
+			return
+		if self.drone_adapter is None:
+			self.log('No drone adapter - cannot start demo')
+			return
 
-    self.demo_running = True
-    self.demo_task = asyncio.create_task(self._circle_loop())
-    self.log('Demo mode started - circle pattern')
+		self.demo_running = True
+		self.demo_task = asyncio.create_task(self._circle_loop())
+		self.log('Demo mode started - circle pattern')
 
-  async def stop_demo(self) -> None:
-    self.demo_running = False
-    if self.demo_task:
-      self.demo_task.cancel()
-      try:
-        await self.demo_task
-      except asyncio.CancelledError:
-        raise
-      finally:
-        self.demo_task = None
-    if self.drone_adapter:
-      await self.drone_adapter.hover()
-    self.log('Demo mode stopped')
+	async def stop_demo(self) -> None:
+		self.demo_running = False
+		if self.demo_task:
+			self.demo_task.cancel()
+			try:
+				await self.demo_task
+			except asyncio.CancelledError:
+				raise
+			finally:
+				self.demo_task = None
+		if self.drone_adapter:
+			await self.drone_adapter.hover()
+		self.log('Demo mode stopped')
 
-  async def _circle_loop(self) -> None:
-    """
-    Circle flight pattern.
+	async def _circle_loop(self) -> None:
+		"""
+		Circle flight pattern.
 
-    Ascends to a safe altitude then continuously rotates clockwise while
-    moving forward, producing a steady circular path.
-    One step = one ROTATE_CW + one MOVE_FORWARD, repeated until stopped.
-    """
-    drone = self.drone_adapter
-    try:
-      self.log('Demo: ascending...')
-      await drone.takeoff()
-      await asyncio.sleep(2)
+		Ascends to a safe altitude then continuously rotates clockwise while
+		moving forward, producing a steady circular path.
+		One step = one ROTATE_CW + one MOVE_FORWARD, repeated until stopped.
+		"""
+		drone = self.drone_adapter
+		try:
+			self.log('Demo: ascending...')
+			await drone.takeoff()
+			await asyncio.sleep(2)
 
-      for _ in range(4):
-        await drone.move(CommandType.MOVE_UP)
-        await asyncio.sleep(0.4)
+			for _ in range(4):
+				await drone.move(CommandType.MOVE_UP)
+				await asyncio.sleep(0.4)
 
-      self.log('Demo: beginning circle...')
-      loop_count = 0
+			self.log('Demo: beginning circle...')
+			loop_count = 0
 
-      while self.demo_running:
-        loop_count += 1
-        self.log(f'Demo: loop #{loop_count}')
+			while self.demo_running:
+				loop_count += 1
+				self.log(f'Demo: loop #{loop_count}')
 
-        for _ in range(12):
-          if not self.demo_running:
-            break
-          await drone.move(CommandType.ROTATE_CW)
-          await drone.move(CommandType.MOVE_FORWARD)
-          await asyncio.sleep(0.2)
+				for _ in range(12):
+					if not self.demo_running:
+						break
+					await drone.move(CommandType.ROTATE_CW)
+					await drone.move(CommandType.MOVE_FORWARD)
+					await asyncio.sleep(0.2)
 
-      await drone.hover()
+			await drone.hover()
 
-    except asyncio.CancelledError:
-      self.log('Demo: cancelled')
-      raise
+		except asyncio.CancelledError:
+			self.log('Demo: cancelled')
+			raise
 
-    except Exception as ex:
-      self.log(f'Demo error: {ex}')
-      logger.exception('Circle demo error')
+		except Exception as ex:
+			self.log(f'Demo error: {ex}')
+			logger.exception('Circle demo error')
 
-  # Telemetry broadcast
+	# Telemetry broadcast
 
-  async def broadcast_telemetry(self) -> None:
-    """Runs forever; pushes telemetry to all connected WebSocket clients."""
-    while True:
-      await asyncio.sleep(0.5)
-      await self._push_telemetry()
+	async def broadcast_telemetry(self) -> None:
+		"""Runs forever; pushes telemetry to all connected WebSocket clients."""
+		while True:
+			await asyncio.sleep(0.5)
+			await self._push_telemetry()
 
-  async def _push_telemetry(self) -> None:
-    """Build one telemetry payload and send it to all connected clients."""
-    if not self.telemetry_clients:
-      return
+	async def _push_telemetry(self) -> None:
+		"""Build one telemetry payload and send it to all connected clients."""
+		if not self.telemetry_clients:
+			return
 
-    data = await self._read_telemetry()
-    payload = json.dumps({'type': 'telemetry', 'data': data})
+		data = await self._read_telemetry()
+		payload = json.dumps({'type': 'telemetry', 'data': data})
 
-    dead = []
-    for ws in self.telemetry_clients:
-      try:
-        await ws.send_text(payload)
-      except Exception:
-        dead.append(ws)
+		dead = []
+		for ws in self.telemetry_clients:
+			try:
+				await ws.send_text(payload)
+			except Exception:
+				dead.append(ws)
 
-    for ws in dead:
-      self.telemetry_clients.remove(ws)
+		for ws in dead:
+			self.telemetry_clients.remove(ws)
 
-  async def _read_telemetry(self) -> dict:
-    """Return a serialisable telemetry dict from the active drone adapter."""
-    if self.drone_adapter is None:
-      return {'source': 'none'}
-    try:
-      t = await self.drone_adapter.get_telemetry()
-      return {
-        'altitude_m': t.altitude_m,
-        'speed_ms': t.speed_ms,
-        'battery_pct': t.battery_pct,
-        'heading_deg': t.heading_deg,
-        'is_flying': t.is_flying,
-        'source': t.source,
-      }
-    except Exception as ex:
-      return {'error': str(ex)}
+	async def _read_telemetry(self) -> dict:
+		"""Return a serialisable telemetry dict from the active drone adapter."""
+		if self.drone_adapter is None:
+			return {'source': 'none'}
+		try:
+			t = await self.drone_adapter.get_telemetry()
+			return {
+				'altitude_m': t.altitude_m,
+				'speed_ms': t.speed_ms,
+				'battery_pct': t.battery_pct,
+				'heading_deg': t.heading_deg,
+				'is_flying': t.is_flying,
+				'source': t.source,
+			}
+		except Exception as ex:
+			return {'error': str(ex)}
 
 
 # minimal fastapi app
@@ -289,35 +286,35 @@ state = AppState()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-  # Startup
-  state.log('Demo server starting...')
+	# Startup
+	state.log('Demo server starting...')
 
-  # Build drone registry
-  state.drone_registry['dummy'] = DummyDroneAdapter()
+	# Build drone registry
+	state.drone_registry['dummy'] = DummyDroneAdapter()
 
-  state.drone_registry['airsim'] = AirSimAdapter()
-  state.log('AirSim adapter available')
+	state.drone_registry['airsim'] = AirSimAdapter()
+	state.log('AirSim adapter available')
 
-  state.drone_registry['projectairsim'] = ProjectAirSimAdapter()
-  state.log('ProjectAirSim adapter available')
+	state.drone_registry['projectairsim'] = ProjectAirSimAdapter()
+	state.log('ProjectAirSim adapter available')
 
-  # Default to dummy adapters
-  await state.set_drone_adapter('dummy')
-  await state.set_input_adapter('keyboard')
+	# Default to dummy adapters
+	await state.set_drone_adapter('dummy')
+	await state.set_input_adapter('keyboard')
 
-  # Start telemetry broadcast loop
-  telem_task = asyncio.create_task(state.broadcast_telemetry())
+	# Start telemetry broadcast loop
+	telem_task = asyncio.create_task(state.broadcast_telemetry())
 
-  state.log('Ready - http://localhost:8000')
+	state.log('Ready - http://localhost:8000')
 
-  yield
+	yield
 
-  # Shutdown
-  telem_task.cancel()
-  await state.stop_demo()
-  if state.drone_adapter:
-    await state.drone_adapter.disconnect()
-  state.log('Server shut down')
+	# Shutdown
+	telem_task.cancel()
+	await state.stop_demo()
+	if state.drone_adapter:
+		await state.drone_adapter.disconnect()
+	state.log('Server shut down')
 
 
 app = FastAPI(title='Drone Demo', lifespan=lifespan)
@@ -327,31 +324,31 @@ app = FastAPI(title='Drone Demo', lifespan=lifespan)
 
 @app.get('/', response_class=HTMLResponse)
 async def index():
-  return HTMLResponse(FRONTEND_HTML)
+	return HTMLResponse(FRONTEND_HTML)
 
 
 @app.get('/api/status')
 async def api_status():
-  drone_name = 'none'
-  for name, adapter in state.drone_registry.items():
-    if adapter is state.drone_adapter:
-      drone_name = name
-      break
+	drone_name = 'none'
+	for name, adapter in state.drone_registry.items():
+		if adapter is state.drone_adapter:
+			drone_name = name
+			break
 
-  input_name = 'none'
-  if state.input_adapter is state.keyboard_input:
-    input_name = 'keyboard'
-  elif state.input_adapter is state.dummy_input:
-    input_name = 'dummy'
+	input_name = 'none'
+	if state.input_adapter is state.keyboard_input:
+		input_name = 'keyboard'
+	elif state.input_adapter is state.dummy_input:
+		input_name = 'dummy'
 
-  return {
-    'drone_adapter': drone_name,
-    'input_adapter': input_name,
-    'drone_adapters': list(state.drone_registry.keys()),
-    'input_adapters': ['keyboard', 'dummy'],
-    'demo_running': state.demo_running,
-    'log': state.event_log[-20:],
-  }
+	return {
+		'drone_adapter': drone_name,
+		'input_adapter': input_name,
+		'drone_adapters': list(state.drone_registry.keys()),
+		'input_adapters': ['keyboard', 'dummy'],
+		'demo_running': state.demo_running,
+		'log': state.event_log[-20:],
+	}
 
 
 # post methods to interact with the switcher
@@ -359,32 +356,32 @@ async def api_status():
 
 @app.post('/api/drone/{name}')
 async def switch_drone(name: str):
-  ok = await state.set_drone_adapter(name)
-  return {'ok': ok}
+	ok = await state.set_drone_adapter(name)
+	return {'ok': ok}
 
 
 @app.post('/api/input/{name}')
 async def switch_input(name: str):
-  ok = await state.set_input_adapter(name)
-  return {'ok': ok}
+	ok = await state.set_input_adapter(name)
+	return {'ok': ok}
 
 
 @app.post('/api/command/{cmd}')
 async def send_command(cmd: str):
-  ok = await state.send_command(cmd)
-  return {'ok': ok}
+	ok = await state.send_command(cmd)
+	return {'ok': ok}
 
 
 @app.post('/api/demo/start')
 async def demo_start():
-  state.start_demo()
-  return {'ok': True}
+	state.start_demo()
+	return {'ok': True}
 
 
 @app.post('/api/demo/stop')
 async def demo_stop():
-  await state.stop_demo()
-  return {'ok': True}
+	await state.stop_demo()
+	return {'ok': True}
 
 
 # websocket for keyboard events
@@ -392,14 +389,14 @@ async def demo_stop():
 
 @app.websocket('/ws/keyboard')
 async def ws_keyboard(ws: WebSocket):
-  await ws.accept()
-  state.log('Keyboard WebSocket connected')
-  try:
-    while True:
-      msg = await ws.receive_json()
-      state.keyboard_input.handle_message(msg)
-  except WebSocketDisconnect:
-    state.log('Keyboard WebSocket disconnected')
+	await ws.accept()
+	state.log('Keyboard WebSocket connected')
+	try:
+		while True:
+			msg = await ws.receive_json()
+			state.keyboard_input.handle_message(msg)
+	except WebSocketDisconnect:
+		state.log('Keyboard WebSocket disconnected')
 
 
 # websocket for telemetry and logs streaming
@@ -407,16 +404,16 @@ async def ws_keyboard(ws: WebSocket):
 
 @app.websocket('/ws/telemetry')
 async def ws_telemetry(ws: WebSocket):
-  await ws.accept()
-  state.telemetry_clients.append(ws)
-  # send current log immediately
-  await ws.send_text(json.dumps({'type': 'log', 'data': state.event_log[-50:]}))
-  try:
-    while True:
-      await asyncio.sleep(1)  # keep alive. telemetry pushed from broadcast loop
-  except WebSocketDisconnect:
-    if ws in state.telemetry_clients:
-      state.telemetry_clients.remove(ws)
+	await ws.accept()
+	state.telemetry_clients.append(ws)
+	# send current log immediately
+	await ws.send_text(json.dumps({'type': 'log', 'data': state.event_log[-50:]}))
+	try:
+		while True:
+			await asyncio.sleep(1)  # keep alive. telemetry pushed from broadcast loop
+	except WebSocketDisconnect:
+		if ws in state.telemetry_clients:
+			state.telemetry_clients.remove(ws)
 
 
 # basic html css to not look ass ugly
@@ -1132,6 +1129,6 @@ setInterval(pollStatus, 3000);
 # ---------------------------------------------------------------------------
 
 if __name__ == '__main__':
-  port = 8000
-  print(f'\n  Drone Demo  ->  http://localhost:{port}\n')
-  uvicorn.run(app, host='127.0.0.1', port=port, log_level='warning') # NOSONAR
+	port = 8000
+	print(f'\n  Drone Demo  ->  http://localhost:{port}\n')
+	uvicorn.run(app, host='127.0.0.1', port=port, log_level='warning')  # NOSONAR

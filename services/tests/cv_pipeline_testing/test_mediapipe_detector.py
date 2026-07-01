@@ -39,6 +39,7 @@ def make_blank_frame():
 		bgr_frame=np.zeros((480, 640, 3), dtype=np.uint8),
 		rgb_frame=np.zeros((480, 640, 3), dtype=np.uint8),
 		frame_index=1,
+		timestamp=0.0,
 	)
 
 
@@ -166,6 +167,7 @@ class TestHandDetectionPipelineOpen:
 		_mock_mp.solutions.hands.Hands.assert_called_with(
 			static_image_mode=False,
 			max_num_hands=MAX_HANDS,
+			model_complexity=0,
 			min_detection_confidence=0.7,
 			min_tracking_confidence=0.5,
 		)
@@ -181,6 +183,7 @@ class TestHandDetectionPipelineOpen:
 		_mock_mp.solutions.hands.Hands.assert_called_with(
 			static_image_mode=False,
 			max_num_hands=MAX_HANDS,
+			model_complexity=0,
 			min_detection_confidence=0.9,
 			min_tracking_confidence=0.8,
 		)

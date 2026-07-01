@@ -28,6 +28,8 @@ tasks:
     internal: true # not possible to call outside
     cmds:
       - uv run fastapi dev {{.BACKEND_APP}}  --port {{.BACKENDPORT}}
+    env:
+      PYTHONPATH: "{{.ROOT_DIR}}"
 
   frontend-dev:
     internal: true
@@ -67,7 +69,7 @@ tasks:
   backend-unit-test:
     desc: Runs Backend Unit Tests
     cmds:
-      - uv run pytest apps/backend/tests services/tests --cov=apps/backend/src --cov=services  --cov-report=xml:apps/backend/coverage.xml --cov-report=term-missing
+      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=xml:apps/backend/coverage.xml
 
   frontend-unit-test:
     desc: Runs Frontend Unit Tests
@@ -78,7 +80,7 @@ tasks:
   integration-test:
     desc: Runs Integration Tests
     cmds:
-      - uv run pytest tests --cov=apps/backend/src --cov=services --cov-report=xml:tests/coverage.xml --cov-report=term-missing
+      - uv run pytest tests --cov --cov-report=term-missing
 
   lint:
     desc: Runs lint checks
@@ -88,8 +90,8 @@ tasks:
 
   backend-lint:
     cmds:
-    - uv run ruff check apps/backend services tests --output-format=github
-    
+      - uv run ruff check --output-format=github
+
   frontend-lint:
     dir: "{{.FRONTEND_DIR}}"
     cmds:
