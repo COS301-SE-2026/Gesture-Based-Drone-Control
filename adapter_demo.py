@@ -774,13 +774,13 @@ FRONTEND_HTML = """
           <div class="telem-label">Altitude</div>
           <div class="telem-value" id="t-alt">-</div>
         </div>
-		
+
         <div class="telem-cell">
           <div class="telem-label">X Displacement</div>
           <div class="telem-value" id="t-x">-</div>
         </div>
-		
-		    <div class="telem-cell">
+
+        <div class="telem-cell">
           <div class="telem-label">Y Displacement</div>
           <div class="telem-value" id="t-y">-</div>
         </div>
