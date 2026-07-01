@@ -7,6 +7,7 @@ and verify pipeline (InputAdapter -> Command -> DroneAdapter).
 """
 
 import logging
+from typing import Any, Callable, cast
 
 from services.commands.command import Command, CommandType
 from services.input.sources.input_adapter import InputAdapter
@@ -36,6 +37,24 @@ class DummyInputAdapter(InputAdapter):
 		self._started = True
 
 		# if you cannot tell i got lazy right about here. no docs for you
+	
+	async def handle_message(self, message: dict[str, Any]) -> None:
+		"""
+		takes in a dict of the form {'command': "FUNCTION_NAME"}
+		where function name maps directly to the trigger_x() functions below
+		This is done so that this input adapter is consistent with the rest, 
+		even through its kind of redundant.
+		e.g {'command':  trigger_land}
+  		"""
+		# turn the str into a callable, since the input
+		# directly maps to one of these
+		command = cast(Callable[[], None], message["command"])
+
+		if not callable(command):
+			logger.error("DummyInputAdapter: 'command' does not map to a function")
+		else:
+			command()
+			
 
 	def trigger_takeoff(self) -> None:
 		self._emit(Command(type=CommandType.TAKEOFF, source='dummy-input'))

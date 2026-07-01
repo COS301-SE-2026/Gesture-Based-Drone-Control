@@ -13,7 +13,7 @@ import logging
 from typing import Annotated
 from dataclasses import asdict
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, WebSocketException
 from pydantic import BaseModel
 
 from apps.backend.app.dependencies import get_state
@@ -150,3 +150,6 @@ async def status(state: Annotated[AppState, Depends(get_state)]):
 	}
 
 # WebSockets endpoints
+
+
+

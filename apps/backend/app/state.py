@@ -14,6 +14,7 @@ import logging
 from dataclasses import dataclass, field
 
 from services.drone_control.adapters.drone_adapter import DroneAdapter
+from services.input.sources.input_adapter import InputAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,12 @@ class AppState:
 
 	# str() of drone adapter ("airsim, xfly...)
 	adapter_name: str | None = None
+ 
+	# currently connected input adapter
+	input: InputAdapter | None = None
+	
+	# dummy, keyboard, controller, gesture...
+	input_name: str | None = None
 
 	# WS clients that are currently connected
 	clients: set[object] = field(default_factory=set)
@@ -35,6 +42,10 @@ class AppState:
 	@property
 	def is_connected(self) -> bool:
 		return self.adapter is not None
+
+	@property
+	def input_connected(self) -> bool:
+		return self.input is not None
 
 	def reset(self) -> None:
 		"""

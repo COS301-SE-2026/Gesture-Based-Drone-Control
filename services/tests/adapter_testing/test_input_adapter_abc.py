@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 
 from services.commands.command import Command, CommandType
@@ -8,7 +10,8 @@ class ConcreteInputAdapter(InputAdapter):
 	async def start(self) -> None:
 		# issa stub
 		pass
-
+	async def handle_message(self, message: dict[str, Any]) -> None:
+		pass
 
 def test_set_handler_stores_callable():
 	adapter = ConcreteInputAdapter()

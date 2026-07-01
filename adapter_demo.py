@@ -394,7 +394,7 @@ async def ws_keyboard(ws: WebSocket):
 	try:
 		while True:
 			msg = await ws.receive_json()
-			state.keyboard_input.handle_message(msg)
+			await state.keyboard_input.handle_message(msg)
 	except WebSocketDisconnect:
 		state.log('Keyboard WebSocket disconnected')
 

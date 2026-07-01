@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Callable
+from typing import Callable, Any
 
 from services.commands.command import Command
 
@@ -85,6 +85,12 @@ class InputAdapter(ABC):
 
 		This method must not block
 		"""
+		...
+	@abstractmethod
+	async def handle_message(self, message: dict[str, Any]) -> None:
+		"""
+		Handle input, and delegate to the correct command
+  		"""
 		...
 
 	# Protected helper only used in subclasses
