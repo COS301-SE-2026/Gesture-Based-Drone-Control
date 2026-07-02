@@ -23,9 +23,11 @@ const GestureControl = () => {
 
   return (
     <div className ="p-6 space-y-6">
+      
       <div className ='grid grid-cols-[1fr_auto] gap-6 items-stretch'>
-        <Card variant ="glass">
-          <div className ="flex items-center gap-8 flex-wrap h-full">
+        <Card variant ="glass">            
+          <Label size ="md" className ="shrink-0" > Stats </Label>
+          <div className ="flex items-center justify-between gap-4 flex-wrap h-full">
             <div className = "flex items-center gap-3">
               <Battery className = "w-6 h-6 text-Red"/>
               <div>
@@ -63,8 +65,37 @@ const GestureControl = () => {
         
         <DroneModeCard
         currentMode ={droneMode}
-        
+        onModeChange ={setDroneMode}
+        className="w-72"
+        />
+
       </div>
+
+      <div className ="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+        <Card variant="glass" className="h-full flex flex-col">
+          <div className="flex flex-col gap-4 flex-1">
+            <div className ="flex items-center justify-between">
+              <Label className="text-lg font-semibold">
+                Gesture Detection
+              </Label>
+            </div>
+
+            <div className="relative w-full flex-1 bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px] flex items-center justify-center">
+            <div className ="w-full h-full bg-gradient-to-br from-OffBlack/40 to-OffBlack/60 flex flex-col items-center justify-center relative">
+            <Camera className ="w-16 h-16 text-DarkGrey mb-3"/>
+            </div>
+            <div className="absolute top-4 right-4 flex items-center gap-2 bg-OffBlack/60 px-3 py-1 rounded-full text-xs text-OffWhite">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"/>
+            <span>Active</span>
+            </div>
+            </div>
+          </div>
+        </Card>
+
+        <GestureGuide className="h-full"/>
+      </div>
+
+      <CommandHistory commands={commands}/>
     </div>
   )
     
