@@ -1,11 +1,12 @@
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
 import PropTypes from "prop-types"
-import { useState } from "react"
+import { useState , useRef } from "react"
 import { ChevronDown, ChevronUp } from "lucide-react"
 
 const CommandHistory = ({ commands = [], className = "" }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const listRef = useRef(null)
   //made mock data here
   const defaultCommands = [
     { action: "swipe up - move up", timestamp: "18:50:43" },
@@ -19,13 +20,19 @@ const CommandHistory = ({ commands = [], className = "" }) => {
   ]
 
   const displayCommands = commands.length > 0 ? commands : defaultCommands
+  const handleCardClick = (e) =>{
+    if (listRef.current && listRef.current.contains(e.target)){
+      return
+    }
+    setIsOpen(!isOpen)
+  }
 
   return (
     <Card
       variant="glass"
       className={`hover:!scale-100 dark:hover:!scale-100 hover:!bg-transperant dark:hover:!bg-transperant hover:!shadow-xl dark:!hover:!shadow-2xl ${className}`}
       clickable={true}
-      onClick={() => setIsOpen(!isOpen)}
+      onClick={handleCardClick}
     >
       <div className="flex flex-col gap-4 cursor-pointer">
         <div className="flex items-center justify-between w-full">
@@ -39,9 +46,8 @@ const CommandHistory = ({ commands = [], className = "" }) => {
         </div>
         {isOpen && (
           <div
+            ref={listRef}
             className="space-y-3 max-h-112 overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-            role="presentation" // cause sonar cube be NOT SO VERY NICE ABOUT IT, i just wanted it to stop from the entire bar from expanding when hovered on.
           >
             {displayCommands.map((cmd, index) => (
               <Card
