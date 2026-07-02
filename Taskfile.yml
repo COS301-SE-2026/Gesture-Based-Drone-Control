@@ -68,7 +68,12 @@ tasks:
     desc: Runs Backend Unit Tests
     cmds:
       - uv run pytest apps/backend/tests services/tests --cov  --cov-report=xml:apps/backend/coverage.xml
-
+    
+  api-unit-test:
+    desc: Runs API unit tests
+    cmds:
+      - uv run pytest apps/backend/tests --cov --cov-report=xml:apps/backend/coverage.xml
+    
   frontend-unit-test:
     desc: Runs Frontend Unit Tests
     dir: "{{.FRONTEND_DIR}}"
