@@ -368,3 +368,37 @@ def test_commands_multiple_commands():
 		ws.receive_json()
 
 	assert state.adapter.execute.await_count == 3
+
+
+# ws drone/ws/telemetry
+
+
+def test_telemetry_gets_data():
+	"""should recieve data when drone is connected"""
+	state = connected_state()
+	client = TestClient(make_app(state))
+
+	with client.websocket_connect('/ws/telemetry') as ws:
+		data = ws.receive_json()
+
+	assert 'altitude_m' in data
+	assert 'is_flying' in data
+	assert data['source'] == 'mock'
+
+
+def test_telemetry_register_client():
+	"""should add clients to state.clients on connect"""
+	state = connected_state()
+	client = TestClient(make_app(state))
+
+	with client.websocket_connect('/ws/telemetry'):
+		assert len(state.clients) == 1
+
+
+def test_telemetry_no_crash():
+	"""should keep socket open when no adapter is connected"""
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	with client.websocket_connect('/ws/telemetry'):
+		assert len(state.clients) == 1
