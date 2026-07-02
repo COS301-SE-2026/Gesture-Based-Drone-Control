@@ -1,5 +1,9 @@
+# apps/backend/tests/test_drone_api.py
+
 """
-Comprehensive testing for POST /drone/connect and GET /drone/disconnect
+Comprehensive testing for all drone endpoints:
+	POST /drone/connect
+	GET /drone/disconnect
 """
 
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -11,6 +15,7 @@ from fastapi.testclient import TestClient
 from apps.backend.app.api.drone import router
 from apps.backend.app.dependencies import get_state
 from apps.backend.app.state import AppState
+from services.drone_control.adapters.drone_adapter import TelemetryData
 
 # helpers
 
@@ -26,6 +31,14 @@ def make_mock_adapter(connect_returns: bool = True) -> MagicMock:
 	adapter = MagicMock()
 	adapter.connect = AsyncMock(return_value=connect_returns)
 	adapter.disconnect = AsyncMock()
+	adapter.get_telemetry = AsyncMock(return_value=TelemetryData(
+		altitude_m=10.0,
+		speed_ms=2.0,
+		battery_pct=85.0,
+		heading_deg=90.0,
+		is_flying=True,
+		source='mock',
+	))
 	return adapter
 
 def connected_state(adapter_name: str = 'dummy') -> AppState:
@@ -206,3 +219,51 @@ async def test_disconnect_correct_message():
 	
 	response = client.post('/disconnect')
 	assert 'dummy' in response.json()['message'].lower()
+
+# GET /drone/status
+
+@pytest.mark.asyncio 
+async def test_status_when_not_connected():
+	"""should return a success with default values"""
+	state = AppState()
+	client = TestClient(make_app(state))
+	
+	response = client.get('/status')
+	
+	assert response.status_code == 200
+	body = response.json()
+	assert body['connected'] is False
+	assert body['adapter'] is None
+
+@pytest.mark.asyncio
+async def test_status_response():
+	"""Check that all expected fileds are present"""
+	state = connected_state()
+	client = TestClient(make_app(state))
+
+	response = client.get('/status')
+	telemetry = response.json()['telemetry']
+	
+	assert 'altitude_m' in telemetry
+	assert 'speed_ms' in telemetry
+	assert 'battery_pct' in telemetry
+	assert 'heading_deg' in telemetry
+	assert 'is_flying' in telemetry
+	assert 'source' in telemetry
+
+@pytest.mark.AsyncIterator
+async def test_status_values():
+	"""returns correct predefined values"""
+	state = connected_state()
+	client = TestClient(make_app(state))
+
+	response = client.get('/status')
+	telemetry = response.json()['telemetry']
+
+	assert telemetry['altitude_m'] == 10.0
+	assert telemetry['speed_ms'] == 2.0
+	assert telemetry['battery_pct'] == 85.0
+	assert telemetry['is_flying'] is True
+	assert telemetry['source'] == 'mock'
+
+# WS /drone/ws/commands
