@@ -3,18 +3,26 @@
 """
 All drone routes, REST and WebSockets
 
-<include a summary here>
-real chat just look at the docs or source files i cant be bothered
+REST:
+
+POST /drone/connect - connect to a drone adapter
+POST /drone.disconnect - disconnect the active drone adapter
+GET /dtrone/status - connection state + telemetry
+
+WebSockets:
+
+WS /drone/ws/telemetry - Push live telemetry to clients every 0.1s
+WS /drone/ws/commands - Utility to bypass inputs, directly issue a Command to droneadapter
 """
 
 from __future__ import annotations
 
-import logging
 import asyncio
-from typing import Annotated
+import logging
 from dataclasses import asdict
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, WebSocketException
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 from apps.backend.app.dependencies import get_state
@@ -25,10 +33,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# generic models to be used as default
 
-
-# support all kwargs
+# support all kwargs. defaults should work when running locally
 class ConnectRequest(BaseModel):
 	# shared
 	adapter: str = 'dummy'
@@ -114,35 +120,37 @@ async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_s
 		adapter=body.adapter,
 		message=f'Connected to {body.adapter} at {body.host}',
 	)
- 
+
+
 class DisconnectResponse(BaseModel):
 	success: bool
 	message: str
- 
+
+
 @router.post('/disconnect', response_model=DisconnectResponse)
 async def disconnect(state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
 	"""
 	Simply disconnects from the connected drone if there is one connected.
 	Returns a false for failure cases
- 	"""
+	"""
 	if state.adapter is None:
-		return DisconnectResponse(success=False, message="There is no drone connected.")
+		return DisconnectResponse(success=False, message='There is no drone connected.')
 
 	# there is an adapter connected, simply call disconnect and see if it works
 	name = state.adapter_name
 	await state.adapter.disconnect()
-	return DisconnectResponse(success=True, message=f"{name} adapter successfully disconnected")
+	return DisconnectResponse(success=True, message=f'{name} adapter successfully disconnected')
 
 
 @router.get('/status')
 async def status(state: Annotated[AppState, Depends(get_state)]):
 	"""
-	GET implementation of some basic telemetry data and general 
+	GET implementation of some basic telemetry data and general
 	drone info. probably not too important but its here as an option
 	"""
 	if not state.is_connected or state.adapter is None:
 		return {'connected': False, 'adapter': None}
-	
+
 	telemetry = await state.adapter.get_telemetry()
 	return {
 		'connected': True,
@@ -150,35 +158,31 @@ async def status(state: Annotated[AppState, Depends(get_state)]):
 		'telemetry': asdict(telemetry),
 	}
 
+
 # WebSockets endpoints
 
-class Basic_Command_Response:
-    success: bool
-    message: str
-    
-class Basic_CommandRequest:
-	# common
-	# dummy specific
-	command: str
-	# keyboard adapter specific
-	key: str
-	event: str
-	
- 
-# TODO input handling websocket. tis difficult
 
 @router.websocket('/ws/telemetry')
 async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
-    """
+	"""
 	Simply send telemetry to connected clients every 0.1 seconds.
-    """
-    await websocket.accept()
-    try:
-        while True:
-            if state.adapter is not None:
-                telemetry = await state.adapter.get_telemetry()
-                await websocket.send_json(asdict(telemetry)) # easy convert to json
-            await asyncio.sleep(0.1) # adjust this polling rate as needed
-    except WebSocketDisconnect:
-        pass
 
+	If no adapter is connected, the socket stays open and silently waits
+		- this is to allow telemetry listening to occur immediately, without reconnecting
+	data will flow once /drone/connect is called
+	"""
+	await websocket.accept()
+	state.clients.add(websocket)
+	logger.info('/drone/ws/telemetry: client connected (with %d total) ', len(state.clients))
+	try:
+		while True:
+			if state.adapter is not None:
+				try:
+					telemetry = await state.adapter.get_telemetry()
+					await websocket.send_json(asdict(telemetry))  # easy convert to json
+				except Exception as ex:
+					logger.error('/drone/ws/telemetry: error getting telemetry - %s', ex)
+			await asyncio.sleep(0.1)  # adjust this polling rate as needed
+	except WebSocketDisconnect:
+		state.clients.discard(websocket)
+		logger.error('/drone/ws/telemetry: client disconnected, %d remaining', len(state.clients))

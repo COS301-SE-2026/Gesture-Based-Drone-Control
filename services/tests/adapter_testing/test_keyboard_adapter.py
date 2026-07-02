@@ -15,6 +15,7 @@ async def test_keyboard_adapter_start_noop(caplog):
 
 	assert 'ready' in caplog.text.lower()
 
+
 @pytest.mark.asyncio
 async def test_keyboard_keydown_mapping_all_keys():
 	adapter = KeyboardAdapter()
@@ -28,6 +29,7 @@ async def test_keyboard_keydown_mapping_all_keys():
 	assert len(received) == len(KEY_MAP)
 	assert {c.type for c in received} == set(KEY_MAP.values())
 
+
 @pytest.mark.asyncio
 async def test_keyboard_ignores_keyup_events():
 	adapter = KeyboardAdapter()
@@ -40,6 +42,7 @@ async def test_keyboard_ignores_keyup_events():
 
 	assert len(received) == 0
 
+
 @pytest.mark.asyncio
 async def test_keyboard_ignores_unknown_key(caplog):
 	adapter = KeyboardAdapter()
@@ -48,6 +51,7 @@ async def test_keyboard_ignores_unknown_key(caplog):
 	await adapter.handle_message({'key': 'InvalidKey', 'event': 'keydown'})
 
 	assert 'unmapped key' in caplog.text.lower()
+
 
 @pytest.mark.asyncio
 async def test_keyboard_handles_missing_key_field():
@@ -60,6 +64,7 @@ async def test_keyboard_handles_missing_key_field():
 
 	assert len(received) == 0
 
+
 @pytest.mark.asyncio
 async def test_keyboard_handles_missing_event_field():
 	adapter = KeyboardAdapter()
@@ -70,6 +75,7 @@ async def test_keyboard_handles_missing_event_field():
 	await adapter.handle_message({'key': 't'})  # missing event defaults to ''
 
 	assert len(received) == 0
+
 
 @pytest.mark.asyncio
 async def test_keyboard_handles_non_dict_input(caplog):

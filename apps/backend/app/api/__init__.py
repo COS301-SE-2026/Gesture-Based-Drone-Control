@@ -12,3 +12,5 @@ from app.api import drone
 router = APIRouter()
 
 router.include_router(drone.router, prefix='/drone', tags=['drone'])
+
+router.include_router(input.router, prefix='input', tags=['input'])

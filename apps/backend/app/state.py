@@ -26,10 +26,10 @@ class AppState:
 
 	# str() of drone adapter ("airsim, xfly...)
 	adapter_name: str | None = None
- 
+
 	# currently connected input adapter
 	input: InputAdapter | None = None
-	
+
 	# dummy, keyboard, controller, gesture...
 	input_name: str | None = None
 
