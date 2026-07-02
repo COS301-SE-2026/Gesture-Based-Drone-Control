@@ -41,6 +41,7 @@ const CommandHistory = ({ commands = [], className = "" }) => {
           <div
             className="space-y-3 max-h-112 overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
+            role="presentation" // cause sonar cube be NOT SO VERY NICE ABOUT IT, i just wanted it to stop from the entire bar from expanding when hovered on.
           >
             {displayCommands.map((cmd, index) => (
               <Card
