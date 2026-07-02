@@ -22,7 +22,7 @@ export default function Button({
   //variants of the button prop
   const variantClasses = {
     default: "bg-Red text-OffWhite hover:bg-LightRed active:bg-DarkRed",
-    secondary: "bg-DarkGrey text-OffBlack dark:text-OffWhite hover:bg-Grey active:bg-DarkGrey",
+    secondary: "bg-DarkGrey text-OffBlack dark:text-OffBlack hover:bg-Grey active:bg-DarkGrey",
     //can add more if we need them
   }
 
