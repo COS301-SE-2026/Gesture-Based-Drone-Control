@@ -4,7 +4,9 @@
 
 The ProjectAirSimAdapter is a concrete implementation of DroneAdapter that wraps the Project AirSim (Unreal Engine 5) Python client.
 
-It replaces legacy AirSim by using a modern async-native architecture based on pynng, where all drone operations are real coroutines.
+This serves as our 'flagship' `DroneAdapter` for simulations, as it has no issues on modern platforms unlike legacy Airsim. 
+
+Heavily uses our custom fork of the `ProjectAirsim` Python library, added as a submodule to our repo under `/Vendors`
 
 ---
 
@@ -26,7 +28,7 @@ It replaces legacy AirSim by using a modern async-native architecture based on p
 - All methods are awaitable coroutines
 - No blocking RPC layer
 
-Examples:
+Examples of better async support:
 - takeoff_async()
 - move_by_velocity_body_frame_async()
 - rotate_by_yaw_rate_async()
@@ -63,6 +65,8 @@ This adapter resolves it dynamically:
 
 If neither exists, a runtime error is thrown.
 
+These files are pretty much guaranteed to exist upon repo initialization.
+
 ---
 
 ## Connection Parameters
@@ -76,18 +80,23 @@ These replace legacy AirSim port 41451.
 
 ---
 
-## Configuration Constants
+## Configuration Constants - May be Tweaked
 
 ### Movement
 
-- DEFAULT_SPEED_MS = 8.0
-- DEFAULT_DURATION_S = 0.5
-- GRAVITY_COMP_VZ = -0.3
+```
+DEFAULT_SPEED_MS = 8.0
+DEFAULT_DURATION_S = 0.5
+GRAVITY_COMP_VZ = -0.3  
+# ^prevents the drone from falling like a brick, consistent with real drone controls
+```
 
 ### Rotation
 
-- DEFAULT_ROTATE_DEG = 15.0
-- DEFAULT_YAW_RATE_DPS = 120.0
+```
+DEFAULT_ROTATE_DEG = 15.0
+DEFAULT_YAW_RATE_DPS = 120.0
+```
 
 ---
 
@@ -95,9 +104,11 @@ These replace legacy AirSim port 41451.
 
 ### Purpose
 
-Wraps Project AirSim Drone API and implements DroneAdapter interface.
+Wraps Project AirSim Drone API and implements the `DroneAdapter` interface.
 
 Provides full lifecycle control, movement, and telemetry normalisation.
+
+This is the only point in our system that directly interacts with PAS.
 
 ---
 
@@ -105,7 +116,7 @@ Provides full lifecycle control, movement, and telemetry normalisation.
 
 ### ProjectAirSimAdapter(host, topics_port, services_port, vehicle_name, scene_config, sim_config_path)
 
-#### Parameters
+#### Parameters - Default usually suffices
 
 - host: simulator host IP (default 127.0.0.1)
 - topics_port: pub-sub port (default 8989)
@@ -131,8 +142,9 @@ Steps:
 - Enables API control
 
 Returns:
-- True on success
-- False on failure
+- `True` on success
+- `False` on failure
+- Does not throw to allow retries.
 
 ---
 
@@ -154,14 +166,14 @@ Steps:
 ### takeoff()
 
 - Arms drone
-- Calls takeoff_async()
+- Calls `takeoff_async()`
 - Requires connection
 
 ---
 
 ### land()
 
-- Calls land_async()
+- Calls `land_async()`
 - Waits until drone confirms landing via telemetry
 - Disarms drone
 
@@ -169,7 +181,7 @@ Steps:
 
 ### hover()
 
-Stops movement and holds position using hover_async().
+Stops movement and holds position using `hover_async()`.
 
 ---
 
@@ -192,6 +204,7 @@ Executes movement or rotation.
 
 ### Parameters
 
+- **kwargs**: optional to override default movement behaviour, analog controls
 - speed_ms: movement speed (default 8.0)
 - duration_s: movement duration (default 0.5)
 - degrees: rotation amount
@@ -212,6 +225,7 @@ Uses body-frame velocity:
 Gravity compensation:
 
 - GRAVITY_COMP_VZ applied during horizontal movement
+- Shifts the drone up slightly so that it maintains its altitude
 
 ---
 
@@ -257,7 +271,7 @@ Returns normalised drone state.
 
 From get_ground_truth_kinematics():
 
-- position (x, y, z)
+- position `(x, y, z)`
 - orientation quaternion
 - linear velocity
 
@@ -297,16 +311,20 @@ Duration = degrees / yaw_rate
 
 ### _yaw_from_quaternion_dict(q)
 
-Converts quaternion dictionary into heading in degrees.
+### _yaw_from_quaternion_dict(dict)
 
-Supports:
-- {w, x, y, z}
-- {w_val, x_val, y_val, z_val}
+Extract compass heading [0, 360) from a quaternion dict.
+ - supports either {w, x, y, z} and {w_val, x_val, y_val, z_val} key shapes
+ - Holy scary math :(
+ - quaternion is a 4d system used to represent a 3D state
+ - consists of one real number (scalar for rotation w) and 3 imaginary numbers
+ - `q = w + xi + yj + zk` where `ijk = -1 = i^2 = j^2 = k^2`
+ - get only the yaw component of a quaternion to euler conversion
+ - calculates yaw = `atan2(2(wz+wy),1 -2(y^2+z^2))`
 
-Returns:
-- heading in range [0, 360)
+Returns heading in a `[0–360)` range, clockwise from North
 
-Falls back to 0.0 on error.
+Falls back to 0.0 on failure.
 
 ---
 

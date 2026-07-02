@@ -6,6 +6,8 @@ The AirSimAdapter is a concrete implementation of DroneAdapter that wraps the Ai
 
 It provides a full bridge between the DroneAdapter interface and the AirSim multirotor API.
 
+This is not intended to be used very much. It works reliably, however the same cannot be said for legacy Airsim itself.  
+
 ---
 
 ## Prerequisites
@@ -18,11 +20,12 @@ Default configuration:
 - host: localhost
 - port: 41451
 
+- this is user configurable so theoretically it can connect to a remote instance of Airsim.
 ---
 
 ### 2. Python package
 
-The AirSim Python package must be available in the active environment.
+The AirSim Python package must be available in the active environment. It is worth noting that a pip install for this package needs to be done with all prerequisites already installed in the environment, as well as the `--no-build-isolation` flag
 
 It should be installed when running via:
 
@@ -144,7 +147,7 @@ Behavior:
 Commands drone to ascend to hover altitude.
 
 Note:
-- Currently blocks until completion using `.join()`
+- Blocks until completion using `.join()`
 
 ---
 
@@ -230,7 +233,7 @@ Returns a normalized snapshot of drone state.
 
 ### Fields
 
-- altitude_m: computed from NED z inversion
+- altitude_m: computed from an inversion of the Z coordinate value
 - speed_ms: magnitude of velocity vector
 - battery_pct: fixed at 100 (AirSim limitation)
 - heading_deg: derived from quaternion yaw
@@ -259,7 +262,7 @@ Rotates drone using yaw rate control.
 - counter-clockwise = negative yaw rate
 
 Duration is computed from:
-degrees / DEFAULT_YAW_RATE_DPS
+`degrees / DEFAULT_YAW_RATE_DPS`
 
 ---
 
