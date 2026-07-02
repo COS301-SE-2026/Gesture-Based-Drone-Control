@@ -31,16 +31,19 @@ def make_mock_adapter(connect_returns: bool = True) -> MagicMock:
 	adapter = MagicMock()
 	adapter.connect = AsyncMock(return_value=connect_returns)
 	adapter.disconnect = AsyncMock()
-	adapter.get_telemetry = AsyncMock(return_value=TelemetryData(
-		altitude_m=10.0,
-		speed_ms=2.0,
-		battery_pct=85.0,
-		heading_deg=90.0,
-		is_flying=True,
-		source='mock',
-	))
+	adapter.get_telemetry = AsyncMock(
+		return_value=TelemetryData(
+			altitude_m=10.0,
+			speed_ms=2.0,
+			battery_pct=85.0,
+			heading_deg=90.0,
+			is_flying=True,
+			source='mock',
+		)
+	)
 	adapter.execute = AsyncMock()
 	return adapter
+
 
 def connected_state(adapter_name: str = 'dummy') -> AppState:
 	"""helper to create an AppState with an already connected adapter"""
@@ -49,10 +52,12 @@ def connected_state(adapter_name: str = 'dummy') -> AppState:
 	state.adapter_name = adapter_name
 	return state
 
+
 # POST drone/connect
 # test successful connections with all sims
 # mocks the drone sims since we just need to see if it behaves right
 # assuming a successful connection
+
 
 @pytest.mark.asyncio
 async def test_connect_dummy():
@@ -173,68 +178,76 @@ async def test_connect_replaces_existing_adapter():
 	assert state.adapter is new_adapter
 	assert state.adapter_name == 'projectairsim'
 
+
 # POST drone/disconnect
+
 
 @pytest.mark.asyncio
 async def test_disconnect_when_connected():
 	"""disconnect from drone and reset state"""
 	state = connected_state('dummy')
-	adapter = state.adapter
+	state.adapter
 	client = TestClient(make_app(state))
-	
+
 	response = client.post('/disconnect')
-	
+
 	assert response.status_code == 200
 	assert response.json()['success'] is True
 	assert state.is_connected is False
+
 
 @pytest.mark.asyncio
 async def test_disconnect_when_not_connected():
 	"""should do nothing to state and return success: False"""
 	state = AppState()
 	client = TestClient(make_app(state))
-	
+
 	response = client.post('/disconnect')
-	
+
 	assert response.status_code == 200
 	body = response.json()
 	assert body['success'] is False
 	assert state.adapter_name is None
 
-@pytest.mark.asyncio 
+
+@pytest.mark.asyncio
 async def test_disconnect_resets_state():
 	"""state should be set to defaults no matter what"""
 	state = AppState()
 	client = TestClient(make_app(state))
-	
-	response = client.post('/disconnect')
+
+	client.post('/disconnect')
 	assert state.adapter is None
 	assert state.adapter_name is None
 	assert state.is_connected is False
+
 
 @pytest.mark.asyncio
 async def test_disconnect_correct_message():
 	"""message returned with successful disconnect should have adapters name"""
 	state = connected_state()
 	client = TestClient(make_app(state))
-	
+
 	response = client.post('/disconnect')
 	assert 'dummy' in response.json()['message'].lower()
 
+
 # GET /drone/status
 
-@pytest.mark.asyncio 
+
+@pytest.mark.asyncio
 async def test_status_when_not_connected():
 	"""should return a success with default values"""
 	state = AppState()
 	client = TestClient(make_app(state))
-	
+
 	response = client.get('/status')
-	
+
 	assert response.status_code == 200
 	body = response.json()
 	assert body['connected'] is False
 	assert body['adapter'] is None
+
 
 @pytest.mark.asyncio
 async def test_status_response():
@@ -244,13 +257,14 @@ async def test_status_response():
 
 	response = client.get('/status')
 	telemetry = response.json()['telemetry']
-	
+
 	assert 'altitude_m' in telemetry
 	assert 'speed_ms' in telemetry
 	assert 'battery_pct' in telemetry
 	assert 'heading_deg' in telemetry
 	assert 'is_flying' in telemetry
 	assert 'source' in telemetry
+
 
 @pytest.mark.asyncio
 async def test_status_values():
@@ -267,77 +281,84 @@ async def test_status_values():
 	assert telemetry['is_flying'] is True
 	assert telemetry['source'] == 'mock'
 
+
 # WS /drone/ws/commands
+
 
 def test_commands_valid():
 	"""valid command should execute and return ok: True"""
 	state = connected_state()
 	client = TestClient(make_app(state))
-	
+
 	with client.websocket_connect('/ws/commands') as ws:
 		ws.send_json({'command': 'TAKEOFF'})
 		response = ws.receive_json()
-	
+
 	assert response['ok'] is True
 	assert response['command'] == 'TAKEOFF'
+
 
 def test_commands_invalid():
 	"""Should return an error with a list of valid commands"""
 	state = connected_state()
 	client = TestClient(make_app(state))
-	
+
 	with client.websocket_connect('/ws/commands') as ws:
 		ws.send_json({'command': 'JARVIS_GET_ME_A_BEER'})
 		response = ws.receive_json()
-	
+
 	assert 'error' in response
 	assert 'valid' in response
 	assert 'JARVIS_GET_ME_A_BEER' in response['error']
 	state.adapter.execute.assert_not_awaited()
 
+
 def test_commands_no_drone():
 	"""Should return an error with no drone connected"""
 	state = AppState()
 	client = TestClient(make_app(state))
-	
+
 	with client.websocket_connect('/ws/commands') as ws:
 		ws.send_json({'command': 'TAKEOFF'})
 		response = ws.receive_json()
-	
+
 	assert 'error' in response
 	assert 'connect' in response['error'].lower()
+
 
 def test_commands_custom_source():
 	"""should pass the source to the adapter"""
 	state = connected_state()
 	client = TestClient(make_app(state))
-	
+
 	with client.websocket_connect('/ws/commands') as ws:
 		ws.send_json({'command': 'TAKEOFF', 'source': 'myass'})
 		ws.receive_json()
-	
+
 	call_args = state.adapter.execute.await_args
 	command = call_args.args[0]
 	assert command.source == 'myass'
+
 
 def test_commands_default_source():
 	"""should default to ws_commands"""
 	state = connected_state()
 	client = TestClient(make_app(state))
-	
+
 	with client.websocket_connect('/ws/commands') as ws:
 		ws.send_json({'command': 'TAKEOFF'})
 		ws.receive_json()
-	
+
 	call_args = state.adapter.execute.await_args
 	command = call_args.args[0]
 	assert command.source == 'ws_commands'
+
 
 def test_commands_multiple_commands():
 	"""should execute all commands sent in sequence"""
 	state = connected_state()
 	client = TestClient(make_app(state))
-	
+
 	with client.websocket_connect('/ws/commands') as ws:
 		ws.send_json({'command': 'TAKEOFF'})
 		ws.receive_json()
@@ -345,5 +366,5 @@ def test_commands_multiple_commands():
 		ws.receive_json()
 		ws.send_json({'command': 'LAND'})
 		ws.receive_json()
-	
+
 	assert state.adapter.execute.await_count == 3
