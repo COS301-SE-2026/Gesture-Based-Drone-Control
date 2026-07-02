@@ -2,15 +2,16 @@
 assemble all routes into a single router that main.py uses
 
 currently added:
-    /drone - everything to do with the adapters
+    /drone - everything to do with the DroneAdapter
+    /input - everything to do with InputAdapters
 """
 
 from fastapi import APIRouter
 
-from app.api import drone
+from app.api import drone, input
 
 router = APIRouter()
 
 router.include_router(drone.router, prefix='/drone', tags=['drone'])
 
-router.include_router(input.router, prefix='input', tags=['input'])
+router.include_router(input.router, prefix='/input', tags=['input'])
