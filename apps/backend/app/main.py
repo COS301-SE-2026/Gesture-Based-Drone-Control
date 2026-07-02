@@ -1,26 +1,49 @@
 # /apps/backend/app/main.py
-import sys
-from pathlib import Path
 
-project_root = Path(__file__).parent.parent.parent.parent
-sys.path.insert(0, str(project_root))
+"""
+Entry point for FastAPI
+
+- Create FastAPI app
+- Manage startup and shutdown
+- Mount the router
+- Store AppState so routes can access
+
+"""
+
+from __future__ import annotations  # prevents typeerrors
+
+import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
 from app.api import router
+from app.state import AppState
+
+logging.basicConfig(
+	level=logging.INFO,
+	format='%(asctime)s  %(levelname)-8s  %(name)s: %(message)s',
+	datefmt='%H:%M:%S',
+)
+
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+	logger.info('Starting API...')
+	app.state.app = AppState()
+	yield
+	logger.info('Stopping API...')
+
 
 app = FastAPI(
-	title='Drone Control API',
+	title='GBDC API',
+	version='1.0',
 	description="""
-##
-## WebSocket Endpoints
-
-* `ws://localhost:3000/drone/telemetry` – Real‑time telemetry stream from live drone
-  Connect with a WebSocket client. Sends telemetry every 0.5s
-
-* `ws://localhost:3000/sim/telemetry` – Real‑time telemetry stream simulated drone
-  Connect with a WebSocket client. Sends telemetry every 0.5s
-""",
+              Describe each endpoint here
+              """,
+	lifespan=lifespan,
 )
 
 app.include_router(router)
