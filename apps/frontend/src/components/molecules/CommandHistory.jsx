@@ -23,7 +23,7 @@ const CommandHistory = ({ commands = [], className = "" }) => {
   return (
     <Card
       variant="glass"
-      className={`hover:scale-100 hover:bg-transperant dark:hover:bg-transperant hover:shadow-xl dark:hover:shadow-2xl ${className}`}
+      className={`hover:!scale-100 dark:hover:!scale-100 hover:!bg-transperant dark:hover:!bg-transperant hover:!shadow-xl dark:!hover:!shadow-2xl ${className}`}
       clickable={true}
       onClick={() => setIsOpen(!isOpen)}
     >
