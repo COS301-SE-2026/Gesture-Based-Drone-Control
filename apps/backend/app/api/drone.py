@@ -10,6 +10,7 @@ real chat just look at the docs or source files i cant be bothered
 from __future__ import annotations
 
 import logging
+import asyncio
 from typing import Annotated
 from dataclasses import asdict
 
@@ -151,5 +152,33 @@ async def status(state: Annotated[AppState, Depends(get_state)]):
 
 # WebSockets endpoints
 
+class Basic_Command_Response:
+    success: bool
+    message: str
+    
+class Basic_CommandRequest:
+	# common
+	# dummy specific
+	command: str
+	# keyboard adapter specific
+	key: str
+	event: str
+	
+ 
+# TODO input handling websocket. tis difficult
 
+@router.websocket('/ws/telemetry')
+async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
+    """
+	Simply send telemetry to connected clients every 0.1 seconds.
+    """
+    await websocket.accept()
+    try:
+        while True:
+            if state.adapter is not None:
+                telemetry = await state.adapter.get_telemetry()
+                await websocket.send_json(asdict(telemetry)) # easy convert to json
+            await asyncio.sleep(0.1) # adjust this polling rate as needed
+    except WebSocketDisconnect:
+        pass
 
