@@ -1,7 +1,7 @@
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
 import PropTypes from "prop-types"
-import { useState , useRef } from "react"
+import { useState, useRef } from "react"
 import { ChevronDown, ChevronUp } from "lucide-react"
 
 const CommandHistory = ({ commands = [], className = "" }) => {
@@ -20,8 +20,8 @@ const CommandHistory = ({ commands = [], className = "" }) => {
   ]
 
   const displayCommands = commands.length > 0 ? commands : defaultCommands
-  const handleCardClick = (e) =>{
-    if (listRef.current && listRef.current.contains(e.target)){
+  const handleCardClick = (e) => {
+    if (listRef.current?.contains(e.target)) {
       return
     }
     setIsOpen(!isOpen)
@@ -45,10 +45,7 @@ const CommandHistory = ({ commands = [], className = "" }) => {
           )}
         </div>
         {isOpen && (
-          <div
-            ref={listRef}
-            className="space-y-3 max-h-112 overflow-y-auto"
-          >
+          <div ref={listRef} className="space-y-3 max-h-112 overflow-y-auto">
             {displayCommands.map((cmd, index) => (
               <Card
                 key={cmd.id || index}
