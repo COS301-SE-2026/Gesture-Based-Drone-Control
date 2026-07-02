@@ -27,6 +27,7 @@ from pydantic import BaseModel
 
 from apps.backend.app.dependencies import get_state
 from apps.backend.app.state import AppState
+from services.commands.command import Command, CommandType
 from services.drone_control.adapters.drone_adapter import DroneAdapter
 
 logger = logging.getLogger(__name__)
@@ -186,3 +187,59 @@ async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get
 	except WebSocketDisconnect:
 		state.clients.discard(websocket)
 		logger.error('/drone/ws/telemetry: client disconnected, %d remaining', len(state.clients))
+
+
+@router.websocket('/ws/commands')
+async def command(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
+	"""
+	A 'backdoor' of sorts to allow the user to directly issue a command to a drone.
+	This can be done to easily wire up simple UI like the on screen buttons, without
+	needing to go through the inputAdapter layer.
+	Mirrors the DummyInputAdapter.
+
+	message format:
+		{"command": "CMD_NAME"}
+		or
+		{"command": "TAKEOFF", "source": "dashboard"}
+
+	Command names map DIRECTLY to CommandType enum values. Make sure input lines up
+	otherwise an error will be logged without closing the socket.
+	"""
+	# only one client for input so we dont touch state.clients
+	# ...i think
+	await websocket.accept()
+	logger.info('drone/ws/commands: client connected')
+
+	try:
+		while True:
+			data = await websocket.receive_json()
+			name = data.get('command', '').upper()
+
+			if state.adapter is None:
+				await websocket.send_json(
+					{
+						'error': 'No drone connected. POST /drone/connect first',
+					}
+				)
+				continue
+
+			# check if the command passed in exists
+			try:
+				command_type = CommandType[name]
+			except KeyError:
+				await websocket.send_json(
+					{'error': f'unknown command: {name!r}', 'valid': [c.name for c in CommandType]}
+				)
+				continue
+
+			# send the successful command to the drone
+			src = data.get('source', 'ws_commands')
+			cmd = Command(type=command_type, source=src)
+
+			logger.info('drone/ws/commands: executing %s', command_type.name)
+
+			await state.adapter.execute(cmd)
+			await websocket.send_json({'ok': True, 'command': command_type.name})
+
+	except WebSocketDisconnect:
+		logger.info('drone/ws/commands: Client disconnected')
