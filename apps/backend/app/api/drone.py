@@ -140,6 +140,7 @@ async def disconnect(state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
 	# there is an adapter connected, simply call disconnect and see if it works
 	name = state.adapter_name
 	await state.adapter.disconnect()
+	state.reset()
 	return DisconnectResponse(success=True, message=f'{name} adapter successfully disconnected')
 
 
