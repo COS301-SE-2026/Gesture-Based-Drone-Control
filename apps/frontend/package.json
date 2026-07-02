@@ -23,7 +23,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-is": "18",
-    "react-leaflet": "^5.0.0",
+    "react-leaflet": "4",
     "react-router-dom": "^7.15.1",
     "validator": "^13.15.35"
   },
