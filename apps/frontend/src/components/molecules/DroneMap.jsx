@@ -32,7 +32,27 @@ function createDroneIcon(headingDeg = 0, isDark = false) {
 /**
  * keeps map panned to follow the drones current position
  * must live in the mapContainer to access the map instance via useMap()
+ * 
+ * fitBounds is just for making the map fit the disp
  */
+function FitBounds({ points }) {
+  const map = useMap()
+  const fitted = useRef(false)
+
+  useEffect(() => {
+    if(!fitted.current && points.length > 0) {
+      const bounds = L.latLngBounds(points)
+      map.fitBounds(bounds, { padding: [60, 60]})
+      fitted.current = true
+    }
+  }, [points, map])
+
+  return null
+}
+
+FitBounds.propTypes = {
+  points: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+}
 
 function FollowDrone({ position }) {
   const map = useMap()
@@ -60,7 +80,7 @@ FollowDrone.defaultProps = {
 
 export default function DroneMap({ pathPoints, headingDeg, height }) {
   const { isDark } = useContext(ThemeContext)
-  const mapRef = useRef(null)
+  // const mapRef = useRef(null)
 
   if (pathPoints.length === 0) {
     return (
@@ -85,10 +105,9 @@ export default function DroneMap({ pathPoints, headingDeg, height }) {
   return (
     <div style={{ height }} className="rounded-lg overflow-hidden">
       <MapContainer
-        ref={mapRef}
         crs={L.CRS.Simple}
-        center={currPos}
-        zoom={5}
+        center={[0,0]}
+        zoom={0}
         minZoom={-5}
         className="h-full w-full bg-[#F5F3F4] dark:bg-[#161A1D]"
       >
@@ -108,6 +127,7 @@ export default function DroneMap({ pathPoints, headingDeg, height }) {
         })}
         <Marker position={currPos} icon={createDroneIcon(headingDeg, isDark)} />
         <FollowDrone position={currPos} />
+        <FitBounds points={displacementPoints} />
       </MapContainer>
     </div>
   )
