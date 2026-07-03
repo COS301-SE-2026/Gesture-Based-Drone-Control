@@ -20,6 +20,7 @@ dependencies = [
     "cryptography==41.0.7",
     "airsim",
     "projectairsim",
+    "pydantic[email]>=2.13.4",
 ]
 
 [dependency-groups]
