@@ -25,7 +25,7 @@ export default function DisplacementStat({
   )
 }
 
-DisplacementStat.PropTypes = {
+DisplacementStat.propTypes = {
   label: PropTypes.node.isRequired,
   value: PropTypes.number,
   unit: PropTypes.string,
