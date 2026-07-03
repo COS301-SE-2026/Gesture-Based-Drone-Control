@@ -1,9 +1,8 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useContext } from "react"
 import PropTypes from "prop-types"
 import { MapContainer, Marker, Polyline, useMap } from "react-leaflet"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { useContext } from "react"
 import { ThemeContext } from "../../context/ThemeContext"
 
 /**
@@ -119,7 +118,7 @@ export default function DroneMap({ pathPoints, headingDeg, height }) {
           )
           return (
             <Polyline
-              key={i}
+              key={`polyline-${i}`}
               positions={[displacementPoints[i], displacementPoints[i + 1]]}
               pathOptions={{ color, opacity, weight: 6 }}
             />

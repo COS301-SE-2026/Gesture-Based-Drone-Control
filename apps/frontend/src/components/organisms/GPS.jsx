@@ -16,7 +16,7 @@ const GPS = () => {
     { x_displacement: 1.0, y_displacement: 0.0, altitude_m: 1.5 }, //move right
     { x_displacement: 1.9, y_displacement: 0.9, altitude_m: 2.0 },
     { x_displacement: 2.5, y_displacement: 1.8, altitude_m: 3.0 },
-    { x_displacement: -5, y_displacement: 3.6, altitude_m: 2.5 }, //seeing if it works for left movements
+    { x_displacement: -5.0, y_displacement: 3.6, altitude_m: 2.5 }, //seeing if it works for left movements
     { x_displacement: 1.4, y_displacement: 3.9, altitude_m: 1.2 },
   ])
 
