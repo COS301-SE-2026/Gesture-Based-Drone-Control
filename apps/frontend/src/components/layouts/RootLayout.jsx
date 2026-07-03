@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom"
-import { SideBar, AnalyticsSideContent, DashboardSideCard } from "../molecules"
+import { SideBar, AnalyticsSideContent, DashboardSideCard, GpsSideContent } from "../molecules"
 import { Home, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
 import bgLight from "../../assets/Lightbackground.png"
 import bgDark from "../../assets/darkbackground.png"
@@ -26,6 +26,9 @@ const RootLayout = () => {
       return <DashboardSideCard />
     } else if (location.pathname.includes("/analytics")) {
       return <AnalyticsSideContent />
+    }
+    else if (location.pathname.includes("/gps")) {
+      return <GpsSideContent/>
     }
   }
 
