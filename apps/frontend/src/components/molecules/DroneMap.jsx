@@ -2,25 +2,28 @@ import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import { MapContainer, Marker, Polyline, useMap } from "react-leaflet"
 import L from "leaflet"
-import "leaflet/dist/deaflet.css"
+import "leaflet/dist/leaflet.css"
+import { useContext } from "react"
+import { ThemeContext } from "../../context/ThemeContext"
 
 /**
- * maps an altitude val to colour on a dim to birght green scake depending on how high it is,
+ * maps an altitude val to colour on a dim to birght green scale depending on how high it is,
  * normalized again the min/max altitude seen in the current path
  *
  */
-
+const PATH_COLOUR = "#A4161A"
 function altitudeToColour(altitude, minAlt, maxAlt) {
   const range = maxAlt - minAlt
   const t = range > 0.05 ? (altitude - minAlt) / range : 0.5
-  const lightness = 25 + t * 60 //25% is dim/drone is low, 85% is bright/drone is higher
-  return `hsl(140, 70%, ${lightness}%)`
+  const opacity = 0.35 + t * 0.65 //25% is dim/drone is low, 85% is bright/drone is higher
+  return { color: PATH_COLOUR, opacity }
 }
 
-function createDroneIcon(headingDeg = 0) {
+function createDroneIcon(headingDeg = 0, isDark = false) {
+  const markerColour = isDark ? "#F5F3F4" : "#161A1D"
   return L.divIcon({
     className: "drone-marker",
-    html: `<div style="transform: rotate(${headingDeg}deg); font-size: 22px; line-height: 1;">o</div`,
+    html: `<div style="transform: rotate(${headingDeg}deg); font-size: 22px; line-height: 1; color: ${markerColour};">▲</div>`,
     iconSize: [24, 24],
     iconAnchor: [12, 12],
   })
@@ -56,6 +59,7 @@ FollowDrone.defaultProps = {
  */
 
 export default function DroneMap({ pathPoints, headingDeg, height }) {
+  const { isDark } = useContext(ThemeContext)
   const mapRef = useRef(null)
 
   if (pathPoints.length === 0) {
@@ -84,25 +88,25 @@ export default function DroneMap({ pathPoints, headingDeg, height }) {
         ref={mapRef}
         crs={L.CRS.Simple}
         center={currPos}
-        zoom={2}
-        minZoom={3}
-        style={{ height: "100%", width: "100%", background: "#F5F3F4" }}
+        zoom={5}
+        minZoom={-5}
+        className="h-full w-full bg-[#F5F3F4] dark:bg-[#161A1D]"
       >
-        {pathPoints.slice(1).map((point, i) => (
-          <Polyline
-            key={i}
-            positions={[displacementPoints[i], displacementPoints[i + 1]]}
-            pathOptions={{
-              color: altitudeToColour(
-                point.altitude_m,
-                minAltitude,
-                maxAltitude
-              ),
-              weight: 4,
-            }}
-          />
-        ))}
-        <Marker position={currPos} icon={createDroneIcon(headingDeg)} />
+        {pathPoints.slice(1).map((point, i) => {
+          const { color, opacity } = altitudeToColour(
+            point.altitude_m,
+            minAltitude,
+            maxAltitude
+          )
+          return (
+            <Polyline
+              key={i}
+              positions={[displacementPoints[i], displacementPoints[i + 1]]}
+              pathOptions={{ color, opacity, weight: 6 }}
+            />
+          )
+        })}
+        <Marker position={currPos} icon={createDroneIcon(headingDeg, isDark)} />
         <FollowDrone position={currPos} />
       </MapContainer>
     </div>
