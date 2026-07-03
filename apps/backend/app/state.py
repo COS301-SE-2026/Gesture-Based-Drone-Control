@@ -56,3 +56,10 @@ class AppState:
 		if self.telemetry_task and not self.telemetry_task.done():
 			self.telemetry_task.cancel()
 		self.telemetry_task = None
+	
+	def input_reset(self) -> None:
+		"""
+		Reset inputs only to a disconnected state
+  		"""
+		self.input = None
+		self.input_name = None
