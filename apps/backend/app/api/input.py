@@ -3,6 +3,11 @@
 """
 All input routes, REST and WebSockets
 
+REST:
+    POST input/connect
+    POST input/disconnect
+    GET input/status - return a snapshot of adapter state
+
 """
 
 from __future__ import annotations
@@ -110,3 +115,16 @@ async def disconnect_input(state: Annotated[AppState, Depends(get_state)]):
     
     logger.info(f'input/disconnect: disconnected {name}')
     return DisconnectInputResponse(success=True, message=f'{name} input adapter disconnected')
+
+@router.get('/status')
+async def input_status(state: Annotated[AppState, Depends(get_state)]):
+    """
+    Basic info on the current input adapter if its connected
+    """
+    if state.input is None:
+        return {'connected': False, 'adapter': 'None connected'}
+    
+    return {
+        'connected': True,
+        'adapter': state.input_name
+    }
