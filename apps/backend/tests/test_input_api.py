@@ -1,0 +1,146 @@
+"""
+Tests all endpoints defined in /apps/backend/app/api/input.py"
+"""
+
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from apps.backend.app.api.input import router
+from apps.backend.app.dependencies import get_state
+from apps.backend.app.state import AppState
+
+
+# helpers
+def make_app(state: AppState) -> FastAPI:
+	app = FastAPI()
+	app.include_router(router)
+	app.dependency_overrides[get_state] = lambda: state
+	return app
+
+
+def make_mock_input_adapter() -> MagicMock:
+	adapter = MagicMock()
+	adapter.start = AsyncMock()
+	adapter.handle_message = AsyncMock()
+	adapter.set_handler = MagicMock()
+	return adapter
+
+
+def make_mock_drone_adapter() -> MagicMock:
+	adapter = MagicMock()
+	adapter.execute = AsyncMock()
+	return adapter
+
+
+def connected_input_state(input_name: str = 'dummy') -> AppState:
+	"""AppState with an input adapter already connected."""
+	state = AppState()
+	state.input = make_mock_input_adapter()
+	state.input_name = input_name
+	return state
+
+
+# POST /connect
+
+
+@pytest.mark.asyncio
+async def test_connect_input_dummy():
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.input._build_input_adapter', return_value=make_mock_input_adapter()
+	):
+		response = client.post('/connect', json={'adapter': 'dummy'})
+
+	assert response.status_code == 200
+	body = response.json()
+	assert body['connected'] is True
+	assert body['adapter'] == 'dummy'
+	assert state.input_connected is True
+
+
+@pytest.mark.asyncio
+async def test_connect_input_keyboard():
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.input._build_input_adapter', return_value=make_mock_input_adapter()
+	):
+		response = client.post('/connect', json={'adapter': 'keyboard'})
+
+	assert response.status_code == 200
+	assert state.input_name == 'keyboard'
+	assert response.json()['connected'] is True
+
+
+@pytest.mark.asyncio
+async def test_connect_invalid():
+	"""unknown adapter should return connected: False"""
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	response = client.post('/connect', json={'adapter': '2006toyotacorolla'})
+	body = response.json()
+
+	assert response.status_code == 200
+	assert '2006toyotacorolla' in body['message'].lower() or 'unknown' in body['message'].lower()
+	assert body['connected'] is False
+	assert state.input_connected is False
+
+
+@pytest.mark.asyncio
+async def test_connect_set_handler():
+	"""the haandler should be registered on the adapter before start is called"""
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	mock_adapter = make_mock_input_adapter()
+
+	with patch('apps.backend.app.api.input._build_input_adapter', return_value=mock_adapter):
+		client.post('/connect', json={'adapter': 'dummy'})
+
+	mock_adapter.set_handler.assert_called_once()
+	mock_adapter.start.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_connect_replaces():
+	"""
+	connecting while one is already connected should replace it
+	we only allow one input adapter at a time
+	"""
+	state = connected_input_state('dummy')
+	old_input = state.input
+
+	new_input = make_mock_input_adapter()
+	client = TestClient(make_app(state))
+
+	with patch('apps.backend.app.api.input._build_input_adapter', return_value=new_input):
+		response = client.post('/connect', json={'adapter': 'keyboard'})
+
+	assert response.status_code == 200
+	assert response.json()['connected'] is True
+	assert state.input is new_input
+	assert state.input_name == 'keyboard'
+
+
+@pytest.mark.asyncio
+async def test_connect_without_drone():
+	"""should connect even without a drone"""
+	state = AppState()  # disconnected state has no drone
+	assert state.adapter is None
+
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.input._build_input_adapter', return_value=make_mock_input_adapter()
+	):
+		response = client.post('/connect', json={'adapter': 'keyboard'})
+
+	assert response.status_code == 200
+	assert response.json()['connected'] is True
