@@ -128,3 +128,36 @@ async def input_status(state: Annotated[AppState, Depends(get_state)]):
         'connected': True,
         'adapter': state.input_name
     }
+
+# Websockets endpoints
+# maintain a ws endpoint for each input method
+
+@router.websocket('/ws/keyboard')
+async def keyboard(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
+    """
+    Receive browser events, forward them to the KeyboardAdapter
+    
+    { "key": "ArrowUp", "event": "keydown" }
+	{ "key": "ArrowUp", "event": "keyup" }
+ 
+    Details are found in the KeyboardAdapter class itself at 
+    /services/input/sources/keyboard_adapter.py"
+    
+    If no keyboard, we keep the socket open but drop messages
+    """
+    await websocket.accept()
+    logger.info('input/ws/keyboard: client connected')
+    
+    try:
+        while True:
+            data = await websocket.receive_json()
+            
+            if state.input is None or state.input_name != 'keyboard':
+                logger.debug('input/ws/keyboard: no keyboard adapter connected, ignoring message')
+                continue
+            # assume valid input... add better handling later
+            await state.input.handle_message(data)
+    except WebSocketDisconnect:
+        logger.info('input/ws/keyboard: client disconnected')
+    except  Exception as ex:
+        logger.error(f'input/ws/keyboard: error caught: {ex}')
