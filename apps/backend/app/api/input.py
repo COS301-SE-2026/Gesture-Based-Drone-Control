@@ -92,3 +92,21 @@ async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, De
         adapter = body.adapter,
         message = f'{body.adapter!r} input adapter connected'
     )
+
+class DisconnectInputResponse(BaseModel):
+    success: bool
+    message: str
+    
+@router.post('/disconnect, response_model=DisconnectInputResponse')
+async def disconnect_input(state: Annotated[AppState, Depends(get_state)]):
+    """
+    disconnect active input adapter. does nothing if nothing connected
+    """
+    if state.input is None:
+        return DisconnectInputResponse(success=False, message='No input adapter is connected')
+    
+    name = state.input_name
+    state.input_reset()
+    
+    logger.info(f'input/disconnect: disconnected {name}')
+    return DisconnectInputResponse(success=True, message=f'{name} input adapter disconnected')
