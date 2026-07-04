@@ -4,7 +4,6 @@ No hands detected, detection itself being None
 And gesture/metric lists that are shorter than the hands list
 """
 
-
 import pytest
 from app.cv.serialization import serialize_event
 from cv_pipeline.gestures.gesture_engine import GestureEngineResult
@@ -44,14 +43,17 @@ def make_event(
 	hand_metrics: list[HandMetrics] | None = None,
 ) -> PipelineEvent:
 	frame = CapturedFrame(
-		bgr_frame=None, rbg_frame=None, frame_index=frame_index, timestamp=timestamp
+		bgr_frame=None, rgb_frame=None, frame_index=frame_index, timestamp=timestamp
 	)
 	return PipelineEvent(
 		frame=frame,
+		detection=detection,
 		engine_result=GestureEngineResult(
 			hand_gestures=hand_gestures if hand_gestures is not None else [],
 			frame_index=frame_index,
 		),
+		hand_metrics=hand_metrics if hand_metrics is not None else [],
+		fps=fps,
 	)
 
 
