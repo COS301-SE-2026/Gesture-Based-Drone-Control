@@ -1,4 +1,5 @@
 import { useState } from "react"
+import {API_BASE_URL} from "../lib/api"
 
 export function useForm(initialState, onSuccess) {
   const [formData, setFormData] = useState(initialState)
@@ -24,10 +25,41 @@ export function useForm(initialState, onSuccess) {
       return
     }
     setIsLoading(true)
-    setTimeout(() => {
+    setErrors({})
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`,{
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          email: formData.email,
+          password : formData.password,
+        }),
+      })
+      if (response.status === 422){
+        const data= await response.json()
+        const fieldErrors = {}
+        for (const err of data.detail) {
+          const field = err.loc[err.loc.length -1]
+          fieldErrors[field] = err.msg
+        }
+        setErrors(fieldErrors)
+        setIsLoading(false)
+        return
+      }
+      if(!response.ok){
+        setErrors({general: "Something aint right, try again"})
+        setIsLoading(false)
+        return
+      }
+      const data = await response.json()
       setIsLoading(false)
-      onSuccess()
-    }, 1500)
+      onSuccess(data)
+    }
+    catch(err){
+      setErrors({general: "Couldn't reach the server, retry man"})
+      setIsLoading(false)
+    }
   }
 
   return {
