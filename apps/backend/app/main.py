@@ -20,6 +20,8 @@ from fastapi import FastAPI
 from app.api import router
 from app.state import AppState
 
+from app.api.auth import router as auth_router
+
 logging.basicConfig(
 	level=logging.INFO,
 	format='%(asctime)s  %(levelname)-8s  %(name)s: %(message)s',
@@ -47,3 +49,5 @@ app = FastAPI(
 )
 
 app.include_router(router)
+
+app.include_router(auth_router)
