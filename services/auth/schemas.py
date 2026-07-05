@@ -2,7 +2,7 @@ from __future__ import annotations
 import re
 from pydantic import BaseModel, EmailStr, field_validator #pydantic is like a library used for validation commonly in python
 
-class LoginRequest(BaseModel)
+class LoginRequest(BaseModel):
     email: EmailStr #Pydantic library built in thingie that checks if the email is the coorect format..
     password: str
 
