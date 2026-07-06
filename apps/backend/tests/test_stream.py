@@ -41,11 +41,11 @@ class FakeCvPipeline:
 		FakeCvPipeline.instances.append(self)
 
 	async def start(self) -> None:
-		self._started = True
+		self.started = True
 		self._running = True
 
 	async def stop(self) -> None:
-		self._stopped = True
+		self.stopped = True
 		self._running = False
 
 	async def events(self) -> AsyncIterator[FakeEvent]:
