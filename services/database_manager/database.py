@@ -12,7 +12,7 @@ from sqlalchemy.pool import StaticPool
 
 
 class Settings(BaseSettings):
-	sqlite_db_path: str = "app.db"
+	sqlite_db_path: str = 'app.db'
 
 	class Config:
 		env_file = '.env'
@@ -20,11 +20,7 @@ class Settings(BaseSettings):
 
 	@property
 	def database_url(self) -> URL:
-		return URL.create(
-			drivername="sqlite+aiosqlite",
-			database=self.sqlite_db_path
-			
-		)
+		return URL.create(drivername='sqlite+aiosqlite', database=self.sqlite_db_path)
 
 
 settings = Settings()
@@ -37,14 +33,16 @@ class Base(DeclarativeBase):
 engine = create_async_engine(
 	settings.database_url,
 	echo=False,
-	poolclass=StaticPool if settings.sqlite_db_path == ":memory:" else None
+	poolclass=StaticPool if settings.sqlite_db_path == ':memory:' else None,
 )
 
-@event.listens_for(engine.sync_engine, "connect")
+
+@event.listens_for(engine.sync_engine, 'connect')
 def set_sqlite_pragma(dbapi_connection, connection_record):
 	cursor = dbapi_connection.cursor()
-	cursor.execute("PRAGMA foreign_keys=ON")
+	cursor.execute('PRAGMA foreign_keys=ON')
 	cursor.close()
+
 
 AsyncSessionLocal = async_sessionmaker(
 	engine,

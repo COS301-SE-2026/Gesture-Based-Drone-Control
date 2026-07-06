@@ -1,9 +1,13 @@
 import uuid
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services.database_manager.database import Base
+
+if TYPE_CHECKING:
+	from services.database_manager.models.flight_summary import FlightSummary
 
 
 class User(Base):
@@ -15,5 +19,5 @@ class User(Base):
 	first_name: Mapped[str] = mapped_column(String, nullable=True)
 	last_name: Mapped[str] = mapped_column(String, nullable=True)
 	is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-	
-	flight_summaries: Mapped[list["FlightSummary"]] = relationship(back_populates="user")
+
+	flight_summaries: Mapped[list['FlightSummary']] = relationship(back_populates='user')
