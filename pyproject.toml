@@ -23,6 +23,7 @@ dependencies = [
     "asyncpg>=0.31.0",
     "sqlalchemy>=2.0",
     "pydantic-settings>=2.14.2",
+    "aiosqlite>=0.22.1",
 ]
 
 [dependency-groups]
