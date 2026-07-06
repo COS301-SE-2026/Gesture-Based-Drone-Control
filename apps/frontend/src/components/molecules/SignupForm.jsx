@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { Mail, Lock, User, Calendar } from "lucide-react"
+import { Mail, Lock, User } from "lucide-react"
 import FormSection from "../atoms/FormSection"
 import PropTypes from "prop-types"
 
@@ -53,19 +53,6 @@ const SignupForm = ({
               onChange={handleChange}
               error={errors.email}
               errorMessage={errors.email}
-            />
-          </div>
-
-          <div className="col-span-2">
-            <FormSection
-              label="Date of Birth"
-              name="dateOfBirth"
-              type="date"
-              icon={Calendar}
-              value={formData.dateOfBirth}
-              onChange={handleChange}
-              error={errors.dateOfBirth}
-              errorMessage={errors.dateOfBirth}
             />
           </div>
 
@@ -149,7 +136,6 @@ SignupForm.propTypes = {
     firstName: PropTypes.string.isRequired,
     lastName: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
-    dateOfBirth: PropTypes.string.isRequired,
     password: PropTypes.string.isRequired,
     confirmPassword: PropTypes.string.isRequired,
     agreeToTerms: PropTypes.bool.isRequired,
