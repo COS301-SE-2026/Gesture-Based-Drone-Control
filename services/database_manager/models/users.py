@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Boolean, String, text
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from services.database_manager.database import Base
@@ -15,4 +15,5 @@ class User(Base):
 	first_name: Mapped[str] = mapped_column(String, nullable=True)
 	last_name: Mapped[str] = mapped_column(String, nullable=True)
 	is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text('true'))
+	
 	flight_summaries: Mapped[list["FlightSummary"]] = relationship(back_populates="user")

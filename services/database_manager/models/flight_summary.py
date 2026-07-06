@@ -24,3 +24,4 @@ class FlightSummary(Base):
     avg_battery_drain: Mapped[float | None] = mapped_column(Real, nullable=True)
     avg_speed: Mapped[float | None] = mapped_column(Real, nullable=True)
     control_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    telemetry_readings: Mapped[list["Telemetry"]] = relationship(back_populates="")

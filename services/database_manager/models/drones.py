@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, String, text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services.database_manager.database import Base
 
