@@ -16,6 +16,8 @@ class SignupResponse(BaseModel):
 class SignupRequest(BaseModel):
 	email: EmailStr
 	password: str
+	first_name: str
+	last_name: str
 
 	@field_validator('password')
 	@classmethod

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import bcrypt
 
 from pydantic import (
 	BaseModel,
@@ -22,6 +23,11 @@ def validate_password_strength(value: str) -> str:
 		raise ValueError('Password must contain atleast one special character. ')
 	return value
 
+def hash_password(password: str) -> str:
+	return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+def verify_password(password: str, stored_hash: str) -> bool:
+	return bcrypt.checkpw(password.encode("utf-8"), stored_hash.encode("utf-8"))
 
 class LoginRequest(BaseModel):
 	email: EmailStr  # Pydantic library that checks if the email is the correct format..

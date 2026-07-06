@@ -12,6 +12,13 @@ Entry point for FastAPI
 
 from __future__ import annotations  # prevents typeerrors
 
+
+from services.database_manager.database import engine, Base
+from services.database_manager.models.users import User
+from services.database_manager.models.drones import Drone
+from services.database_manager.models.flight_summary import FlightSummary
+from services.database_manager.models.telemetry import Telemetry
+
 import logging
 from contextlib import asynccontextmanager
 
@@ -33,6 +40,10 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 	logger.info('Starting API...')
+
+	async with engine.begin() as conn:
+		await conn.run_sync(Base.metadata.create_all)
+
 	app.state.app = AppState()
 	yield
 	logger.info('Stopping API...')
