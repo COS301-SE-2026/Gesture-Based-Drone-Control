@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, Double, ForeignKey, Integer, Real, text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import BigInteger, DateTime, Double, ForeignKey, Integer, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services.database_manager.database import Base
 
@@ -15,7 +15,7 @@ class Telemetry(Base):
         nullable=True
     )
     recorded_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=text("now()")
+        DateTime(timezone=True), nullable=False, server_default=func.now()
     )
     displacement_x: Mapped[float | None] = mapped_column(Double, nullable=True)
     displacement_y: Mapped[float | None] = mapped_column(Double, nullable=True)
@@ -24,3 +24,4 @@ class Telemetry(Base):
     speed: Mapped[float | None] = mapped_column(Double, nullable=True)
     command_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
+    flight_summary: Mapped["FlightSummary"] = relationship(back_populates="telemetry_readings")
