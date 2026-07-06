@@ -18,9 +18,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.api import router
-from app.state import AppState
-
 from app.api.auth import router as auth_router
+from app.state import AppState
 
 logging.basicConfig(
 	level=logging.INFO,

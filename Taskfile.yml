@@ -24,7 +24,6 @@ tasks:
       - frontend-dev
 
   backend-dev:
-    internal: true # not possible to call outside
     cmds:
       - uv run fastapi dev {{.BACKEND_APP}}  --port {{.BACKENDPORT}}
     env:

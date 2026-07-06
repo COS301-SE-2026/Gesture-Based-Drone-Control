@@ -1,5 +1,5 @@
 import { useState } from "react"
-import {API_BASE_URL} from "../lib/api"
+import { API_BASE_URL } from "../lib/api"
 
 export function useForm(initialState, onSuccess) {
   const [formData, setFormData] = useState(initialState)
@@ -28,36 +28,35 @@ export function useForm(initialState, onSuccess) {
     setErrors({})
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`,{
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: formData.email,
-          password : formData.password,
+          password: formData.password,
         }),
       })
-      if (response.status === 422){
-        const data= await response.json()
+      if (response.status === 422) {
+        const data = await response.json()
         const fieldErrors = {}
         for (const err of data.detail) {
-          const field = err.loc[err.loc.length -1]
+          const field = err.loc[err.loc.length - 1]
           fieldErrors[field] = err.msg
         }
         setErrors(fieldErrors)
         setIsLoading(false)
         return
       }
-      if(!response.ok){
-        setErrors({general: "Something aint right, try again"})
+      if (!response.ok) {
+        setErrors({ general: "Something aint right, try again" })
         setIsLoading(false)
         return
       }
       const data = await response.json()
       setIsLoading(false)
       onSuccess(data)
-    }
-    catch(err){
-      setErrors({general: "Couldn't reach the server, retry man"})
+    } catch (err) {
+      setErrors({ general: "Couldn't reach the server, retry man " + err })
       setIsLoading(false)
     }
   }

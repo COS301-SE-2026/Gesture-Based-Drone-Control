@@ -10,8 +10,7 @@ const LoginForm = ({
   isLoading,
   handleChange,
   handleSubmit,
-}) => 
-  {
+}) => {
   const validateForm = () => {
     const newErr = {}
     if (!formData.email) {
@@ -22,15 +21,17 @@ const LoginForm = ({
 
     if (!formData.password) {
       newErr.password = "Password is required"
-    } else if (!validator.isStrongPassword(formData.password,{
-      minLength:8,
-      minLowerCase:1,
-      minUpperCase:1,
-      minNumbers:1,
-      minSymbols:1,
-    }))
-    {
-      newErr.password = "The password must be atleast 8 characters long and must include an uppercase and lowercase letter,a number and a special character."
+    } else if (
+      !validator.isStrongPassword(formData.password, {
+        minLength: 8,
+        minLowerCase: 1,
+        minUpperCase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+    ) {
+      newErr.password =
+        "The password must be atleast 8 characters long and must include an uppercase and lowercase letter,a number and a special character."
     }
     return newErr
   }
@@ -48,11 +49,11 @@ const LoginForm = ({
         className="space-y-5"
       >
         {errors.general && (
-          <div className = "text-sm text-Red bg-Red/10 border border-Red/30 rounded-lg px-3 py-2">
+          <div className="text-sm text-Red bg-Red/10 border border-Red/30 rounded-lg px-3 py-2">
             {errors.genral}
           </div>
         )}
-        
+
         <FormSection
           label="Email Address"
           name="email"
