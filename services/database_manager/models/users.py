@@ -15,3 +15,4 @@ class User(Base):
 	first_name: Mapped[str] = mapped_column(String, nullable=True)
 	last_name: Mapped[str] = mapped_column(String, nullable=True)
 	is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text('true'))
+	flight_summaries: Mapped[list["FlightSummary"]] = relationship(back_populates="user")
