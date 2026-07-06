@@ -14,5 +14,5 @@ async def login(payload: LoginRequest):
 
 
 @router.post('/signup', response_model=SignupResponse)
-async def signup(payload: SignupRequest):
+async def signup(request: SignupRequest):
 	return SignupResponse(message='Signup Successful')
