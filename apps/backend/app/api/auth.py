@@ -1,9 +1,17 @@
 from __future__ import annotations
 
-from fastapi import APIRouter  # thingie that organizes the endpoints
+from fastapi import (
+	APIRouter,
+	Depends,
+	HTTPException,
+	status,
+)  # thingie that organizes the endpoints
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.auth.schemas import LoginRequest, LoginResponse
 from services.auth.signup import SignupRequest, SignupResponse
+from services.database_manager.database import get_db
+from services.database_manager.managers.UserManager import user_manager
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 
@@ -13,6 +21,18 @@ async def login(payload: LoginRequest):
 	return LoginResponse(message='Validation passed yaay')
 
 
-@router.post('/signup', response_model=SignupResponse)
-async def signup(request: SignupRequest):
+@router.post('/signup', response_model=SignupResponse, status_code=status.HTTP_201_CREATED)
+async def signup(request: SignupRequest, db: AsyncSession = Depends(get_db)):
+
+	existing_user = await user_manager.get_by_email(db, request.email)
+
+	if existing_user is not None:
+		raise HTTPException(
+			status_code=status.HTTP_409_CONFLICT, detail='A user with this email already exists'
+		)
+
+	await user_manager.create(
+		db, request.email, request.password, request.first_name, request.last_name
+	)
+
 	return SignupResponse(message='Signup Successful')
