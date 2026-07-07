@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="22" height="22" fill="none" aria-hidden="true">
+  <!-- Single propeller — 4 blades from hub -->
+  <g transform="translate(16,16)">
+    <ellipse cx="0" cy="-9" rx="2.4" ry="6.5" fill="#A4161A"/>
+    <ellipse cx="9" cy="0" rx="6.5" ry="2.4" fill="#A4161A"/>
+    <ellipse cx="0" cy="9" rx="2.4" ry="6.5" fill="#A4161A"/>
+    <ellipse cx="-9" cy="0" rx="6.5" ry="2.4" fill="#A4161A"/>
+    <circle r="3.4" fill="#161A1D" stroke="#E5383B" stroke-width="1.4"/>
+    <circle r="1.2" fill="#E5383B"/>
+  </g>
+</svg>

@@ -20,6 +20,7 @@ test.describe('gesture control page aka dashboard', () =>{
 
     //changing this whole component to be a more info type of thing so ill leave the testing out till i make the new component
     test ('command history entries', async ({page})=>{
+        await page.getByText('Command History').click()
         await expect(page.getByText(/swipe up - move up/i)). toBeVisible()
         await expect(page.getByText(/swipe down - move down/i)). toBeVisible()
         await expect(page.getByText(/swipe right - move right/i)). toBeVisible()

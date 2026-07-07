@@ -5,6 +5,7 @@ data/*.db
 .venv
 .egg-info
 drone_services.egg-info
+backend.egg-info
 services.egg-info
 backend.egg-info
 __pycache__/
@@ -15,3 +16,4 @@ __pycache__
 site/
 *.fig
 .DS_Store
+:Zone.Identifier
