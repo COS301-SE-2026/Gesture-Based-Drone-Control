@@ -12,13 +12,6 @@ Entry point for FastAPI
 
 from __future__ import annotations  # prevents typeerrors
 
-
-from services.database_manager.database import engine, Base
-from services.database_manager.models.users import User
-from services.database_manager.models.drones import Drone
-from services.database_manager.models.flight_summary import FlightSummary
-from services.database_manager.models.telemetry import Telemetry
-
 import logging
 from contextlib import asynccontextmanager
 
@@ -27,6 +20,11 @@ from fastapi import FastAPI
 from app.api import router
 from app.api.auth import router as auth_router
 from app.state import AppState
+from services.database_manager.database import Base, engine
+from services.database_manager.models.drones import Drone
+from services.database_manager.models.flight_summary import FlightSummary
+from services.database_manager.models.telemetry import Telemetry
+from services.database_manager.models.users import User
 
 logging.basicConfig(
 	level=logging.INFO,
