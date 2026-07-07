@@ -84,8 +84,9 @@ class GestureStream:
 				except asyncio.CancelledError:
 					pass  # NOSONAR - our own cancel of the broadcast task, expected
 				self._broadcast_task = None
-			await self._pipeline.stop()
+			pipeline = self._pipeline
 			self._pipeline = None
+			await asyncio.shield(pipeline.stop())
 			logger.info('GestureStream stopped (no clients remaining)')
 
 	async def _broadcast(self) -> None:
