@@ -47,8 +47,14 @@ export function useForm(initialState, onSuccess) {
         setIsLoading(false)
         return
       }
+
+      if(response.status === 401){
+        setErrors({general: "Invalid email or password "})
+        setIsLoading(false)
+        return
+      }
       if (!response.ok) {
-        setErrors({ general: "Something aint right, try again" })
+        setErrors({ general: "Something has gone wrong, try again" })
         setIsLoading(false)
         return
       }

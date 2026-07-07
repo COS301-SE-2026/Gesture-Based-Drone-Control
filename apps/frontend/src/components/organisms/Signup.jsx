@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AuthLayout from "../molecules/AuthLayout"
 import SignupForm from "../molecules/SignupForm"
+import {API_BASE_URL} from "../../lib/api"
 
 export default function Signup() {
   const navigate = useNavigate()
@@ -9,7 +10,6 @@ export default function Signup() {
     firstName: "",
     lastName: "",
     email: "",
-    dateOfBirth: "",
     password: "",
     confirmPassword: "",
     agreeToTerms: false,
@@ -37,7 +37,6 @@ export default function Signup() {
       firstName: !formData.firstName.trim() ? "First Name is required" : "",
       lastName: !formData.lastName.trim() ? "Last Name is required" : "",
       email: !formData.email ? " Email is required " : "",
-      dateOfBirth: !formData.dateOfBirth ? " Date of birth is required " : "",
       password: !formData.password ? " Password is required " : "",
       confirmPassword: !formData.confirmPassword
         ? " Please confirm your password "
