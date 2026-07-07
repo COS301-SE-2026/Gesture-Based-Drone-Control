@@ -14,7 +14,7 @@ from sqlalchemy.pool import StaticPool
 class Settings(BaseSettings):
 	sqlite_db_path: str = 'app.db'
 
-	model_config = SettingsConfigDict(env_file='.env', extra = 'ignore')
+	model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 
 	@property
 	def database_url(self) -> URL:
