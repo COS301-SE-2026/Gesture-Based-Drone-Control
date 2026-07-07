@@ -42,3 +42,16 @@ class TestSettings:
         module = importlib.import_module(MODULE_PATH)
         settings = module.Settings()
         assert settings.sqlite_db_path
+
+class TestEnginePoolConfig:
+    def test_staticPoolConfig(self, db_module):
+        assert db_module.engine.pool.__class__ is StaticPool
+
+    async def test_default_pool_used_for_file_db(self, monkeypatch, tmp_path):
+        monkeypatch.setenv("SQLITE_DB_PATH", str(tmp_path/"test.db"))
+        sys.modules.pop(MODULE_PATH, None)
+        module = importlib.import_module(MODULE_PATH)
+        try:
+            assert not isinstance(module.engine.pool, StaticPool)
+        finally:
+            await module.engine.dispose()
