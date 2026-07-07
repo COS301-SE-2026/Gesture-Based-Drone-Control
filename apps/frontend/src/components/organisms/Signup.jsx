@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AuthLayout from "../molecules/AuthLayout"
 import SignupForm from "../molecules/SignupForm"
-import {API_BASE_URL} from "../../lib/api"
+import { API_BASE_URL } from "../../lib/api"
 
 export default function Signup() {
   const navigate = useNavigate()
@@ -53,17 +53,54 @@ export default function Signup() {
 
     if (Object.keys(filteredErrors).length > 0) {
       setErrors(filteredErrors)
-      if (filteredErrors.agreeToTerms) {
-        alert(filteredErrors.agreeToTerms)
-      }
       return
     }
 
     setIsLoading(true)
-    setTimeout(() => {
+    setErrors({})
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+        }),
+      })
+
+      if (response.status === 422) {
+        const data = await response.json()
+        const fieldErrors = {}
+        for (const err of data.detail) {
+          const field = err.loc[err.loc.length - 1]
+          fieldErrors[field] = err.msg
+        }
+        setErrors(fieldErrors)
+        setIsLoading(false)
+        return
+      }
+
+      if (response.status === 409) {
+        setErrors({ general: "An account with this email already exists. " })
+        setIsLoading(false)
+        return
+      }
+
+      if (response.status !== 201) {
+        setErrors({ general: "Something went wrong, try again. " })
+        setIsLoading(false)
+        return
+      }
+
       setIsLoading(false)
       navigate("/login")
-    }, 1500)
+    } catch (err) {
+      setErrors({ general: "Could not reach the server...try again" })
+      setIsLoading(false)
+    }
   }
 
   return (
