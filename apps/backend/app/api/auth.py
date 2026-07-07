@@ -31,7 +31,7 @@ async def signup(request: SignupRequest, db: AsyncSession = Depends(get_db)):
 			detail="A user with this email already exists"
 		)
 	
-	user_manager.create(
+	await user_manager.create(
 		db,
 		request.email,
 		request.password,
