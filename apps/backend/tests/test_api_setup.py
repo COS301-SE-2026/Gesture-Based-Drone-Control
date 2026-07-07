@@ -106,5 +106,5 @@ def test_connect_route_exists():
 	client = TestClient(app, raise_server_exceptions=False)
 
 	# empty body will hit validation (422), but not 404
-	response = client.post('/connect', json={})
+	response = client.post('/drone/connect', json={})
 	assert response.status_code != 404

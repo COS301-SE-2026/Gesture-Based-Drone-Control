@@ -92,6 +92,23 @@ class GestureFramePayload(BaseModel):
 	}
 
 
+def _build_hand_out(detected_hand, gesture_result, hand_metric) -> HandOut:
+	"""
+	Assemble one HandOut, to keep sonarqube happy
+	"""
+	return HandOut(
+		handedness=detected_hand.handedness.name,
+		gesture=gesture_result.gesture.name if gesture_result else 'UNKNOWN',
+		fingers=gesture_result.finger_state.count if gesture_result else 0,
+		confidence=round(detected_hand.confidence, 3),
+		speed=round(hand_metric.speed, 4) if hand_metric else 0.0,
+		landmarks=[
+			LandmarkOut(x=round(lm.x, 4), y=round(lm.y, 4), z=round(lm.z, 4))
+			for lm in detected_hand.landmarks
+		],
+	)
+
+
 def serialize_event(event: PipelineEvent) -> GestureFramePayload:
 	"""
 	Build a GestureFramePayload from a pipelineEvent
@@ -106,20 +123,8 @@ def serialize_event(event: PipelineEvent) -> GestureFramePayload:
 		for i, detected_hand in enumerate(detection.hands):
 			gesture_result = gesture_results[i] if i < len(gesture_results) else None
 			hand_metric = metrics[i] if i < len(metrics) else None
+			hands.append(_build_hand_out(detected_hand, gesture_result, hand_metric))
 
-			hands.append(
-				HandOut(
-					handedness=detected_hand.handedness.name,
-					gesture=gesture_result.gesture.name if gesture_result else 'UNKNOWN',
-					fingers=gesture_result.finger_state.count if gesture_result else 0,
-					confidence=round(detected_hand.confidence, 3),
-					speed=round(hand_metric.speed, 4) if hand_metric else 0.0,
-					landmarks=[
-						LandmarkOut(x=round(lm.x, 4), y=round(lm.y, 4), z=round(lm.z, 4))
-						for lm in detected_hand.landmarks
-					],
-				)
-			)
 	return GestureFramePayload(
 		frame_index=event.frame_index,
 		timestamp=event.frame.timestamp,
