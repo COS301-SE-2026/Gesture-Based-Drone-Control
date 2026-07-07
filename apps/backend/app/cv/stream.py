@@ -82,7 +82,9 @@ class GestureStream:
 				try:
 					await self._broadcast_task
 				except asyncio.CancelledError:
-					pass
+					current = asyncio.current_task()
+					if current is not None and current.cancelling() > 0:
+						raise
 				self._broadcast_task = None
 			await self._pipeline.stop()
 			self._pipeline = None
@@ -93,7 +95,10 @@ class GestureStream:
 		try:
 			async for event in self._pipeline.events():
 				payload = serialize_event(event)
-				for queue in list(self._clients):
+				# beat this sonar
+				for queue in list(
+					self._clients
+				):  # NOSONAR - copy: set may mutate during async iteration
 					# drop oldest: never let one slow client back-pressure the stream
 					if queue.full():
 						try:
