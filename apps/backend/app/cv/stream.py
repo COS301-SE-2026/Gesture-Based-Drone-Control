@@ -9,6 +9,7 @@ last client to unsubscribe() stops the pipeline and releases the camera
 """
 
 import asyncio
+import contextlib
 import logging
 from typing import Optional
 
@@ -79,10 +80,8 @@ class GestureStream:
 				return
 			if self._broadcast_task is not None:
 				self._broadcast_task.cancel()
-				try:
+				with contextlib.suppress(asyncio.CancelledError):
 					await self._broadcast_task
-				except asyncio.CancelledError:
-					pass  # NOSONAR - our own cancel of the broadcast task, expected
 				self._broadcast_task = None
 			pipeline = self._pipeline
 			self._pipeline = None
