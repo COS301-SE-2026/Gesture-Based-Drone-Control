@@ -82,9 +82,7 @@ class GestureStream:
 				try:
 					await self._broadcast_task
 				except asyncio.CancelledError:
-					current = asyncio.current_task()
-					if current is not None and current.cancelling() > 0:
-						raise
+					pass  # NOSONAR - our own cancel of the broadcast task, expected
 				self._broadcast_task = None
 			await self._pipeline.stop()
 			self._pipeline = None

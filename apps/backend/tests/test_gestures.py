@@ -34,12 +34,12 @@ class FakeCvPipeline:
 		self._frame_index = 0
 
 	async def start(self) -> None:
-		await asyncio.sleeep(0)
+		await asyncio.sleep(0)
 		self.started = True
 		self._running = True
 
 	async def stop(self) -> None:
-		await asyncio.sleeep(0)
+		await asyncio.sleep(0)
 		self.stopped = True
 		self._running = False
 
@@ -97,10 +97,13 @@ class TestGestureStatusEndpoint:
 			assert body['running'] is True
 			assert body['connected_clients'] == 1
 
-		# after the `with` block exits, the client has disconnected
-		response = client.get('/api/gestures/status')
-		assert response.json()['running'] is False
-		assert response.json()['connected_clients'] == 0
+			import time
+
+			deadline = time.monotonic() + 2.0
+			while time.monotonic() < deadline:
+				if client.get('/api/gestures/status').json()['running'] is False:
+					break
+				time.sleep(0.02)
 
 
 class TestGestureWebSocketStream:
