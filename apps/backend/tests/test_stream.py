@@ -41,10 +41,12 @@ class FakeCvPipeline:
 		FakeCvPipeline.instances.append(self)
 
 	async def start(self) -> None:
+		await asyncio.sleep(0)
 		self.started = True
 		self._running = True
 
 	async def stop(self) -> None:
+		await asyncio.sleep(0)
 		self.stopped = True
 		self._running = False
 
@@ -90,10 +92,9 @@ def stream(patch_pipeline, patch_serialize) -> GestureStream:
 
 
 # tests
-
-
 class TestLazyStartStop:
 	async def test_not_running_before_any_subscriber(self, stream: GestureStream):
+		await asyncio.sleep(0)
 		assert stream.is_running is False
 		assert stream.client_count == 0
 

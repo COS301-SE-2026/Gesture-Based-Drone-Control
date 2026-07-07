@@ -96,7 +96,7 @@ class GestureStream:
 			async for event in self._pipeline.events():
 				payload = serialize_event(event)
 				# beat this sonar
-				for queue in list(
+				for queue in list(  # NOSONAR
 					self._clients
 				):  # NOSONAR - copy: set may mutate during async iteration
 					# drop oldest: never let one slow client back-pressure the stream

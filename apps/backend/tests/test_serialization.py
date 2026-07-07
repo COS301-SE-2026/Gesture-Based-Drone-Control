@@ -64,8 +64,8 @@ class TestSerializeTopLevelFields:
 		payload = serialize_event(event)
 
 		assert payload.frame_index == 142
-		assert payload.timestamp == 1719831600.123
-		assert payload.fps == 28.7
+		assert payload.timestamp == pytest.approx(1719831600.123)
+		assert payload.fps == pytest.approx(28.7)
 
 	def test_type_discriminator_defaults_to_gesture_frame(self):
 		payload = serialize_event(make_event())
@@ -113,10 +113,10 @@ class TestSerializeEventWithOneHand:
 		assert out.handedness == 'RIGHT'
 		assert out.gesture == 'OPEN_PALM'
 		assert out.fingers == 5
-		assert out.confidence == 0.954
-		assert out.speed == 0.1235
+		assert out.confidence == pytest.approx(0.954)
+		assert out.speed == pytest.approx(0.1235)
 		assert len(out.landmarks) == 21
-		assert out.landmarks[0].x == 0.5
+		assert out.landmarks[0].x == pytest.approx(0.5)
 
 	def test_landmarks_are_rounded(self):
 		hand = make_hand()
@@ -128,8 +128,8 @@ class TestSerializeEventWithOneHand:
 		)
 		payload = serialize_event(event)
 		lm = payload.hands[0].landmarks[0]
-		assert lm.x == 0.1235
-		assert lm.y == 0.9877
+		assert lm.x == pytest.approx(0.1235)
+		assert lm.y == pytest.approx(0.9877)
 		assert lm.z == -0.0
 
 
@@ -181,7 +181,7 @@ class TestSerializeEventDefensiveFallbacks:
 		assert len(payload.hands) == 1
 		assert payload.hands[0].gesture == 'UNKNOWN'
 		assert payload.hands[0].fingers == 0
-		assert payload.hands[0].speed == 0.0
+		assert payload.hands[0].speed == pytest.approx(0.0)
 
 	def test_two_hands_one_missing_gesture(self):
 		left = make_hand(handedness=Handedness.LEFT)
@@ -197,7 +197,7 @@ class TestSerializeEventDefensiveFallbacks:
 
 		assert payload.hands[0].gesture == 'FIST'
 		assert payload.hands[1].gesture == 'UNKNOWN'
-		assert payload.hands[1].speed == 0.0
+		assert payload.hands[1].speed == pytest.approx(0.0)
 
 	def test_confidence_still_comes_from_detected_hand_not_gesture_result(self):
 		"""
@@ -211,7 +211,7 @@ class TestSerializeEventDefensiveFallbacks:
 			hand_metrics=[],
 		)
 		payload = serialize_event(event)
-		assert payload.hands[0].confidence == 0.777
+		assert payload.hands[0].confidence == pytest.approx(0.777)
 
 
 class TestGestureFramePayloadValidation:

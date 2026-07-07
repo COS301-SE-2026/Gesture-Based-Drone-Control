@@ -52,7 +52,6 @@ class GestureStreamStatus(BaseModel):
 
 @router.get(
 	'/status',
-	response_model=GestureStreamStatus,
 	summary='Get gesture pipeline status',
 	description=(
 		'Returns whether the camera pipeline is currently running and how many '

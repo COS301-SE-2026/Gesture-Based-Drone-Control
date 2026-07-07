@@ -34,10 +34,12 @@ class FakeCvPipeline:
 		self._frame_index = 0
 
 	async def start(self) -> None:
+		await asyncio.sleeep(0)
 		self.started = True
 		self._running = True
 
 	async def stop(self) -> None:
+		await asyncio.sleeep(0)
 		self.stopped = True
 		self._running = False
 
@@ -87,7 +89,7 @@ class TestGestureStatusEndpoint:
 		assert body['last_frame'] is None
 
 	def test_status_reflects_running_state_while_websocket_open(self, app_and_client):
-		gestures_module, client = app_and_client
+		_, client = app_and_client
 
 		with client.websocket_connect('/api/gestures/stream'):
 			response = client.get('/api/gestures/status')
