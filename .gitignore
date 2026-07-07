@@ -15,4 +15,5 @@ __pycache__
 .ruff*
 site/
 *.fig
+.DS_Store
 :Zone.Identifier

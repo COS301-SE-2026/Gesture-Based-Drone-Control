@@ -3,7 +3,7 @@
 
 import os
 import sys
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
@@ -16,6 +16,18 @@ sys.modules['mediapipe'] = _mock_mp
 # pytest from anywhere. services/ is three levels up from this test file
 # (tests/cv_pipeline_testing/test_mediapipe_detector.py -> services/)
 _services_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+from cv_pipeline.hand_detection import mediapipe_detector as _md  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _patch_mediapipe():
+	"""
+	Re-bind the detectors 'mp' to the mock regarldess of suit import
+	"""
+	with patch.object(_md, 'mp', _mock_mp):
+		yield
+
+
 sys.path.insert(0, _services_dir)
 
 # noqa :E402 stops the warnings dont remvoe those

@@ -21,7 +21,7 @@ from services.drone_control.adapters.drone_adapter import DroneAdapter
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(prefix='/drone', tags=['drone'])
 
 # generic models to be used as default
 
