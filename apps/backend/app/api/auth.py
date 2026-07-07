@@ -7,6 +7,7 @@ from services.auth.signup import SignupRequest, SignupResponse
 
 from services.database_manager.database import get_db
 from services.database_manager.models.users import User
+from services.database_manager.managers.UserManager import user_manager
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,8 +23,7 @@ async def login(payload: LoginRequest):
 @router.post('/signup', response_model=SignupResponse, status_code=status.HTTP_201_CREATED)
 async def signup(request: SignupRequest, db: AsyncSession = Depends(get_db)):
 
-	result = await db.execute(select(User).where(User.email == request.email))
-	existing_user = result.scalar_one_or_none()
+	existing_user = await user_manager.get_by_email(db, request.email)
 
 	if existing_user is not None:
 		raise HTTPException(
@@ -31,15 +31,12 @@ async def signup(request: SignupRequest, db: AsyncSession = Depends(get_db)):
 			detail="A user with this email already exists"
 		)
 	
-	new_user = User(
-		email = request.email,
-		hashed_password= hash_password(request.password),
-		first_name = request.first_name,
-		last_name= request.last_name
-	)
-
-	db.add(new_user)
-	await db.commit()
-	await db.refresh(new_user)
+	user_manager.create(
+		db,
+		request.email,
+		request.password,
+		request.first_name,
+		request.last_name
+		)
 
 	return SignupResponse(message='Signup Successful')
