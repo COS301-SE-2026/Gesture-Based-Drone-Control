@@ -55,3 +55,46 @@ class TestEnginePoolConfig:
             assert not isinstance(module.engine.pool, StaticPool)
         finally:
             await module.engine.dispose()
+
+class TestPragma:
+    async def test_foreign_keys_is_enabled_on_connect(self, db_module):
+        async with db_module.engine.connect() as conn:
+            result = await conn.execute(text("PRAGMA foreign_keys"))
+            assert result.scalar() == 1
+
+class TestGetDb:
+    async def test_yields_async_session(self, db_module):
+        gen= db_module.get_db()
+        session = await gen.__anext__()
+        try:
+            assert isinstance(session, AsyncSession)
+        finally:
+            await gen.aclose()
+
+    async def test_session_can_run_queries(self,db_module):
+        async for session in db_module.get_db():
+            result = await session.execute(text("SELECT 1"))
+            assert result.scalar() == 1
+            break
+
+    async def test_rollback_called_on_exception(self, db_module, monkeypatch):
+        gen= db_module.get_db()
+        session = await gen.__anext__()
+
+        session.rollback = AsyncMock(wraps=session.rollback)
+
+        with pytest.raises(ValueError):
+            await gen.athrow(ValueError("boom"))
+
+        session.rollback.assert_awaited_once()
+
+    async def test_no_rollback_on_clean_exit(self, db_module, monkeypatch):
+        gen= db_module.get_db()
+        session = await gen.__anext__()
+
+        session.rollback = AsyncMock(wraps=session.rollback)
+
+        async for _ in db_module.get_db():
+            pass
+
+        session.rollback.assert_not_awaited()
