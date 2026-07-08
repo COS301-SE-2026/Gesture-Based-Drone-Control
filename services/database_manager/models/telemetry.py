@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, DateTime, Double, ForeignKey, Integer, func
+from sqlalchemy import DateTime, Double, ForeignKey, Integer, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from services.database_manager.database import Base
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class Telemetry(Base):
 	__tablename__ = 'telemetry'
 
-	id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+	id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 	flight_id: Mapped[uuid.UUID | None] = mapped_column(
 		ForeignKey('flight_summary.id', ondelete='CASCADE'), nullable=False
 	)
