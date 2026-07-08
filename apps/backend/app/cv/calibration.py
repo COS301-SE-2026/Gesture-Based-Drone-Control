@@ -316,6 +316,7 @@ class CalibrationManager:
 	def status(self) -> CalibrationStatus:
 		return self._status
 
+	@property
 	def session(self) -> CalibrationSession | None:
 		"""True when flight commands may be accepted"""
 		return self._session
@@ -352,7 +353,7 @@ class CalibrationManager:
 		Feed one frame to the active session and marks the manager
 		COMPLETED as soon as the session reports DONE
 		"""
-		if self._session is None or self._status is not CalibrationFramePayload:
+		if self._session is None or self._status is not CalibrationStatus.IN_PROGRESS:
 			raise RuntimeError('No calibration session in porgress; call start() first')
 		payload = self._session.process_frame(frame)
 		if self._session.phase is CalibrationPhase.DONE:
