@@ -20,13 +20,14 @@ export function useForm(initialState, onSuccess) {
   const handleSubmit = async (e, validateFn) => {
     e.preventDefault()
     const newErr = validateFn()
+    console.log("validation errors:", newErr)
     if (Object.keys(newErr).length > 0) {
       setErrors(newErr)
       return
     }
     setIsLoading(true)
     setErrors({})
-
+    console.log("AOI_BASE_URL is:", API_BASE_URL)
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
@@ -47,8 +48,14 @@ export function useForm(initialState, onSuccess) {
         setIsLoading(false)
         return
       }
+
+      if (response.status === 401) {
+        setErrors({ general: "Invalid email or password " })
+        setIsLoading(false)
+        return
+      }
       if (!response.ok) {
-        setErrors({ general: "Something aint right, try again" })
+        setErrors({ general: "Something has gone wrong, try again" })
         setIsLoading(false)
         return
       }
@@ -56,6 +63,7 @@ export function useForm(initialState, onSuccess) {
       setIsLoading(false)
       onSuccess(data)
     } catch (err) {
+      console.log("fetch failed with:", err)
       setErrors({ general: "Couldn't reach the server, retry man " + err })
       setIsLoading(false)
     }
