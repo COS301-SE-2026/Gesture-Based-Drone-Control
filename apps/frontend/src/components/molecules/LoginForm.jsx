@@ -50,7 +50,7 @@ const LoginForm = ({
       >
         {errors.general && (
           <div className="text-sm text-Red bg-Red/10 border border-Red/30 rounded-lg px-3 py-2">
-            {errors.genral}
+            {errors.general}
           </div>
         )}
 

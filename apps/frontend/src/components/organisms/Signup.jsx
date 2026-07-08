@@ -97,7 +97,7 @@ export default function Signup() {
 
       setIsLoading(false)
       navigate("/login")
-    } catch (err) {
+    } catch {
       setErrors({ general: "Could not reach the server...try again" })
       setIsLoading(false)
     }

@@ -19,12 +19,12 @@ const SignupForm = ({
         <p className="text-Grey dark:text-DarkGrey">create your account</p>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {errors.general &&(
-          <div className ="text-sm text-Red bg-Red/10 border border-Red/30 rounded-lg px-3 py-2">
+        {errors.general && (
+          <div className="text-sm text-Red bg-Red/10 border border-Red/30 rounded-lg px-3 py-2">
             {errors.general}
           </div>
         )}
-        
+
         <div className="grid grid-cols-2 gap-3">
           <FormSection
             label="First Name"

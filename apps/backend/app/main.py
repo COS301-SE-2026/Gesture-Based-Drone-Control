@@ -17,6 +17,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.api import router
 from app.api.auth import router as auth_router
 from app.state import AppState
@@ -58,10 +59,10 @@ app = FastAPI(
 # lets Fastapi know that requests from lclhst3000 is chill
 app.add_middleware(
 	CORSMiddleware,
-	allow_origins=["http://localhost:3000"],
+	allow_origins=['http://localhost:3000'],
 	allow_credentials=True,
-	allow_methods=["*"],
-	allow_headers=["*"],
+	allow_methods=['*'],
+	allow_headers=['*'],
 )
 app.include_router(router)
 

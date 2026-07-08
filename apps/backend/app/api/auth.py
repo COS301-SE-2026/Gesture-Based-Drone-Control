@@ -18,13 +18,14 @@ router = APIRouter(prefix='/auth', tags=['auth'])
 
 
 @router.post('/login', response_model=LoginResponse)  # so this is da login endpoint
-async def login(payload :LoginRequest, db: AsyncSession =Depends(get_db)):
-	user = await user_manager.get_by_email(db,payload.email)
+async def login(payload: LoginRequest, db: AsyncSession = Depends(get_db)):
+	user = await user_manager.get_by_email(db, payload.email)
 	if user is None or not verify_password(payload.password, user.hashed_password):
 		raise HTTPException(
-			status_code = status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
+			status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid email or password'
 		)
-	return LoginResponse(message="Login is succesful")
+	return LoginResponse(message='Login is succesful')
+
 
 @router.post('/signup', response_model=SignupResponse, status_code=status.HTTP_201_CREATED)
 async def signup(request: SignupRequest, db: AsyncSession = Depends(get_db)):

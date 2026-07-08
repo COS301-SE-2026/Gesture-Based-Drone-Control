@@ -27,7 +27,7 @@ export function useForm(initialState, onSuccess) {
     }
     setIsLoading(true)
     setErrors({})
-    console.log("AOI_BASE_URL is:",API_BASE_URL)
+    console.log("AOI_BASE_URL is:", API_BASE_URL)
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
@@ -62,9 +62,8 @@ export function useForm(initialState, onSuccess) {
       const data = await response.json()
       setIsLoading(false)
       onSuccess(data)
-    } 
-    catch (err) {
-      console.log("fetch failed with:" ,err)
+    } catch (err) {
+      console.log("fetch failed with:", err)
       setErrors({ general: "Couldn't reach the server, retry man " + err })
       setIsLoading(false)
     }
