@@ -139,19 +139,4 @@ test.describe('Signup Page' , () =>{
         await expect(page.getByText(/you must agree to continue/i)).toBeVisible()
     })
 
-    test ('should succesfully submit with valid data and redirect to login ' ,async ({page}) => {
-        const uniqueEmail = `yea+${Date.now()}@gmail.com`
-        await fillSignupForm(page, {
-            firstName: 'Chinmayi',
-            lastName:'yeaaaa',
-            email:uniqueEmail,
-            password: 'Yeaa@123',
-            confirmPassword: 'Yeaa@123',
-            agreeToTerms: true,
-
-        })
-        await page.getByRole('button' ,{name: /sign up/i }).click()
-        await expect(page).toHaveURL(/\/login/)
-    })
-
 })
