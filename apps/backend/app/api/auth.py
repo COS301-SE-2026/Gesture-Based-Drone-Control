@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.auth.schemas import LoginRequest, LoginResponse
 from services.auth.signup import SignupRequest, SignupResponse
 from services.database_manager.database import get_db
-from services.database_manager.managers.UserManager import user_manager
+from services.database_manager.managers.user_manager import user_manager
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 
