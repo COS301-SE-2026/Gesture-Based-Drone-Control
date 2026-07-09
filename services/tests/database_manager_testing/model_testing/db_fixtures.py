@@ -3,10 +3,6 @@ from sqlalchemy import event
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from services.database_manager.database import Base
-from services.database_manager.models.drones import Drone
-from services.database_manager.models.flight_summary import FlightSummary
-from services.database_manager.models.telemetry import Telemetry
-from services.database_manager.models.users import User
 
 
 @pytest_asyncio.fixture
