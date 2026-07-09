@@ -19,12 +19,12 @@ async def test_create_user_minimal_fields(session):
 
 
 async def test_email_uniqueness_enforced(session):
-	# NOSONAR
-	session.add(User(email='test@example.com', hashed_password='hashed'))
+	
+	session.add(User(email='test@example.com', hashed_password='hashed'))# NOSONAR
 	await session.commit()
 
-	# NOSONAR
-	session.add(User(email='test@example.com', hashed_password='hashed'))
+	
+	session.add(User(email='test@example.com', hashed_password='hashed'))# NOSONAR
 	with pytest.raises(IntegrityError):
 		await session.commit()
 

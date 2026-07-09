@@ -49,19 +49,18 @@ async def test_create_builds_user_with_hashed_password(
 	mock_user_cls.return_value = mock_instance
 
 	result = await manager.create(
-		# NOSONAR
+		
 		db,
 		email='new@example.com',
-		password='plaintext',
+		password='plaintext',# NOSONAR
 		first_name='Jane',
 		last_name='Doe',
 	)
 
 	mock_hash_password.assert_called_once_with('plaintext')
 	mock_user_cls.assert_called_once_with(
-		# NOSONAR
 		email='new@example.com',
-		hashed_password='hashed_pw',
+		hashed_password='hashed_pw',# NOSONAR
 		first_name='Jane',
 		last_name='Doe',
 	)
