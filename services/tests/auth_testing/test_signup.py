@@ -25,9 +25,8 @@ def test_valid_password_calls_validator_and_passes():
 		'services.auth.signup.validate_password_strength', return_value='StrongPass123!'
 	) as mock_validate:
 		req = SignupRequest(
-			# NOSONAR
 			email='user@example.com',
-			password='StrongPass123!',
+			password='StrongPass123!',# NOSONAR
 			first_name='Jane',
 			last_name='Doe',
 		)

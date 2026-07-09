@@ -30,30 +30,26 @@ async def test_email_uniqueness_enforced(session):
 
 
 async def test_email_required(session):
-	#NOSONAR
-	session.add(User(hashed_password='a'))
+	session.add(User(hashed_password='a')) # NOSONAR
 	with pytest.raises(IntegrityError):
 		await session.commit()
 
 
 async def test_password_required(session):
-	#NOSONAR
-	session.add(User(email='example@email.com'))
+	session.add(User(email='example@email.com'))# NOSONAR
 	with pytest.raises(IntegrityError):
 		await session.commit()
 
 
 async def test_is_active_can_be_overriden(session):
-	#NOSONAR
-	user = User(email='test@example.com', hashed_password='hashed', is_active=False)
+	user = User(email='test@example.com', hashed_password='hashed', is_active=False) # NOSONAR
 	session.add(user)
 	await session.commit()
 	assert user.is_active is False
 
 
 async def test_flight_summaries_relationship_empty_by_default(session):
-	#NOSONAR
-	user = User(email='test@example.com', hashed_password='hashed', is_active=False)
+	user = User(email='test@example.com', hashed_password='hashed', is_active=False) # NOSONAR
 	session.add(user)
 	await session.commit()
 	await session.refresh(user, attribute_names=['flight_summaries'])

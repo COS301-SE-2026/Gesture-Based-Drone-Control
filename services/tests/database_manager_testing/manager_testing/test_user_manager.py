@@ -74,8 +74,8 @@ async def test_create_adds_commits_and_refreshes(mock_user_cls, mock_hash_passwo
 	mock_instance = MagicMock()
 	mock_user_cls.return_value = mock_instance
 
-	# NOSONAR
-	await manager.create(db, 'a@example.com', 'pw', 'A', 'B')
+	
+	await manager.create(db, 'a@example.com', 'pw', 'A', 'B')# NOSONAR
 
 	db.add.assert_called_once_with(mock_instance)
 	db.commit.assert_awaited_once()
@@ -89,8 +89,8 @@ async def test_create_never_stores_plaintext_password(
 ):
 	mock_hash_password.return_value = 'hashed_pw'
 
-	# NOSONAR
-	await manager.create(db, 'a@example.com', 'supersecret', 'A', 'B')
+	
+	await manager.create(db, 'a@example.com', 'supersecret', 'A', 'B')# NOSONAR
 
 	call_kwargs = mock_user_cls.call_args.kwargs
 	assert call_kwargs['hashed_password'] == 'hashed_pw'
