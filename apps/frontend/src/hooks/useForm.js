@@ -27,7 +27,7 @@ export function useForm(initialState, onSuccess) {
     }
     setIsLoading(true)
     setErrors({})
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",

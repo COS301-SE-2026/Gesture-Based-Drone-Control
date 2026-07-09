@@ -8,7 +8,7 @@ currently added:
 
 from fastapi import APIRouter
 
-from app.api import drone, gestures, auth
+from app.api import auth, drone, gestures
 
 router = APIRouter(prefix='/api')
 

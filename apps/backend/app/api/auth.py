@@ -16,9 +16,11 @@ from services.database_manager.managers.user_manager import user_manager
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 
+
 @router.get('/health')
 async def health():
 	return {'status': 'ok'}
+
 
 @router.post('/login', response_model=LoginResponse)  # so this is da login endpoint
 async def login(payload: LoginRequest, db: AsyncSession = Depends(get_db)):

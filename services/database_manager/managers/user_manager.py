@@ -9,7 +9,7 @@ from services.database_manager.models.users import User
 
 class UserManager:
 	async def get_by_email(self, db: AsyncSession, email: str) -> User | None:
-		result = await db.execute(select(User).where(User.email.lower() == email))
+		result = await db.execute(select(User).where(User.email == email.lower()))
 		return result.scalar_one_or_none()
 
 	async def create(
@@ -20,7 +20,7 @@ class UserManager:
 		first_name: str,
 		last_name: str,
 	) -> User:
-		
+
 		existing_user = self.get_by_email(db, email)
 		if existing_user is None:
 			return None
