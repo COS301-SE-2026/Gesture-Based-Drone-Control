@@ -16,9 +16,10 @@ from typing import AsyncIterator, Optional
 
 import pytest
 from app.cv.serialization import GestureFramePayload
-from cv_pipeline.processing.pipeline import PipelineConfig
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+from services.cv_pipeline.processing.pipeline import PipelineConfig
 
 
 @dataclass
@@ -72,7 +73,7 @@ def app_and_client(monkeypatch):
 	importlib.reload(gestures_module)
 
 	app = FastAPI()
-	app.include_router(gestures_module.router)
+	app.include_router(gestures_module.router, prefix='/api')
 	client = TestClient(app)
 	return gestures_module, client
 

@@ -14,7 +14,8 @@ import logging
 from typing import Optional
 
 from app.cv.serialization import GestureFramePayload, serialize_event
-from cv_pipeline.processing.pipeline import CvPipeline, PipelineConfig
+
+from services.cv_pipeline.processing.pipeline import CvPipeline, PipelineConfig
 
 logger = logging.getLogger(__name__)
 
