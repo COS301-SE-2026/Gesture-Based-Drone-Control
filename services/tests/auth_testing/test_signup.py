@@ -26,7 +26,7 @@ def test_valid_password_calls_validator_and_passes():
 	) as mock_validate:
 		req = SignupRequest(
 			email='user@example.com',
-			password='StrongPass123!',# NOSONAR
+			password='StrongPass123!',  # NOSONAR
 			first_name='Jane',
 			last_name='Doe',
 		)
