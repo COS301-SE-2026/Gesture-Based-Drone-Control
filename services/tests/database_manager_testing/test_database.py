@@ -68,6 +68,7 @@ class TestPragma:
 			result = await conn.execute(text('PRAGMA foreign_keys'))
 			assert result.scalar() == 1
 
+
 @pytest_asyncio.fixture
 async def initialized_db_gen(db_module):
 	gen = db_module.get_db()
@@ -77,6 +78,7 @@ async def initialized_db_gen(db_module):
 
 	await gen.aclose()
 
+
 class TestGetDb:
 	async def test_yields_async_session(self, db_module):
 		gen = db_module.get_db()
@@ -85,7 +87,7 @@ class TestGetDb:
 			assert isinstance(session, AsyncSession)
 		finally:
 			await gen.aclose()
-	
+
 	async def test_session_can_run_queries(self, db_module):
 		async for session in db_module.get_db():
 			result = await session.execute(text('SELECT 1'))
