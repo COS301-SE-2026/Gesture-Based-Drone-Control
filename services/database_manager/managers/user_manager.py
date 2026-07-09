@@ -26,7 +26,7 @@ class UserManager:
 			return None
 
 		new_user = User(
-			email=email,
+			email=email.lower(),
 			hashed_password=hash_password(password),
 			first_name=first_name,
 			last_name=last_name,
