@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 # hand-detection import
-from cv_pipeline.hand_detection.mediapipe_detector import HandDetectionResult
+from services.cv_pipeline.hand_detection.mediapipe_detector import HandDetectionResult
 
 # recognizer imports — GestureResult lives with the interface now, not rule_based
 from .recognizers.gesture_recognizer import GestureRecognizer, GestureResult

@@ -40,7 +40,7 @@ async def test_connect_dummy():
 	mock_adapter = make_mock_adapter()
 
 	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
-		response = client.post('/connect', json={'adapter': 'dummy'})
+		response = client.post('/drone/connect', json={'adapter': 'dummy'})
 
 	assert response.status_code == 200
 	body = response.json()
@@ -58,7 +58,7 @@ async def test_connect_projectairsim():
 
 	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
 		response = client.post(
-			'/connect',
+			'/drone/connect',
 			json={
 				'adapter': 'projectairsim',
 				'host': '127.0.0.2',
@@ -81,7 +81,7 @@ async def test_connect_airsim():
 
 	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
 		response = client.post(
-			'/connect',
+			'/drone/connect',
 			json={
 				'adapter': 'airsim',
 				'port': 1234,
@@ -102,7 +102,7 @@ async def test_connect_adapter_connect_fails():  # NOSONAR
 	mock_adapter = make_mock_adapter(connect_returns=False)
 
 	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
-		response = client.post('/connect', json={'adapter': 'dummy'})
+		response = client.post('/drone/connect', json={'adapter': 'dummy'})
 
 	assert response.status_code == 200
 	body = response.json()
@@ -116,7 +116,7 @@ async def test_connect_unknown_adapter():
 	state = AppState()
 	client = TestClient(make_app(state))
 
-	response = client.post('/connect', json={'adapter': 'fakebullshitadapter'})
+	response = client.post('/drone/connect', json={'adapter': 'fakebullshitadapter'})
 
 	assert response.status_code == 200
 	body = response.json()
@@ -139,7 +139,7 @@ async def test_connect_replaces_existing_adapter():
 	client = TestClient(make_app(state))
 
 	with patch('apps.backend.app.api.drone._build_adapter', return_value=new_adapter):
-		response = client.post('/connect', json={'adapter': 'projectairsim'})
+		response = client.post('/drone/connect', json={'adapter': 'projectairsim'})
 
 	assert response.status_code == 200
 	assert response.json()['connected'] is True
