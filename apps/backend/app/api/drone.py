@@ -75,9 +75,11 @@ def _build_adapter(body: ConnectRequest) -> DroneAdapter:
 
 # REST endpoints\
 
+
 @router.get('/health')
 async def health():
-	return {"status": "ok"}
+	return {'status': 'ok'}
+
 
 @router.post('/connect', response_model=ConnectResponse)
 async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_state)]):  # NOSONAR

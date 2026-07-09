@@ -62,9 +62,11 @@ class GestureStreamStatus(BaseModel):
 async def get_gesture_stream_status() -> GestureStreamStatus:
 	return GestureStreamStatus(running=stream.is_running, connected_clients=stream.client_count)
 
+
 @router.get('/health')
 async def health():
-	return {"status": "ok"}
+	return {'status': 'ok'}
+
 
 @router.websocket('/stream')
 async def gesture_websocket(websocket: WebSocket) -> None:
