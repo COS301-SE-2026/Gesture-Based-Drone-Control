@@ -76,9 +76,9 @@ async def test_all_optional_numeric_fields_can_be_set(session, flight_summary):
 	session.add(reading)
 	await session.commit()
 
-	assert reading.displacement_x == 1.5
-	assert reading.displacement_y == -2.25
-	assert reading.altitude == 100.0
-	assert reading.battery_level == 87.3
-	assert reading.speed == 4.2
+	assert reading.displacement_x == pytest.approx(1.5)
+	assert reading.displacement_y == pytest.approx(-2.25)
+	assert reading.altitude == pytest.approx(100.0)
+	assert reading.battery_level == pytest.approx(87.3)
+	assert reading.speed == pytest.approx(4.2)
 	assert reading.command_count == 12

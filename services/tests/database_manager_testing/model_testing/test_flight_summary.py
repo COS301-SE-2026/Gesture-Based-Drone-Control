@@ -66,7 +66,7 @@ async def test_optional_numeric_fields_can_be_set(session, drone):
 	session.add(summary)
 	await session.commit()
 
-	assert summary.max_altitude == 120.5
-	assert summary.avg_battery_drain == 0.42
-	assert summary.avg_speed == 8.3
-	assert summary.control_count == 57
+	assert summary.max_altitude == pytest.approx(120.5)
+	assert summary.avg_battery_drain == pytest.approx(0.42)
+	assert summary.avg_speed == pytest.approx(8.3)
+	assert summary.control_count == pytest.approx(57)

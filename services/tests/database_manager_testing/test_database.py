@@ -3,6 +3,7 @@ import sys
 from unittest.mock import AsyncMock
 
 import pytest
+import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.pool import StaticPool
@@ -67,6 +68,14 @@ class TestPragma:
 			result = await conn.execute(text('PRAGMA foreign_keys'))
 			assert result.scalar() == 1
 
+@pytest_asyncio.fixture
+async def initialized_db_gen(db_module):
+	gen = db_module.get_db()
+	session = await gen.__anext__()
+
+	yield gen, session
+
+	await gen.aclose()
 
 class TestGetDb:
 	async def test_yields_async_session(self, db_module):
@@ -76,16 +85,15 @@ class TestGetDb:
 			assert isinstance(session, AsyncSession)
 		finally:
 			await gen.aclose()
-
+	
 	async def test_session_can_run_queries(self, db_module):
 		async for session in db_module.get_db():
 			result = await session.execute(text('SELECT 1'))
 			assert result.scalar() == 1
 			break
 
-	async def test_rollback_called_on_exception(self, db_module, monkeypatch):
-		gen = db_module.get_db()
-		session = await gen.__anext__()
+	async def test_rollback_called_on_exception(self, initialized_db_gen, monkeypatch):
+		gen, session = initialized_db_gen
 
 		session.rollback = AsyncMock(wraps=session.rollback)
 
@@ -100,7 +108,7 @@ class TestGetDb:
 
 		session.rollback = AsyncMock(wraps=session.rollback)
 
-		async for _ in db_module.get_db():
-			pass
+		async for session in db_module.get_db():
+			session.rollback = AsyncMock(wraps=session.rollback)
 
 		session.rollback.assert_not_awaited()
