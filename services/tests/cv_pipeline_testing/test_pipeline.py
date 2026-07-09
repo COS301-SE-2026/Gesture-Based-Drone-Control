@@ -1,7 +1,6 @@
 # unit testing for pipeline.py
 # Run from services/ with: pytest tests/cv_pipeline_testing/test_pipeline.py -v
 
-import os
 import sys
 
 # need to slow stuff down
@@ -15,22 +14,18 @@ import pytest
 _mock_mp = MagicMock()
 sys.modules['mediapipe'] = _mock_mp
 
-# add services/ to sys.path so cv_pipeline.* imports resolve
-_services_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-sys.path.insert(0, _services_dir)
-
-from cv_pipeline.camera.camera_feed import CameraConfig, CapturedFrame  # noqa: E402
-from cv_pipeline.gestures.gesture_engine import GestureEngineResult  # noqa: E402
-from cv_pipeline.gestures.recognizers.gesture_recognizer import (  # noqa: E402
+from services.cv_pipeline.camera.camera_feed import CameraConfig, CapturedFrame  # noqa: E402
+from services.cv_pipeline.gestures.gesture_engine import GestureEngineResult  # noqa: E402
+from services.cv_pipeline.gestures.recognizers.gesture_recognizer import (  # noqa: E402
 	FingerState,
 	Gesture,
 	GestureResult,
 )
-from cv_pipeline.hand_detection.mediapipe_detector import (  # noqa: E402
+from services.cv_pipeline.hand_detection.mediapipe_detector import (  # noqa: E402
 	DetectorConfig,
 	Handedness,
 )
-from cv_pipeline.processing.pipeline import (  # noqa: E402
+from services.cv_pipeline.processing.pipeline import (  # noqa: E402
 	CvPipeline,
 	PipelineConfig,
 	PipelineEvent,
@@ -151,9 +146,11 @@ def fake_pipeline_deps(monkeypatch):
 		fakes['engines'].append(e)
 		return e
 
-	monkeypatch.setattr('cv_pipeline.processing.pipeline.CameraFeed', make_camera)
-	monkeypatch.setattr('cv_pipeline.processing.pipeline.HandDetectionPipeline', make_detector)
-	monkeypatch.setattr('cv_pipeline.processing.pipeline.GestureEngine', make_engine)
+	monkeypatch.setattr('services.cv_pipeline.processing.pipeline.CameraFeed', make_camera)
+	monkeypatch.setattr(
+		'services.cv_pipeline.processing.pipeline.HandDetectionPipeline', make_detector
+	)
+	monkeypatch.setattr('services.cv_pipeline.processing.pipeline.GestureEngine', make_engine)
 
 	return fakes
 

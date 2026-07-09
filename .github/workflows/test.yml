@@ -43,6 +43,13 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@8f6ec407a34d5ec2b33d7d8f7f50279493b5efb4
+        with:
+          files: services/coverage.xml
+          flags: services
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
 
   Frontend-Unit-Tests:
     runs-on: ubuntu-latest
