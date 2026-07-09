@@ -99,8 +99,9 @@ class TestGetDb:
 
 		session.rollback = AsyncMock(wraps=session.rollback)
 
+		exc = ValueError('boom')
 		with pytest.raises(ValueError):
-			await gen.athrow(ValueError('boom'))
+			await gen.athrow(exc)
 
 		session.rollback.assert_awaited_once()
 

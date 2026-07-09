@@ -7,8 +7,8 @@ from services.database_manager.models.users import User
 
 
 async def test_create_user_minimal_fields(session):
-	# NOSONAR
-	user = User(email='test@example.com', hashed_password='hashed')
+
+	user = User(email='test@example.com', hashed_password='hashed')  # NOSONAR
 	session.add(user)
 	await session.commit()
 
