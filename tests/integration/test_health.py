@@ -25,3 +25,10 @@ def test_gestures_health_endpoint():
 
 		assert response.status_code == 200
 		assert response.json() == {'status': 'ok'}
+
+def test_auth_health_endpoint():
+	with TestClient(app) as client:
+		response = client.get('/api/auth/health')
+
+		assert response.status_code == 200
+		assert response.json() == {'status': 'ok'}
