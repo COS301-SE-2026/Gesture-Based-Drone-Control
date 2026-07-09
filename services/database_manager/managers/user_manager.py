@@ -20,6 +20,11 @@ class UserManager:
 		first_name: str,
 		last_name: str,
 	) -> User:
+		
+		existing_user = self.get_by_email(db, email)
+		if existing_user is None:
+			return None
+
 		new_user = User(
 			email=email,
 			hashed_password=hash_password(password),

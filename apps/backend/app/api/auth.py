@@ -40,8 +40,13 @@ async def signup(request: SignupRequest, db: AsyncSession = Depends(get_db)):
 			status_code=status.HTTP_409_CONFLICT, detail='A user with this email already exists'
 		)
 
-	await user_manager.create(
+	result = await user_manager.create(
 		db, request.email, request.password, request.first_name, request.last_name
 	)
+	
+	if result is None:
+		raise HTTPException(
+			status_code=status.HTTP_409_CONFLICT, detail='A user with this email already exists'
+		)
 
 	return SignupResponse(message='Signup Successful')
