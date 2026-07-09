@@ -5,7 +5,7 @@ are JSON serializable over webscoket
 PipelineEvent -> GestureFramePayload -> sent to browser as ws.send_json
 """
 
-from cv_pipeline.processing.pipeline import PipelineEvent
+from services.cv_pipeline.processing.pipeline import PipelineEvent
 from pydantic import BaseModel, Field
 
 

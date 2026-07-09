@@ -73,7 +73,12 @@ def _build_adapter(body: ConnectRequest) -> DroneAdapter:
 	raise ValueError(f'Unknown adapter: {body.adapter}. Supported: dummy, airsim, projectairsim')
 
 
-# REST endpoints
+# REST endpoints\
+
+@router.get('/health')
+async def health():
+	return {"status": "ok"}
+
 @router.post('/connect', response_model=ConnectResponse)
 async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
 	# fuckass sonarqube would break this... dependencies are supposed to be injected like this
