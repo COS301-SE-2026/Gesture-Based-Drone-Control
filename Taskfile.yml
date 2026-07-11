@@ -131,9 +131,8 @@ tasks:
 
   cv-pipeline:
     desc: full async pipeline (landmarks + fps + speed + confidence)
-    dir: "{{.SERVICES_DIR}}"
     cmds:
-      - uv run python -m cv_pipeline.processing.pipeline
+      - uv run python -m services.cv_pipeline.processing.pipeline
 
   sim-as:
     desc: Runs the old pain in the ass sim
