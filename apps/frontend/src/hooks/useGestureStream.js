@@ -1,18 +1,18 @@
 import {useEffect, useRef, useState} from "react"
 import {API_BASE_URL} from "../lib/api"
 
-function buildWslUrl(path){
+function buildWsUrl(path){
     const wsBase = API_BASE_URL.replace(/^http/,"ws")
     return `${wsBase}${path}`
 }
 
 export function useGestureStream(){
     const [frame,setFrame]=useState(null)
-    const[connected,ssetConnected]=useState(false)
+    const[connected,setConnected]=useState(false)
     const wsRef = useRef(null)
 
     useEffect(()=>{
-        const ws =new WenSocket(buildWsUrl("/api/gestures/stream"))
+        const ws =new WebSocket(buildWsUrl("/api/gestures/stream"))
         wsRef.current=ws
 
         ws.onopen=() => setConnected(true)
