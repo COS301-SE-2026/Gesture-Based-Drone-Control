@@ -2,19 +2,19 @@ coverage:
   status:
     project:
       default:
-        target: auto
+        target: 80%
         threshold: 1%
       backend:
-        target: auto
+        target: 80%
         flags:
           - backend
       services:
-        target: auto
+        target: 80%
         flags:
           - services
     patch:
       default:
-        target: auto
+        target: 80%
         threshold: 1%
 
 flag_management:

@@ -1,4 +1,4 @@
-# basically a makefile for windows 
+# basically a makefile for windows
 version: "3"
 
 dotenv: [".env"]
@@ -9,7 +9,6 @@ vars:
   SERVICES_DIR: services
 
 tasks:
-
   install:
     desc: Install backend + frontend deps
     cmds:
@@ -23,9 +22,8 @@ tasks:
     deps:
       - backend-dev
       - frontend-dev
-    
+
   backend-dev:
-    internal: true # not possible to call outside
     cmds:
       - uv run fastapi dev {{.BACKEND_APP}}  --port {{.BACKENDPORT}}
     env:
@@ -36,18 +34,17 @@ tasks:
     dir: "{{.FRONTEND_DIR}}"
     cmds:
       - yarn dev
-  
+
   build:
     desc: Builds the backend and frontend
     deps:
       - backend-build
       - frontend-build
-  
+
   backend-build:
-    internal: true
     cmds:
       - uv run fastapi run  {{.BACKEND_APP}} --port {{.BACKENDPORT}}
-  
+
   frontend-build:
     internal: true
     dir: "{{.FRONTEND_DIR}}"
@@ -56,20 +53,20 @@ tasks:
 
   test:
     desc: Runs Unit Tests, Integration and End to End tests
-    deps:
-      - unit-test
-      - integration-test
+    cmds:
+      - task: unit-test
+      - task: integration-test
 
   unit-test:
     desc: Runs Frontend and Backend Unit Tests
-    deps:
-      - backend-unit-test
-      - frontend-unit-test
+    cmds:
+      - task: backend-unit-test
+      - task: frontend-unit-test
 
   backend-unit-test:
     desc: Runs Backend Unit Tests
     cmds:
-      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=xml:apps/backend/coverage.xml
+      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=xml:apps/backend/coverage.xml --cov-report=term-missing --cov-fail-under=90
 
   frontend-unit-test:
     desc: Runs Frontend Unit Tests
@@ -103,12 +100,12 @@ tasks:
     deps:
       - backend-fix
       - frontend-fix
-  
+
   backend-fix:
     cmds:
       - uv run ruff format .
       - uv run ruff check --fix .
-  
+
   frontend-fix:
     dir: "{{.FRONTEND_DIR}}"
     cmds:
@@ -131,7 +128,7 @@ tasks:
     dir: "{{.SERVICES_DIR}}"
     cmds:
       - uv run python -m cv_pipeline.gestures.gesture_engine
-  
+
   cv-pipeline:
     desc: full async pipeline (landmarks + fps + speed + confidence)
     dir: "{{.SERVICES_DIR}}"
@@ -144,35 +141,34 @@ tasks:
       - cmd: powershell -Command "Start-Process '{{.AS_PATH}}'"
         platforms: [windows]
 
-  sim-pas: 
+  sim-pas:
     desc: Launches PAS, the UE5 version
     cmds:
       - cmd: powershell -Command "Start-Process '{{.PAS_PATH}}'"
         platforms: [windows]
-  
+
   sim-pas-demo:
     desc: Launches PAS, and the drone adapter demo
     cmds:
       - cmd: powershell -Command "Start-Process '{{.PAS_PATH}}'"
         platforms: [windows]
       - cmd: uv run adapter_demo.py
-  
+
   sim-beeg-demo:
-    desc: Test your laptop out 
+    desc: Test your laptop out
     deps:
       - sim-pas-demo
-      - sim-as 
-  
+      - sim-as
+
   prereqs:
     desc: install all prereqs (add more as identified)
     cmds:
       - cmd: winget install Python.Python.3.11 astral-sh.uv Microsoft.DirectX --accept-package-agreements --accept-source-agreements
         platforms: [windows]
       - cmd: npm install -g yarn
-        platforms:  [windows]
+        platforms: [windows]
       - cmd: |
           sudo apt update && sudo apt install  -y python3.11 python3.11-venv nodejs npm curl
           curl -LsSf https://astral.sh/uv/install.sh | sh
           npm install -g yarn
         platforms: [linux]
-  
