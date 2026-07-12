@@ -72,6 +72,8 @@ ignore = ["E402"]
 
 [tool.ruff.lint.per-file-ignores]
 "apps/backend/app/main.py" = ["F401"]
+"services/tests/database_manager_testing/model_testing/conftest.py" = ["F401"]
+"tests/integration/db_manager_tests/conftest.py" = ["F401"]
 
 [tool.ruff.format]
 quote-style = "single"
@@ -79,7 +81,7 @@ indent-style = "tab"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-pythonpath = ["apps/backend", "services"]
+pythonpath = ["."]
 filterwarnings = [
     "ignore:module 'sre_parse' is deprecated:DeprecationWarning",
     "ignore:module 'sre_constants' is deprecated:DeprecationWarning",

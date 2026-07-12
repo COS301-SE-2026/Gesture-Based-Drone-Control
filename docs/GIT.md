@@ -1,113 +1,426 @@
-# Universal Git Branch Strategy
+# Git Conventions
 
-> A consistent workflow to keep all teams in sync, minimize merge conflicts, and maintain a stable codebase.
+<div class="tx-badges">
+  <span class="tx-status"><span class="tx-status__dot"></span>Flow · GitHub Flow (extended)</span>
+  <span class="tx-status">Commits · Conventional Commits</span>
+  <span class="tx-status">Merge · Merge commit (no squash)</span>
+</div>
+
+!!! abstract "What this document covers"
+    The branch flow, commit conventions, and pull-request rules used by
+    Codex Merchants on the Gesture-Based Drone Control System. This is
+    the *human-side* counterpart to [CI/CD](CICD.md) — the pipeline
+    enforces what this document specifies. Conventional Commits are
+    required by [`R15.2`](SRS.md#r15-process--documentation).
+
+---
+
+## 1. Branch Flow
+
+The repository uses a four-level branch hierarchy that mirrors the
+structure of the work: features compose into use cases, use cases
+compose into a release-candidate integration branch, and that branch is
+promoted to production.
 
 ```mermaid
 flowchart LR
-    main(["main"]):::main
+    feat["feature/UC#/name"]:::feat
+    uc["Use-Case#"]:::uc
     dev(["dev"]):::dev
-    uc(["UC#"]):::uc
-    feat(["feature/UC#/name"]):::feat
+    main(["main"]):::main
 
-    main --> dev --> uc --> feat
-    feat -->|PR| uc
-    uc -->|PR| dev
-    dev -->|PR| main
+    feat -->|PR + review| uc
+    uc -->|PR + review| dev
+    dev -->|PR + review| main
 
-    classDef main fill:#ff6b6b,color:#fff,stroke:none
-    classDef dev  fill:#7c6dfa,color:#fff,stroke:none
-    classDef uc   fill:#4fffb0,color:#111,stroke:none
-    classDef feat fill:#4a90d9,color:#fff,stroke:none
+    classDef main fill:#660708,color:#fff,stroke:none
+    classDef dev  fill:#A4161A,color:#fff,stroke:none
+    classDef uc   fill:#BA181B,color:#fff,stroke:none
+    classDef feat fill:#161A1D,color:#fff,stroke:none
 ```
 
----
+*Figure 1.1 — Four-level branch hierarchy. Every promotion is a
+reviewed pull request, never a direct push.*
 
-## 01 · Branch Overview
+### 1.1 Branches
 
-| Branch | Purpose |
-|---|---|
-| `main` | Production-ready code only. Always stable. |
-| `dev` | Integration branch. All Use Case branches merge here when ready. |
-| `UC1`, `UC2` … `UCn` | One branch per Use Case. All feature work originates here. |
-| `feature/UC#/name` | Individual features or bugfixes, created from the Use Case branch. |
+| Branch | Lifetime | Pushable directly? | Purpose |
+| --- | --- | --- | --- |
+| `main` | Permanent | No | Production-ready code. Tagged at each demo. The docs site is rebuilt on every push here. |
+| `dev` | Permanent | No | Integration branch. All Use-Case branches merge here when ready for cross-feature integration testing. |
+| `Use-Case<n>` | Per-use-case | No | One per SRS use case (e.g. `Use-Case-1` for UC-1 — gesture control). Features are integrated and stabilised here before promotion to `dev`. |
+| `feature/UC<n>/<short-name>` | Per-feature | Yes (your own) | Individual feature or fix work. Created from the parent Use-Case branch. |
 
-> **Keep your Use Case branch current.** Regularly merge `dev` into your UC branch to stay aligned with the rest of the project and prevent large conflicts later.
+### 1.2 Rationale
 
----
+The intermediate `Use-Case` branches act as **mini-integration branches**.
+This gives the team two layers of safety: a feature stabilises with its
+sibling features on the Use-Case branch before that whole unit is
+proposed to `dev`. The cost is one extra PR per promotion — a price the
+team is happy to pay for fewer post-merge regressions in `dev`.
 
-## 02 · Sync Your Use Case Branch with Dev
-
-**Step 1 — Switch to your Use Case branch**
-In the Source Control panel, switch to your UC branch (e.g. `UC1`, `UC2`).
-
-**Step 2 — Pull latest remote changes**
-Click **Sync Changes** or **Pull** in the Source Control panel to fetch the latest updates.
-
-**Step 3 — Merge `dev` into your branch**
-Open the Command Palette:
-- Mac: `Cmd+Shift+P`
-- Windows / Linux: `Ctrl+Shift+P`
-
-Type and select **Git: Merge Branch…** then choose `dev`. Resolve any conflicts, stage, and commit.
+!!! tip "Keep your Use-Case branch current"
+    Merge `dev` into your Use-Case branch at least once a week. Long-lived
+    Use-Case branches that lag behind `dev` produce the worst merge
+    conflicts the team encounters.
 
 ---
 
-## 03 · Feature Development Workflow
+## 2. Branch Naming
 
-**Step 1 — Create your feature branch from your Use Case branch**
+| Pattern | Example | Notes |
+| --- | --- | --- |
+| `Use-Case<n>` | `Use-Case-1` | The `n` matches the UC number in the [SRS](SRS.md#4-use-cases). |
+| `feature/UC<n>/<short-name>` | `feature/UC1/openpalm-recognizer` | `<short-name>` is kebab-case, ≤ 4 words, describes the *outcome* not the *task* (`openpalm-recognizer`, not `add-recognizer-code`). |
+| `fix/UC<n>/<short-name>` | `fix/UC2/telemetry-units` | Bug fixes follow the same shape, with `fix/` instead of `feature/`. |
+| `hotfix/<short-name>` | `hotfix/demo-day-crash` | Reserved for emergency fixes off `main` (see [§6](#6-hotfix-flow)). |
+| `docs/<short-name>` | `docs/srs-ieee830` | Documentation-only changes targeting `main` or `dev` directly. |
+
+Branch names are lowercase except for `Use-Case` (the only branch
+prefix that uses a capital). No spaces, no underscores in the
+short-name segment.
+
+---
+
+
+## 3. Pull Requests
+
+### 3.1 Title
+
+The PR title follows the same Conventional-Commit form as the merge
+commit it will produce:
+
+```
+feat(recognizer): add open-palm gesture (R3.2.2)
+```
+
+### 3.2 Description template
+
+```markdown
+## What
+A one-sentence summary of the change.
+
+## How
+A short walkthrough — files touched, design decisions worth flagging,
+anything reviewers should know.
+
+## Testing
+- [ ] Lint passes locally
+- [ ] Unit tests pass locally
+- [ ] Manual test:&nbsp;<short description>
+
+
+Closes #<issue>
+```
+
+### 3.3 Review requirements
+
+| Target branch | Approving reviews | Required CI checks |
+| --- | --- | --- |
+| `Use-Case<n>` from `feature/*` | 1 from the Use-Case sub-team | Lint workflow |
+| `dev` from `Use-Case<n>` | 1 from another sub-team | Lint + Test workflows |
+| `main` from `dev` | 1 from the Scrum Master + 1 from another team member | Lint + Test workflows |
+| `main` from `hotfix/*` | 1 (any team member) | Lint workflow |
+
+CI checks are enforced by GitHub branch protection — see
+[CI/CD §5](CICD.md#5-branch-protection--required-checks).
+
+### 3.4 Merge strategy
+
+PRs are merged with **"Create a merge commit"** &mdash; not squash, not
+rebase. Rationale:
+
+- The branch history shows *how* the work was done (intermediate
+  commits, fixups during review). This is valuable when bisecting a
+  regression.
+- The merge commit itself gives a single record of *when* the PR was
+  integrated and links back to the PR number on GitHub.
+- Conventional-Commit prefixes on the individual commits remain useful
+  in a `git log` because they are preserved verbatim.
+
+Branches **must not** be deleted automatically by GitHub on merge —
+leave the branch in place for at least 24 hours after merging so the
+team can recover if a problem surfaces immediately.
+
+---
+
+## 4. Feature Development Workflow
+
+The day-to-day workflow for a developer picking up a story is the same
+whether you use the command line or the VS Code source-control panel.
+
+=== "Command line"
+
+    ```bash
+    # 1. Start from the parent Use-Case branch
+    git checkout Use-Case-1
+    git pull origin Use-Case-1
+
+    # 2. Create your feature branch
+    git checkout -b feature/UC1/openpalm-recognizer
+
+    # 3. Work, committing often with conventional messages
+    git add services/cv_pipeline/gestures/open_palm.py
+    git commit -m "feat(recognizer): add open-palm gesture (R3.2.2)"
+
+    # 4. Before opening the PR, pull the latest Use-Case changes
+    git fetch origin
+    git merge origin/Use-Case-1
+    # resolve any conflicts locally and commit
+
+    # 5. Push and open a PR into Use-Case-1
+    git push -u origin feature/UC1/openpalm-recognizer
+    # open the PR on GitHub from the link in the push output
+    ```
+
+=== "VS Code source control"
+
+    1. Open the Source Control panel (`Ctrl/Cmd+Shift+G`).
+    2. Use the branch indicator in the status bar (bottom-left) to
+       switch to your parent Use-Case branch, then PULL to refresh.
+    3. Create new branch from… → pick the Use-Case branch → name it
+       `feature/UCn/short-name`.
+    4. Stage files in the Source Control panel and commit using the
+       Conventional-Commit form in the message box.
+    5. Before opening the PR, open the Command Palette
+       (`Ctrl/Cmd+Shift+P`) → Git: Merge Branch… → select your
+       Use-Case branch. Resolve conflicts in the editor's three-way
+       merge view.
+    6. Sync Changes to push, then click Create Pull Request in
+       the panel (with the GitHub Pull Requests extension installed) or
+       open the PR on GitHub.
+
+---
+
+## 5. Hotfix Flow
+
+For an emergency fix that must reach `main` *immediately* — typically
+discovered minutes before a demo — the team uses a shortened flow:
+
+```mermaid
+flowchart LR
+    main(["main"]):::main --> hf["hotfix/short-name"]:::hf
+    hf -->|PR| main
+    main -.->|back-merge| dev(["dev"]):::dev
+
+    classDef main fill:#660708,color:#fff,stroke:none
+    classDef dev  fill:#A4161A,color:#fff,stroke:none
+    classDef hf   fill:#E5383B,color:#fff,stroke:none
+```
+
+*Figure 6.1 — Hotfix branches start from `main`, merge back into
+`main`, and are then back-merged into `dev`.*
+
+Rules:
+
+1. Branch from `main`, not from `dev` or a Use-Case branch.
+2. Keep the change minimal — one bug, one PR.
+3. Lint must still pass; the test suite is **strongly encouraged** but
+   may be skipped if a demo is imminent (Scrum value of *Courage* — own
+   the decision in the PR description).
+4. After merging to `main`, immediately open a second PR back-merging
+   `main` into `dev` so the fix is not lost when the next regular
+   release goes out.
+
+---
+
+## 6. CLI Reference
+
+A copy-paste-ready cheatsheet for the most common operations on this
+repository. Every command is what you would actually type in a terminal
+opened at the repo root.
+
+### 6.1 First-time setup
 
 ```bash
-# Switch to your UC branch and pull latest
-git checkout [UC#]
-git pull origin [UC#]
+# Clone the repository
+git clone https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control.git
+cd Gesture-Based-Drone-Control
 
-# Create your feature branch
-git checkout -b feature/UC#/some-feature-name
+# Identify yourself (once per machine)
+git config --global user.name  "Your Name"
+git config --global user.email "your.email@example.com"
+
+# Fetch all branches and tags
+git fetch --all --tags
 ```
 
-**Step 2 — Work on your feature**
-Develop, commit often, and keep your changes focused on a single feature or fix.
-
-**Step 3 — Before opening a PR — merge your UC branch in**
-Pull the latest from your Use Case branch, then merge locally to resolve conflicts before review.
+### 6.2 Daily — start a new feature
 
 ```bash
-# Update your UC branch
-git checkout [UC#]
-git pull origin [UC#]
+# 1. Sync the parent Use-Case branch
+git checkout Use-Case-1
+git pull origin Use-Case-1
 
-# Merge into your feature branch
-git checkout feature/your-feature-name
-git merge [UC#]
-# Resolve conflicts, then commit if needed
+# 2. Branch off it
+git checkout -b feature/UC1/openpalm-recognizer
+
+# 3. Verify you're where you expect to be
+git branch --show-current
+# → feature/UC1/openpalm-recognizer
 ```
 
-**Step 4 — Open a Pull Request**
-Push your branch and create a PR to merge into your Use Case branch. With conflicts already resolved, reviews and merges stay clean.
+### 6.3 Daily — commit and push
+
+```bash
+# Inspect what changed
+git status
+git diff
+
+# Stage selectively
+git add services/cv_pipeline/gestures/open_palm.py
+git add services/tests/test_open_palm.py
+
+#Stage all files altered/added
+git add .
+
+# Commit with Conventional-Commit form
+git commit -m "feat(recognizer): add open-palm gesture (R3.2.2)"
+
+# Subsequent pushes
+git push
+```
+
+### 6.4 Sync your Use-Case branch with `dev`
+
+Run this at least once a week on every active Use-Case branch.
+
+```bash
+# Update dev locally
+git checkout dev
+git pull origin dev
+
+# Merge dev into the Use-Case branch
+git checkout Use-Case-1
+git merge dev
+# resolve any conflicts, then:
+git push origin Use-Case-1
+```
+
+### 6.5 Before opening a PR — merge the parent in
+
+```bash
+# Make sure the parent Use-Case branch is fresh
+git fetch origin
+
+# Merge the latest parent into your feature branch
+git merge origin/Use-Case-1
+# resolve any conflicts, commit, then:
+git push
+```
+
+### 6.6 Promote a Use-Case branch to `dev`
+
+```bash
+# Sync first
+git checkout Use-Case-1
+git pull origin Use-Case-1
+git fetch origin
+
+# Bring dev in to catch any drift
+git merge origin/dev
+git push origin Use-Case-1
+
+# Then open the PR Use-Case-1 → dev on GitHub
+```
+
+### 6.7 Promote `dev` to `main`
+
+```bash
+# Sync dev
+git checkout dev
+git pull origin dev
+
+# Then open the PR dev → main on GitHub
+# (Two approving reviews required — see §4.3)
+```
+
+### 6.8 Hotfix
+
+```bash
+# Branch off main, not dev
+git checkout main
+git pull origin main
+git checkout -b hotfix/demo-day-crash
+
+# Fix, commit, push
+git commit -m "fix(backend): handle missing telemetry frame on startup"
+git push -u origin hotfix/demo-day-crash
+
+# After the hotfix → main PR is merged, back-merge to dev
+git checkout dev
+git pull origin dev
+git merge origin/main
+git push origin dev
+```
+
+### 6.9 Inspecting history
+
+```bash
+# Last 10 commits, one line each, with branch graph
+git log --oneline --graph --decorate -10
+
+# Who touched a specific file?
+git log --follow apps/backend/app/main.py
+
+# Show a specific commit
+git show <commit-sha>
+
+# Find which commit introduced a bug
+git bisect start
+git bisect bad
+git bisect good demo-1
+# git will check out commits; mark each as good/bad until it isolates the culprit
+git bisect reset
+```
+
+### 6.10 Undoing things
+
+```bash
+# Discard unstaged changes in a file
+git restore apps/backend/app/main.py
+
+# Unstage a file you accidentally added
+git restore --staged apps/backend/app/main.py
+
+# Amend the last commit message (only before pushing)
+git commit --amend -m "feat(recognizer): add open-palm gesture (R3.2.2)"
+
+# Revert a merged commit by creating a new commit that undoes it
+git revert <commit-sha>
+
+# Stash work-in-progress without committing
+git stash push -m "wip: gesture overlay"
+git stash list
+git stash pop
+```
+
+!!! warning "Never `git reset --hard` on a shared branch"
+    `git reset --hard` and `git push --force` on `dev`, `main`, or a
+    `Use-Case*` branch will silently destroy other team members' work.
+    Only use these on your own feature branch, and only when you are
+    certain nobody else has pulled it.
+
+## 7. Best Practices
+
+A short list, in priority order:
+
+1. **Pull before you push.** Every push begins with a `git pull` (or
+   *Sync Changes*) on the branch you are about to push to.
+2. **Merge Use-Case into your feature *before* opening the PR.** The
+   reviewer should never be the one to discover a merge conflict.
+3. **Commit early, commit often.** Many small commits with good
+   messages beat one giant commit titled "wip".
+4. **Never `git push --force` to a shared branch.** Only your own
+   feature branch may receive a forced push, and only when you are
+   certain nobody else has pulled it.
+5. **Don't commit secrets.** `.env` files are listed in `.gitignore`;
+   keep them there. Use `.env.example` for documenting required
+   variables.
+6. **Don't commit generated artefacts.** `site/`, `node_modules/`,
+   `.venv/`, `dist/`, `__pycache__/` are all in `.gitignore`.
+7. **Reference the requirement.** If the change implements an SRS
+   requirement, cite the ID in the commit body and the PR
+   description.
 
 ---
-
-## 04 · VS Code Source Control
-
-**Step 1 — Sync your Use Case branch**
-In the Source Control panel, switch to your UC branch. Click **Sync Changes** or **Pull** to fetch and pull the latest from remote.
-
-**Step 2 — Switch to your feature branch**
-Select your feature branch from the branch menu (bottom-left). If it doesn't exist yet, click **Create new branch from…**, select your UC branch, and name it.
-
-**Step 3 — Merge team branch into feature branch**
-With your feature branch checked out, open the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`), type **Git: Merge Branch…**, and select your UC branch. VS Code will highlight conflicts — resolve them in the editor, then stage and commit.
-
-**Step 4 — Create a Pull Request**
-Push your branch with the **Sync Changes** or **Push** button. Then use the **Create Pull Request** button in the Source Control panel, or open a PR directly on GitHub / GitLab.
-
----
-
-## 05 · Best Practices
-
-| | Practice |
-|---|---|
-| `sync` | Regularly merge the latest `dev` into your Use Case branch |
-| `update` | Keep your feature branch up to date with your UC branch before opening a PR |
-| `local` | Resolve conflicts locally before submitting your PR |
-| `review` | Only merge into your UC branch via PR, after review |

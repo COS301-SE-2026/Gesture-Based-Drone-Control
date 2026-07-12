@@ -53,20 +53,20 @@ tasks:
 
   test:
     desc: Runs Unit Tests, Integration and End to End tests
-    deps:
-      - unit-test
-      - integration-test
+    cmds:
+      - task: unit-test
+      - task: integration-test
 
   unit-test:
     desc: Runs Frontend and Backend Unit Tests
-    deps:
-      - backend-unit-test
-      - frontend-unit-test
+    cmds:
+      - task: backend-unit-test
+      - task: frontend-unit-test
 
   backend-unit-test:
     desc: Runs Backend Unit Tests
     cmds:
-      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=xml:apps/backend/coverage.xml
+      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=xml:apps/backend/coverage.xml --cov-report=term-missing --cov-fail-under=90
 
   frontend-unit-test:
     desc: Runs Frontend Unit Tests
