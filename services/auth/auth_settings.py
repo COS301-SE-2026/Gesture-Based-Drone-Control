@@ -1,3 +1,4 @@
+from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -19,3 +20,8 @@ class AuthSettings(BaseSettings):
 	cookie_samesite: str = 'lax'
 	access_cookie_name: str = 'access_token'
 	refresh_cookie_name: str = 'refresh_cookie'
+
+
+@lru_cache
+def get_auth_settings() -> AuthSettings:
+	return AuthSettings()
