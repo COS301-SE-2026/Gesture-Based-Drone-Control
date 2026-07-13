@@ -6,7 +6,7 @@ from pydantic import (
 	field_validator,
 )  # pydantic is like a library used for validation commonly in
 
-from services.auth.schemas import validate_password_strength
+from auth.password_service import validate_password_strength
 
 
 class SignupResponse(BaseModel):

@@ -3,7 +3,7 @@ from __future__ import annotations
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.auth.schemas import hash_password
+from auth.password_service import hash_password
 from services.database_manager.models.users import User
 
 
