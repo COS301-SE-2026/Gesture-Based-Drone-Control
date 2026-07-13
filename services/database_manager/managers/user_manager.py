@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from auth.password_service import hash_password
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth.password_service import hash_password
 from services.database_manager.models.users import User
 
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from auth.password_service import verify_password
 from fastapi import (
 	APIRouter,
 	Depends,
@@ -9,7 +10,6 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.auth.login import LoginRequest, LoginResponse
-from auth.password_service import verify_password
 from services.auth.signup import SignupRequest, SignupResponse
 from services.database_manager.database import get_db
 from services.database_manager.managers.user_manager import user_manager

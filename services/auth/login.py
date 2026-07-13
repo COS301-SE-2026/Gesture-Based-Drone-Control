@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, EmailStr, field_validator
-
 from auth.password_service import validate_password_strength
+from pydantic import BaseModel, EmailStr, field_validator
 
 
 class LoginRequest(BaseModel):

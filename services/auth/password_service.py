@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 
 import bcrypt
+
 from services.auth.auth_settings import AuthSettings
 
 
@@ -22,7 +23,9 @@ def validate_password_strength(value: str) -> str:
 
 def hash_password(password: str) -> str:
 	settings = AuthSettings()
-	return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=settings.bcrypt_rounds)).decode('utf-8')
+	return bcrypt.hashpw(
+		password.encode('utf-8'), bcrypt.gensalt(rounds=settings.bcrypt_rounds)
+	).decode('utf-8')
 
 
 def verify_password(password: str, stored_hash: str) -> bool:

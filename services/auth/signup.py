@@ -1,12 +1,11 @@
 from __future__ import annotations
 
+from auth.password_service import validate_password_strength
 from pydantic import (
 	BaseModel,
 	EmailStr,
 	field_validator,
 )  # pydantic is like a library used for validation commonly in
-
-from auth.password_service import validate_password_strength
 
 
 class SignupResponse(BaseModel):
