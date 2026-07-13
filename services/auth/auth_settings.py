@@ -20,6 +20,7 @@ class AuthSettings(BaseSettings):
 	cookie_samesite: str = 'lax'
 	access_cookie_name: str = 'access_token'
 	refresh_cookie_name: str = 'refresh_cookie'
+	bcrypt_rounds: int = 13
 
 
 @lru_cache
