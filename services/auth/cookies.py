@@ -28,3 +28,8 @@ def set_auth_cookies(
 	response.set_cookie(
 		settings.refresh_cookie_name, refresh_token, max_age=refresh_max_age, **common
 	)
+
+
+def clear_auth_cookies(response: Response, *, settings: AuthSettings) -> None:
+	response.delete_cookies(settings.access_cookie_name, path='/', domain=settings.cookie_domain)
+	response.delete_cookies(settings.refresh_cookie_name, path='/', domain=settings.cookie_domain)
