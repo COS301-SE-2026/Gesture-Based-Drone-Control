@@ -1,2 +1,2 @@
-from services.tests.database_manager_testing.db_fixures import engine,session
+from services.tests.database_manager_testing.model_testing.db_fixtures import engine,session
 

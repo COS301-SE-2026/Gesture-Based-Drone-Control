@@ -10,12 +10,12 @@ from services.database_manager.managers.user_manager import user_manager
 
 pytestmark = pytest.mark.asyncio
 
-@pytest_asyncio.fixure
+@pytest_asyncio.fixture
 async def client(session):
     async def override_get_db():
         yield session
     
-    app.dependency_overrides[get_db] = overrride_get_db
+    app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()
@@ -31,7 +31,7 @@ VALID_SIGNUP = {
 async def test_signup_then_login_succeeds(client):
     signup_response = client.post('/api/auth/signup' , json=VALID_SIGNUP)
     assert signup_response.status_code == 201
-    assert signup_response.json() =={'message':"Sighnup good yaay"}
+    assert signup_response.json() =={'message':"Signup Successful"}
 
     login_response = client.post(
         '/api/auth/login',
@@ -39,7 +39,7 @@ async def test_signup_then_login_succeeds(client):
     )
 
     assert login_response.status_code == 200
-    assert login_response.json() == {'message': 'Login is good yaay'}
+    assert login_response.json() == {'message': 'Login is succesful'}
 
 
 async def test_signup_duplicate_email_returns_409(client):
@@ -58,7 +58,7 @@ async def test_login_wrong_password_returns_401(client):
     client.post('/api/auth/signup', json=VALID_SIGNUP)
 
     response = client.post(
-        '/api/auth/signup', json={'email'VALID_SIGNUP['email'],'password':"WrongPass123!"} ,
+        '/api/auth/login', json={'email':VALID_SIGNUP['email'],'password':"WrongPass123!"} ,
     )
 
     assert response.status_code ==401
@@ -79,7 +79,7 @@ async def test_login_nonexixtent_email_returns_401(client):
 async def test_signup_stores_hashed_password_not_plaintextt(client,session):
     client.post('/api/auth/signup', json=VALID_SIGNUP)
 
-    storred_user = await user_manager.get_by_email(session,VALID_SIGNUP['email'])
+    stored_user = await user_manager.get_by_email(session,VALID_SIGNUP['email'])
     assert stored_user is not None
     assert stored_user.hashed_password != VALID_SIGNUP['password']
     assert verify_password(VALID_SIGNUP['password'], stored_user.hashed_password)
