@@ -11,7 +11,7 @@ from services.database_manager.managers.user_manager import user_manager
 pytestmark = pytest.mark.asyncio
 
 @pytest_asyncio.fixure
-async def client(session)
+async def client(session):
     async def override_get_db():
         yield session
     
@@ -26,6 +26,34 @@ VALID_SIGNUP = {
     'first_name':"Chinmayi",
     'last_name':"Santhosh",
 }
+
+
+async def test_signup_then_login_succeeds(client):
+    signup_response = client.post('/api/auth/signup' , json=VALID_SIGNUP)
+    assert signup_response.status_code == 201
+    assert signup_response.json() =={'message':"Sighnup good yaay"}
+
+    login_response = client.post(
+        '/api/auth/login',
+        json = {'email': VALID_SIGNUP['email'],'password':VALID_SIGNUP['password']},
+    )
+
+    assert login_response.status_code == 200
+    assert login_response.json() == {'message': 'Login is good yaay'}
+
+
+async def test_signup_duplicate_email_returns_409(client):
+    client.post('/api/auth/signup', json=VALID_SIGNUP)
+
+    duplicate_response = client.post('/api/auth/signup',json =VALID_SIGNUP)
+    assert duplicate_response.status_code ==409
+
+
+async def test_signup_weak_password_returns_422(client):
+    weak_payload = {**VALID_SIGNUP,'password':'weak'}
+    response = client.post('/api/auth/signup',json=weak_payload)
+    assert response.status_code==422
+
 
 
 
