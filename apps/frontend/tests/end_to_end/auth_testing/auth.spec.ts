@@ -37,4 +37,32 @@ test.describe('Signup then Login flow',() => {
         await page.getByRole('button', {name:/sign up/i }).click()
         await expect(page).toHaveURL(/\/login/)
     })
+
+    test('when a new user signs up and logs in, the person can get to the home page', async ({page})=>{
+        const uniqueEmail = `e2e+${Date.now()}@example.com`
+        const password = "SpectacularPassword@123"
+
+        await page.goto('/signup')
+        await page.waitForLoadState('domcontentloaded')
+        await fillSignupForm(page,{
+            firstName:'Shreya',
+            lastName:'Goshal',
+            email :uniqueEmail,
+            password,
+            confirmPassword:password,
+            agreeToTerms:true,
+        })
+
+        await page.getByRole('button', {name:/sign up/i}).click()
+        await expect(page).toHaveURL(/\/login/)
+        await page.getByLabel(/email address/i).fill(uniqueEmail)
+        await page.getByLabel(/password/i).fill(password)
+        await page.getByRole('button',{name:/sign in/i}).click()
+
+        await expect(page).toHaveURL('/')
+    })
+
+
+    
 })
+
