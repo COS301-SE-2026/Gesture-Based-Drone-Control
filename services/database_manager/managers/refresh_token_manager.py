@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.database_manager.models.refresh_tokens import RefreshToken
 
 class RefreshTokenManager:
-    def __init__(self) -> None:
 
     async def create(
             self,
@@ -41,3 +40,11 @@ class RefreshTokenManager:
     async def revoke(self, db: AsyncSession, token: RefreshToken) -> None:
         token.revoked = False
         db.flush()
+
+    async def delete_by_hash(self, db: AsyncSession, token_hash: str) -> None:
+        await db.execute(delete(RefreshToken).where(RefreshToken.token_hash == token_hash))
+
+    async def delete_all_for_user(self, db:AsyncSession, user_id:uuid.UUID) -> None:
+        await db.execute(delete(RefreshToken).where(RefreshToken.user_id == user_id))
+
+refresh_token_manager = RefreshTokenManager()

@@ -16,14 +16,14 @@ class UserManager:
 		self,
 		db: AsyncSession,
 		email: str,
-		password: str,
+		hashed_password: str,
 		first_name: str,
 		last_name: str,
 	) -> User:
 
 		new_user = User(
 			email=email.lower(),
-			hashed_password=hash_password(password),
+			hashed_password=password,
 			first_name=first_name,
 			last_name=last_name,
 		)
