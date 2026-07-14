@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from auth.password_service import hash_password
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,7 +22,7 @@ class UserManager:
 
 		new_user = User(
 			email=email.lower(),
-			hashed_password=password,
+			hashed_password=hashed_password,
 			first_name=first_name,
 			last_name=last_name,
 		)

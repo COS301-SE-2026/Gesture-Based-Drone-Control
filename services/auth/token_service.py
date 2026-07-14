@@ -1,9 +1,8 @@
+import hashlib
+import secrets
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-
-import hashlib
-import secrets
 
 import jwt
 from jwt import ExpiredSignatureError, InvalidAudienceError, InvalidIssuerError, InvalidTokenError
@@ -69,16 +68,16 @@ class TokenService:
 			issued_at=datetime.fromtimestamp(payload['iat'], tz=timezone.utc),
 			expires_at=datetime.fromtimestamp(payload['exp'], tz=timezone.utc),
 		)
-	
+
 	def create_refresh_token(self):
 		plaintext = secrets.token_urlsafe(32)
 		hash = self.hash_refresh_token(plaintext)
 
 		return plaintext, hash
-		
 
 	@staticmethod
 	def hash_refresh_token(self, token: str) -> str:
-		return hashlib.sha256(token.encode("utf-8")).hexdigest()
+		return hashlib.sha256(token.encode('utf-8')).hexdigest()
+
 
 token_service = TokenService()
