@@ -54,6 +54,36 @@ async def test_signup_weak_password_returns_422(client):
     response = client.post('/api/auth/signup',json=weak_payload)
     assert response.status_code==422
 
+async def test_login_wrong_password_returns_401(client):
+    client.post('/api/auth/signup', json=VALID_SIGNUP)
+
+    response = client.post(
+        '/api/auth/signup', json={'email'VALID_SIGNUP['email'],'password':"WrongPass123!"} ,
+    )
+
+    assert response.status_code ==401
+    assert response.json()['detail']=='Invalid email or password'
+
+
+async def test_login_nonexixtent_email_returns_401(client):
+    response = client.post(
+        '/api/auth/login',
+        json={'email':'booiamaghost@example.com','password':'StrongPaswword@123'},
+
+    )
+
+    assert response.status_code == 401
+    assert response.json()['detail'] == 'Invalid email or password'
+
+
+async def test_signup_stores_hashed_password_not_plaintextt(client,session):
+    client.post('/api/auth/signup', json=VALID_SIGNUP)
+
+    storred_user = await user_manager.get_by_email(session,VALID_SIGNUP['email'])
+    assert stored_user is not None
+    assert stored_user.hashed_password != VALID_SIGNUP['password']
+    assert verify_password(VALID_SIGNUP['password'], stored_user.hashed_password)
+
 
 
 
