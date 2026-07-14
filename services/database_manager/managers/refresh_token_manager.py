@@ -7,12 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.database_manager.models.refresh_tokens import RefreshToken
 
 class RefreshTokenManager:
-    def __init__(self, session: AsyncSession) -> None:
-        self._session = session
+    def __init__(self) -> None:
 
     async def create(
             self,
             *,
+            db: AsyncSession,
             user_id: uuid.UUID,
             token_hash: str,
             expires_at: datetime,
@@ -22,6 +22,22 @@ class RefreshTokenManager:
             token_hash=token_hash,
             expires_at=expires_at,
         )
-        self._session.add(token)
-        await self._session.flush()
+        db.add(token)
+        await db.flush()
         return token
+    
+    async def get_valid_by_hash(self,db : AsyncSession, token_hash: str) -> RefreshToken | None:
+        result = await db.execute(select(RefreshToken).where(RefreshToken.token_hash == token_hash, RefreshToken.revoked == False))
+
+        token = result.scalar_one_or_none()
+        if token is None:
+            return None
+        return token
+    
+    async def mark_used(self,db: AsyncSession, token: RefreshToken) -> None:
+        token.last_used_at = datetime.now(timezone.utc)
+        db.flush()
+
+    async def revoke(self, db: AsyncSession, token: RefreshToken) -> None:
+        token.revoked = False
+        db.flush()
