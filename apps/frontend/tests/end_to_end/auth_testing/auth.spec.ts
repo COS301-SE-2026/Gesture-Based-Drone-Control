@@ -1,6 +1,6 @@
 import{test,expect,Page} from '@playwright/test'
 
-interface SignupFormData{
+interface SignupFormData {
     firstName?: string
     lastName?: string
     email?: string
@@ -23,6 +23,7 @@ const fillSignupForm = async (page: Page , data:SignupFormData) => {
 test.describe('Signup then Login flow',() => {
     test('successful signup redirects to the login page', async ({page})=>{
         const uniqueEmail = `e2e+${Date.now()}@example.com`
+
         await page.goto('/signup')
         await page.waitForLoadState('domcontentloaded')
         await fillSignupForm(page,{
@@ -63,6 +64,32 @@ test.describe('Signup then Login flow',() => {
     })
 
 
-    
+    test('should show invalid credentials err when logging in with a wrong passord', async({page})=>{
+        const uniqueEmail = `e2e+${Date.now()}@example.com`
+        const correctPassword ='GoodPassword@123'
+
+        await page.goto('/signup')
+        await page.waitForLoadState('domcontentloaded')
+        await fillSignupForm(page,{
+            firstName:'Nitara',
+            lastName:'Pauly',
+            email:uniqueEmail,
+            password:correctPassword,
+            confirmPassword:correctPassword,
+            agreeToTerms:true,
+        })
+
+        await page.getByRole('button', {name:/sign up/i}).click()
+        await expect(page).toHaveURL(/\/login/)
+
+        await page.getByLabel(/email address/i).fill(uniqueEmail)
+        await page.getByLabel(/password/i).fill('WrongPassword@123')
+        await page.getByRole('button', {name:/sign in/i}).click()
+
+        await expect(page.getByText(/invalid email or password/i)).toBeVisible()
+    })
+
+
+
 })
 
