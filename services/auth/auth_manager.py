@@ -14,6 +14,10 @@ class EmailAlreadyRegisteredError(Exception):
 	pass
 
 
+class AccountCreationError(Exception):
+	pass
+
+
 class InvalidCredentialsError(Exception):
 	pass
 
@@ -36,6 +40,8 @@ class AuthManager:
 		db: AsyncSession,
 		email: str,
 		password: str,
+		first_name: str,
+		last_name: str,
 	) -> SessionTokens:
 		existing = await user_manager.get_by_email(email=email)
 
@@ -44,7 +50,12 @@ class AuthManager:
 
 		password_hash = hash_password(password)
 
-		user = await user_manager.create(email=email, hashed_password=password_hash)
+		user = await user_manager.create(
+			email=email, hashed_password=password_hash, first_name=first_name, last_name=last_name
+		)
+
+		if user is None:
+			raise AccountCreationError()
 
 		return await self._create_session(user, db)
 
@@ -68,3 +79,6 @@ class AuthManager:
 		return SessionTokens(
 			access_token=access_token, refresh_token=refresh, refresh_expires_at=expires
 		)
+
+
+auth_manager = AuthManager()
