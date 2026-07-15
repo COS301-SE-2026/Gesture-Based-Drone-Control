@@ -120,7 +120,7 @@ async def test_connect_replaces():
 	we only allow one input adapter at a time
 	"""
 	state = connected_input_state('dummy')
- 
+
 	new_input = make_mock_input_adapter()
 	client = TestClient(make_app(state))
 
@@ -162,3 +162,62 @@ async def test_connect_response_contains_adapter_name():
 		response = client.post('/input/connect', json={'adapter': 'dummy'})
 
 	assert 'dummy' in response.json()['message'].lower()
+
+
+# POST /input/disconnect
+
+
+@pytest.mark.asyncio
+async def test_disconnect_when_connected():
+	"""
+	Should return success: True and clear input state
+	"""
+	state = connected_input_state('keyboard')
+	client = TestClient(make_app(state))
+
+	response = client.post('/input/disconnect')
+
+	assert response.status_code == 200
+	assert response.json()['success'] is True
+
+
+async def test_disconnect_when_not_connected():
+	"""
+	Should return success: False when nothing is connected
+	"""
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	response = client.post('/input/disconnect')
+
+	assert response.status_code == 200
+	assert response.json()['success'] is False
+
+
+async def test_disconnect_message_contains_name():
+	"""
+	Success message should mention which adapter was disconnected
+	"""
+	state = connected_input_state('keyboard')
+	client = TestClient(make_app(state))
+
+	response = client.post('/input/disconnect')
+
+	assert 'keyboard' in response.json()['message'].lower()
+
+
+@pytest.mark.asyncio
+async def test_disconnect_does_not_touch_drone():
+	"""
+	Disconnecting input should not affect the drone adapter at all
+	"""
+	state = connected_input_state('dummy')
+	drone = make_mock_drone_adapter()
+	state.adapter = drone
+	state.adapter_name = 'dummy'
+
+	client = TestClient(make_app(state))
+	client.post('/input/disconnect')
+
+	assert state.adapter is drone
+	assert state.adapter_name == 'dummy'
