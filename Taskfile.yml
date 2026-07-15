@@ -72,12 +72,18 @@ tasks:
     desc: Runs Frontend Unit Tests
     dir: "{{.FRONTEND_DIR}}"
     cmds:
-      - yarn test
+      - yarn unit-test
 
   integration-test:
     desc: Runs Integration Tests
     cmds:
       - uv run pytest tests --cov --cov-report=term-missing
+
+  e2e-test:
+    desc: Runs End to End Tests
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn e2e-test
 
   lint:
     desc: Runs lint checks

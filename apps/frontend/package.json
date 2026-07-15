@@ -11,11 +11,12 @@
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
     "preview": "vite preview",
-    "unit-test": "playwright test tests/unitTesting/",
-    "e2e-test": "playwright test tests/end_to_end/ --workers=1",
+    "unit-test": "playwright test tests/unitTesting/ --config=playwright.unit.config.ts",
+    "e2e-test": "playwright test tests/end_to_end/ --workers=1 --config=playwright.e2e.config.ts",
     "ui-add": "npx shadcn@4.7.0 add"
   },
   "dependencies": {
+    "dotenv": "^17.4.2",
     "electron": "^36.3.0",
     "install-deps": "^1.1.0",
     "lucide-react": "^1.14.0",
