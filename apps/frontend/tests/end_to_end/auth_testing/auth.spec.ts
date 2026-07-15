@@ -92,7 +92,7 @@ test.describe('Signup then Login flow',() => {
 
     test('should show an error when signing in with an email that already exists',async ({page})=>{
         const uniqueEmail = `e2e+${Date.now()}@example.com`
-        const password = 'GoodPassword@example.com'
+        const password = 'GoodPassword@123'
 
         await page.goto('/signup')
         await page.waitForLoadState('domcontentloaded')
@@ -128,6 +128,6 @@ test.describe('Signup then Login flow',() => {
 
     })
 
-    
+
 })
 
