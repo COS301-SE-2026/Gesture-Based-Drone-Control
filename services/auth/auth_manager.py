@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 
-from dataclass import dataclass
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.auth.password_service import hash_password, verify_password
@@ -26,7 +25,6 @@ class InvalidRefreshTokenError(Exception):
 	pass
 
 
-@dataclass(frozen=True)
 class SessionTokens:
 	access_token: str
 	rtefresh_token: str

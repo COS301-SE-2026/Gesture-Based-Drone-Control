@@ -25,6 +25,7 @@ dependencies = [
     "pydantic-settings>=2.14.2",
     "aiosqlite>=0.22.1",
     "bcrypt>=5.0.0",
+    "pyjwt>=2.13.0",
 ]
 
 [dependency-groups]

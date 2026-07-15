@@ -80,4 +80,4 @@ class TokenService:
 		return hashlib.sha256(token.encode('utf-8')).hexdigest()
 
 
-token_service = TokenService()
+token_service = TokenService(AuthSettings())
