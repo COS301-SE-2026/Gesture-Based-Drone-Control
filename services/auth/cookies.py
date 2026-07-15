@@ -8,16 +8,16 @@ from services.auth.auth_settings import AuthSettings
 def set_auth_cookies(
 	response: Response,
 	*,
-	settings: AuthSettings,
 	access_token: str,
 	refresh_token: str,
 	refresh_expires_at: datetime,
 ) -> None:
+	settings = AuthSettings()
 	access_max_age = settings.access_token_expire_minutes * 60
 	refresh_max_age = int((refresh_expires_at - datetime.now(timezone.utc)).total_seconds())
 	common = dict(
 		httponly=True,
-		secure=settings.cookie_samesite,
+		secure=settings.cookie_secure,
 		samesite=settings.cookie_samesite,
 		domain=settings.cookie_domain,
 		path='/',

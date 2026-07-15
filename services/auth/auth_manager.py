@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from dataclasses import dataclass
 from services.auth.password_service import hash_password, verify_password
 from services.auth.token_service import token_service
 from services.database_manager.managers.refresh_token_manager import refresh_token_manager
@@ -24,12 +25,11 @@ class InvalidCredentialsError(Exception):
 class InvalidRefreshTokenError(Exception):
 	pass
 
-
+@dataclass
 class SessionTokens:
 	access_token: str
-	rtefresh_token: str
+	refresh_token: str
 	refresh_expires_at: datetime
-
 
 class AuthManager:
 	async def register(
@@ -41,7 +41,7 @@ class AuthManager:
 		first_name: str,
 		last_name: str,
 	) -> SessionTokens:
-		existing = await user_manager.get_by_email(email=email)
+		existing = await user_manager.get_by_email(email=email, db=db)
 
 		if existing is not None:
 			raise EmailAlreadyRegisteredError()
@@ -49,7 +49,7 @@ class AuthManager:
 		password_hash = hash_password(password)
 
 		user = await user_manager.create(
-			email=email, hashed_password=password_hash, first_name=first_name, last_name=last_name
+			email=email, hashed_password=password_hash, first_name=first_name, last_name=last_name, db=db
 		)
 
 		if user is None:

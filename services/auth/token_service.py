@@ -76,7 +76,7 @@ class TokenService:
 		return plaintext, hash
 
 	@staticmethod
-	def hash_refresh_token(self, token: str) -> str:
+	def hash_refresh_token(token: str) -> str:
 		return hashlib.sha256(token.encode('utf-8')).hexdigest()
 
 

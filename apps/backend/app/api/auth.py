@@ -5,6 +5,7 @@ from fastapi import (
 	Depends,
 	HTTPException,
 	status,
+	Response
 )  # thingie that organizes the endpoints
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -35,20 +36,22 @@ async def login(payload: LoginRequest, db: AsyncSession = Depends(get_db)):
 
 
 @router.post('/signup', response_model=SignupResponse, status_code=status.HTTP_201_CREATED)
-async def signup(request: SignupRequest, db: AsyncSession = Depends(get_db)):
+async def signup(request: SignupRequest,response: Response, db: AsyncSession = Depends(get_db)):
 
 	try:
-		tokens: SessionTokens = auth_manager.register(
+		tokens: SessionTokens =await auth_manager.register(
 			db=db,
 			email=request.email.lower(),
 			password=request.password,
 			first_name=request.first_name,
 			last_name=request.last_name,
 		)
+		
 		set_auth_cookies(
 			access_token=tokens.access_token,
 			refresh_token=tokens.refresh_token,
 			refresh_expires_at=tokens.refresh_expires_at,
+			response= response
 		)
 
 		return SignupResponse(message='Signup Successful')
