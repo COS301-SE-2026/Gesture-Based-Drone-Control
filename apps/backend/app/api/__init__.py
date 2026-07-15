@@ -9,7 +9,7 @@ currently added:
 
 from fastapi import APIRouter
 
-from app.api import auth, drone, input, gestures
+from app.api import auth, drone, gestures, input
 
 router = APIRouter(prefix='/api')
 
@@ -22,5 +22,4 @@ async def health():
 router.include_router(drone.router)
 router.include_router(gestures.router)
 router.include_router(auth.router)
-
-router.include_router(input.router, prefix='/input', tags=['input'])
+router.include_router(input.router)

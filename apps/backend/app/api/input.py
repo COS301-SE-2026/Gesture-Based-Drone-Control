@@ -28,7 +28,7 @@ from services.input.sources.input_adapter import InputAdapter
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(prefix='/input', tags=['input'])
 
 
 class ConnectInputRequest(BaseModel):
@@ -115,7 +115,7 @@ class DisconnectInputResponse(BaseModel):
 	message: str
 
 
-@router.post('/disconnect, response_model=DisconnectInputResponse')
+@router.post('/disconnect', response_model=DisconnectInputResponse)
 async def disconnect_input(state: Annotated[AppState, Depends(get_state)]):
 	"""
 	disconnect active input adapter. does nothing if nothing connected

@@ -1,5 +1,10 @@
 """
 Tests all endpoints defined in /apps/backend/app/api/input.py"
+
+POST /input/connect
+POST /input/disconnect
+GET /input/status
+WS /input/ws/keyboard
 """
 
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -54,7 +59,7 @@ async def test_connect_input_dummy():
 	with patch(
 		'apps.backend.app.api.input._build_input_adapter', return_value=make_mock_input_adapter()
 	):
-		response = client.post('/connect', json={'adapter': 'dummy'})
+		response = client.post('input/connect', json={'adapter': 'dummy'})
 
 	assert response.status_code == 200
 	body = response.json()
@@ -71,7 +76,7 @@ async def test_connect_input_keyboard():
 	with patch(
 		'apps.backend.app.api.input._build_input_adapter', return_value=make_mock_input_adapter()
 	):
-		response = client.post('/connect', json={'adapter': 'keyboard'})
+		response = client.post('/input/connect', json={'adapter': 'keyboard'})
 
 	assert response.status_code == 200
 	assert state.input_name == 'keyboard'
@@ -84,7 +89,7 @@ async def test_connect_invalid():
 	state = AppState()
 	client = TestClient(make_app(state))
 
-	response = client.post('/connect', json={'adapter': '2006toyotacorolla'})
+	response = client.post('/input/connect', json={'adapter': '2006toyotacorolla'})
 	body = response.json()
 
 	assert response.status_code == 200
@@ -102,7 +107,7 @@ async def test_connect_set_handler():
 	mock_adapter = make_mock_input_adapter()
 
 	with patch('apps.backend.app.api.input._build_input_adapter', return_value=mock_adapter):
-		client.post('/connect', json={'adapter': 'dummy'})
+		client.post('/input/connect', json={'adapter': 'dummy'})
 
 	mock_adapter.set_handler.assert_called_once()
 	mock_adapter.start.assert_awaited_once()
@@ -115,13 +120,12 @@ async def test_connect_replaces():
 	we only allow one input adapter at a time
 	"""
 	state = connected_input_state('dummy')
-	old_input = state.input
-
+ 
 	new_input = make_mock_input_adapter()
 	client = TestClient(make_app(state))
 
 	with patch('apps.backend.app.api.input._build_input_adapter', return_value=new_input):
-		response = client.post('/connect', json={'adapter': 'keyboard'})
+		response = client.post('/input/connect', json={'adapter': 'keyboard'})
 
 	assert response.status_code == 200
 	assert response.json()['connected'] is True
@@ -140,7 +144,21 @@ async def test_connect_without_drone():
 	with patch(
 		'apps.backend.app.api.input._build_input_adapter', return_value=make_mock_input_adapter()
 	):
-		response = client.post('/connect', json={'adapter': 'keyboard'})
+		response = client.post('/input/connect', json={'adapter': 'keyboard'})
 
 	assert response.status_code == 200
 	assert response.json()['connected'] is True
+
+
+@pytest.mark.asyncio
+async def test_connect_response_contains_adapter_name():
+	"""Response message should mention the adapter name"""
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.input._build_input_adapter', return_value=make_mock_input_adapter()
+	):
+		response = client.post('/input/connect', json={'adapter': 'dummy'})
+
+	assert 'dummy' in response.json()['message'].lower()
