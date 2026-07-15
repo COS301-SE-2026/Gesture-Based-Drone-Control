@@ -245,3 +245,47 @@ async def test_status_connected():
     assert response.json()['connected'] is True
     assert response.json()['adapter'] == 'keyboard'
     
+# WS /input/ws/keyboard
+
+def test_keyboard_forwards_msg():
+	"""
+	only keydown messages should be forwarded to the handler
+	"""
+	state = connected_input_state('keyboard')
+	client = TestClient(make_app(state))
+
+	with client.websocket_connect('/input/ws/keyboard') as ws:
+		ws.send_json({'key': 'ArrowUp', 'event': 'keydown'})
+
+	# holy x.y.z
+	state.input.handle_message.assert_awaited_once_with({'key': 'ArrowUp', 'event': 'keydown'})
+ 
+def test_keyboard_no_crash():
+	"""
+ 	socket should stay open and silently drop messages when no input adapter is connected
+  	"""
+	state = AppState()
+	client = TestClient(make_app(state))
+ 
+	with client.websocket_connect('/input/ws/keyboard') as ws:
+		ws.send_json({'key': 'ArrowUp', 'event': 'keydown'})
+
+def test_ws_keyboard_multiple_messages():
+	"""
+ 	multiple messages sent at basically the same time should all be
+	forwarded and therefore handled
+  	"""
+	state = connected_input_state('keyboard')
+	client = TestClient(make_app(state))
+	
+	# takeoff, move, nothing 
+	with client.websocket_connect('/input/ws/keyboard') as ws:
+		ws.send_json({'key': 't', 'event': 'keydown'})
+		ws.send_json({'key': 'ArrowUp', 'event': 'keydown'})
+		ws.send_json({'key': ' ', 'event': 'keydown'})
+ 
+	assert state.input.handle_message.await_count == 3
+
+
+
+    
