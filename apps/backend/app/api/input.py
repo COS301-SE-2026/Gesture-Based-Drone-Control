@@ -106,7 +106,7 @@ async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, De
 	state.input = adapter
 	state.input_name = body.adapter
 
-	logger.info(f'input/connect: connected to {state.input_name} successfully')
+	logger.info('input/connect: connected to %s successfully', state.input_name)
 	return ConnectInputResponse(
 		connected=True, adapter=body.adapter, message=f'{state.input_name} input adapter connected'
 	)
