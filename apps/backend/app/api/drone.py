@@ -119,9 +119,6 @@ async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_s
 	state.adapter = adapter
 	state.adapter_name = body.adapter
 
-	# start telemetry loop
-	# TODO: add telemetry endpoint
-
 	logger.info('/drone/connect: connected via %s', state.adapter)
 	return ConnectResponse(
 		connected=True,
@@ -195,6 +192,8 @@ async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get
 	except WebSocketDisconnect:
 		state.clients.discard(websocket)
 		logger.error('/drone/ws/telemetry: client disconnected, %d remaining', len(state.clients))
+	finally:
+		state.clients.discard(websocket)
 
 
 @router.websocket('/ws/commands')

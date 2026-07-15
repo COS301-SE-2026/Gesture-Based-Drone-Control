@@ -325,8 +325,8 @@ async def test_get_telemetry_success():
 	mock_drone.get_ground_truth_kinematics.return_value = {
 		'pose': {
 			'position': {
-				'x': 0.0,
-				'y': 0.0,
+				'x': 1.5,
+				'y': 2.5,
 				'z': -5.0,
 			},
 			'orientation': {
@@ -352,6 +352,8 @@ async def test_get_telemetry_success():
 	assert t.speed_ms == 5
 	assert t.is_flying is True
 	assert t.source == 'projectairsim'
+	assert t.x_displacement == 1.5
+	assert t.y_displacement == 2.5
 
 
 @pytest.mark.asyncio
