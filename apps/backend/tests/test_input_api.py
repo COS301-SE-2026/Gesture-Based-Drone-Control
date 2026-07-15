@@ -181,7 +181,7 @@ async def test_disconnect_when_connected():
 	assert response.json()['success'] is True
 
 
-async def test_disconnect_when_not_connected():
+def test_disconnect_when_not_connected():
 	"""
 	Should return success: False when nothing is connected
 	"""
@@ -194,7 +194,7 @@ async def test_disconnect_when_not_connected():
 	assert response.json()['success'] is False
 
 
-async def test_disconnect_message_contains_name():
+def test_disconnect_message_contains_name():
 	"""
 	Success message should mention which adapter was disconnected
 	"""
@@ -222,30 +222,35 @@ async def test_disconnect_does_not_touch_drone():
 	assert state.adapter is drone
 	assert state.adapter_name == 'dummy'
 
+
 # GET /input/status
+
 
 @pytest.mark.asyncio
 async def test_status_not_connected():
-    state = AppState()
-    client = TestClient(make_app(state))
-    
-    response = client.get('/input/status')
-    
-    assert response.status_code == 200
-    assert response.json()['connected'] is False
-    
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	response = client.get('/input/status')
+
+	assert response.status_code == 200
+	assert response.json()['connected'] is False
+
+
 @pytest.mark.asyncio
 async def test_status_connected():
-    state = connected_input_state('keyboard')
-    client = TestClient(make_app(state))
-    
-    response = client.get('/input/status')
-    
-    assert response.status_code == 200
-    assert response.json()['connected'] is True
-    assert response.json()['adapter'] == 'keyboard'
-    
+	state = connected_input_state('keyboard')
+	client = TestClient(make_app(state))
+
+	response = client.get('/input/status')
+
+	assert response.status_code == 200
+	assert response.json()['connected'] is True
+	assert response.json()['adapter'] == 'keyboard'
+
+
 # WS /input/ws/keyboard
+
 
 def test_keyboard_forwards_msg():
 	"""
@@ -259,33 +264,31 @@ def test_keyboard_forwards_msg():
 
 	# holy x.y.z
 	state.input.handle_message.assert_awaited_once_with({'key': 'ArrowUp', 'event': 'keydown'})
- 
+
+
 def test_keyboard_no_crash():
 	"""
- 	socket should stay open and silently drop messages when no input adapter is connected
-  	"""
+	socket should stay open and silently drop messages when no input adapter is connected
+	"""
 	state = AppState()
 	client = TestClient(make_app(state))
- 
+
 	with client.websocket_connect('/input/ws/keyboard') as ws:
 		ws.send_json({'key': 'ArrowUp', 'event': 'keydown'})
 
+
 def test_ws_keyboard_multiple_messages():
 	"""
- 	multiple messages sent at basically the same time should all be
+	multiple messages sent at basically the same time should all be
 	forwarded and therefore handled
-  	"""
+	"""
 	state = connected_input_state('keyboard')
 	client = TestClient(make_app(state))
-	
-	# takeoff, move, nothing 
+
+	# takeoff, move, nothing
 	with client.websocket_connect('/input/ws/keyboard') as ws:
 		ws.send_json({'key': 't', 'event': 'keydown'})
 		ws.send_json({'key': 'ArrowUp', 'event': 'keydown'})
 		ws.send_json({'key': ' ', 'event': 'keydown'})
- 
+
 	assert state.input.handle_message.await_count == 3
-
-
-
-    

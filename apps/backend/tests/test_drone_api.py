@@ -6,6 +6,7 @@ Comprehensive testing for all drone endpoints:
 	GET /drone/disconnect
 """
 
+import math
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -275,9 +276,9 @@ async def test_status_values():
 	response = client.get('/drone/status')
 	telemetry = response.json()['telemetry']
 
-	assert telemetry['altitude_m'] == 10.0
-	assert telemetry['speed_ms'] == 2.0
-	assert telemetry['battery_pct'] == 85.0
+	assert math.isclose(telemetry['altitude_m'], 10.0)
+	assert math.isclose(telemetry['speed_ms'], 2.0)
+	assert math.isclose(telemetry['battery_pct'], 85.0)
 	assert telemetry['is_flying'] is True
 	assert telemetry['source'] == 'mock'
 

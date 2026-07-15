@@ -73,7 +73,9 @@ def _make_handler(state: AppState):
 				f'input handler: command {command.type.name} dropped, no drone connected'
 			)
 			return
-		asyncio.create_task(state.adapter.execute(command))
+		asyncio.create_task(  # NOSONAR
+			state.adapter.execute(command)  # NOSONAR
+		)  # NOSONAR
 
 	return handler
 
@@ -104,9 +106,9 @@ async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, De
 	state.input = adapter
 	state.input_name = body.adapter
 
-	logger.info(f'input/connect: connected to {body.adapter!r} successfully')
+	logger.info(f'input/connect: connected to {state.input_name} successfully')
 	return ConnectInputResponse(
-		connected=True, adapter=body.adapter, message=f'{body.adapter!r} input adapter connected'
+		connected=True, adapter=body.adapter, message=f'{state.input_name} input adapter connected'
 	)
 
 
@@ -173,4 +175,4 @@ async def keyboard(websocket: WebSocket, state: Annotated[AppState, Depends(get_
 	except WebSocketDisconnect:
 		logger.info('input/ws/keyboard: client disconnected')
 	except Exception as ex:
-		logger.error(f'input/ws/keyboard: error caught: {ex}')
+		logger.exception(f'input/ws/keyboard: error caught: {ex}')

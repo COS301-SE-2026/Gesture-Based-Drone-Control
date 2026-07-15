@@ -1,6 +1,7 @@
 # tests/adapter_testing/test_project_airsim_adapter.py
 
 # i didnt even know the mocks could be async these know ball
+import math
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -352,8 +353,8 @@ async def test_get_telemetry_success():
 	assert t.speed_ms == 5
 	assert t.is_flying is True
 	assert t.source == 'projectairsim'
-	assert t.x_displacement == 1.5
-	assert t.y_displacement == 2.5
+	assert math.isclose(t.x_displacement, 1.5)
+	assert math.isclose(t.y_displacement, 2.5)
 
 
 @pytest.mark.asyncio

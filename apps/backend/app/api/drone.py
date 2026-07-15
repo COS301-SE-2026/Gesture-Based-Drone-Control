@@ -187,11 +187,13 @@ async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get
 					telemetry = await state.adapter.get_telemetry()
 					await websocket.send_json(asdict(telemetry))  # easy convert to json
 				except Exception as ex:
-					logger.error('/drone/ws/telemetry: error getting telemetry - %s', ex)
+					logger.exception('/drone/ws/telemetry: error getting telemetry - %s', ex)
 			await asyncio.sleep(0.1)  # adjust this polling rate as needed
 	except WebSocketDisconnect:
 		state.clients.discard(websocket)
-		logger.error('/drone/ws/telemetry: client disconnected, %d remaining', len(state.clients))
+		logger.exception(
+			'/drone/ws/telemetry: client disconnected, %d remaining', len(state.clients)
+		)
 	finally:
 		state.clients.discard(websocket)
 

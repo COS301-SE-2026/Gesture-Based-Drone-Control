@@ -12,6 +12,7 @@ class ConcreteInputAdapter(InputAdapter):
 		pass
 
 	async def handle_message(self, message: dict[str, Any]) -> None:
+		# issa stub. please shut up sonarqube
 		pass
 
 
