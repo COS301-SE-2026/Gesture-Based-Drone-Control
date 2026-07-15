@@ -221,3 +221,27 @@ async def test_disconnect_does_not_touch_drone():
 
 	assert state.adapter is drone
 	assert state.adapter_name == 'dummy'
+
+# GET /input/status
+
+@pytest.mark.asyncio
+async def test_status_not_connected():
+    state = AppState()
+    client = TestClient(make_app(state))
+    
+    response = client.get('/input/status')
+    
+    assert response.status_code == 200
+    assert response.json()['connected'] is False
+    
+@pytest.mark.asyncio
+async def test_status_connected():
+    state = connected_input_state('keyboard')
+    client = TestClient(make_app(state))
+    
+    response = client.get('/input/status')
+    
+    assert response.status_code == 200
+    assert response.json()['connected'] is True
+    assert response.json()['adapter'] == 'keyboard'
+    
