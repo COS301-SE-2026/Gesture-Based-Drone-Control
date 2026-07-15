@@ -67,7 +67,7 @@ async def test_connect_dummy():
 	mock_adapter = make_mock_adapter()
 
 	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
-		response = client.post('/connect', json={'adapter': 'dummy'})
+		response = client.post('/drone/connect', json={'adapter': 'dummy'})
 
 	assert response.status_code == 200
 	body = response.json()
@@ -85,7 +85,7 @@ async def test_connect_projectairsim():
 
 	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
 		response = client.post(
-			'/connect',
+			'/drone/connect',
 			json={
 				'adapter': 'projectairsim',
 				'host': '127.0.0.2',
@@ -108,7 +108,7 @@ async def test_connect_airsim():
 
 	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
 		response = client.post(
-			'/connect',
+			'/drone/connect',
 			json={
 				'adapter': 'airsim',
 				'port': 1234,
@@ -129,7 +129,7 @@ async def test_connect_adapter_connect_fails():  # NOSONAR
 	mock_adapter = make_mock_adapter(connect_returns=False)
 
 	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
-		response = client.post('/connect', json={'adapter': 'dummy'})
+		response = client.post('/drone/connect', json={'adapter': 'dummy'})
 
 	assert response.status_code == 200
 	body = response.json()
@@ -143,7 +143,7 @@ async def test_connect_unknown_adapter():
 	state = AppState()
 	client = TestClient(make_app(state))
 
-	response = client.post('/connect', json={'adapter': 'fakebullshitadapter'})
+	response = client.post('/drone/connect', json={'adapter': 'fakebullshitadapter'})
 
 	assert response.status_code == 200
 	body = response.json()
@@ -166,7 +166,7 @@ async def test_connect_replaces_existing_adapter():
 	client = TestClient(make_app(state))
 
 	with patch('apps.backend.app.api.drone._build_adapter', return_value=new_adapter):
-		response = client.post('/connect', json={'adapter': 'projectairsim'})
+		response = client.post('/drone/connect', json={'adapter': 'projectairsim'})
 
 	assert response.status_code == 200
 	assert response.json()['connected'] is True
@@ -189,7 +189,7 @@ async def test_disconnect_when_connected():
 	state.adapter
 	client = TestClient(make_app(state))
 
-	response = client.post('/disconnect')
+	response = client.post('/drone/disconnect')
 
 	assert response.status_code == 200
 	assert response.json()['success'] is True
@@ -202,7 +202,7 @@ async def test_disconnect_when_not_connected():
 	state = AppState()
 	client = TestClient(make_app(state))
 
-	response = client.post('/disconnect')
+	response = client.post('/drone/disconnect')
 
 	assert response.status_code == 200
 	body = response.json()
@@ -216,7 +216,7 @@ async def test_disconnect_resets_state():
 	state = AppState()
 	client = TestClient(make_app(state))
 
-	client.post('/disconnect')
+	client.post('/drone/disconnect')
 	assert state.adapter is None
 	assert state.adapter_name is None
 	assert state.is_connected is False
@@ -228,7 +228,7 @@ async def test_disconnect_correct_message():
 	state = connected_state()
 	client = TestClient(make_app(state))
 
-	response = client.post('/disconnect')
+	response = client.post('/drone/disconnect')
 	assert 'dummy' in response.json()['message'].lower()
 
 
@@ -241,7 +241,7 @@ async def test_status_when_not_connected():
 	state = AppState()
 	client = TestClient(make_app(state))
 
-	response = client.get('/status')
+	response = client.get('/drone/status')
 
 	assert response.status_code == 200
 	body = response.json()
@@ -255,7 +255,7 @@ async def test_status_response():
 	state = connected_state()
 	client = TestClient(make_app(state))
 
-	response = client.get('/status')
+	response = client.get('/drone/status')
 	telemetry = response.json()['telemetry']
 
 	assert 'altitude_m' in telemetry
@@ -272,7 +272,7 @@ async def test_status_values():
 	state = connected_state()
 	client = TestClient(make_app(state))
 
-	response = client.get('/status')
+	response = client.get('/drone/status')
 	telemetry = response.json()['telemetry']
 
 	assert telemetry['altitude_m'] == 10.0
@@ -290,7 +290,7 @@ def test_commands_valid():
 	state = connected_state()
 	client = TestClient(make_app(state))
 
-	with client.websocket_connect('/ws/commands') as ws:
+	with client.websocket_connect('/drone/ws/commands') as ws:
 		ws.send_json({'command': 'TAKEOFF'})
 		response = ws.receive_json()
 
@@ -303,7 +303,7 @@ def test_commands_invalid():
 	state = connected_state()
 	client = TestClient(make_app(state))
 
-	with client.websocket_connect('/ws/commands') as ws:
+	with client.websocket_connect('/drone/ws/commands') as ws:
 		ws.send_json({'command': 'JARVIS_GET_ME_A_BEER'})
 		response = ws.receive_json()
 
@@ -318,7 +318,7 @@ def test_commands_no_drone():
 	state = AppState()
 	client = TestClient(make_app(state))
 
-	with client.websocket_connect('/ws/commands') as ws:
+	with client.websocket_connect('/drone/ws/commands') as ws:
 		ws.send_json({'command': 'TAKEOFF'})
 		response = ws.receive_json()
 
@@ -331,7 +331,7 @@ def test_commands_custom_source():
 	state = connected_state()
 	client = TestClient(make_app(state))
 
-	with client.websocket_connect('/ws/commands') as ws:
+	with client.websocket_connect('/drone/ws/commands') as ws:
 		ws.send_json({'command': 'TAKEOFF', 'source': 'myass'})
 		ws.receive_json()
 
@@ -345,7 +345,7 @@ def test_commands_default_source():
 	state = connected_state()
 	client = TestClient(make_app(state))
 
-	with client.websocket_connect('/ws/commands') as ws:
+	with client.websocket_connect('/drone/ws/commands') as ws:
 		ws.send_json({'command': 'TAKEOFF'})
 		ws.receive_json()
 
@@ -359,7 +359,7 @@ def test_commands_multiple_commands():
 	state = connected_state()
 	client = TestClient(make_app(state))
 
-	with client.websocket_connect('/ws/commands') as ws:
+	with client.websocket_connect('/drone/ws/commands') as ws:
 		ws.send_json({'command': 'TAKEOFF'})
 		ws.receive_json()
 		ws.send_json({'command': 'MOVE_FORWARD'})
@@ -378,7 +378,7 @@ def test_telemetry_gets_data():
 	state = connected_state()
 	client = TestClient(make_app(state))
 
-	with client.websocket_connect('/ws/telemetry') as ws:
+	with client.websocket_connect('/drone/ws/telemetry') as ws:
 		data = ws.receive_json()
 
 	assert 'altitude_m' in data
@@ -391,7 +391,7 @@ def test_telemetry_register_client():
 	state = connected_state()
 	client = TestClient(make_app(state))
 
-	with client.websocket_connect('/ws/telemetry'):
+	with client.websocket_connect('/drone/ws/telemetry'):
 		assert len(state.clients) == 1
 
 
@@ -400,5 +400,5 @@ def test_telemetry_no_crash():
 	state = AppState()
 	client = TestClient(make_app(state))
 
-	with client.websocket_connect('/ws/telemetry'):
+	with client.websocket_connect('/drone/ws/telemetry'):
 		assert len(state.clients) == 1
