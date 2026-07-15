@@ -53,7 +53,6 @@ async def test_connect_failure():
 
 	# this is necessary because airsim doesnt exist globally in the adapter
 	# rather its imported in a function, therefore we have to mock it
-	# even when not used airsim is a pain in the ass
 	fake_airsim = MagicMock()
 	fake_airsim.MultirotorClient.side_effect = Exception('fail')
 

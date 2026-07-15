@@ -10,13 +10,15 @@ This allows verification of the full pipeline:
 
 InputAdapter -> Command -> DroneAdapter
 
+It is intended to be used as the first InputAdapter that a new DroneAdapter implementation is tested with. This eliminates as many variables as possible
+
 ---
 
 ## Purpose
 
 This adapter is used for:
 
-- unit testing input-to-command mapping
+- unit testing, input-to-command mapping
 - validating system integration without hardware
 - simulating user actions deterministically
 - debugging command flow
@@ -182,4 +184,3 @@ Example flow:
 
 - This adapter is strictly for testing and simulation
 - It is safe to use in CI pipelines
-- It should never be used as a production input source

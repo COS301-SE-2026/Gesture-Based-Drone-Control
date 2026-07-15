@@ -137,31 +137,59 @@ copyright: >
 
 nav:
   - Home: index.md
-  - Requirements:
-    - SRS: SRS.md
-  - Architecture & Design:
-    - Design & Wireframes: DESIGN.md
-    - Frontend:
+
+  - Demo 2 Deliverables:
+    - Software Requirements (SRS): SRS.md
+    - Software Architecture (SAS): SAS.md
+    - Brand & Design System: BRAND.md
+    - Coding Standards: CODING.md
+    - Testing Policy: POLICY.md
+    - User Manual: MANUAL.md
+    - Project Plan: PLAN.md
+
+  - Development:
+    - Git Conventions: GIT.md
+    - CI/CD Pipeline: CICD.md
+    - Testing Manual: testing/TESTING.md
+
+  - Reference:
+    - API Reference: api/API_REFERENCE.md
+    - Frontend Components:
       - Atoms: frontend/atoms.md
       - Molecules: frontend/molecules.md
       - Organisms: frontend/organisms.md
       - Routing: frontend/routing.md
-    - Services:
-      - AirSim Adapter: services/airsim_adapter.md
+    - Services & Adapters:
       - Command: services/command.md
-      - Drone Adapter: services/drone_adapter.md
-      - Dummy Drone Adapter: services/dummy_drone_adapter.md
-      - Dummy Input Adapter: services/dummy_input_adapter.md
-      - Input Adapter: services/input_adapter.md
-      - Keyboard Adapter: services/keyboard_adapter.md
+      - Drone Adapter (ABC): services/drone_adapter.md
+      - AirSim Adapter: services/airsim_adapter.md
       - Project AirSim Adapter: services/project_airsim_adapter.md
-  - API Reference:
-    - Overview: api/API_REFERENCE.md
-  - Testing:
-    - Strategy: testing/TESTING.md
-  - DevOps:
-    - CI/CD Pipeline: CICD.md
-    - Git Conventions: GIT.md
-    - Deployment: demo/Deployment.md
-  - Project:
-    - Plan & Roadmap: PLAN.md
+      - Dummy Drone Adapter: services/dummy_drone_adapter.md
+      - Input Adapter (ABC): services/input_adapter.md
+      - Keyboard Adapter: services/keyboard_adapter.md
+      - Dummy Input Adapter: services/dummy_input_adapter.md
+
+  - Demo 1 Archive:
+    - Overview: demo/demo_one_documentation/index.md
+    - SRS: demo/demo_one_documentation/SRS.md
+    - Design & Wireframes: demo/demo_one_documentation/DESIGN.md
+    - Plan & Roadmap: demo/demo_one_documentation/PLAN.md
+    - Git Conventions: demo/demo_one_documentation/GIT.md
+    - CI/CD Pipeline: demo/demo_one_documentation/CICD.md
+    - Deployment: demo/demo_one_documentation/demo/Deployment.md
+    - API Reference: demo/demo_one_documentation/api/API_REFERENCE.md
+    - Testing: demo/demo_one_documentation/testing/TESTING.md
+    - Frontend:
+      - Atoms: demo/demo_one_documentation/frontend/atoms.md
+      - Molecules: demo/demo_one_documentation/frontend/molecules.md
+      - Organisms: demo/demo_one_documentation/frontend/organisms.md
+      - Routing: demo/demo_one_documentation/frontend/routing.md
+    - Services:
+      - AirSim Adapter: demo/demo_one_documentation/services/airsim_adapter.md
+      - Command: demo/demo_one_documentation/services/command.md
+      - Drone Adapter: demo/demo_one_documentation/services/drone_adapter.md
+      - Dummy Drone Adapter: demo/demo_one_documentation/services/dummy_drone_adapter.md
+      - Dummy Input Adapter: demo/demo_one_documentation/services/dummy_input_adapter.md
+      - Input Adapter: demo/demo_one_documentation/services/input_adapter.md
+      - Keyboard Adapter: demo/demo_one_documentation/services/keyboard_adapter.md
+      - Project AirSim Adapter: demo/demo_one_documentation/services/project_airsim_adapter.md
