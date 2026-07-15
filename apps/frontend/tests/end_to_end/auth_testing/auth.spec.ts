@@ -90,6 +90,44 @@ test.describe('Signup then Login flow',() => {
     })
 
 
+    test('should show an error when signing in with an email that already exists',async ({page})=>{
+        const uniqueEmail = `e2e+${Date.now()}@example.com`
+        const password = 'GoodPassword@example.com'
 
+        await page.goto('/signup')
+        await page.waitForLoadState('domcontentloaded')
+        await fillSignupForm(page,{
+            firstName:'Coffee',
+            lastName:'Bean',
+            email:uniqueEmail,
+            password,
+            confirmPassword:password,
+            agreeToTerms:true,
+        })
+
+        await page.getByRole('button',{name:/sign up/i}).click()
+        await expect(page).toHaveURL(/\/login/)
+
+        await page.goto('/signup')
+        await page.waitForLoadState('domcontentloaded')
+        await fillSignupForm(page,{
+            firstName:'Coffee',
+            lastName:'Bean',
+            email:uniqueEmail,
+            password,
+            confirmPassword:password,
+            agreeToTerms:true,
+        })
+
+
+    await page.getByRole('button',{name:/sign up/i}).click()
+
+    await expect(
+        page.getByText(/account with this email already exists/i)
+    ).toBeVisible()
+
+    })
+
+    
 })
 
