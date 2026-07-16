@@ -12,10 +12,25 @@ test.describe('gesture control page aka dashboard', () =>{
         })
 
         test('active status indicator shows',async ({page})=>{
-            await page.routeWebSocket(/\/api\/gestures\/stream/,(ws) =>{
-                ws.onMessage(() => {})
-            })
+            await page.addInitScript(() =>{
+                class FakeWebSocket{
+                    onopen:(()=>void)|null=null
+                    onclose:(() => void)| null=null
+                    onerror:(() => void)|null=null
+                    onmessage:((event:MessageEvent)=> void)|null=null
 
+                    constructor(){
+                        setTimeout(()=> {
+                            this.onopen?.()
+                        },0)
+                    }
+                    close(){
+                        this.onclose?.()
+                    }
+                    send() {}
+                }
+                window.WebSocket= FakeWebSocket as unknown as typeof WebSocket
+            })
             await page.goto('/gestures')
             await page.waitForLoadState('domcontentloaded')
 
