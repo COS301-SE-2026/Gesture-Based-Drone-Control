@@ -12,9 +12,33 @@ test.describe('gesture control page aka dashboard', () =>{
         })
 
         test('active status indicator shows',async ({page})=>{
-        await expect(page.getByText(/active/i)).toBeVisible()
-        const dot = page.locator('.w-2.h-2.bg-green-500')
-        await expect(dot).toBeVisible()
+            await page.addInitScript(()=>{
+                class FakeWebSocket{
+                    onopen:(() => void)|null=null
+                    onclose:(() =>void )|null=null
+                    onerror:(() =>void )|null=null
+                    onmessage:((event:MessageEvent) => void)| null=null
+
+                    constructor(){
+                        setTimeout(() => {
+                            this.onopen?.()
+                        },0)
+                    }
+
+                    close(){
+                        this.onclose?.()
+                    }
+                    send(){}
+                }
+                window.WebSocket = FakeWebSocket as unknown as typeof WebSocket
+            })
+
+            await page.goto('/gestures')
+            await page.waitForLoadState('domcontentloaded')
+
+            await expect(page.getByText(/active/i)).toBeVisible()
+            const dot =page.locator('.w-2.h-2.bg-green-500')
+            await expect(dot).toBeVisible()
         })
     })
 
