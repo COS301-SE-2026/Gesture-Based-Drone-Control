@@ -71,7 +71,7 @@ select = [
 ignore = ["E402"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/integration/auth_testing/confest.py" =["F401"]
+"tests/integration/auth_testing/conftest.py" =["F401"]
 "apps/backend/app/main.py" = ["F401"]
 "services/tests/database_manager_testing/model_testing/conftest.py" = ["F401"]
 "tests/integration/db_manager_tests/conftest.py" = ["F401"]
