@@ -63,7 +63,7 @@ def test_login_wrong_password_returns_401(client):
 
 	response = client.post(
 		'/api/auth/login',
-		json={'email': VALID_SIGNUP['email'], 'password': 'WrongPass123!'},
+		json={'email': VALID_SIGNUP['email'], 'password': 'WrongPass123!'},  # NOSONAR
 	)
 
 	assert response.status_code == 401
@@ -73,7 +73,7 @@ def test_login_wrong_password_returns_401(client):
 def test_login_nonexixtent_email_returns_401(client):
 	response = client.post(
 		'/api/auth/login',
-		json={'email': 'booiamaghost@example.com', 'password': 'StrongPaswword@123'},
+		json={'email': 'booiamaghost@example.com', 'password': 'StrongPaswword@123'},  # NOSONAR
 	)
 
 	assert response.status_code == 401
