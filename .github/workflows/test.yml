@@ -74,7 +74,7 @@ jobs:
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/frontend/package.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
 
@@ -91,8 +91,8 @@ jobs:
         with:
           name: playwright-test-results
           path: |
-            test-results
-            playwright-report
+            apps/frontend/test-results
+            apps/frontend/playwright-report
 
   Integration-Tests:
     runs-on: ubuntu-latest
