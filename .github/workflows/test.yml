@@ -121,6 +121,8 @@ jobs:
     timeout-minutes: 10
 
     needs: ["Integration-Tests"]
+    env:
+      BACKENDPORT: 3001
 
     steps:
 
