@@ -13,7 +13,8 @@ test.describe('gesture control page aka dashboard', () =>{
 
         test('active status indicator shows',async ({page})=>{
             await page.routeWebSocket(/\/api\/gestures\/stream/,(ws) =>{
-                ws.onMessage(() => {})
+                const server = ws.connectToServer()
+                server.onMessage(() => {})
             })
 
             await page.goto('/gestures')
