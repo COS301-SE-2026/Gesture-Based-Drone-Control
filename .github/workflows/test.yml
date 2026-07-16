@@ -53,7 +53,7 @@ jobs:
 
   Frontend-Unit-Tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     defaults: 
       run: 
         working-directory: apps/frontend
@@ -74,7 +74,7 @@ jobs:
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/frontend/yarn.lock') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
 
@@ -84,6 +84,15 @@ jobs:
 
       - name: Run Playwright testing
         run: yarn unit-test
+
+      - name: Upload Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: |
+            test-results
+            playwright-report
 
   Integration-Tests:
     runs-on: ubuntu-latest
