@@ -58,6 +58,9 @@ jobs:
       run: 
         working-directory: apps/frontend
 
+    env:
+      BACKENDPORT: 3001
+
     steps: 
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
