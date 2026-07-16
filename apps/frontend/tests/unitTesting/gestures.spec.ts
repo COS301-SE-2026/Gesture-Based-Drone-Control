@@ -12,9 +12,16 @@ test.describe('gesture control page aka dashboard', () =>{
         })
 
         test('active status indicator shows',async ({page})=>{
-        await expect(page.getByText(/active/i)).toBeVisible()
-        const dot = page.locator('.w-2.h-2.bg-green-500')
-        await expect(dot).toBeVisible()
+            await page.routeWebSocket(/\/api\/gestures\/stream/,(ws) =>{
+                ws.onMessage(() => {})
+            })
+
+            await page.goto('/gestures')
+            await page.waitForLoadState('domcontentloaded')
+
+            await expect(page.getByText(/active/i)).toBeVisible()
+            const dot =page.locator('.w-2.h-2.bg-green-500')
+            await expect(dot).toBeVisible()
         })
     })
 
