@@ -31,7 +31,7 @@ VALID_SIGNUP = {
 }
 
 
-async def test_signup_then_login_succeeds(client):
+def test_signup_then_login_succeeds(client):
 	signup_response = client.post('/api/auth/signup', json=VALID_SIGNUP)
 	assert signup_response.status_code == 201
 	assert signup_response.json() == {'message': 'Signup Successful'}
@@ -45,20 +45,20 @@ async def test_signup_then_login_succeeds(client):
 	assert login_response.json() == {'message': 'Login is succesful'}
 
 
-async def test_signup_duplicate_email_returns_409(client):
+def test_signup_duplicate_email_returns_409(client):
 	client.post('/api/auth/signup', json=VALID_SIGNUP)
 
 	duplicate_response = client.post('/api/auth/signup', json=VALID_SIGNUP)
 	assert duplicate_response.status_code == 409
 
 
-async def test_signup_weak_password_returns_422(client):
+def test_signup_weak_password_returns_422(client):
 	weak_payload = {**VALID_SIGNUP, 'password': 'weak'}
 	response = client.post('/api/auth/signup', json=weak_payload)
 	assert response.status_code == 422
 
 
-async def test_login_wrong_password_returns_401(client):
+def test_login_wrong_password_returns_401(client):
 	client.post('/api/auth/signup', json=VALID_SIGNUP)
 
 	response = client.post(
@@ -70,7 +70,7 @@ async def test_login_wrong_password_returns_401(client):
 	assert response.json()['detail'] == 'Invalid email or password'
 
 
-async def test_login_nonexixtent_email_returns_401(client):
+def test_login_nonexixtent_email_returns_401(client):
 	response = client.post(
 		'/api/auth/login',
 		json={'email': 'booiamaghost@example.com', 'password': 'StrongPaswword@123'},
