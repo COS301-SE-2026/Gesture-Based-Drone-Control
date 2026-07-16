@@ -4,8 +4,7 @@
 
 The InputAdapter is an abstract base class that standardises how all input sources are integrated into the system.
 
-It acts as a translation layer between raw input signals and the internal Command model.
-
+It forms the basis of one half of our two-way Adapter system, providing a consistent interface for input methods to issue commands to any kind of drone.
 ---
 
 ## Responsibility Scope

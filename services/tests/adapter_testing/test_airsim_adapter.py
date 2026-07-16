@@ -11,7 +11,7 @@ from services.drone_control.adapters.airsim_adapter import AirSimAdapter, Teleme
 class FakeState:
 	class Kinematics:
 		def __init__(self):
-			self.position = MagicMock(z_val=-5)
+			self.position = MagicMock(z_val=-5, x_val=1.0, y_val=2.0)
 			self.linear_velocity = MagicMock(x_val=1, y_val=2, z_val=2)
 			self.orientation = MagicMock()
 
@@ -53,7 +53,6 @@ async def test_connect_failure():
 
 	# this is necessary because airsim doesnt exist globally in the adapter
 	# rather its imported in a function, therefore we have to mock it
-	# even when not used airsim is a pain in the ass
 	fake_airsim = MagicMock()
 	fake_airsim.MultirotorClient.side_effect = Exception('fail')
 
@@ -103,6 +102,8 @@ async def test_get_telemetry_connected():
 	assert t.source == 'airsim'
 	assert t.speed_ms == 3
 	assert t.altitude_m == 5
+	assert t.x_displacement == 1
+	assert t.y_displacement == 2
 
 
 # test movement (may be a bit wack since we cant have real airsim)

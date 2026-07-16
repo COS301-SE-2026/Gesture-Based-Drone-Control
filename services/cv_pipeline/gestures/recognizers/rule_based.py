@@ -11,7 +11,7 @@ import logging
 import math
 
 # hand detection import
-from cv_pipeline.hand_detection.mediapipe_detector import DetectedHand
+from services.cv_pipeline.hand_detection.mediapipe_detector import DetectedHand
 
 # pull interface + shared types from the recognizer module
 from .gesture_recognizer import (

@@ -7,7 +7,7 @@ then passes it through stabilize() before returning
 from collections import Counter, deque
 from dataclasses import replace
 
-from cv_pipeline.hand_detection.mediapipe_detector import Handedness
+from services.cv_pipeline.hand_detection.mediapipe_detector import Handedness
 
 from .recognizers.gesture_recognizer import Gesture, GestureResult
 

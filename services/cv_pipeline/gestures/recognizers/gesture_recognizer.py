@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 # hand-detection import
-from cv_pipeline.hand_detection.mediapipe_detector import DetectedHand, Handedness
+from services.cv_pipeline.hand_detection.mediapipe_detector import DetectedHand, Handedness
 
 
 # gesture enum
