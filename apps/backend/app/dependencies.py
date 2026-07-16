@@ -15,7 +15,7 @@ to store info that may be relevant to endpoints at different times
 
 from __future__ import annotations
 
-from fastapi import Depends, HTTPException, Request
+from fastapi import Depends, HTTPException, Request, WebSocket
 
 from apps.backend.app.state import AppState
 from services.drone_control.adapters.drone_adapter import DroneAdapter
@@ -24,6 +24,10 @@ from services.drone_control.adapters.drone_adapter import DroneAdapter
 def get_state(request: Request) -> AppState:
 	"""Returns the global state according to how main sees it"""
 	return request.app.state.app
+
+def get_ws_state(websocket: Websocket) -> AppState:
+	"""Same as get_state, but for Websocket routes"""
+	return websocket.app.state.app
 
 
 # example of usage: it is only possible to get the adapter if the state

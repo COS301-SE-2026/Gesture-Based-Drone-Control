@@ -2,7 +2,15 @@ import { useState } from "react"
 import { CommandHistory, GestureGuide, DroneModeCard } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge, Camera } from "lucide-react"
+import { useTelemetry } from "@/hooks/useTelemetry"
 
+const MS_TO_KMH = 3.6
+
+function fmt(value, digits = 0) {
+  return typeof value === "number" ? value.toFixed(digits) : "--"
+}
+
+//TODO: this is still mocked for now
 const GestureControl = () => {
   const [commands] = useState([
     { action: "swipe up - move up", timestamp: "18:50:43" },
@@ -11,13 +19,15 @@ const GestureControl = () => {
     { action: "swipe left - move left", timestamp: "18:50:42" },
   ])
 
-  //mock data for drone status
-  const droneMetrics = {
-    battery: 56,
-    speed: 5.6,
-    altitude: 72,
-    signal: 71,
-  }
+  const { telemetry } = useTelemetry()
+
+  // //mock data for drone status
+  // const droneMetrics = {
+  //   battery: 56,
+  //   speed: 5.6,
+  //   altitude: 72,
+  //   signal: 71,
+  // }
 
   const [droneMode, setDroneMode] = useState("DroneSim")
 
@@ -37,7 +47,7 @@ const GestureControl = () => {
                   Battery
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {droneMetrics.battery}%
+                  {fmt(telemetry?.battery_pct)}%
                 </p>
               </div>
             </div>
@@ -49,7 +59,8 @@ const GestureControl = () => {
                   Signal
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {droneMetrics.signal}%
+                  {/* TODO: this is still mocked for now - theres no signl_pct field on the telem return yet */}
+                  71%
                 </p>
               </div>
             </div>
@@ -61,7 +72,11 @@ const GestureControl = () => {
                   Speed
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {droneMetrics.speed} km/h
+                  {fmt( typeof telemetry?.speed_ms === "number" 
+                      ? telemetry.speed_ms * MS_TO_KMH :
+                      undefined, 1
+                  )}{" "}
+                  km/h
                 </p>
               </div>
             </div>
@@ -73,7 +88,7 @@ const GestureControl = () => {
                   Altitude
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {droneMetrics.altitude}m
+                  {fmt(telemetry?.altitude_m, 1)}m
                 </p>
               </div>
             </div>

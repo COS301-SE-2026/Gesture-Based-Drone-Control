@@ -7,7 +7,7 @@ REST:
 
 POST /drone/connect - connect to a drone adapter
 POST /drone.disconnect - disconnect the active drone adapter
-GET /dtrone/status - connection state + telemetry
+GET /drone/status - connection state + telemetry
 
 WebSockets:
 
@@ -25,7 +25,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
-from apps.backend.app.dependencies import get_state
+from apps.backend.app.dependencies import get_state, get_ws_state
 from apps.backend.app.state import AppState
 from services.commands.command import Command, CommandType
 from services.drone_control.adapters.drone_adapter import DroneAdapter
@@ -169,7 +169,7 @@ async def status(state: Annotated[AppState, Depends(get_state)]):
 
 
 @router.websocket('/ws/telemetry')
-async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
+async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get_ws_state)]):
 	"""
 	Simply send telemetry to connected clients every 0.1 seconds.
 
@@ -199,7 +199,7 @@ async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get
 
 
 @router.websocket('/ws/commands')
-async def command(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
+async def command(websocket: WebSocket, state: Annotated[AppState, Depends(get_ws_state)]):
 	"""
 	A 'backdoor' of sorts to allow the user to directly issue a command to a drone.
 	This can be done to easily wire up simple UI like the on screen buttons, without
