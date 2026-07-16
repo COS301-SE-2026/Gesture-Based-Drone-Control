@@ -383,7 +383,7 @@ class AirSimAdapter(DroneAdapter):
 			speed = math.sqrt(vel.x_val**2 + vel.y_val**2 + vel.z_val**2)
 
 			# NED: z is negative when airborne, so negate for a positive altitude
-			altitude = max(0.0, -pos.z_val)
+			altitude = -pos.z_val
 
 			# LandedState.Landed == 1, Flying == 0 (check AirSim source)
 			# airsim is stupid and uses either a plain int or enum depending on version.
@@ -397,6 +397,8 @@ class AirSimAdapter(DroneAdapter):
 				battery_pct=100.0,  # AirSim has no battery model
 				heading_deg=self._get_heading_deg(),
 				is_flying=is_flying,
+				x_displacement=round(pos.x_val, 3),  # north offset from sim origin
+				y_displacement=round(pos.y_val, 3),  # east offset form sim origin
 				source='airsim',
 			)
 		except Exception as ex:

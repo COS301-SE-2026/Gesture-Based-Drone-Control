@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from fastapi import Depends, HTTPException, Request
 
-from app.state import AppState
+from apps.backend.app.state import AppState
 from services.drone_control.adapters.drone_adapter import DroneAdapter
 
 
