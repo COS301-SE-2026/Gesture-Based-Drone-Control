@@ -64,7 +64,7 @@ class AuthManager:
 		return await self._create_session(user, db)
 
 	async def authenticate(self, *, db: AsyncSession, email: str, password: str) -> SessionTokens:
-		user = await user_manager.get_by_email(email=email)
+		user = await user_manager.get_by_email(email=email, db=db)
 
 		if user is None or not verify_password(password=password, stored_hash=user.hashed_password):
 			raise InvalidCredentialsError()

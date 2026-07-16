@@ -33,7 +33,7 @@ async def login(payload: LoginRequest, response: Response, db: AsyncSession = De
 
 	try:
 		tokens: SessionTokens = await auth_manager.authenticate(
-			email=payload.email, password=payload.password, db=db
+			email=payload.email.lower(), password=payload.password, db=db
 		)
 		set_auth_cookies(
 			access_token=tokens.access_token,
