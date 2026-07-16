@@ -83,7 +83,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright testing
-        run: yarn test
+        run: yarn unit-test
 
   Integration-Tests:
     runs-on: ubuntu-latest

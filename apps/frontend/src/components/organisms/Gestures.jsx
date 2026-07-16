@@ -1,5 +1,10 @@
 import { useState } from "react"
-import { CommandHistory, GestureGuide, DroneModeCard, GestureCameraFeed } from "../molecules"
+import {
+  CommandHistory,
+  GestureGuide,
+  DroneModeCard,
+  GestureCameraFeed,
+} from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
 
@@ -94,7 +99,7 @@ const GestureControl = () => {
               <Label className="text-lg font-semibold">Gesture Detection</Label>
             </div>
 
-            <GestureCameraFeed className ="flex-1"/>
+            <GestureCameraFeed className="flex-1" />
           </div>
         </Card>
 
