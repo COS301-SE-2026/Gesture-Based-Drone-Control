@@ -101,6 +101,6 @@ async def logout(request: RefreshRequest, response: Response, db: AsyncSession =
 
 		clear_auth_cookies(response=response)
 
-		return AuthResponse(message="Logout Successful")
+		return AuthResponse(message='Logout Successful')
 	except InvalidRefreshTokenError as e:
 		raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
