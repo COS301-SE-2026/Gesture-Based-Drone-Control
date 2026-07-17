@@ -1,18 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, EmailStr, field_validator
-
-from services.auth.password_service import validate_password_strength
-
-
-class LoginRequest(BaseModel):
-	email: EmailStr
-	password: str
-
-	@field_validator('password')
-	@classmethod
-	def validate_password(cls, value: str) -> str:
-		return validate_password_strength(value)
+from pydantic import BaseModel
 
 
 class LoginResponse(BaseModel):

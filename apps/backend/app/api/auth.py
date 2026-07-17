@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from auth.schemas import AuthResponse, LoginRequest, RefreshRequest, SignupRequest
 from fastapi import (
 	APIRouter,
 	Depends,
@@ -12,12 +13,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.auth.auth_manager import (
 	EmailAlreadyRegisteredError,
 	InvalidCredentialsError,
+	InvalidRefreshTokenError,
 	SessionTokens,
 	auth_manager,
 )
 from services.auth.cookies import set_auth_cookies
-from services.auth.login import LoginRequest, LoginResponse
-from services.auth.signup import SignupRequest, SignupResponse
 from services.database_manager.database import get_db
 
 router = APIRouter(prefix='/auth', tags=['auth'])
@@ -28,7 +28,7 @@ async def health():
 	return {'status': 'ok'}
 
 
-@router.post('/login', response_model=LoginResponse)  # so this is da login endpoint
+@router.post('/login', response_model=AuthResponse)  # so this is da login endpoint
 async def login(payload: LoginRequest, response: Response, db: AsyncSession = Depends(get_db)):
 
 	try:
@@ -41,14 +41,14 @@ async def login(payload: LoginRequest, response: Response, db: AsyncSession = De
 			refresh_expires_at=tokens.refresh_expires_at,
 			response=response,
 		)
-		return LoginResponse(message='Login is succesful')
+		return AuthResponse(message='Login is succesful')
 	except InvalidCredentialsError:
 		raise HTTPException(
 			status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid email or password'
 		)
 
 
-@router.post('/signup', response_model=SignupResponse, status_code=status.HTTP_201_CREATED)
+@router.post('/signup', response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
 async def signup(request: SignupRequest, response: Response, db: AsyncSession = Depends(get_db)):
 
 	try:
@@ -67,8 +67,28 @@ async def signup(request: SignupRequest, response: Response, db: AsyncSession = 
 			response=response,
 		)
 
-		return SignupResponse(message='Signup Successful')
+		return AuthResponse(message='Signup Successful')
 	except EmailAlreadyRegisteredError:
 		raise HTTPException(
 			status_code=status.HTTP_409_CONFLICT, detail='A user with this email already exists'
 		)
+
+
+@router.post('/refresh', response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
+async def refresh(request: RefreshRequest, response: Response, db: AsyncSession = Depends(get_db)):
+
+	try:
+		tokens: SessionTokens = await auth_manager.refresh(
+			db=db, refresh_token=request.refresh_token
+		)
+
+		set_auth_cookies(
+			access_token=tokens.access_token,
+			refresh_token=tokens.refresh_token,
+			refresh_expires_at=tokens.refresh_expires_at,
+			response=response,
+		)
+
+		return AuthResponse(message='Token Refresh Successful')
+	except InvalidRefreshTokenError as e:
+		raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, details=str(e))

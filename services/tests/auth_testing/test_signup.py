@@ -1,9 +1,8 @@
 from unittest.mock import patch
 
 import pytest
+from auth.schemas import SignupRequest
 from pydantic import ValidationError
-
-from services.auth.signup import SignupRequest
 
 
 @pytest.mark.parametrize(
