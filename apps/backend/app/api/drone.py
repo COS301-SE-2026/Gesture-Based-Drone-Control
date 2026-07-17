@@ -98,10 +98,7 @@ async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_s
 	if there is already an adapter connected, this endpoint handles disconnecting it
 	should be seamless switching
 	"""
-	if state.adapter is not None:
-		logger.info('drone/connect: replacing existing adapter %s', state.adapter_name)
-		await state.adapter.disconnect()
-		state.reset()
+
 	try:
 		adapter = _build_adapter(body)
 	except ValueError as ex:
@@ -114,6 +111,12 @@ async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_s
 			adapter=body.adapter,
 			message=f'Cannot connect to {body.adapter} at {body.host}.',
 		)
+	
+	if state.adapter is not None:
+		logger.info('drone/connect: replacing existing adapter %s', state.adapter_name)
+		await state.adapter.disconnect()
+		state.reset()
+	
 
 	# update global state
 	state.adapter = adapter

@@ -24,14 +24,20 @@ export function useTelemetry(wsUrl = DEFAULT_WS_URL) {
     const reconnectAttemptsRef = useRef(0)
     const reconnectTimeoutRef = useRef(null)
     const isUnmountedRef = useRef(false)
-
+    const wsUrlRef = useRef(wsUrl)
     const connectRef = useRef(null)
+
+    // const connectRef = useRef(null)
 
     const connect = useCallback(() => {
         if (isUnmountedRef.current) return
 
+        if (socketRef.current) {
+            socketRef.current.close()
+            socketRef.current = null
+        }
         setStatus("connecting")
-        const socket = new WebSocket(wsUrl)
+        const socket = new WebSocket(wsUrlRef.current)
         socketRef.current = socket
 
         socket.onopen = () => {
@@ -52,8 +58,9 @@ export function useTelemetry(wsUrl = DEFAULT_WS_URL) {
         }
 
         socket.onerror = (err) => {
+            if (isUnmountedRef.current) return
             console.error("useTelemetry: websoscket error", err)
-            if (!isUnmountedRef.current) setStatus("error")
+            setStatus("error")
         }
 
         socket.onclose = () => {
@@ -67,15 +74,15 @@ export function useTelemetry(wsUrl = DEFAULT_WS_URL) {
                 MAX_RECONNECT_DELAY_MS
             )
             reconnectAttemptsRef.current += 1
-            reconnectTimeoutRef.current = setTimeout(() => connectRef.current(), delay)
+            reconnectTimeoutRef.current = setTimeout(() => { if (!isUnmountedRef.current && connectRef.current) { connectRef.current() }}, delay)
         }
 
 
-    }, [wsUrl])
+    }, [])
 
     useEffect(() => {
-        connectRef.current = connect
-    }, [connect])
+        wsUrlRef.current = wsUrl
+    }, [wsUrl])
 
     useEffect(() => {
         isUnmountedRef.current = false
@@ -84,9 +91,12 @@ export function useTelemetry(wsUrl = DEFAULT_WS_URL) {
         return () => {
             isUnmountedRef.current = true
             clearTimeout(reconnectTimeoutRef.current)
-            socketRef.current?.close()
+            if (socketRef.current) {
+                socketRef.current.close()
+                socketRef.current = null
+            }
         }
-    }, [connect])
+    }, [])
 
     return { telemetry, status}
 }
