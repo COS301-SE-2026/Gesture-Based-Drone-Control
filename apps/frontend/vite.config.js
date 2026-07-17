@@ -5,6 +5,8 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  envDir:'../../',
+  envPrefix:['VITE_', 'BACKENDPORT'],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src")
