@@ -4,6 +4,9 @@ design tokens, base styles
 @import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
 
 html {
+    scroll-behavior: smooth;
+}
+body {
     margin: 0;
 }
 
@@ -97,7 +100,7 @@ shared section heading scale
 @keyframes md-pulse {
     0%,
     100% {
-        opacity: -.35;
+        opacity: 0.35;
     }
     50% {
         opacity: 1;
@@ -109,7 +112,7 @@ reactbits-style motion primitives
 .md-ltr {
     display: inline-block;
     opacity: 0;
-    transform: translateY(0.55rem);
+    transform: translateY(0.55em);
     filter: blur(8px);
     animation: md-rise 0.8s cubic-bezier(0.2, 0.75, 0.25, 1) forwards;
 }
@@ -131,7 +134,7 @@ reactbits-style motion primitives
 }
 .md-magnet {
     display: inline-block;
-    transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.3. 1);
+    transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.3, 1);
     will-change: transform;
 }
 

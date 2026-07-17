@@ -7,7 +7,7 @@ export interface Gesture {
   desc: string
 }
 
-export const Gestures: Gesture[] = [
+export const GESTURES: Gesture[] = [
   {
     name: "Open palm",
     verb: "Hover",
@@ -15,7 +15,7 @@ export const Gestures: Gesture[] = [
     desc: "SHOW an open hand and the drone freezes in place. This is also the arming gesture - nothing flies until it sees your palm.",
   },
   {
-    name: "Index Up",
+    name: "Index up",
     verb: "Ascend",
     cmd: "ASCEND 0.5 M/S",
     desc: "Point at the sky to climb. Altitude tracks how long you hold the gesture, so a short point is a small hop.",

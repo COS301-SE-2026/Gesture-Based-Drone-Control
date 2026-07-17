@@ -12,7 +12,6 @@
     "format:check": "prettier --check src/",
     "preview": "vite preview",
     "test": "playwright test",
-    "ui-add": "npx shadcn@4.7.0 add",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
