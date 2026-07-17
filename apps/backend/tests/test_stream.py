@@ -12,7 +12,8 @@ from typing import AsyncIterator, Optional
 import pytest
 from app.cv.serialization import GestureFramePayload
 from app.cv.stream import GestureStream
-from cv_pipeline.processing.pipeline import PipelineConfig
+
+from services.cv_pipeline.processing.pipeline import PipelineConfig
 
 pytestmark = pytest.mark.asyncio
 

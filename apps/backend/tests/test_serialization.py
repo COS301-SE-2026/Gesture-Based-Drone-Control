@@ -6,19 +6,20 @@ And gesture/metric lists that are shorter than the hands list
 
 import pytest
 from app.cv.serialization import serialize_event
-from cv_pipeline.gestures.gesture_engine import GestureEngineResult
-from cv_pipeline.gestures.recognizers.gesture_recognizer import (
+
+from services.cv_pipeline.gestures.gesture_engine import GestureEngineResult
+from services.cv_pipeline.gestures.recognizers.gesture_recognizer import (
 	FingerState,
 	Gesture,
 	GestureResult,
 )
-from cv_pipeline.hand_detection.mediapipe_detector import (
+from services.cv_pipeline.hand_detection.mediapipe_detector import (
 	DetectedHand,
 	HandDetectionResult,
 	Handedness,
 	HandLandmark,
 )
-from cv_pipeline.processing.pipeline import CapturedFrame, HandMetrics, PipelineEvent
+from services.cv_pipeline.processing.pipeline import CapturedFrame, HandMetrics, PipelineEvent
 
 
 # builders

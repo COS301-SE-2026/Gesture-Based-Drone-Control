@@ -16,16 +16,16 @@ import threading
 from dataclasses import dataclass, field
 from typing import AsyncIterator, Optional
 
-from cv_pipeline.camera.camera_feed import CameraConfig, CameraFeed, CapturedFrame
-from cv_pipeline.gestures.gesture_engine import GestureEngine, GestureEngineResult
-from cv_pipeline.hand_detection.mediapipe_detector import (
+from services.cv_pipeline.camera.camera_feed import CameraConfig, CameraFeed, CapturedFrame
+from services.cv_pipeline.gestures.gesture_engine import GestureEngine, GestureEngineResult
+from services.cv_pipeline.hand_detection.mediapipe_detector import (
 	DetectorConfig,
 	HandDetectionPipeline,
 	HandDetectionResult,
 	Handedness,
 	draw_landmarks,
 )
-from cv_pipeline.processing.async_queue import BoundedFrameQueue
+from services.cv_pipeline.processing.async_queue import BoundedFrameQueue
 
 logger = logging.getLogger(__name__)
 
