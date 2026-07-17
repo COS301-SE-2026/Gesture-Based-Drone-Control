@@ -93,11 +93,12 @@ async def refresh(request: RefreshRequest, response: Response, db: AsyncSession 
 	except InvalidRefreshTokenError as e:
 		raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, details=str(e))
 
+
 @router.post('/logout', response_model=AuthResponse, status_code=status.HTTP_200_OK)
 async def logout(request: RefreshRequest, response: Response, db: AsyncSession = Depends(get_db)):
 	try:
 		tokens: SessionTokens = await auth_manager.logout(
-			db= db, refresh_token=request.refresh_token
+			db=db, refresh_token=request.refresh_token
 		)
 
 		clear_auth_cookies(response=response)

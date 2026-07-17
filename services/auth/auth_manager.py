@@ -72,7 +72,7 @@ class AuthManager:
 		return await self._create_session(user, db)
 
 	async def refresh(self, *, db: AsyncSession, refresh_token: str) -> SessionTokens:
-		
+
 		token_hash = token_service.hash_refresh_token(refresh_token)
 
 		stored_token = await refresh_token_manager.get_valid_by_hash(token_hash=token_hash)
@@ -90,26 +90,26 @@ class AuthManager:
 
 		if user is None:
 			raise InvalidRefreshTokenError('User no longer exists')
-		
+
 		await refresh_token_manager.revoke(db=db, token=stored_token)
 
 		return await self._create_session(
 			db=db,
 			user=user,
 		)
-	
-	async def logout(self, *, db: AsyncSession, refresh_token:str) -> None:
+
+	async def logout(self, *, db: AsyncSession, refresh_token: str) -> None:
 		token_hash = token_service.hash_refresh_token(refresh_token)
 		stored_token = await refresh_token_manager.get_valid_by_hash(token_hash=token_hash)
 
 		if stored_token is None:
 			raise InvalidRefreshTokenError('Refresh token is invalid')
-		
+
 		user = await user_manager.get_by_id(db=db, id=stored_token.id)
 
 		if user is None:
 			raise InvalidRefreshTokenError('User no longer exists')
-		
+
 		await refresh_token_manager.revoke(db=db, token=stored_token)
 
 	async def _create_session(self, user: User, db: AsyncSession) -> SessionTokens:
@@ -124,7 +124,6 @@ class AuthManager:
 		return SessionTokens(
 			access_token=access_token, refresh_token=refresh, refresh_expires_at=expires
 		)
-		
 
 
 auth_manager = AuthManager()
