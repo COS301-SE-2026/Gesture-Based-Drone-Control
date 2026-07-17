@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.database_manager.models.refresh_tokens import RefreshToken
@@ -27,9 +27,10 @@ class RefreshTokenManager:
 
 	async def get_valid_by_hash(self, db: AsyncSession, token_hash: str) -> RefreshToken | None:
 		result = await db.execute(
-			select(RefreshToken).where(
-				RefreshToken.token_hash == token_hash, not RefreshToken.revoked
-			)
+			select(RefreshToken)
+			.where(RefreshToken.token_hash == token_hash, not RefreshToken.revoked)
+			.order_by(desc(RefreshToken.created_at))
+			.limit(1)
 		)
 
 		token = result.scalar_one_or_none()
@@ -42,7 +43,7 @@ class RefreshTokenManager:
 		db.flush()
 
 	async def revoke(self, db: AsyncSession, token: RefreshToken) -> None:
-		token.revoked = False
+		token.revoked = True
 		db.flush()
 
 	async def delete_by_hash(self, db: AsyncSession, token_hash: str) -> None:
