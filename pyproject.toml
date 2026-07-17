@@ -90,4 +90,8 @@ filterwarnings = [
 ]
 
 [tool.coverage.run]
-omit=["vendors/*"]
+omit=[
+    "vendors/*",
+    "*/tests/*",
+    "*/test_*.py"
+    ]
