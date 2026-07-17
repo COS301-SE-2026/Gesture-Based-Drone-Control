@@ -25,7 +25,7 @@ def get_state(request: Request) -> AppState:
 	"""Returns the global state according to how main sees it"""
 	return request.app.state.app
 
-def get_ws_state(websocket: Websocket) -> AppState:
+def get_ws_state(websocket: WebSocket) -> AppState:
 	"""Same as get_state, but for Websocket routes"""
 	return websocket.app.state.app
 

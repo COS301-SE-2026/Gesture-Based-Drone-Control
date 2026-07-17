@@ -19,7 +19,7 @@ const GestureControl = () => {
     { action: "swipe left - move left", timestamp: "18:50:42" },
   ])
 
-  const { telemetry } = useTelemetry()
+  const { telemetry, status } = useTelemetry()
 
   // //mock data for drone status
   // const droneMetrics = {
@@ -35,10 +35,13 @@ const GestureControl = () => {
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">
         <Card variant="glass">
-          <Label size="md" className="shrink-0">
-            {" "}
-            Stats{" "}
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label size="md" className="shrink-0">
+              {" "}
+              Stats{" "}
+            </Label>
+            <span className="text-xs text-DarkGrey">telemetry: {status}</span>
+          </div>
           <div className="flex items-center justify-between gap-4 flex-wrap h-full">
             <div className="flex items-center gap-3">
               <Battery className="w-6 h-6 text-Red" />
