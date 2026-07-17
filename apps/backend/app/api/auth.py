@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from services.auth.schemas import AuthResponse, LoginRequest, RefreshRequest, SignupRequest
 from fastapi import (
 	APIRouter,
 	Depends,
@@ -17,7 +16,8 @@ from services.auth.auth_manager import (
 	SessionTokens,
 	auth_manager,
 )
-from services.auth.cookies import set_auth_cookies, clear_auth_cookies
+from services.auth.cookies import clear_auth_cookies, set_auth_cookies
+from services.auth.schemas import AuthResponse, LoginRequest, RefreshRequest, SignupRequest
 from services.database_manager.database import get_db
 
 router = APIRouter(prefix='/auth', tags=['auth'])
@@ -97,9 +97,7 @@ async def refresh(request: RefreshRequest, response: Response, db: AsyncSession 
 @router.post('/logout', response_model=AuthResponse, status_code=status.HTTP_200_OK)
 async def logout(request: RefreshRequest, response: Response, db: AsyncSession = Depends(get_db)):
 	try:
-		tokens: SessionTokens = await auth_manager.logout(
-			db=db, refresh_token=request.refresh_token
-		)
+		await auth_manager.logout(db=db, refresh_token=request.refresh_token)
 
 		clear_auth_cookies(response=response)
 	except InvalidRefreshTokenError as e:
