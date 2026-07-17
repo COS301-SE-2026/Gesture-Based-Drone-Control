@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { CommandHistory, GestureGuide, DroneModeCard } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge, Camera } from "lucide-react"
@@ -30,6 +30,41 @@ const GestureControl = () => {
   // }
 
   const [droneMode, setDroneMode] = useState("DroneSim")
+  const [setIsConnecting] = useState(false)
+  const [setConnectionStatus] = useState("disconnected")
+
+  //auto connect to airsim when the component is mounted
+  useEffect(() => {
+    const connectToDrone = async () => {
+      setIsConnecting(true)
+      try {
+        const response = await fetch(
+          "http://localhost:3001/api/drone/connect",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              adapter: "projectairsim",
+              host: "127.0.0.1",
+              vehicle_name: "Drone1",
+              topics_port: 8989,
+              services_port: 8990,
+            }),
+          }
+        )
+        const data = await response.json()
+        setConnectionStatus(data.connected ? "connected" : "failed")
+        console.log("drone connection: ", data)
+      } catch (error) {
+        console.error("failed to connect to drone:", error)
+        setConnectionStatus("failed")
+      } finally {
+        setIsConnecting(false)
+      }
+    }
+
+    connectToDrone()
+  }, [])
 
   return (
     <div className="p-6 space-y-6">
@@ -75,9 +110,11 @@ const GestureControl = () => {
                   Speed
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {fmt( typeof telemetry?.speed_ms === "number" 
-                      ? telemetry.speed_ms * MS_TO_KMH :
-                      undefined, 1
+                  {fmt(
+                    typeof telemetry?.speed_ms === "number"
+                      ? telemetry.speed_ms * MS_TO_KMH
+                      : undefined,
+                    1
                   )}{" "}
                   km/h
                 </p>

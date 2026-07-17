@@ -111,12 +111,11 @@ async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_s
 			adapter=body.adapter,
 			message=f'Cannot connect to {body.adapter} at {body.host}.',
 		)
-	
+
 	if state.adapter is not None:
 		logger.info('drone/connect: replacing existing adapter %s', state.adapter_name)
 		await state.adapter.disconnect()
 		state.reset()
-	
 
 	# update global state
 	state.adapter = adapter
