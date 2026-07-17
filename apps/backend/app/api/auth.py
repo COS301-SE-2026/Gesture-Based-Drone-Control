@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from auth.schemas import AuthResponse, LoginRequest, RefreshRequest, SignupRequest
+from services.auth.schemas import AuthResponse, LoginRequest, RefreshRequest, SignupRequest
 from fastapi import (
 	APIRouter,
 	Depends,
@@ -93,7 +93,7 @@ async def refresh(request: RefreshRequest, response: Response, db: AsyncSession 
 	except InvalidRefreshTokenError as e:
 		raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, details=str(e))
 
-@router.post('/logout', respnse_model=AuthResponse, status_code=status.HTTP_200_OK)
+@router.post('/logout', response_model=AuthResponse, status_code=status.HTTP_200_OK)
 async def logout(request: RefreshRequest, response: Response, db: AsyncSession = Depends(get_db)):
 	try:
 		tokens: SessionTokens = await auth_manager.logout(
