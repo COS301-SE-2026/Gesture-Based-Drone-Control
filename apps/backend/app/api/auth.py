@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Annotated
+
 from fastapi import (
 	APIRouter,
 	Depends,
@@ -29,7 +31,9 @@ async def health():
 
 
 @router.post('/login', response_model=AuthResponse)  # so this is da login endpoint
-async def login(payload: LoginRequest, response: Response, db: AsyncSession = Depends(get_db)):
+async def login(
+	payload: LoginRequest, response: Response, db: Annotated[AsyncSession, Depends(get_db)]
+):
 
 	try:
 		tokens: SessionTokens = await auth_manager.authenticate(
@@ -49,7 +53,9 @@ async def login(payload: LoginRequest, response: Response, db: AsyncSession = De
 
 
 @router.post('/signup', response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
-async def signup(request: SignupRequest, response: Response, db: AsyncSession = Depends(get_db)):
+async def signup(
+	request: SignupRequest, response: Response, db: Annotated[AsyncSession, Depends(get_db)]
+):
 
 	try:
 		tokens: SessionTokens = await auth_manager.register(
@@ -75,7 +81,9 @@ async def signup(request: SignupRequest, response: Response, db: AsyncSession = 
 
 
 @router.post('/refresh', response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
-async def refresh(request: RefreshRequest, response: Response, db: AsyncSession = Depends(get_db)):
+async def refresh(
+	request: RefreshRequest, response: Response, db: Annotated[AsyncSession, Depends(get_db)]
+):
 
 	try:
 		tokens: SessionTokens = await auth_manager.refresh(
@@ -95,7 +103,9 @@ async def refresh(request: RefreshRequest, response: Response, db: AsyncSession 
 
 
 @router.post('/logout', response_model=AuthResponse, status_code=status.HTTP_200_OK)
-async def logout(request: RefreshRequest, response: Response, db: AsyncSession = Depends(get_db)):
+async def logout(
+	request: RefreshRequest, response: Response, db: Annotated[AsyncSession, Depends(get_db)]
+):
 	try:
 		await auth_manager.logout(db=db, refresh_token=request.refresh_token)
 

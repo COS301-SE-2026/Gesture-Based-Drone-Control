@@ -40,11 +40,11 @@ class RefreshTokenManager:
 
 	async def mark_used(self, db: AsyncSession, token: RefreshToken) -> None:
 		token.last_used_at = datetime.now(timezone.utc)
-		db.flush()
+		await db.flush()
 
 	async def revoke(self, db: AsyncSession, token: RefreshToken) -> None:
 		token.revoked = True
-		db.flush()
+		await db.flush()
 
 	async def delete_by_hash(self, db: AsyncSession, token_hash: str) -> None:
 		await db.execute(delete(RefreshToken).where(RefreshToken.token_hash == token_hash))

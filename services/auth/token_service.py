@@ -71,9 +71,9 @@ class TokenService:
 
 	def create_refresh_token(self):
 		plaintext = secrets.token_urlsafe(32)
-		hash = self.hash_refresh_token(plaintext)
+		hash_token = self.hash_refresh_token(plaintext)
 
-		return plaintext, hash
+		return plaintext, hash_token
 
 	@staticmethod
 	def hash_refresh_token(token: str) -> str:

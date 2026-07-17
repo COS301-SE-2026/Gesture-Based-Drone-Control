@@ -17,7 +17,7 @@ def test_signup_request_valid():
 	) as mock_validate:
 		request = SignupRequest(
 			email='user@example.com',
-			password='StrongPass123!',
+			password='StrongPass123!',  # NOSONAR
 			first_name='Jane',
 			last_name='Doe',
 		)
@@ -68,7 +68,7 @@ def test_login_request_valid():
 	with patch(
 		'services.auth.schemas.validate_password_strength', return_value='StrongPass123!'
 	) as mock_validate:
-		request = LoginRequest(email='user@example.com', password='StrongPass123!')
+		request = LoginRequest(email='user@example.com', password='StrongPass123!')  # NOSONAR
 		mock_validate.assert_called_once_with('StrongPass123!')
 		assert request.email == 'user@example.com'
 		assert request.password == 'StrongPass123!'
@@ -89,7 +89,7 @@ def test_login_request_invalid_password(password):
 def test_login_request_invalid_email():
 	with patch('services.auth.schemas.validate_password_strength', return_value='StrongPass123!'):
 		with pytest.raises(ValidationError):
-			LoginRequest(email='invalid-email', password='StrongPass123!')
+			LoginRequest(email='invalid-email', password='StrongPass123!')  # NOSONAR
 
 
 def test_login_request_missing_required_fields():

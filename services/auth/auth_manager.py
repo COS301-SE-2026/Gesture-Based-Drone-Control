@@ -115,11 +115,11 @@ class AuthManager:
 	async def _create_session(self, user: User, db: AsyncSession) -> SessionTokens:
 
 		access_token = token_service.create_access_token(user.id)
-		refresh, hash = token_service.create_refresh_token()
+		refresh, hash_token = token_service.create_refresh_token()
 		expires = datetime.now(timezone.utc) + timedelta(hours=24)
 
 		await refresh_token_manager.create(
-			db=db, user_id=user.id, expires_at=expires, token_hash=hash
+			db=db, user_id=user.id, expires_at=expires, token_hash=hash_token
 		)
 		return SessionTokens(
 			access_token=access_token, refresh_token=refresh, refresh_expires_at=expires
