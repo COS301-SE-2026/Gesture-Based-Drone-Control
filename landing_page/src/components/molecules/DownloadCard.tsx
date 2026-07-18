@@ -23,7 +23,7 @@ export default function DownloadCard({os, ext, req, delay=0}: Props) {
             <h3>{os}</h3>
             <p>{req}</p>
             {/* symbol pasted */}
-            <span className="md-dlbtn">Download v1 ↓</span>
+            <span className="md-dlbtn">Download v0.9.0 ↓</span>
         </Reveal>
     )
 }
