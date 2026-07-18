@@ -105,6 +105,9 @@ jobs:
 
     needs: ["Frontend-Unit-Tests", "Backend-Unit-Tests"]
 
+    env:
+      JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
+
     steps:
 
       - uses: actions/checkout@v4
