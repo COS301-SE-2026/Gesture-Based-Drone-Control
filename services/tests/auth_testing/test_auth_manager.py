@@ -6,6 +6,8 @@ import pytest
 from services.auth.auth_manager import (
 	AuthManager,
 	SessionTokens,
+	EmailAlreadyRegisteredError,
+	AccountCreationError
 )
 
 
@@ -50,6 +52,7 @@ class TestRegister:
 			refresh_token="refresh",
 			refresh_expires_at=datetime.now(timezone.utc)
         )
+		
 		mock_create_session.return_value = tokens
 		result = await auth_manager.register(
 			db=db,
@@ -58,7 +61,49 @@ class TestRegister:
 			first_name="Jane",
 			last_name="Doe"
         )
+		
 		assert result == tokens
 		mock_hash_password.assert_called_once_with("Password123!")
 		mock_create.assert_awaited_once()
 		mock_create_session.assert_awaited_once_with(user,db)
+		
+	@patch("services.auth.auth_manager.user_manager.get_by_email")
+	async def test_register_existing_email(
+		self, 
+		mock_get_by_email,
+		auth_manager,
+		db,
+		user
+    ):
+		mock_get_by_email.return_value= user
+		
+		with pytest.raises(EmailAlreadyRegisteredError):
+			await auth_manager.register(
+				db=db,
+				email="test@example.com",
+				password="Password123!",
+				first_name="Jane",
+				last_name="Doe"
+            )
+	@patch("services.auth.auth_manager.hash_password")
+	@patch("services.auth.auth_manager.user_manager.create", new_callable=AsyncMock)
+	@patch("services.auth.auth_manager.user_manager.get_by_email", new_callable=AsyncMock)
+	async def test_register_creation_failed(
+		self,
+		mock_get_by_email,
+		mock_create,
+		mock_hash_password,
+		auth_manager,
+		db
+    ):
+		mock_get_by_email.return_value = None
+		mock_hash_password.return_value = "hashed_password"
+		mock_create.return_value = None
+		with pytest.raises(AccountCreationError):
+			await auth_manager.register(
+				db=db,
+				email="test@example.com",
+				password="Password123!",
+				first_name="Jane",
+				last_name= "Doe"
+            )
