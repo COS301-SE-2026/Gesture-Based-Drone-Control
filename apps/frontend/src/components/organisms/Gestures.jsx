@@ -30,31 +30,59 @@ const GestureControl = () => {
   // }
 
   const [droneMode, setDroneMode] = useState("DroneSim")
-  const [setIsConnecting] = useState(false)
-  const [setConnectionStatus] = useState("disconnected")
+  const [isConnecting, setIsConnecting] = useState(false)
+  const [connectionStatus, setConnectionStatus] = useState("disconnected")
+  const [connectionError, setConnectionError] = useState("")
 
   //auto connect to airsim when the component is mounted
-  useEffect(() => {
-    const connectToDrone = async () => {
+  
+    const connectToDrone = async (adapterType) => {
       setIsConnecting(true)
+      setConnectionError("")
       try {
+        let requestBody = {
+          adapter: adapterType,
+          host: "127.0.0.1",
+        }
+
+        if (adapterType === "projectairsim") {
+          requestBody = {
+            ...requestBody,
+            vehicle_name: "Drone1",
+            topics_port: 8989,
+            services_port: 8990,
+          }
+        }
+        else if (adapterType === "dummy") {
+          requestBody = {
+            ...requestBody,
+            vehicle_name: "Drone-1",
+          }
+        }
+        //add xfly adapter later here
+
+
         const response = await fetch(
           "http://localhost:3001/api/drone/connect",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              adapter: "projectairsim",
-              host: "127.0.0.1",
-              vehicle_name: "Drone1",
-              topics_port: 8989,
-              services_port: 8990,
-            }),
+            body: JSON.stringify(requestBody),
           }
         )
         const data = await response.json()
-        setConnectionStatus(data.connected ? "connected" : "failed")
+        // setConnectionStatus(data.connected ? "connected" : "failed")
         console.log("drone connection: ", data)
+
+        if (data.connected) {
+          setConnectionStatus("connected")
+          console.log(`connected to ${adapterType} adapter`)
+        }
+        else {
+          setConnectionStatus("failed")
+          setConnectionError(data.message || "connection failed")
+          console.error("connection failed: ", data.message)
+        }
       } catch (error) {
         console.error("failed to connect to drone:", error)
         setConnectionStatus("failed")
@@ -63,11 +91,42 @@ const GestureControl = () => {
       }
     }
 
-    connectToDrone()
-  }, [])
+    //handle mode changes
+    const handleModeChange = async (mode) => {
+      setDroneMode(mode)
+
+      //disconnec curr adapter
+      try {
+        await fetch(
+          "http://localhost:3001/api/drone/disconnect", {
+            method: "POST",
+          })
+          console.log("disconnected from current adapter")
+          
+      }
+      catch (error) {
+        console.warn("error disconnecting:", error)
+      }
+
+      if (mode === "DroneSim") {
+        await connectToDrone("projectairsim")
+
+      }
+      else if (mode === "Manual" || mode === "Autonomous") {
+        await connectToDrone("dummy")
+      }
+    }
+    //add hardware mode when drone works
+
+    useEffect(() => {
+      //initially connect to dummy
+      connectToDrone("dummy")
+    }, [])
+
 
   return (
     <div className="p-6 space-y-6">
+       
       <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">
         <Card variant="glass">
           <div className="flex items-center justify-between">
