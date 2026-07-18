@@ -4,79 +4,81 @@ design tokens, base styles
 @import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 body {
-    margin: 0;
+  margin: 0;
 }
 
 .md-root,
 .md-root *,
 .md-root *::before,
 .md-root *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .md-root {
-    --bg: #0b090a;
-    --surface: #161a1d;
-    --ink: #f5f3f4;
-    --dim: #b1a7a6;
-    --line: rgba(211, 211, 211, 0.14);
-    --red: #e5383b;
-    --red-deep: #ba181b;
-    --red-shadow: #660708;
-    --glow: rgba(229, 56, 59, 0.8);
-    --panel: rgba(22, 26, 29, 0.55);
-    --nav: rgba(11, 9, 10, 0.72);
-    --glass: rgba(255, 255, 255, 0.06);
-    --glass-2: rgba(255, 255, 255, 0.015);
-    --glass-brd: rgba(255, 255, 255, 0.13);
-    --glass-hi: rgba(255, 255, 255, 0.1);
-    --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --bg: #0b090a;
+  --surface: #161a1d;
+  --ink: #f5f3f4;
+  --dim: #b1a7a6;
+  --line: rgba(211, 211, 211, 0.14);
+  --red: #e5383b;
+  --red-deep: #ba181b;
+  --red-shadow: #660708;
+  --glow: rgba(229, 56, 59, 0.8);
+  --panel: rgba(22, 26, 29, 0.55);
+  --nav: rgba(11, 9, 10, 0.72);
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-2: rgba(255, 255, 255, 0.015);
+  --glass-brd: rgba(255, 255, 255, 0.13);
+  --glass-hi: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
 }
 .md-root[data-theme="light"] {
-    --bg: #f5f3f4;
-    --surface: #ffffff;
-    --ink: #0b090a;
-    --dim: rgba(11, 9, 10, 0.55);
-    --line: rgba(11, 9, 10, 0.14);
-    --red: #ba181b;
-    --red-deep: #a4161a;
-    --red-shadow: #e5383b;
-    --glow: rgba(186, 24, 27, 0.45);
-    --panel: rgba(255, 255, 255, 0.6);
-    --nav: rgba(245, 243, 244, 0.78);
-    --glass: rgba(255, 255, 255, 0.55);
-    --glass-2: rgba(255, 255, 255, 0.22);
-    --glass-brd: rgba(11, 9, 10, 0.1);
-    --glass-hi: rgba(255, 255, 255, 0.9);
-    --glass-shadow: 0 10px 30px rgba(11, 9, 10, 0.1);
+  --bg: #f5f3f4;
+  --surface: #ffffff;
+  --ink: #0b090a;
+  --dim: rgba(11, 9, 10, 0.55);
+  --line: rgba(11, 9, 10, 0.14);
+  --red: #ba181b;
+  --red-deep: #a4161a;
+  --red-shadow: #e5383b;
+  --glow: rgba(186, 24, 27, 0.45);
+  --panel: rgba(255, 255, 255, 0.6);
+  --nav: rgba(245, 243, 244, 0.78);
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-2: rgba(255, 255, 255, 0.22);
+  --glass-brd: rgba(11, 9, 10, 0.1);
+  --glass-hi: rgba(255, 255, 255, 0.9);
+  --glass-shadow: 0 10px 30px rgba(11, 9, 10, 0.1);
 }
 
 .md-root {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: "Space Grotesk", system-ui, sans-serif;
-    line-height: 1.6;
-    min-height: 100vh;
-    transition: background 0.4s ease, color 0.4s ease;
-    overflow-x: clip;
-    isolation: isolate;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+  transition:
+    background 0.4s ease,
+    color 0.4s ease;
+  overflow-x: clip;
+  isolation: isolate;
 }
 .md-root h1,
 .md-root h2,
 .md-root h3 {
-    font-family: "Chakra Petch", "Space Grotesk", sans-serif;
-    line-height: 1.05;
-    margin: 0;
+  font-family: "Chakra Petch", "Space Grotesk", sans-serif;
+  line-height: 1.05;
+  margin: 0;
 }
 .md-eyebrow {
-    font-family: "Jetbrains Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 0.28em;
-    color: var(--red);
-    display: block;
+  font-family: "Jetbrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  color: var(--red);
+  display: block;
 }
 /*
 shared section heading scale
@@ -88,70 +90,72 @@ shared section heading scale
 .md-dl h2,
 .md-faq h2,
 .md-modes h2 {
-    font-size: clamp(1.9rem, 4.4vw, 3.4rem);
-    font-weight: 600;
-    margin-top: 14px;
+  font-size: clamp(1.9rem, 4.4vw, 3.4rem);
+  font-weight: 600;
+  margin-top: 14px;
 }
 .md-root a:focus-visible,
 .md-root button:focus-visible {
-    outline: 2px solid var(--red);
-    outline-offset: 3px;
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
 }
 @keyframes md-pulse {
-    0%,
-    100% {
-        opacity: 0.35;
-    }
-    50% {
-        opacity: 1;
-    }
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 /*
 reactbits-style motion primitives
 */
 .md-ltr {
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(0.55em);
-    filter: blur(8px);
-    animation: md-rise 0.8s cubic-bezier(0.2, 0.75, 0.25, 1) forwards;
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.55em);
+  filter: blur(8px);
+  animation: md-rise 0.8s cubic-bezier(0.2, 0.75, 0.25, 1) forwards;
 }
 @keyframes md-rise {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-        filter: blur(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
 }
 .md-reveal {
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.8s ease var(--rd, 0ms), transform 0.8s cubic-bezier(0.2, 0.7, 0.25, 1) var(--rd, 0ms);
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s ease var(--rd, 0ms),
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.25, 1) var(--rd, 0ms);
 }
 .md-reveal.md-in {
-    opacity: 1;
-    transform: none;
+  opacity: 1;
+  transform: none;
 }
 .md-magnet {
-    display: inline-block;
-    transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.3, 1);
-    will-change: transform;
+  display: inline-block;
+  transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.3, 1);
+  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .md-root *,
-    .md-root *::before,
-    .md-root *::after {
-        animation: none !important;
-        transition: none !important;
-    }
-    .md-reveal,
-    .md-ltr {
-        opacity: 1 !important;
-        transform: none !important;
-        filter: none !important;
-    }
-    html {
-        scroll-behavior: auto;
-    }
+  .md-root *,
+  .md-root *::before,
+  .md-root *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .md-reveal,
+  .md-ltr {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
 }
