@@ -1,0 +1,49 @@
+.md-btn {
+  font-family: "Chakra Petch", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 13px 26px;
+  color: #ffffff;
+  background: var(--red-deep);
+  border: 1px solid var(--red-deep);
+  transition:
+    background 0.2s,
+    transform 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+  clip-path: polygon(
+    10px 0,
+    100% 0,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    0 100%,
+    0 10px
+  );
+}
+.md-btn:hover {
+  background: var(--red);
+  border-color: var(--red);
+  transform: translateY(-2px);
+}
+.md-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.md-ghost:hover {
+  background: transparent;
+  color: var(--red);
+  border-color: var(--red);
+}
+.md-ctarow {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  pointer-events: auto;
+}
+.md-center {
+  justify-content: center;
+}
