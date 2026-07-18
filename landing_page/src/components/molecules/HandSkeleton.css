@@ -1,0 +1,45 @@
+.md-handsvg {
+  width: 100%;
+  height: 100%;
+  max-height: 58vh;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+.md-bone {
+  stroke: var(--red);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.md-bone-dim {
+  stroke: var(--dim);
+  stroke-width: 2;
+  opacity: 0.55;
+}
+.md-bone-hot {
+  stroke-width: 4.4;
+  filter: drop-shadow(0 0 6px var(--glow));
+}
+.md-bone-cold {
+  stroke: var(--dim);
+  opacity: 0.35;
+}
+.md-joint {
+  fill: var(--ink);
+}
+.md-joint-cold {
+  opacity: 0.35;
+}
+.md-tip {
+  fill: var(--red);
+}
+@media (max-width: 980px) {
+  .md-handsvg {
+    max-height: 46vh;
+  }
+}
+@media (max-width: 620px) {
+  .md-handsvg {
+    max-height: 38vh;
+  }
+}

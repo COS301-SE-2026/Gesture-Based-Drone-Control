@@ -74,7 +74,7 @@ body {
   margin: 0;
 }
 .md-eyebrow {
-  font-family: "Jetbrains Mono", monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 11px;
   letter-spacing: 0.28em;
   color: var(--red);
