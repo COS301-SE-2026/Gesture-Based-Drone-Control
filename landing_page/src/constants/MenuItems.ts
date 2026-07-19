@@ -18,7 +18,7 @@ export const NAV_LINKS: NavItem[] = [
 ]
 
 export const SIDE_LINKS: SideLink[] = [
-  { n: "01", t: "Gesutres", h: "#gestures" },
+  { n: "01", t: "Gestures", h: "#gestures" },
   { n: "02", t: "Pipeline", h: "#pipeline" },
   { n: "03", t: "System", h: "#system" },
   { n: "04", t: "Simulator", h: "#sim" },

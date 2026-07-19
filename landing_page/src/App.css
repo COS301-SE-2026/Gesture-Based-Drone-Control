@@ -32,7 +32,7 @@ lives in multiple places so global
 .md-spot:hover {
   background-image:
     radial-gradient(
-      260px circle at var(--sx, 50%) var (--sy, 50%),
+      260px circle at var(--sx, 50%) var(--sy, 50%),
       rgba(229, 56, 59, 0.14),
       transparent 65%
     ),
@@ -41,7 +41,7 @@ lives in multiple places so global
 [data-theme="light"] .md-spot:hover {
   background-image:
     radial-gradient(
-      260px circle at var(--sx, 50%) var (--sy, 50%),
+      260px circle at var(--sx, 50%) var(--sy, 50%),
       rgba(186, 24, 27, 0.1),
       transparent 65%
     ),
@@ -98,7 +98,7 @@ lives in multiple places so global
   border: 1px solid var(--glass-brd);
   border-right: none;
   border-radius: 12px 0 0 12px;
-  box-shadow: var (--glass-shadow);
+  box-shadow: var(--glass-shadow);
 }
 .md-sbtab:hover {
   border-color: var(--red);

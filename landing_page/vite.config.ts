@@ -16,7 +16,7 @@ export default defineConfig({
   },
   server: {
     port: 3009,           // desired port
-    strictPort: false,    // falls back to next available if 3000 is taken
+    strictPort: false,    // falls back to next available if 3009 is taken
 
     watch: {
       usePolling: true,

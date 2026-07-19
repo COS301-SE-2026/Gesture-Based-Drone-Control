@@ -65,7 +65,7 @@ export const STEPS = [
   {
     n: "05",
     t: "Transmit",
-    d: "The command streams over WebSocket to the flgiht controller in milliseconds.",
+    d: "The command streams over WebSocket to the flight controller in milliseconds.",
   },
 ]
 
@@ -80,7 +80,7 @@ export const FEATURES = [
   },
   {
     t: "Faster than a flinch",
-    d: "Camera to command in under a frame's worth of time, streamed over a persistent WebSocket, the rone reacts while your gesutre is still forming.",
+    d: "Camera to command in under a frame's worth of time, streamed over a persistent WebSocket, the drone reacts while your gesture is still forming.",
   },
   {
     t: "Hardware you already own",
