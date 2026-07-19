@@ -79,16 +79,43 @@ export const FEATURES = [
     d: "Commands only change when a majority of recent frames agree. Shaky hands and bad frames get outvoted before they reach the props",
   },
   {
-    t: "Reads the shape, not the angle",
+    t: "Faster than a flinch",
     d: "Camera to command in under a frame's worth of time, streamed over a persistent WebSocket, the rone reacts while your gesutre is still forming.",
   },
   {
-    t: "Reads the shape, not the angle",
+    t: "Hardware you already own",
     d: "A laptop webcam is the whole sensor suite.",
   },
 ]
 
-export const BUILD = [
+export const BUILDS = [
   { os: "Windows", ext: ".EXE", req: "Windows 10 or later" },
   { os: "Linux", ext: ".APPIMAGE", req: "Ubuntu 22.04 or equivalent" },
+]
+
+export const FAQS = [
+  {
+    q: "a",
+    a: "b",
+  },
+  {
+    q: "a",
+    a: "b",
+  },
+  {
+    q: "a",
+    a: "b",
+  },
+  {
+    q: "a",
+    a: "b",
+  },
+  {
+    q: "a",
+    a: "b",
+  },
+  {
+    q: "a",
+    a: "b",
+  },
 ]
