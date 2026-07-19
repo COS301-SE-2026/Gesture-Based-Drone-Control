@@ -36,6 +36,7 @@ export default function App() {
       <ModesSection />
       <DemoSection />
       <DownloadSection />
+      <FaqSection />
       <Footer />
     </div>
   )
