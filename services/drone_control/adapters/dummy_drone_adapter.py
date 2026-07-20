@@ -11,7 +11,7 @@ leaflet CRS.Simple map without a real sim or hardware connected
 import logging
 import math
 
-from services.commands.command import CommandType
+from services.commands.command import CommandType, AnalogInput
 from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 logger = logging.getLogger(__name__)
@@ -120,15 +120,8 @@ class DummyDroneAdapter(DroneAdapter):
 			direction.name,
 		)
   
-	async def analog(self,
-					*,
-					left_x:  float,
-					left_y: float,
-					right_x: float,
-					right_y: float,
-					ltrigger: float,
-					rtrigger: float,
-					) -> None:
+	# TODO implement
+	async def analog(self, input: AnalogInput) -> None:
 		...
 
 	async def hover(self) -> None:

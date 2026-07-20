@@ -48,7 +48,7 @@ import logging
 import math
 from typing import TYPE_CHECKING
 
-from services.commands.command import CommandType
+from services.commands.command import CommandType, AnalogInput
 from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 # allow rest of package to be imported if airsim is not installed
@@ -356,16 +356,9 @@ class AirSimAdapter(DroneAdapter):
 
 		# Snap to hover after each move so the drone doesn't drift.
 		await self._run(lambda: client.hoverAsync(vehicle_name=vehicle).join())
-  
-	async def analog(self,
-					*,
-					left_x:  float,
-					left_y: float,
-					right_x: float,
-					right_y: float,
-					ltrigger: float,
-					rtrigger: float,
-					) -> None:
+	
+	# TODO implement 
+	async def analog(self, input: AnalogInput) -> None:
 		...
 
 	# TELEMETRY DATA

@@ -46,7 +46,7 @@ import math
 import pathlib
 from typing import TYPE_CHECKING
 
-from services.commands.command import CommandType
+from services.commands.command import CommandType, AnalogInput
 from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 if TYPE_CHECKING:
@@ -301,15 +301,8 @@ class ProjectAirSimAdapter(DroneAdapter):
 
 		await self._drone.move_by_velocity_body_frame_async(vx, vy, vz, duration)
 
-	async def analog(self,
-					*,
-					left_x:  float,
-					left_y: float,
-					right_x: float,
-					right_y: float,
-					ltrigger: float,
-					rtrigger: float,
-					) -> None:
+	# TODO implement
+	async def analog(self, input: AnalogInput) -> None:
 		...
 
 	async def hover(self) -> None:

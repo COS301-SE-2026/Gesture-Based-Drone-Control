@@ -127,3 +127,18 @@ class Command:
 		if self.source != 'unknown':
 			parts.append(f'source={self.source!r}')
 		return f'Command({", ".join(parts)})'  # funny python string
+
+@dataclass(slots=True)
+class AnalogInput:
+	"""
+	Stores the data passed into the DroneAdapter for analog inputs.
+	All values are bound to  [-1, 1], where  
+	right==1, left==-1 
+	down==1, up==-1
+	"""
+	left_x:  float
+	left_y: float
+	right_x: float
+	right_y: float
+	ltrigger: float
+	rtrigger: float

@@ -25,10 +25,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
 
-from services.commands.command import Command, CommandType
+from services.commands.command import Command, CommandType, AnalogInput
 
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class TelemetryData:
@@ -136,15 +135,7 @@ class DroneAdapter(ABC):
 		...
   
 	@abstractmethod
-	async def analog(self,
-                  	*,
-                   	left_x:  float,
-                    left_y: float,
-                    right_x: float,
-                    right_y: float,
-                    ltrigger: float,
-                    rtrigger: float,
-					) -> None:
+	async def analog(self, input: AnalogInput) -> None:
 		"""
 		Similar to the move handler, but specifically for the
 		analog inputs we get from the controller and possibly other
