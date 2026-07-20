@@ -120,9 +120,61 @@ class DummyDroneAdapter(DroneAdapter):
 			direction.name,
 		)
   
-	# TODO implement
 	async def analog(self, input: AnalogInput) -> None:
-		...
+		"""
+		Simulate continuous analog movement.
+
+		Exactly the  same as the PAS adapter:
+			- Left stick: horizontal movement
+			- Right stick x: yaw
+			- Right stick y / triggers: altitude
+		Basically just copy paste from PAS and dummy move
+  		"""
+		self._assert_connected()
+  
+		vx = -input.left_y * DEFAULT_SPEED_MS
+		vy = input.left_x * DEFAULT_SPEED_MS
+
+		stickz = -input.right_y
+		triggerz = input.ltrigger - input.rtrigger
+
+		vert = (
+			stickz
+			if abs(stickz) >= abs(triggerz)
+			else triggerz
+		)
+  
+		vz = vert * DEFAULT_SPEED_MS
+	
+		self._heading_deg = (
+		self._heading_deg
+		+ input.right_x * DEFAULT_ROTATE_DEG
+		) % 360
+
+		dt = DEFAULT_DURATION_S
+
+		heading_rad = math.radians(self._heading_deg)
+
+		self._x_displacement += dt * (
+			vx * math.cos(heading_rad)
+			- vy * math.sin(heading_rad)
+		)
+
+		self._y_displacement += dt * (
+			vx * math.sin(heading_rad)
+			+ vy * math.cos(heading_rad)
+		)
+
+		self._altitude_m += vz * dt
+
+		logger.info(
+			"DummyDroneAdapter: analog "
+			"(lx=%.2f ly=%.2f rx=%.2f ry=%.2f)",
+			input.left_x,
+			input.left_y,
+			input.right_x,
+			input.right_y,
+		)
 
 	async def hover(self) -> None:
 		"""
