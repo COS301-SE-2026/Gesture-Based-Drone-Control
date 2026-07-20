@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react"
 
 //backend port url
 const DEFAULT_WS_URL = `ws://${window.location.hostname}:3001/api/drone/ws/commands`
@@ -14,7 +14,7 @@ const MAX_RECONNECT_DELAY_MS = 10000
  */
 
 export function useCommands(wsUrl = DEFAULT_WS_URL) {
-    const [status, setStatus] = useState("connecting")
+  const [status, setStatus] = useState("connecting")
   //connecting | open | closed | error
   const [lastResp, setLastResp] = useState(null)
 
@@ -30,8 +30,8 @@ export function useCommands(wsUrl = DEFAULT_WS_URL) {
     if (isUnmountedRef.current) return
 
     if (socketRef.current) {
-        socketRef.current.close()
-        socketRef.current = null
+      socketRef.current.close()
+      socketRef.current = null
     }
 
     setStatus("connecting")
@@ -39,42 +39,78 @@ export function useCommands(wsUrl = DEFAULT_WS_URL) {
     socketRef.current = socket
 
     socket.onopen = () => {
-        if (isUnmountedRef.current) return
-        reconnectAttemptsRef.current = 0
-        setStatus("open")
+      if (isUnmountedRef.current) return
+      reconnectAttemptsRef.current = 0
+      setStatus("open")
     }
 
     socket.onmessage = (event) => {
-        if (isUnmountedRef.current) return
-        try {
-            setLastResp(JSON.parse(event.data))
-        }
-        catch (error) {
-            console.error("useCommands: failed to parse a response", error)
-        }
+      if (isUnmountedRef.current) return
+      try {
+        setLastResp(JSON.parse(event.data))
+      } catch (error) {
+        console.error("useCommands: failed to parse a response", error)
+      }
     }
 
     socket.onerror = (err) => {
-        if (isUnmountedRef.current) return
-        console.error("useCommands: websokcet error", err)
-        setStatus("error")
+      if (isUnmountedRef.current) return
+      console.error("useCommands: websokcet error", err)
+      setStatus("error")
     }
 
     socket.onclose = () => {
-        socketRef.current = null
-        if (isUnmountedRef.current) return
-        setStatus("closed")
+      socketRef.current = null
+      if (isUnmountedRef.current) return
+      setStatus("closed")
 
-        const delay = Math.min(
-            BASE_RECONNECT_DELAY_MS * 2 ** reconnectAttemptsRef.current,
-            MAX_RECONNECT_DELAY_MS
-        )
-        reconnectAttemptsRef.current += 1
-        reconnectTimeoutRef.current = setTimeout(() => {
-            if (!isUnmountedRef.current && connectRef.current) {
-                connectRef.current()
-            }
-        }, delay)
+      const delay = Math.min(
+        BASE_RECONNECT_DELAY_MS * 2 ** reconnectAttemptsRef.current,
+        MAX_RECONNECT_DELAY_MS
+      )
+      reconnectAttemptsRef.current += 1
+      reconnectTimeoutRef.current = setTimeout(() => {
+        if (!isUnmountedRef.current && connectRef.current) {
+          connectRef.current()
+        }
+      }, delay)
     }
   }, [])
+
+  const sendCommand = useCallback((commandName, extra = {}) => {
+    const socket = socketRef.current
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      console.warn(
+        "useCommands: socket not open, dropping command",
+        commandName
+      )
+      return false
+    }
+    socket.send(JSON.stringify({ command: commandName, ...extra }))
+    return true
+  }, [])
+
+  useEffect(() => {
+    connectRef.current = connec
+  }, [connec])
+
+  useEffect(() => {
+    wsUrlRef.current = wsUrl
+  }, [wsUrl])
+
+  useEffect(() => {
+    isUnmountedRef.current = false
+    connectRef.current()
+
+    return () => {
+      isUnmountedRef.current = true
+      clearTimeout(reconnectTimeoutRef.current)
+      if (socketRef.current) {
+        socketRef.current.close()
+        socketRef.current = null
+      }
+    }
+  }, [])
+
+  return { sendCommand, status, lastResp }
 }
