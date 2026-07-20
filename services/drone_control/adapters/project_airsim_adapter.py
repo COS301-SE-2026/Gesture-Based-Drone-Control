@@ -487,7 +487,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 
 	def _assert_connected(self) -> None:
 		"""Raise RuntimeError if not connected. Guards every command method."""
-		if not self._drone is None or not self._connected:
+		if self._drone is None or not self._connected:
 			raise RuntimeError(
 				'ProjectAirSimAdapter is not connected. Await connect() before issuing commands.'
 			)
