@@ -55,39 +55,28 @@ function poll(){
             const payload = {
                 
                 // stick inputs within [-1, 1] inclusive
-                leftStick:{
-                    x: cleanAxis(pad.axes[0]), //right==1, ,left==-1
-                    y: cleanAxis(pad.axes[1]) //down==1, up==-1
-                },
+                left_x: cleanAxis(pad.axes[0]), //right==1, ,left==-1
+                left_y: cleanAxis(pad.axes[1]), //down==1, up==-1
 
-                rightStick:{
-                    x: cleanAxis(pad.axes[2]),
-                    y: cleanAxis(pad.axes[3])
-                },
-
+                right_x: cleanAxis(pad.axes[2]),
+                right_y: cleanAxis(pad.axes[3]),
                 //fully depressed == 1
-                triggers:{
-                    left: Number(((pad.buttons[6]?.value)||0).toFixed(3)),
-                    right:Number(((pad.buttons[7]?.value)||0).toFixed(3))
-                },
-
-                buttons:{
-                    A: pad.buttons[0]?.pressed || false, //x
-                    B: pad.buttons[1]?.pressed || false, //o
-                    X: pad.buttons[2]?.pressed || false, //square
-                    Y: pad.buttons[3]?.pressed || false, //triangle
-                    LB: pad.buttons[4]?.pressed || false,
-                    RB: pad.buttons[5]?.pressed || false,
-                    Back: pad.buttons[8]?.pressed || false,
-                    Start: pad.buttons[9]?.pressed || false,
-                    LS: pad.buttons[10]?.pressed || false, //left stick click
-                    RS: pad.buttons[11]?.pressed || false, //right stick click
-                    Up: pad.buttons[12]?.pressed || false, //dpad
-                    Down: pad.buttons[13]?.pressed || false,
-                    Left: pad.buttons[14]?.pressed || false,
-                    Right: pad.buttons[15]?.pressed || false
-                }
-
+                ltrigger: Number(((pad.buttons[6]?.value)||0).toFixed(3)),
+                rtrigger:Number(((pad.buttons[7]?.value)||0).toFixed(3)),
+                a: pad.buttons[0]?.pressed || false, //x
+                b: pad.buttons[1]?.pressed || false, //o
+                x: pad.buttons[2]?.pressed || false, //square
+                y: pad.buttons[3]?.pressed || false, //triangle
+                lb: pad.buttons[4]?.pressed || false,
+                rb: pad.buttons[5]?.pressed || false,
+                back: pad.buttons[8]?.pressed || false,
+                start: pad.buttons[9]?.pressed || false,
+                lclick: pad.buttons[10]?.pressed || false, //left stick click
+                rclick: pad.buttons[11]?.pressed || false, //right stick click
+                up: pad.buttons[12]?.pressed || false, //dpad
+                down: pad.buttons[13]?.pressed || false,
+                left: pad.buttons[14]?.pressed || false,
+                right: pad.buttons[15]?.pressed || false
             };
 
             outEl.textContent = JSON.stringify(payload,null,4);
