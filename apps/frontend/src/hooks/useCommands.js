@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react"
-
-//backend port url
-const DEFAULT_WS_URL = `ws://${window.location.hostname}:3001/api/drone/ws/commands`
+import { API_BASE_URL } from "../lib/api"
 
 const BASE_RECONNECT_DELAY_MS = 1000
 const MAX_RECONNECT_DELAY_MS = 10000
@@ -13,7 +11,13 @@ const MAX_RECONNECT_DELAY_MS = 10000
  * connection status and the last resp/err received back from the backend
  */
 
-export function useCommands(wsUrl = DEFAULT_WS_URL) {
+function getDefaultWsUrl() {
+  const url = new URL("/api/drone/ws/commands", API_BASE_URL)
+  url.protocol = url.protocol === "https:" ? "wss:" : "ws:"
+  return url.toString()
+}
+
+export function useCommands(wsUrl = getDefaultWsUrl) {
   const [status, setStatus] = useState("connecting")
   //connecting | open | closed | error
   const [lastResp, setLastResp] = useState(null)

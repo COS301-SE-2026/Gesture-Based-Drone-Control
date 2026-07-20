@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState, useCallback } from "react"
-
-//backend port url
-const DEFAULT_WS_URL = `ws://${window.location.hostname}:3001/api/drone/ws/telemetry`
+import { API_BASE_URL } from "../lib/api"
 
 const BASE_RECONNECT_DELAY_MS = 1000
 const MAX_RECONNECT_DELAY_MS = 10000
+
+function getDefaultWsUrl() {
+  const url = new URL("/api/drone/ws/telemetry", API_BASE_URL)
+  url.protocol = url.protocol === "https:" ? "wss:" : "ws:"
+  return url.toString()
+}
 
 /**
  * opens a websocket to /drone/ws/telemetry and keeps it alive w reconnect and backoff.
@@ -15,7 +19,7 @@ const MAX_RECONNECT_DELAY_MS = 10000
  * the "open" status with telemetry being null means no adapter is connected yet not that the socket is broken
  */
 
-export function useTelemetry(wsUrl = DEFAULT_WS_URL) {
+export function useTelemetry(wsUrl = getDefaultWsUrl) {
   const [telemetry, setTelemetry] = useState(null)
   const [status, setStatus] = useState("connecting")
   //connecting | open | closed | error
