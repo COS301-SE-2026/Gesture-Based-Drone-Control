@@ -34,6 +34,9 @@ const GestureControl = () => {
   const [connectionStatus, setConnectionStatus] = useState("disconnected")
   const [connectionError, setConnectionError] = useState("")
 
+  //hardware isnt wired for now so we dont want to show the stale sim data
+  const displayTelem = droneMode === "Hardware" ? null : telemetry
+
   //auto connect to airsim when the component is mounted
 
   const connectToDrone = async (adapterType) => {
@@ -109,7 +112,7 @@ const GestureControl = () => {
 
   useEffect(() => {
     //initially connect to dummy
-    connectToDrone("dummy")
+    Promise.resolve().then(() => connectToDrone("dummy"))
   }, [])
 
   return (
@@ -148,7 +151,6 @@ const GestureControl = () => {
               {" "}
               Stats{" "}
             </Label>
-            <span className="text-xs text-DarkGrey">telemetry: {status}</span>
           </div>
           <div className="flex items-center justify-between gap-4 flex-wrap h-full">
             <div className="flex items-center gap-3">
@@ -158,7 +160,7 @@ const GestureControl = () => {
                   Battery
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {fmt(telemetry?.battery_pct)}%
+                  {fmt(displayTelem?.battery_pct)}%
                 </p>
               </div>
             </div>
@@ -171,7 +173,7 @@ const GestureControl = () => {
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
                   {/* TODO: this is still mocked for now - theres no signl_pct field on the telem return yet */}
-                  71%
+                  100%
                 </p>
               </div>
             </div>
@@ -184,8 +186,8 @@ const GestureControl = () => {
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
                   {fmt(
-                    typeof telemetry?.speed_ms === "number"
-                      ? telemetry.speed_ms * MS_TO_KMH
+                    typeof displayTelem?.speed_ms === "number"
+                      ? displayTelem.speed_ms * MS_TO_KMH
                       : undefined,
                     1
                   )}{" "}
@@ -201,7 +203,7 @@ const GestureControl = () => {
                   Altitude
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {fmt(telemetry?.altitude_m, 1)}m
+                  {fmt(displayTelem?.altitude_m, 1)}m
                 </p>
               </div>
             </div>
