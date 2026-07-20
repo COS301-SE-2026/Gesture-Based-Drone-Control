@@ -60,6 +60,8 @@ DEFAULT_DURATION_S: float = 0.5
 DEFAULT_ROTATE_DEG: float = 15.0
 DEFAULT_YAW_RATE_DPS: float = 75.0
 
+DEFAULT_ANALOG_DURATION_S = 0.05
+
 # the drone drops like a rock, drift it up a lil every time we move horzontally
 GRAVITY_COMP_VZ: float = -0.3
 
@@ -301,16 +303,55 @@ class ProjectAirSimAdapter(DroneAdapter):
 
 		await self._drone.move_by_velocity_body_frame_async(vx, vy, vz, duration)
 
-	# TODO implement
 	async def analog(self, input: AnalogInput) -> None:
-		...
+		"""
+		Equivalent to the move command, but exclusively for our analog inputs
+		Handles input from the left and right sticks, as well as triggers.
+		Bindings inspired loosely by real drones and helicopter controls in gta 5:
+			left_y = forward / backward
+			left_x = strafe left / right
+
+			right_x = yaw
+			right_y = ascend / descend 
+   
+			ltrigger = ascend
+			rtrigger = descend 
+			(last two redundant on purpose)
+  		"""
+		self._assert_connected()
+
+		vx = -input.left_y * DEFAULT_SPEED_MS
+		vy = input.left_x * DEFAULT_SPEED_MS
+
+		# between stick and trigger, take highest magnitude
+		stickz = -input.right_y
+		triggerz = input.ltrigger - input.rtrigger
+		vert  = (
+			stickz 
+			if abs(stickz) >=abs(triggerz)
+			else triggerz
+		)
+		vz = vert * DEFAULT_SPEED_MS
+		
+		yaw = input.right_x * DEFAULT_ROTATE_DEG
+
+		await self._drone.move_by_velocity_body_frame_async(
+			vx,
+			vy,
+			vz,
+			DEFAULT_ANALOG_DURATION_S,
+   		)
+
+		if abs(yaw) > 0.05:
+			await self._drone.rotate_by_yaw_rate_async(
+				yaw,
+				DEFAULT_ANALOG_DURATION_S,
+			)
 
 	async def hover(self) -> None:
 		"""
 		Cancel any active movement and hold a specified position
-		Should take prioriy over all commands except an emergency landing
-
-		hover_async should exist i hope
+		Should take priority over all commands except an emergency landing
 		"""
 		self._assert_connected()
 
@@ -320,7 +361,6 @@ class ProjectAirSimAdapter(DroneAdapter):
 	async def emergency_stop(self) -> None:
 		"""
 		Cancel any active movement and hold current position
-		Maybe initiate a landing, not sure what would be best
 		"""
 		if self._drone is None:
 			logger.warning('ProjectAirSimAdapter: emergency_stop called but drone is None')
@@ -447,7 +487,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 
 	def _assert_connected(self) -> None:
 		"""Raise RuntimeError if not connected. Guards every command method."""
-		if not self._connected or self._drone is None:
+		if not self._drone is None or not self._connected:
 			raise RuntimeError(
 				'ProjectAirSimAdapter is not connected. Await connect() before issuing commands.'
 			)
