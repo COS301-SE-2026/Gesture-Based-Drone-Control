@@ -356,6 +356,17 @@ class AirSimAdapter(DroneAdapter):
 
 		# Snap to hover after each move so the drone doesn't drift.
 		await self._run(lambda: client.hoverAsync(vehicle_name=vehicle).join())
+  
+	async def analog(self,
+					*,
+					left_x:  float,
+					left_y: float,
+					right_x: float,
+					right_y: float,
+					ltrigger: float,
+					rtrigger: float,
+					) -> None:
+		...
 
 	# TELEMETRY DATA
 

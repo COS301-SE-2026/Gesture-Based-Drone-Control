@@ -119,6 +119,17 @@ class DummyDroneAdapter(DroneAdapter):
 			'DummyDroneAdapter: move %s)',
 			direction.name,
 		)
+  
+	async def analog(self,
+					*,
+					left_x:  float,
+					left_y: float,
+					right_x: float,
+					right_y: float,
+					ltrigger: float,
+					rtrigger: float,
+					) -> None:
+		...
 
 	async def hover(self) -> None:
 		"""

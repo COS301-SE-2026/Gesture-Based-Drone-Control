@@ -301,6 +301,17 @@ class ProjectAirSimAdapter(DroneAdapter):
 
 		await self._drone.move_by_velocity_body_frame_async(vx, vy, vz, duration)
 
+	async def analog(self,
+					*,
+					left_x:  float,
+					left_y: float,
+					right_x: float,
+					right_y: float,
+					ltrigger: float,
+					rtrigger: float,
+					) -> None:
+		...
+
 	async def hover(self) -> None:
 		"""
 		Cancel any active movement and hold a specified position
