@@ -268,4 +268,137 @@ class TestLogout:
 			mock_get_token.return_value = token
 			mock_get_user.return_value = None
 			with pytest.raises(InvalidRefreshTokenError):
-				await auth_manager.logout(db=db, refresh_token='refresh-token')
+				await auth_manager.logout(
+					db=db,
+					refresh_token="refresh-token"
+				)
+
+class TestRefresh:
+	@patch.object(AuthManager, "_create_session", new_callable=AsyncMock)
+	@patch("services.auth.auth_manager.user_manager.get_by_id", new_callable=AsyncMock)
+	@patch("services.auth.auth_manager.refresh_token_manager.revoke", new_callable=AsyncMock)
+	@patch("services.auth.auth_manager.refresh_token_manager.get_valid_by_hash", new_callable=AsyncMock)
+	@patch("services.auth.auth_manager.token_service.hash_refresh_token")
+	async def test_refresh_success(
+		self, 
+		mock_hash_refresh,
+		mock_get_token,
+		mock_revoke,
+		mock_get_user,
+		mock_create_session,
+		auth_manager,
+		db,
+		user
+	):
+		stored_token = Mock()
+		stored_token.id = user.id	
+		stored_token.revoked = False
+		stored_token.expires_at = datetime(2100, 1,1, tzinfo=timezone.utc)
+		mock_hash_refresh.return_value = 'hash'
+		mock_get_token.return_value = stored_token
+		mock_get_user.return_value = user
+		tokens = SessionTokens(
+			access_token='access',
+			refresh_token='refresh',
+			refresh_expires_at=datetime.now(timezone.utc),
+		)
+		mock_create_session.return_value=tokens
+		result = await auth_manager.refresh(
+			db=db, 
+			refresh_token="refresh-token"
+		)
+		assert result == tokens
+		mock_revoke.assert_awaited_once_with(
+			db=db,
+			token=stored_token
+		)
+
+	@patch("services.auth.auth_manager.refresh_token_manager.get_valid_by_hash", new_callable=AsyncMock)
+	@patch("services.auth.auth_manager.token_service.hash_refresh_token")
+	async def test_refresh_invalid_token(
+		self,
+		mock_hash_refresh,
+		mock_get_token,
+		auth_manager,
+		db,
+	):
+		mock_hash_refresh.return_value = "hash"
+		mock_get_token.return_value= None
+
+		with pytest.raises(InvalidRefreshTokenError):
+			await auth_manager.refresh(
+				db=db,
+				refresh_token= "refresh-token"
+			)
+
+	@patch("services.auth.auth_manager.refresh_token_manager.get_valid_by_hash", new_callable=AsyncMock)
+	@patch("services.auth.auth_manager.token_service.hash_refresh_token")
+	async def test_refresh_revoked_token(
+		self,
+		mock_hash_refresh,
+		mock_get_token,
+		auth_manager,
+		db,
+	):
+		token = Mock()
+		token.revoked = True
+		token.expires_at = datetime (2100,1 ,1 , tzinfo=timezone.utc)
+
+		mock_hash_refresh.return_value = "hash"
+		mock_get_token.return_value = token
+
+		with pytest.raises(InvalidRefreshTokenError):
+			await auth_manager.refresh(
+				db=db,
+				refresh_token = "refresh-token"
+			)
+
+	@patch("services.auth.auth_manager.refresh_token_manager.get_valid_by_hash", new_callable=AsyncMock)
+	@patch("services.auth.auth_manager.token_service.hash_refresh_token")
+	async def test_refresh_expired_token(
+		self,
+		mock_hash_refresh,
+		mock_get_token,
+		auth_manager,
+		db,
+	):
+		token = Mock()
+		token.revoked = False
+		token.expires_at = datetime (2000,1 ,1 , tzinfo=timezone.utc)
+
+		mock_hash_refresh.return_value = "hash"
+		mock_get_token.return_value = token
+
+		with pytest.raises(InvalidRefreshTokenError):
+			await auth_manager.refresh(
+				db=db,
+				refresh_token = "refresh-token"
+			)
+
+	@patch("services.auth.auth_manager.user_manager.get_by_id", new_callable=AsyncMock)
+	@patch("services.auth.auth_manager.refresh_token_manager.get_valid_by_hash", new_callable=AsyncMock)
+	@patch("services.auth.auth_manager.token_service.hash_refresh_token")
+	async def test_refresh_user_not_found(
+		self,
+		mock_hash_refresh,
+		mock_get_token,
+		mock_get_user,
+		auth_manager,
+		db,
+	):
+		token = Mock()
+		token.id = 1
+		token.revoked = False
+		token.expires_at = datetime (2100,1 ,1 , tzinfo=timezone.utc)
+
+
+		mock_hash_refresh.return_value = "hash"
+		mock_get_token.return_value = token
+		mock_get_user.return_value = None
+
+		with pytest.raises(InvalidRefreshTokenError):
+			await auth_manager.refresh(
+				db=db,
+				refresh_token = "refresh-token"
+			)
+	
