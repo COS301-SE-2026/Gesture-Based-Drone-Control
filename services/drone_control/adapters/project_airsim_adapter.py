@@ -317,6 +317,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 			ltrigger = ascend
 			rtrigger = descend 
 			(last two redundant on purpose)
+		Whichever has the highest magnitude takes precedence 
   		"""
 		self._assert_connected()
 
@@ -335,6 +336,15 @@ class ProjectAirSimAdapter(DroneAdapter):
 		
 		yaw = input.right_x * DEFAULT_ROTATE_DEG
 
+		logger.debug(
+			"ProjectAirSimAdapter: analog "
+			"(vx=%.2f vy=%.2f vz=%.2f yaw=%.2f)",
+			vx,
+			vy,
+			vz,
+			input.right_x,
+		)
+  
 		await self._drone.move_by_velocity_body_frame_async(
 			vx,
 			vy,

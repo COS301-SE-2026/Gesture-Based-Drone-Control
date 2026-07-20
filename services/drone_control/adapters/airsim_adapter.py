@@ -76,6 +76,8 @@ DEFAULT_ROTATE_DEG: float = 15.0
 # yaw rate used during rotation (degrees per second)
 DEFAULT_YAW_RATE_DPS: float = 45.0
 
+DEFAULT_ANALOG_DURATION_S = 0.05
+
 
 class AirSimAdapter(DroneAdapter):
 	"""
@@ -357,9 +359,70 @@ class AirSimAdapter(DroneAdapter):
 		# Snap to hover after each move so the drone doesn't drift.
 		await self._run(lambda: client.hoverAsync(vehicle_name=vehicle).join())
 	
-	# TODO implement 
 	async def analog(self, input: AnalogInput) -> None:
-		...
+		"""
+		Equivalent to the move command, but exclusively for our analog inputs
+		Handles input from the left and right sticks, as well as triggers.
+		Bindings inspired loosely by real drones and helicopter controls in gta 5:
+			left_y = forward / backward
+			left_x = strafe left / right
+
+			right_x = yaw
+			right_y = ascend / descend 
+
+			ltrigger = ascend
+			rtrigger = descend 
+			(last two redundant on purpose)
+		Whichever has the highest magnitude takes precedence 
+		"""
+		self._assert_connected()
+
+		client = self._client
+		vehicle = self._vehicle
+
+		vx = -input.left_y * DEFAULT_SPEED_MS
+		vy = input.left_x * DEFAULT_SPEED_MS
+	
+		stickz = -input.right_y
+		triggerz = input.ltrigger - input.rtrigger
+
+		vert = (
+			stickz
+			if abs(stickz) >= abs(triggerz)
+			else triggerz
+		)
+		vz = vert * DEFAULT_SPEED_MS
+
+		logger.debug(
+			"AirSimAdapter: analog "
+			"(vx=%.2f vy=%.2f vz=%.2f yaw=%.2f)",
+			vx,
+			vy,
+			vz,
+			input.right_x,
+		)
+
+		await self._run(
+				lambda: client.moveByVelocityBodyFrameAsync(
+					vx,
+					vy,
+					vz,
+					DEFAULT_ANALOG_DURATION_S,
+					vehicle_name=vehicle,
+				).join()
+			)
+		
+		yaw = input.right_x * DEFAULT_ROTATE_DEG
+
+		# i forgot just how ugly this adapter is
+		if abs(yaw) > 0.05:
+			await self._run(
+				lambda: client.rotateByYawRateAsync(
+					yaw,
+					DEFAULT_ANALOG_DURATION_S,
+					vehicle_name=vehicle,
+				).join()
+			)
 
 	# TELEMETRY DATA
 
