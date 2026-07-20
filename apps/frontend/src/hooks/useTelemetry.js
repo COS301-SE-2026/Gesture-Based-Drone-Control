@@ -83,12 +83,16 @@ export function useTelemetry(wsUrl = DEFAULT_WS_URL) {
   }, [])
 
   useEffect(() => {
+    connectRef.current = connect
+  }, [connect])
+
+  useEffect(() => {
     wsUrlRef.current = wsUrl
   }, [wsUrl])
 
   useEffect(() => {
     isUnmountedRef.current = false
-    connect()
+    connectRef.current()
 
     return () => {
       isUnmountedRef.current = true
