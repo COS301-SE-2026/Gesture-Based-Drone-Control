@@ -27,8 +27,6 @@ export function useTelemetry(wsUrl = DEFAULT_WS_URL) {
   const wsUrlRef = useRef(wsUrl)
   const connectRef = useRef(null)
 
-  // const connectRef = useRef(null)
-
   const connect = useCallback(() => {
     if (isUnmountedRef.current) return
 
