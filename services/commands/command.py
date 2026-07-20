@@ -42,12 +42,13 @@ class CommandType(Enum):
 	ROTATE_CCW = auto()
 	HOVER = auto()
 	EMERGENCY_STOP = auto()
+	ANALOG = auto()
 
 
 # Prirority constants
 # Use these names to make things more readable
 PRIORITY_NORMAL = 1
-PRIORITY_HIGH = 10  # will be used at some points
+PRIORITY_HIGH = 10  # will be used at some point maybe
 PRIORITY_CRITICAL = 999
 
 

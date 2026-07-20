@@ -207,6 +207,8 @@ class DroneAdapter(ABC):
 		elif t is CommandType.HOVER:
 			await self.hover()
 
+		elif t is CommandType.ANALOG:
+			await self.analog(**command.payload)
 		elif t in (
 			CommandType.MOVE_UP,
 			CommandType.MOVE_DOWN,
