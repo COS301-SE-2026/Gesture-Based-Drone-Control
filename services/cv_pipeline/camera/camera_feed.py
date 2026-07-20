@@ -6,6 +6,7 @@
 # return captured frame (api call possibly)
 
 import logging
+import time
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Optional
@@ -49,6 +50,8 @@ class CapturedFrame:
 	rgb_frame: np.ndarray
 	# monotonic counter
 	frame_index: int
+	# capture time in seconds
+	timestamp: float
 
 
 class CameraFeed:
@@ -73,9 +76,10 @@ class CameraFeed:
 			raise RuntimeError('Failed to open camera')
 
 		# apply res and FPS
-		self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._config.frame_width)
-		self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._config.frame_height)
+		# self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._config.frame_width)
+		# self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._config.frame_height)
 		self._cap.set(cv2.CAP_PROP_FPS, self._config.target_fps)
+		self._cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
 		logger.info(
 			'Camera opened — source=%s, device=%s, target=%dx%d @ %dfps',
@@ -143,6 +147,7 @@ class CameraFeed:
 			bgr_frame=raw,
 			rgb_frame=rgb,
 			frame_index=self._frame_idx,
+			timestamp=time.monotonic(),
 		)
 
 

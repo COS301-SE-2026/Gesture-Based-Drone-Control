@@ -27,18 +27,9 @@ from cv_pipeline.gestures.recognizers.rule_based import (  # noqa: E402
 	INDEX_MCP,
 	INDEX_PIP,
 	INDEX_TIP,
-	MIDDLE_PIP,
-	MIDDLE_TIP,
-	PINKY_PIP,
-	PINKY_TIP,
-	RING_PIP,
-	RING_TIP,
-	THUMB_IP,
-	THUMB_TIP,
 	RuleBasedRecognizer,
 )
 from cv_pipeline.hand_detection.mediapipe_detector import (  # noqa: E402
-	NUM_LANDMARKS,
 	DetectedHand,
 	Handedness,
 	HandLandmark,
@@ -47,58 +38,74 @@ from cv_pipeline.hand_detection.mediapipe_detector import (  # noqa: E402
 
 # helpers
 def make_hand(
-	thumb_up: bool = False,
-	index_up: bool = False,
-	middle_up: bool = False,
-	ring_up: bool = False,
-	pinky_up: bool = False,
-	handedness: Handedness = Handedness.RIGHT,
-	confidence: float = 0.95,
+	thumb_up=False,
+	index_up=False,
+	middle_up=False,
+	ring_up=False,
+	pinky_up=False,
+	handedness=Handedness.RIGHT,
+	confidence=0.95,
 ) -> DetectedHand:
 	"""
-	Build a DetectedHand with landmark positions that show the desired
-	finger states.
-
-	y axis: 0 = top, 1 = bottom. A finger is "up" when tip.y < pip.y.
-	-> finger up:   tip.y = 0.2, pip.y = 0.5
-	-> finger down: tip.y = 0.8, pip.y = 0.5
-
-	Thumb extension is distance-based: tip is "up" when its distance from
-	the index MCP is greater than the IP joint's distance from the index MCP
-	We anchor the index MCP at (0.4, 0.5) and choose thumb positions so:
-	-> thumb up:   thumb_tip far from index_mcp
-	-> thumb down: thumb_tip close to / inside the palm
+	Builds a synthetic hand where 'up' fingers have collinear MCP-PIP-TIP
+	(angle ~180°) and 'down' fingers have the tip folded back (angle ~60°).
 	"""
-	# start every landmark in the centre and irrelevant points stay neutral
-	landmarks = [HandLandmark(x=0.5, y=0.5, z=0.0) for _ in range(NUM_LANDMARKS)]
+	lm = [HandLandmark(0.5, 0.5, 0.0)] * 21  # base: all landmarks at centre
 
-	# four vertical fingers
-	for tip_idx, pip_idx, is_up in [
-		(INDEX_TIP, INDEX_PIP, index_up),
-		(MIDDLE_TIP, MIDDLE_PIP, middle_up),
-		(RING_TIP, RING_PIP, ring_up),
-		(PINKY_TIP, PINKY_PIP, pinky_up),
-	]:
-		landmarks[pip_idx] = HandLandmark(x=0.5, y=0.5, z=0.0)
-		tip_y = 0.2 if is_up else 0.8
-		landmarks[tip_idx] = HandLandmark(x=0.5, y=tip_y, z=0.0)
+	def straight(mcp, pip, tip_lm):
+		# tip continues in same direction as pip->mcp reversed — ~180 deg at pip
+		return mcp, pip, HandLandmark(2 * pip.x - mcp.x, 2 * pip.y - mcp.y, 0.0)
 
-	# thumb: distance from index_mcp at (0.4, 0.5)
-	# ip joint sits at (0.3, 0.5) — distance ~0.10 from index_mcp
-	# extended tip lands at (0.05, 0.5) — distance ~0.35 > 0.10 -> "up"
-	# curled tip lands at (0.45, 0.5) — distance ~0.05 < 0.10 -> "down"
-	landmarks[INDEX_MCP] = HandLandmark(x=0.4, y=0.5, z=0.0)
-	landmarks[THUMB_IP] = HandLandmark(x=0.3, y=0.5, z=0.0)
-	if thumb_up:
-		landmarks[THUMB_TIP] = HandLandmark(x=0.05, y=0.5, z=0.0)
-	else:
-		landmarks[THUMB_TIP] = HandLandmark(x=0.45, y=0.5, z=0.0)
+	def curled(mcp, pip, _):
+		# tip folds back toward mcp — sharp angle at pip
+		return mcp, pip, HandLandmark(mcp.x, mcp.y + 0.01, 0.0)
 
-	return DetectedHand(
-		handedness=handedness,
-		landmarks=landmarks,
-		confidence=confidence,
-	)
+	# thumb: landmarks 2 (MCP), 3 (IP), 4 (TIP)
+	mcp = HandLandmark(0.42, 0.85, 0.0)
+	pip = HandLandmark(0.36, 0.80, 0.0)
+	tip = HandLandmark(0.28, 0.74, 0.0) if thumb_up else HandLandmark(0.46, 0.68, 0.0)
+	lm = list(lm)
+	lm[2] = mcp
+	lm[3] = pip
+	lm[4] = tip
+
+	# index: 5 (MCP), 6 (PIP), 8 (TIP)
+	mcp = HandLandmark(0.45, 0.65, 0.0)
+	pip = HandLandmark(0.44, 0.50, 0.0)
+	builder = straight if index_up else curled
+	_, _, tip = builder(mcp, pip, None)
+	lm[5] = mcp
+	lm[6] = pip
+	lm[8] = tip
+
+	# middle: 9, 10, 12
+	mcp = HandLandmark(0.50, 0.64, 0.0)
+	pip = HandLandmark(0.50, 0.48, 0.0)
+	builder = straight if middle_up else curled
+	_, _, tip = builder(mcp, pip, None)
+	lm[9] = mcp
+	lm[10] = pip
+	lm[12] = tip
+
+	# ring: 13, 14, 16
+	mcp = HandLandmark(0.55, 0.65, 0.0)
+	pip = HandLandmark(0.55, 0.50, 0.0)
+	builder = straight if ring_up else curled
+	_, _, tip = builder(mcp, pip, None)
+	lm[13] = mcp
+	lm[14] = pip
+	lm[16] = tip
+
+	# pinky: 17, 18, 20
+	mcp = HandLandmark(0.60, 0.67, 0.0)
+	pip = HandLandmark(0.60, 0.54, 0.0)
+	builder = straight if pinky_up else curled
+	_, _, tip = builder(mcp, pip, None)
+	lm[17] = mcp
+	lm[18] = pip
+	lm[20] = tip
+
+	return DetectedHand(handedness=handedness, landmarks=lm, confidence=confidence)
 
 
 # finger stats
@@ -142,12 +149,12 @@ class TestIsFingerUp:
 	def test_finger_up_when_tip_above_pip(self):
 		recognizer = RuleBasedRecognizer()
 		hand = make_hand(index_up=True)
-		assert recognizer._is_finger_up(hand.landmarks, INDEX_TIP, INDEX_PIP) is True
+		assert recognizer._is_finger_up(hand.landmarks, INDEX_TIP, INDEX_PIP, INDEX_MCP) is True
 
 	def test_finger_down_when_tip_below_pip(self):
 		recognizer = RuleBasedRecognizer()
 		hand = make_hand(index_up=False)
-		assert recognizer._is_finger_up(hand.landmarks, INDEX_TIP, INDEX_PIP) is False
+		assert recognizer._is_finger_up(hand.landmarks, INDEX_TIP, INDEX_PIP, INDEX_MCP) is False
 
 
 class TestIsThumbUp:

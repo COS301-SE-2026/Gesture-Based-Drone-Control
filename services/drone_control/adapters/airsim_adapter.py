@@ -135,7 +135,35 @@ class AirSimAdapter(DroneAdapter):
 		"""
 
 		try:
+			import inspect
+
 			import airsim  # type: ignore (the package does in fact exist...)
+			import msgpack
+
+			# this is the stupidest patch ever
+			# newer msgpack versions lack the encoding kewarg that msgpack-rpc-python uses
+			# patch the packer and unpacker to allow airsim and pas to work together in one env
+			# i hate it
+			# i hate it here
+			if 'encoding' not in inspect.signature(msgpack.Packer.__init__).parameters:
+				oldpacker = msgpack.Packer
+
+				class _PatchedPacker(oldpacker):
+					def __init__(self, *args, **kwargs):
+						kwargs.pop('encoding', None)  # get rid of it entirely
+						super().__init__(*args, **kwargs)  # and pass to parent
+
+				msgpack.Packer = _PatchedPacker
+
+			if 'encoding' not in inspect.signature(msgpack.Unpacker.__init__).parameters:
+				oldunpacker = msgpack.Unpacker
+
+				class _PatchedUnpacker(oldunpacker):
+					def __init__(self, *args, **kwargs):
+						kwargs.pop('encoding', None)  # get rid of it entirely
+						super().__init__(*args, **kwargs)  # and pass to parent
+
+				msgpack.Unpacker = _PatchedUnpacker
 
 			def _connect_blocking():
 				# AirSim's MultirotorClient may be broken.
@@ -355,7 +383,7 @@ class AirSimAdapter(DroneAdapter):
 			speed = math.sqrt(vel.x_val**2 + vel.y_val**2 + vel.z_val**2)
 
 			# NED: z is negative when airborne, so negate for a positive altitude
-			altitude = max(0.0, -pos.z_val)
+			altitude = -pos.z_val
 
 			# LandedState.Landed == 1, Flying == 0 (check AirSim source)
 			# airsim is stupid and uses either a plain int or enum depending on version.
@@ -369,6 +397,8 @@ class AirSimAdapter(DroneAdapter):
 				battery_pct=100.0,  # AirSim has no battery model
 				heading_deg=self._get_heading_deg(),
 				is_flying=is_flying,
+				x_displacement=round(pos.x_val, 3),  # north offset from sim origin
+				y_displacement=round(pos.y_val, 3),  # east offset form sim origin
 				source='airsim',
 			)
 		except Exception as ex:

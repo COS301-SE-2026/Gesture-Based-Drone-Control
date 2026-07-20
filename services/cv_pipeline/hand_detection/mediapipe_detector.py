@@ -12,11 +12,12 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Optional
 
+import cv2
 import mediapipe as mp
 import numpy as np
 
 # camera_feed.py imports -> 1st in chain then this file
-from cv_pipeline.camera.camera_feed import CapturedFrame
+from services.cv_pipeline.camera.camera_feed import CapturedFrame
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,36 @@ logger = logging.getLogger(__name__)
 # points on one hand = 21
 NUM_LANDMARKS = 21
 MAX_HANDS = 2
+
+HAND_CONNECTIONS = (
+	# thumb
+	(0, 1),
+	(1, 2),
+	(2, 3),
+	(3, 4),
+	# index
+	(0, 5),
+	(5, 6),
+	(6, 7),
+	(7, 8),
+	# middle
+	(5, 9),
+	(9, 10),
+	(10, 11),
+	(11, 12),
+	# ring
+	(9, 13),
+	(13, 14),
+	(14, 15),
+	(15, 16),
+	# pinky
+	(13, 17),
+	(17, 18),
+	(18, 19),
+	(19, 20),
+	# palm
+	(0, 17),
+)
 
 
 # Enums
@@ -103,6 +134,8 @@ class DetectorConfig:
 	min_tracking_confidence: float = 0.5
 	# static_image_mode = F -> mediapipe tracks acrosss frames
 	static_image_mode: bool = False
+	# 0 = light/fast, 1 = full/accurate (0 halves per-frame time)
+	model_complexity: int = 0
 
 
 # hand detection pipeline
@@ -130,6 +163,7 @@ class HandDetectionPipeline:
 		self._hands = mp_hands.Hands(
 			static_image_mode=self._config.static_image_mode,
 			max_num_hands=MAX_HANDS,
+			model_complexity=self._config.model_complexity,
 			min_detection_confidence=self._config.min_detection_confidence,
 			min_tracking_confidence=self._config.min_tracking_confidence,
 		)
@@ -224,29 +258,30 @@ class HandDetectionPipeline:
 		Draw landmarks onto BGR frame
 		should return annotated frame (does not mess with original)
 		"""
-		annotated = frame.bgr_frame.copy()
+		return draw_landmarks(frame.bgr_frame, result)
 
-		if not result.has_hands:
-			return annotated
 
-		# lazy import — same reason as open()
-		mp_hands = mp.solutions.hands
-		mp_drawing = mp.solutions.drawing_utils
-
-		# re-run mp result format for drawing
-		mp_result = self._hands.process(frame.rgb_frame)
-		if mp_result.multi_hand_landmarks:
-			for hand_landmarks in mp_result.multi_hand_landmarks:
-				mp_drawing.draw_landmarks(
-					annotated,
-					hand_landmarks,
-					mp_hands.HAND_CONNECTIONS,
-				)
+def draw_landmarks(bgr_frame: np.ndarray, result: HandDetectionResult) -> np.ndarray:
+	annotated = bgr_frame.copy()
+	if not result.has_hands:
 		return annotated
+
+	h, w = annotated.shape[:2]
+
+	for hand in result.hands:
+		pts = [(int(lm.x * w), int(lm.y * h)) for lm in hand.landmarks]
+
+		# bones
+		for a, b in HAND_CONNECTIONS:
+			cv2.line(annotated, pts[a], pts[b], (0, 255, 0), 2)
+
+		for x, y in pts:
+			cv2.circle(annotated, (x, y), 4, (0, 255, 0), -1)
+
+	return annotated
 
 
 # smoke test
-
 if __name__ == '__main__':
 	import os
 	import sys

@@ -1,17 +1,16 @@
-import { Construction } from "lucide-react"
-import { Card } from "../atoms"
+import { DroneInfoCard } from "../molecules"
 
 const Settings = () => {
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-200px)] p-6">
-      <Card variant="glass" className="max-w-md w-full">
-        <div className="flex flex-col items-center text-center space-y-4 p-y-8">
-          <Construction size={64} className="text-yellow-500 animate-pulse" />
-          <h2 className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
-            PAGE IN PROGRESS
-          </h2>
-        </div>
-      </Card>
+    <div classsName="p-6 space-y-6">
+      <div className="max-w-md ml-6">
+        <DroneInfoCard
+          connected={true}
+          droneName="Phantom 4"
+          model="DJI PHANTOM 4 PRO"
+          description="Professional drone with 4k camera"
+        />
+      </div>
     </div>
   )
 }

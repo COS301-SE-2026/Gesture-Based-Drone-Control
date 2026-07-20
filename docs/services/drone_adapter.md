@@ -4,9 +4,7 @@
 
 The `DroneAdapter` abstract base class defines the standard interface for all drone control implementations.
 
-It acts as the core abstraction layer between:
-- Input systems (gesture, keyboard, API, etc.)
-- Concrete drone implementations (AirSim, simulators, hardware SDKs)
+It acts as a core abstraction layer, allowing uniform interaction between all drone implementations, specifically our real drone and simulators. To implement support for a new drone, one simply needs to create a new `DroneAdapter` and implement all the required methods.
 
 All drone interaction must go through `execute(command)` on a concrete implementation.
 
@@ -18,7 +16,7 @@ All drone interaction must go through `execute(command)` on a concrete implement
 
 `TelemetryData` is the standard return structure for `get_telemetry()` across all adapters.
 
-It provides a minimal, consistent snapshot of drone state.
+It provides a minimal, consistent snapshot of drone state. All drone adapters return data of this shape
 
 ---
 
@@ -67,7 +65,7 @@ Default: "unknown"
 ---
 
 #### extra: dict
-Escape hatch for adapter-specific telemetry values.
+An escape hatch for adapter-specific telemetry values.
 
 - Must not be relied upon by consumers
 - Used only when adapter-specific data cannot fit standard fields
@@ -84,15 +82,19 @@ Defines the required interface for all drone adapters.
 
 Each implementation wraps a specific SDK or simulator and exposes a uniform control API.
 
+The main point of interation is execute(command).
+Makes use of the Adapter design pattern used so that callers do not
+need to know the gory details of whatever drone sim
+or drone sdk they are interacting with.
 ---
 
 ### Lifecycle Flow
 
-1. Create adapter instance with connection parameters
-2. Call `await connect()`
-3. Use `await execute(command)` for control
-4. Poll `await get_telemetry()` continuously
-5. Call `await disconnect()` on shutdown
+1) create the adapter with connection parameterss (localhost, drone ip, etc.)
+2) await adapter.connect() for a True
+3) Pass commands via await adapter.execute(command)
+4) Optionally in another thread, poll telemetry via await adapter.get_telemetry()
+5) await adapter.disconnect() at shutdown. This should safely land the drone
 
 ---
 
@@ -140,13 +142,15 @@ Executes a directional movement or rotation.
 
 Parameters:
 - direction: CommandType specifying movement type
-- kwargs: optional movement modifiers extracted from Command.payload
+- kwargs: optional movement modifiers extracted from Command.payload, for fine grained movement.
 
 Planned kwargs:
 - distance_m
 - speed_ms
 - duration_s
 - degrees
+
+- currently supports all basic commands from the `Command` class.
 
 ---
 
@@ -160,7 +164,7 @@ Should take priority over normal commands except emergency stop.
 
 ### emergency_stop() -> None
 
-Immediately cancels all activity and holds current position.
+Immediately overrides all other pending commands and holds current position.
 
 May optionally trigger landing depending on implementation.
 
@@ -178,7 +182,7 @@ Should be called frequently for live monitoring.
 
 ### Purpose
 
-Single entry point for all command execution.
+The only concrete method in this class, a single entry point for all command execution.
 
 Routes a `Command` to the correct adapter method.
 
@@ -192,7 +196,7 @@ Routes a `Command` to the correct adapter method.
 - HOVER -> hover()
 - Movement and rotation commands -> move()
 
-Supported movement commands:
+Supported movement commands (all basic commands defined in `Command`):
 - MOVE_UP
 - MOVE_DOWN
 - MOVE_FORWARD
