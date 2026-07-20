@@ -136,9 +136,9 @@ class AnalogInput:
 	right==1, left==-1 
 	down==1, up==-1
 	"""
-	left_x:  float
-	left_y: float
-	right_x: float
-	right_y: float
-	ltrigger: float
-	rtrigger: float
+	left_x:  float = 0.0
+	left_y: float = 0.0
+	right_x: float = 0.0
+	right_y: float = 0.0
+	ltrigger: float = 0.0
+	rtrigger: float = 0.0

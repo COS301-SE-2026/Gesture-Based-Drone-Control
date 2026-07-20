@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from services.commands.command import CommandType
+from services.commands.command import CommandType, AnalogInput
 from services.drone_control.adapters.drone_adapter import TelemetryData
 from services.drone_control.adapters.project_airsim_adapter import (
 	DEFAULT_ROTATE_DEG,
@@ -421,4 +421,3 @@ def test_find_sim_config_failure():
 			_find_sim_config()
 
 # analog movement
-
