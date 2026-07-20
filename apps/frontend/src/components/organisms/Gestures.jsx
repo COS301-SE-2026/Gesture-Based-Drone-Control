@@ -3,6 +3,7 @@ import { CommandHistory, GestureGuide, DroneModeCard } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge, Camera } from "lucide-react"
 import { useTelemetry } from "@/hooks/useTelemetry"
+import { useCommands } from "@/hooks/useCommands"
 
 const MS_TO_KMH = 3.6
 
@@ -19,7 +20,36 @@ const GestureControl = () => {
     { action: "swipe left - move left", timestamp: "18:50:42" },
   ])
 
+  //from gesture guide molecule to backend commandType name
+  const ACTION_TO_COMMAND = {
+    moveForward: "MOVE_FORWARD",
+    moveBackward: "MOVE_BACKWARD",
+    moveLeft: "MOVE_LEFT",
+    moveRight: "MOVE_RIGHT",
+    goUp: "MOVE_UP",
+    goDown: "MOVE_DOWN",
+    rotateLeft: "ROTATE_CCW",
+    rotateRight: "ROTATE_CW",
+    takeoff: "TAKEOFF",
+    land: "LAND",
+    hover: "HOVER",
+    emergencyStop: "EMERGENCY_STOP",
+  }
+
   const { telemetry, status } = useTelemetry()
+  const { sendCommand, status: commandStatus, lastResp } = useCommands()
+
+  const handleControlAcion = (action) => {
+    const commandName = ACTION_TO_COMMAND[action]
+    if (!commandName) {
+      console.warn(
+        "GestureControl: no command mapping for this action: ",
+        action
+      )
+      return
+    }
+    sendCommand(commandName, { source: "onscreen" })
+  }
 
   // //mock data for drone status
   // const droneMetrics = {
@@ -111,7 +141,7 @@ const GestureControl = () => {
   //add hardware mode when drone works
 
   useEffect(() => {
-    //initially connect to dummy
+    //initially connect to dummy or airsim for testing
     Promise.resolve().then(() => connectToDrone("dummy"))
   }, [])
 
@@ -141,8 +171,19 @@ const GestureControl = () => {
         >
           {status}
         </span>
+        <span className="text-DarkGrey">Commands:</span>
+        <span
+          className={`font-semibold ${
+            commandStatus === "open" ? "text-green-500" : "text-yellow-500"
+          }`}
+        >
+          {commandStatus}
+        </span>
         <span className="text-DarkGrey">Mode:</span>
         <span className="font-semibold text-blue-500">{droneMode}</span>
+        {lastResp?.error && (
+          <span className="text-semibold text-blue-500">{lastResp.error}</span>
+        )}
       </div>
       <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">
         <Card variant="glass">
@@ -236,7 +277,7 @@ const GestureControl = () => {
           </div>
         </Card>
 
-        <GestureGuide className="h-full" />
+        <GestureGuide className="h-full" onControlAction={handleControlAcion} />
       </div>
 
       <CommandHistory commands={commands} />
