@@ -27,7 +27,7 @@ tasks:
     cmds:
       - uv run --no-sync uvicorn app.main:app --port {{.BACKENDPORT}} --app-dir apps/backend --reload --reload-dir apps/backend/app --reload-dir services
     env:
-      PYTHONPATH: "{{.TASKFILE_DIR}}:{{.TASKFILE_DIR}}/apps/backend"
+      PYTHONPATH: "{{.ROOT_DIR}}"
 
   frontend-dev:
     internal: true
