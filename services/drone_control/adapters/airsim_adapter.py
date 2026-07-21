@@ -48,7 +48,7 @@ import logging
 import math
 from typing import TYPE_CHECKING
 
-from services.commands.command import CommandType, AnalogInput
+from services.commands.command import AnalogInput, CommandType
 from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 # allow rest of package to be imported if airsim is not installed
@@ -358,7 +358,7 @@ class AirSimAdapter(DroneAdapter):
 
 		# Snap to hover after each move so the drone doesn't drift.
 		await self._run(lambda: client.hoverAsync(vehicle_name=vehicle).join())
-	
+
 	async def analog(self, input: AnalogInput) -> None:
 		"""
 		Equivalent to the move command, but exclusively for our analog inputs
@@ -368,12 +368,12 @@ class AirSimAdapter(DroneAdapter):
 			left_x = strafe left / right
 
 			right_x = yaw
-			right_y = ascend / descend 
+			right_y = ascend / descend
 
 			ltrigger = ascend
-			rtrigger = descend 
+			rtrigger = descend
 			(last two redundant on purpose)
-		Whichever has the highest magnitude takes precedence 
+		Whichever has the highest magnitude takes precedence
 		"""
 		self._assert_connected()
 
@@ -382,20 +382,15 @@ class AirSimAdapter(DroneAdapter):
 
 		vx = -input.left_y * DEFAULT_SPEED_MS
 		vy = input.left_x * DEFAULT_SPEED_MS
-	
+
 		stickz = -input.right_y
 		triggerz = input.ltrigger - input.rtrigger
 
-		vert = (
-			stickz
-			if abs(stickz) >= abs(triggerz)
-			else triggerz
-		)
+		vert = stickz if abs(stickz) >= abs(triggerz) else triggerz
 		vz = vert * DEFAULT_SPEED_MS
 
 		logger.debug(
-			"AirSimAdapter: analog "
-			"(vx=%.2f vy=%.2f vz=%.2f yaw=%.2f)",
+			'AirSimAdapter: analog (vx=%.2f vy=%.2f vz=%.2f yaw=%.2f)',
 			vx,
 			vy,
 			vz,
@@ -403,15 +398,15 @@ class AirSimAdapter(DroneAdapter):
 		)
 
 		await self._run(
-				lambda: client.moveByVelocityBodyFrameAsync(
-					vx,
-					vy,
-					vz,
-					DEFAULT_ANALOG_DURATION_S,
-					vehicle_name=vehicle,
-				).join()
-			)
-		
+			lambda: client.moveByVelocityBodyFrameAsync(
+				vx,
+				vy,
+				vz,
+				DEFAULT_ANALOG_DURATION_S,
+				vehicle_name=vehicle,
+			).join()
+		)
+
 		yaw = input.right_x * DEFAULT_ROTATE_DEG
 
 		# i forgot just how ugly this adapter is

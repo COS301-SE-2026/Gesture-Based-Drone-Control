@@ -46,7 +46,7 @@ import math
 import pathlib
 from typing import TYPE_CHECKING
 
-from services.commands.command import CommandType, AnalogInput
+from services.commands.command import AnalogInput, CommandType
 from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 if TYPE_CHECKING:
@@ -312,13 +312,13 @@ class ProjectAirSimAdapter(DroneAdapter):
 			left_x = strafe left / right
 
 			right_x = yaw
-			right_y = ascend / descend 
-   
+			right_y = ascend / descend
+
 			ltrigger = ascend
-			rtrigger = descend 
+			rtrigger = descend
 			(last two redundant on purpose)
-		Whichever has the highest magnitude takes precedence 
-  		"""
+		Whichever has the highest magnitude takes precedence
+		"""
 		self._assert_connected()
 
 		vx = -input.left_y * DEFAULT_SPEED_MS
@@ -327,30 +327,25 @@ class ProjectAirSimAdapter(DroneAdapter):
 		# between stick and trigger, take highest magnitude
 		stickz = -input.right_y
 		triggerz = input.ltrigger - input.rtrigger
-		vert  = (
-			stickz 
-			if abs(stickz) >=abs(triggerz)
-			else triggerz
-		)
+		vert = stickz if abs(stickz) >= abs(triggerz) else triggerz
 		vz = vert * DEFAULT_SPEED_MS
-		
+
 		yaw = input.right_x * DEFAULT_ROTATE_DEG
 
 		logger.debug(
-			"ProjectAirSimAdapter: analog "
-			"(vx=%.2f vy=%.2f vz=%.2f yaw=%.2f)",
+			'ProjectAirSimAdapter: analog (vx=%.2f vy=%.2f vz=%.2f yaw=%.2f)',
 			vx,
 			vy,
 			vz,
 			input.right_x,
 		)
-  
+
 		await self._drone.move_by_velocity_body_frame_async(
 			vx,
 			vy,
 			vz,
 			DEFAULT_ANALOG_DURATION_S,
-   		)
+		)
 
 		if abs(yaw) > 0.05:
 			await self._drone.rotate_by_yaw_rate_async(

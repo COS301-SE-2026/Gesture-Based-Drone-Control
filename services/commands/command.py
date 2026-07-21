@@ -128,15 +128,17 @@ class Command:
 			parts.append(f'source={self.source!r}')
 		return f'Command({", ".join(parts)})'  # funny python string
 
+
 @dataclass(slots=True)
 class AnalogInput:
 	"""
 	Stores the data passed into the DroneAdapter for analog inputs.
-	All values are bound to  [-1, 1], where  
-	right==1, left==-1 
+	All values are bound to  [-1, 1], where
+	right==1, left==-1
 	down==1, up==-1
 	"""
-	left_x:  float = 0.0
+
+	left_x: float = 0.0
 	left_y: float = 0.0
 	right_x: float = 0.0
 	right_y: float = 0.0

@@ -182,13 +182,14 @@ async def keyboard(websocket: WebSocket, state: Annotated[AppState, Depends(get_
 	except Exception as ex:
 		logger.exception(f'input/ws/keyboard: error caught: {ex}')
 
+
 @router.websocket('/ws/gamepad')
 async def gamepad(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
-	'''
+	"""
 	Receive snapshots of the controller state and forward them to the GamepadAdapter
-	Should happen about once per frame, so 60fps or so. 
-	
-	Format: 
+	Should happen about once per frame, so 60fps or so.
+
+	Format:
 		{
 			"left_x": 0.73, "left_y": -0.41,
 			"right_x": 0.0, "right_y": 0.0,
@@ -201,7 +202,7 @@ async def gamepad(websocket: WebSocket, state: Annotated[AppState, Depends(get_s
 	The browser should apply some cleaning to the data before sending.
 	Messages are silently dropped if the adapter type is not 'gamepad'
 	so we can keep the connection open even when an adapter is switched.
-	'''
+	"""
 	await websocket.accept()
 	logger.info('input/ws/gamepad: client connected')
 	try:
