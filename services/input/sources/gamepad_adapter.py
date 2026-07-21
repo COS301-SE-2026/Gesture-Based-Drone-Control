@@ -138,6 +138,15 @@ class GamepadAdpater(InputAdapter):
         
         Works about the same as any other digital input already implemented
         """
+        for button, command_type in BUTTON_MAP.items()
+            pressed = bool(msg.get(button, False))
+            
+            if pressed:
+                logger.debug('GamepadAdapter: button %r -> %s', button, command_type.name)
+                self._emit(Command(
+                    type = command_type,
+                    source = 'gamepad'
+                ))
         
     def get_bindings(self) -> dict[str, str]:
         """
