@@ -102,7 +102,6 @@ async def gesture_websocket(websocket: WebSocket) -> None:
 		queue = await stream.subscribe()
 		logger.info('gesture client connected (total =%d)', stream.client_count)
 		while True:
-			queue = await stream.subscribe()
 			payload = await queue.get()
 			await websocket.send_json(payload.model_dump())
 	except WebSocketDisconnect:
