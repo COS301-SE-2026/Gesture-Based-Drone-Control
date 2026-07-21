@@ -7,143 +7,145 @@ from services.input.sources.gamepad_adapter import DEADZONE, GamepadAdpater
 # create the adapter
 @pytest.fixture
 def adapter():
-    a = GamepadAdpater()
-    received = []
-    a.set_handler(received.append)
-    return a, received
+	a = GamepadAdpater()
+	received = []
+	a.set_handler(received.append)
+	return a, received
 
 
 @pytest.mark.asyncio
 async def test_start():
-    adapter = GamepadAdpater()
-    await adapter.start()
+	adapter = GamepadAdpater()
+	await adapter.start()
 
 
 @pytest.mark.asyncio
 async def test_takeoff_button(adapter):
-    gamepad, received = adapter
+	gamepad, received = adapter
 
-    await gamepad.handle_message({'a': True})
+	await gamepad.handle_message({'a': True})
 
-    assert received[0].type is CommandType.TAKEOFF
+	assert received[0].type is CommandType.TAKEOFF
 
 
 @pytest.mark.asyncio
 async def test_hover_button(adapter):
-    gamepad, received = adapter
+	gamepad, received = adapter
 
-    await gamepad.handle_message({'x': True})
+	await gamepad.handle_message({'x': True})
 
-    assert received[0].type is CommandType.HOVER
+	assert received[0].type is CommandType.HOVER
 
 
 @pytest.mark.asyncio
 async def test_multiple_inputs(adapter):
-    """full controller snapshot with multiple inputs should be handled separately"""
-    gamepad, received = adapter
+	"""full controller snapshot with multiple inputs should be handled separately"""
+	gamepad, received = adapter
 
-    await gamepad.handle_message(
-        {
-            'a': True,
-            'b': True,
-            'y': True,
-        }
-    )
+	await gamepad.handle_message(
+		{
+			'a': True,
+			'b': True,
+			'y': True,
+		}
+	)
 
-    assert len(received) == 3
+	assert len(received) == 3
 
-    assert CommandType.TAKEOFF in [c.type for c in received]
-    assert CommandType.LAND in [c.type for c in received]
-    assert CommandType.EMERGENCY_STOP in [c.type for c in received]
+	assert CommandType.TAKEOFF in [c.type for c in received]
+	assert CommandType.LAND in [c.type for c in received]
+	assert CommandType.EMERGENCY_STOP in [c.type for c in received]
 
 
 @pytest.mark.asyncio
 async def test_ignore_unknown_button(adapter):
-    gamepad, received = adapter
+	gamepad, received = adapter
 
-    await gamepad.handle_message({'jonasi': True})
+	await gamepad.handle_message({'jonasi': True})
 
-    assert received == []
+	assert received == []
 
 
 @pytest.mark.asyncio
 async def test_deadzone(adapter):
-    """small negligible inputs should be dropped"""
-    gamepad, received = adapter
+	"""small negligible inputs should be dropped"""
+	gamepad, received = adapter
 
-    await gamepad.handle_message(
-        {
-            'left_x': DEADZONE / 2,
-            'left_y': 0.0,
-            'right_x': 0.0,
-            'right_y': DEADZONE -0.001,
-            'ltrigger': DEADZONE / 1.01,
-            'rtrigger': 0.0,
-        }
-    )
+	await gamepad.handle_message(
+		{
+			'left_x': DEADZONE / 2,
+			'left_y': 0.0,
+			'right_x': 0.0,
+			'right_y': DEADZONE - 0.001,
+			'ltrigger': DEADZONE / 1.01,
+			'rtrigger': 0.0,
+		}
+	)
 
-    assert received == []
+	assert received == []
+
 
 @pytest.mark.asyncio
 async def test_analog_command_emitted(adapter):
-    """big inputs go through"""
-    gamepad, received = adapter
+	"""big inputs go through"""
+	gamepad, received = adapter
 
-    await gamepad.handle_message(
-        {
-            'left_x': 0.5,
-            'left_y': -1.0,
-            'right_x': 0.25,
-            'right_y': 0.75,
-            'ltrigger': 0.1,
-            'rtrigger': 0.0,
-        }
-    )
+	await gamepad.handle_message(
+		{
+			'left_x': 0.5,
+			'left_y': -1.0,
+			'right_x': 0.25,
+			'right_y': 0.75,
+			'ltrigger': 0.1,
+			'rtrigger': 0.0,
+		}
+	)
 
-    assert len(received) == 1
+	assert len(received) == 1
 
-    cmd = received[0]
+	cmd = received[0]
 
-    assert cmd.type is CommandType.ANALOG
+	assert cmd.type is CommandType.ANALOG
 
-    analog = cmd.payload['input']
+	analog = cmd.payload['input']
 
-    assert isinstance(analog, AnalogInput)
-    assert analog.left_x == 0.5
-    assert analog.left_y == -1.0
-    assert analog.right_x == 0.25
-    assert analog.right_y == 0.75
-    assert analog.ltrigger == 0.1
-    assert analog.rtrigger == 0.0
+	assert isinstance(analog, AnalogInput)
+	assert analog.left_x == 0.5
+	assert analog.left_y == -1.0
+	assert analog.right_x == 0.25
+	assert analog.right_y == 0.75
+	assert analog.ltrigger == 0.1
+	assert analog.rtrigger == 0.0
 
 
 @pytest.mark.asyncio
 async def test_deadzone_zeroes_small(adapter):
-    gamepad, received = adapter
+	gamepad, received = adapter
 
-    await gamepad.handle_message(
-        {
-            'left_x': 0.5,
-            'left_y': DEADZONE / 2,
-            'right_x': 0.0,
-            'right_y': 0.0,
-            'ltrigger': DEADZONE / 3,
-            'rtrigger': 0.0,
-        }
-    )
+	await gamepad.handle_message(
+		{
+			'left_x': 0.5,
+			'left_y': DEADZONE / 2,
+			'right_x': 0.0,
+			'right_y': 0.0,
+			'ltrigger': DEADZONE / 3,
+			'rtrigger': 0.0,
+		}
+	)
 
-    analog = received[0].payload['input']
+	analog = received[0].payload['input']
 
-    assert analog.left_x == 0.5
-    assert analog.left_y == 0.0
-    assert analog.ltrigger == 0.0
+	assert analog.left_x == 0.5
+	assert analog.left_y == 0.0
+	assert analog.ltrigger == 0.0
 
 
 @pytest.mark.asyncio
 async def test_non_dict_msg_ignore(adapter):
-    gamepad, received = adapter
+	gamepad, received = adapter
 
-    await gamepad.handle_message("\
+	await gamepad.handle_message(
+		"\
     SHREK\
     Written by William Steig & Ted Elliott SHREK\
     Once upon a time there was a lovely \
@@ -154,18 +156,19 @@ async def test_non_dict_msg_ignore(adapter):
     by a terrible fire-breathing dragon. \
     Many brave knights had attempted to \
     free her from this dreadful prison \
-    ")
+    "
+	)
 
-    assert received == []
+	assert received == []
 
 
 def test_get_bindings():
-    """this is literally just for coverage"""
-    adapter = GamepadAdpater()
+	"""this is literally just for coverage"""
+	adapter = GamepadAdpater()
 
-    bindings = adapter.get_bindings()
+	bindings = adapter.get_bindings()
 
-    assert bindings['a'] == 'TAKEOFF'
-    assert bindings['b'] == 'LAND'
-    assert bindings['x'] == 'HOVER'
-    assert bindings['y'] == 'EMERGENCY_STOP'
+	assert bindings['a'] == 'TAKEOFF'
+	assert bindings['b'] == 'LAND'
+	assert bindings['x'] == 'HOVER'
+	assert bindings['y'] == 'EMERGENCY_STOP'
