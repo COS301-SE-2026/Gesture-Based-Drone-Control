@@ -111,15 +111,36 @@ class GamepadAdpater(InputAdapter):
         logger.info('GamepadAdapter: ready and waiting for WS data')
         
     def handle_message(self, message: dict[str, Any]) -> None:
-        ...
+        """
+        Process a single state snapshot from the browser
+        
+        Called from the relevant WS route for every incoming JSON message.
+        Both analog and digital inputs are delegated from here
+        """
+        if not isinstance(message, dict):
+            logger.warning('GamepadAdapter: received non-dict message: %r', message)
+            return 
+
+        self._process_analog(message)
+        self._process_digital(message)
 
     # handle the analog and digital inputs separately
     
     def _process_analog(self, msg: dict[str, Any]) -> None:
-        ...
+        """
+        Read the stick and trigger values, apply deadzone normalization,
+        and emit an ANALOG command if any value exceeds the threshold
+        """
         
     def _process_digital(self, msg: dict[str, Any]) -> None:
-        ...
+        """
+        Read all mapped digital buttons and emit a discrete Command for each one.
+        
+        Works about the same as any other digital input already implemented
+        """
         
     def get_bindings(self) -> dict[str, str]:
+        """
+        Human readable summary of button bindings.
+        """
         return {button: cmd.name for button, cmd in BUTTON_MAP.items()}
