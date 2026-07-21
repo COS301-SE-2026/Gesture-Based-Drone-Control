@@ -4,7 +4,6 @@ import { getWsUrl } from "../lib/api"
 const BASE_RECONNECT_DELAY_MS = 1000
 const MAX_RECONNECT_DELAY_MS = 10000
 
-
 /**
  * opens a websocket to /drone/ws/telemetry and keeps it alive w reconnect and backoff.
  * it exposes the latest telemetry frame

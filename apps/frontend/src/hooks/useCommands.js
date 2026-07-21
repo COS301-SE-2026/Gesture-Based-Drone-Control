@@ -11,8 +11,6 @@ const MAX_RECONNECT_DELAY_MS = 10000
  * connection status and the last resp/err received back from the backend
  */
 
-
-
 export function useCommands(wsUrl = getWsUrl("/api/drone/ws/commands")) {
   const [status, setStatus] = useState("connecting")
   //connecting | open | closed | error
