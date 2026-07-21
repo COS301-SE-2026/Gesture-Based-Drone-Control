@@ -110,7 +110,7 @@ class GamepadAdpater(InputAdapter):
         """
         logger.info('GamepadAdapter: ready and waiting for WS data')
         
-    def handle_message(self, message: dict[str, Any]) -> None:
+    async def handle_message(self, message: dict[str, Any]) -> None:
         """
         Process a single state snapshot from the browser
         
