@@ -54,4 +54,63 @@ export function useKeyboardControl(enabled){
             )
         }
     },[enabled])
+
+    useEffect(() => {
+        if (!enabled) 
+        {
+            return
+        }
+
+        let cancelled = false
+
+        const connectSocket = () => {
+            const ws = new WebSocket(`${WS_BASE_URL}/input/ws/keyboard`)
+            wsRef.current = ws
+
+            ws.onopen = () => setConnected (true)
+            ws.onclose = () => {
+                setConnected(false)
+                if(!camcelled){
+                    reconnectTimer.current = setTimeout(connectSocket,RECONNECT_DELAY_MS)
+                }
+            }
+            ws.onerror = () => ws.close()
+        }
+        connectSocket()
+
+        return() => {
+            cancelled = trueclearTimeout(reconnectTimer.current)
+            wsRef.current?.close()
+            wsRef.current=null
+            setConnected(false)
+        }
+    },[enabled])
+
+    useEffect(() =>  {
+        if(!enabled)
+        {
+            return
+        }
+
+        const handleKeyDown = (e) => {
+            if (e.repeat)
+            {
+                return
+            }
+            send({key:e.key, event:"keydown"})
+        }
+        const handleKeyUp = (e) => {
+            send({key: e.key,event:"keyup"})
+        }
+
+        window.addEventListener("keydown", handleKeyDown)
+        window.addEventListener("keyup", handleKeyUp)
+
+        return () => {
+            window.removeEventListener("keydown",handleKeyDown)
+            window.removeEventListener("keyup",handleKeyUp)
+        }
+    },[enabled,send])
+
+    return {connected}
 }
