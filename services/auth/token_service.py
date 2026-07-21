@@ -56,7 +56,7 @@ class TokenService:
 		except InvalidIssuerError as exc:
 			raise TokenError('Invalid Token Issuer') from exc
 		except InvalidTokenError as exc:
-			raise TokenError('Invalide access token') from exc
+			raise TokenError('Invalid Access Token') from exc
 
 		try:
 			user_id = uuid.UUID(payload['sub'])
