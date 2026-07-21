@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from services.commands.command import CommandType
+from services.commands.command import CommandType, AnalogInput
 from services.drone_control.adapters.drone_adapter import TelemetryData
 from services.drone_control.adapters.project_airsim_adapter import (
 	DEFAULT_ROTATE_DEG,
@@ -422,3 +422,39 @@ def test_find_sim_config_failure():
 
 
 # analog movement
+
+@pytest.mark.asyncio
+async def test_analog_left_stick_translation():
+	adapter, mock_drone, _ = make_connected_adapter()
+	input = AnalogInput(
+		left_x=0.5,
+		left_y=-0.75,
+		right_x=0.0,
+		right_y=0.0,
+		ltrigger=0.0,
+		rtrigger=0.0,
+	)
+
+	await adapter.analog(input)
+	mock_drone.move_by_velocity_body_frame_async.assert_awaited_once()
+	args = mock_drone.move_by_velocity_body_frame_async.await_args.args
+
+	assert args[0] == 0.75 * DEFAULT_SPEED_MS
+	assert args[1] == 0.5 * DEFAULT_SPEED_MS
+	assert args[2] == 0
+
+@pytest.mark.asyncio
+async def test_analog_vertical_uses_right_stick_when_stronger():
+	""">= should make the stick take precedence"""
+	adapter, mock_drone, _ = make_connected_adapter()
+
+	input = AnalogInput(
+		right_y=-0.8,
+		ltrigger=0.3,
+		rtrigger=0.0,
+	)
+
+	await adapter.analog(input)
+	args = mock_drone.move_by_velocity_body_frame_async.await_args.args
+
+	assert args[2] == 0.8 * DEFAULT_SPEED_MS
