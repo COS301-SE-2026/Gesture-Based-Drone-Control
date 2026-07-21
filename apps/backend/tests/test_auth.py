@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 from apps.backend.app.api.auth import auth_manager, router
 from services.auth.auth_manager import (
+	InvalidCredentialsError,
 	SessionTokens,
 )
 
@@ -48,3 +49,18 @@ class TestLoginEndpoint:
 			password='Password123!',
 			db=mock_authenticate.await_args.kwargs['db'],
 		)
+
+	@patch('apps.backend.app.api.auth.set_auth_cookies')
+	@patch.object(auth_manager, 'authenticate', new_callable=AsyncMock)
+	def test_login_invalid_credentials(self, mock_authenticate, mock_set_auth_cookies):
+		mock_authenticate.side_effect = InvalidCredentialsError()
+		response = client.post(
+			'/auth/login',
+			json={
+				'email': 'test@gmail.com',
+				'password': 'WrongPassword123!',  # NOSONAR
+			},
+		)
+		assert response.status_code == 401
+		assert response.json() == {'detail': 'Invalid email or password'}
+		mock_set_auth_cookies.assert_not_called()

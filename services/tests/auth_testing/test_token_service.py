@@ -1,3 +1,4 @@
+import hashlib
 import uuid
 from datetime import datetime, timedelta, timezone
 
@@ -161,3 +162,35 @@ class TestValidateAccessToken:
 		)
 		with pytest.raises(TokenError, match='Access token missing valid subject claim'):
 			token_service.validate_access_token(token)
+
+
+class TestRefreshToken:
+	def test_returns_plaintext_and_hash(self, token_service):
+		plaintext, token_hash = token_service.create_refresh_token()
+
+		assert isinstance(plaintext, str)
+		assert isinstance(token_hash, str)
+		assert token_hash == hashlib.sha256(plaintext.encode('utf-8')).hexdigest()
+
+	def test_generates_unique_tokens(self, token_service):
+		plaintext, token_hash = token_service.create_refresh_token()
+		plaintext2, token_hash2 = token_service.create_refresh_token()
+
+		assert plaintext != plaintext2
+		assert token_hash != token_hash2
+
+
+class TestHashRefreshToken:
+	def test_hash_matches_sha256(self):
+		token = 'my-refresh-token'
+		expected = hashlib.sha256(token.encode('utf-8')).hexdigest()
+		assert TokenService.hash_refresh_token(token) == expected
+
+	def test_hash_deterministic(self):
+		token = 'my-refresh-token'
+		assert TokenService.hash_refresh_token(token) == TokenService.hash_refresh_token(token)
+
+	def test_diff_token_produce_diff_hash(self):
+		assert TokenService.hash_refresh_token('token1') != TokenService.hash_refresh_token(
+			'token2'
+		)

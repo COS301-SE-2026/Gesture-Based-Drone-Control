@@ -8,7 +8,7 @@ from services.database_manager.database import Base
 
 
 class RefreshToken(Base):
-	__tablename__ = 'refresj_tokens'
+	__tablename__ = 'refresh_tokens'
 
 	id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
 	user_id: Mapped[uuid.UUID] = mapped_column(
