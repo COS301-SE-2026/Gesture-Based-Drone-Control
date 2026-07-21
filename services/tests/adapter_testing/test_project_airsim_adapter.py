@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from services.commands.command import CommandType, AnalogInput
+from services.commands.command import AnalogInput, CommandType
 from services.drone_control.adapters.drone_adapter import TelemetryData
 from services.drone_control.adapters.project_airsim_adapter import (
 	DEFAULT_ROTATE_DEG,
@@ -423,6 +423,7 @@ def test_find_sim_config_failure():
 
 # analog movement
 
+
 @pytest.mark.asyncio
 async def test_analog_left_stick_translation():
 	adapter, mock_drone, _ = make_connected_adapter()
@@ -442,6 +443,7 @@ async def test_analog_left_stick_translation():
 	assert args[0] == 0.75 * DEFAULT_SPEED_MS
 	assert args[1] == 0.5 * DEFAULT_SPEED_MS
 	assert args[2] == 0
+
 
 @pytest.mark.asyncio
 async def test_analog_vertical_uses_right_stick_when_stronger():
