@@ -135,7 +135,7 @@ class DummyDroneAdapter(DroneAdapter):
 		vx = -input.left_y * DEFAULT_SPEED_MS
 		vy = input.left_x * DEFAULT_SPEED_MS
 
-		stickz = -input.right_y
+		stickz = input.right_y
 		triggerz = input.ltrigger - input.rtrigger
 
 		vert = stickz if abs(stickz) >= abs(triggerz) else triggerz
