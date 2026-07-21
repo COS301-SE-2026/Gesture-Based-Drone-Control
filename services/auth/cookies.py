@@ -32,5 +32,5 @@ def set_auth_cookies(
 
 def clear_auth_cookies(response: Response) -> None:
 	settings = AuthSettings()
-	response.delete_cookies(settings.access_cookie_name, path='/', domain=settings.cookie_domain)
-	response.delete_cookies(settings.refresh_cookie_name, path='/', domain=settings.cookie_domain)
+	response.delete_cookie(settings.access_cookie_name, path='/', domain=settings.cookie_domain)
+	response.delete_cookie(settings.refresh_cookie_name, path='/', domain=settings.cookie_domain)

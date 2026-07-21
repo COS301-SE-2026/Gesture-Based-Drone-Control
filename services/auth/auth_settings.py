@@ -18,7 +18,7 @@ class AuthSettings(BaseSettings):
 	cookie_domain: str | None = None
 	cookie_secure: bool = False
 	cookie_samesite: str = 'lax'
-	access_cookie_name: str = 'access_token'
+	access_cookie_name: str = 'access_cookie'
 	refresh_cookie_name: str = 'refresh_cookie'
 	bcrypt_rounds: int = 13
 

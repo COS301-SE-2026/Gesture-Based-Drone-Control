@@ -273,7 +273,6 @@ class TestRefresh:
 		'services.auth.auth_manager.refresh_token_manager.get_valid_by_hash', new_callable=AsyncMock
 	)
 	@patch('services.auth.auth_manager.token_service.hash_refresh_token')
-
 	async def test_refresh_invalid_token(
 		self,
 		mock_hash_refresh,
@@ -291,7 +290,6 @@ class TestRefresh:
 		'services.auth.auth_manager.refresh_token_manager.get_valid_by_hash', new_callable=AsyncMock
 	)
 	@patch('services.auth.auth_manager.token_service.hash_refresh_token')
-
 	async def test_refresh_revoked_token(
 		self,
 		mock_hash_refresh,
@@ -313,7 +311,6 @@ class TestRefresh:
 		'services.auth.auth_manager.refresh_token_manager.get_valid_by_hash', new_callable=AsyncMock
 	)
 	@patch('services.auth.auth_manager.token_service.hash_refresh_token')
-	
 	async def test_refresh_expired_token(
 		self,
 		mock_hash_refresh,
