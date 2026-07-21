@@ -11,46 +11,124 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"
+import { useTelemetry } from "@/hooks/useTelemetry"
+import { useEffect, useRef, useState } from "react"
+
+// const Analytics = () => {
+//   // Mock flight data for charts
+//   const flightTelemetryData = [
+//     { time: "0min", value: 10 },
+//     { time: "5min", value: 30 },
+//     { time: "10min", value: 50 },
+//     { time: "15min", value: 45 },
+//     { time: "20min", value: 35 },
+//     { time: "21min", value: 0 },
+//   ]
+
+//   const batteryHealthData = [
+//     { time: "0min", health: 100 },
+//     { time: "5min", health: 92 },
+//     { time: "10min", health: 85 },
+//     { time: "15min", health: 75 },
+//     { time: "20min", health: 65 },
+//     { time: "21min", health: 60 },
+//   ]
+
+//   const performanceData = [
+//     { flight: "Flight 1", duration: 21 },
+//     { flight: "Flight 2", duration: 18 },
+//     { flight: "Flight 3", duration: 25 },
+//     { flight: "Flight 4", duration: 19 },
+//     { flight: "Flight 5", duration: 22 },
+//     { flight: "Flight 6", duration: 20 },
+//     { flight: "Flight 7", duration: 23 },
+//     { flight: "Flight 8", duration: 21 },
+//   ]
+
+//   const metrics = {
+//     flightTime: 21,
+//     avgSpeed: 8.2,
+//     maxAltitude: 53,
+//     totalDistance: 3.5,
+//     avgFlightDuration: 7,
+//     totalFlights: 14,
+//   }
+
+const MAX_LIVE_POINTS = 60 //might change this depending
+const MS_TO_KMH = 3.6
+const API_BASE = "http://localhost:3001/api/analytics"
+
+function fmt(value, digits = 0) {
+  return typeof value === "number" ? value.toFixed(digits) : "--"
+}
 
 const Analytics = () => {
-  // Mock flight data for charts
-  const flightTelemetryData = [
-    { time: "0min", value: 10 },
-    { time: "5min", value: 30 },
-    { time: "10min", value: 50 },
-    { time: "15min", value: 45 },
-    { time: "20min", value: 35 },
-    { time: "21min", value: 0 },
-  ]
+  const { telemetry } = useTelemetry()
 
-  const batteryHealthData = [
-    { time: "0min", health: 100 },
-    { time: "5min", health: 92 },
-    { time: "10min", health: 85 },
-    { time: "15min", health: 75 },
-    { time: "20min", health: 65 },
-    { time: "21min", health: 60 },
-  ]
+  //live, in sess charts, built client side from websocket
+  const [flightTelemetryData, setFlightTelemtryData] = useState([])
+  const [batteryHealthData, setBatteryHealthData] = useState([])
+  const startTimeRef = useRef(Date.now())
+  const maxAltitudeRef = useRef(0)
 
-  const performanceData = [
-    { flight: "Flight 1", duration: 21 },
-    { flight: "Flight 2", duration: 18 },
-    { flight: "Flight 3", duration: 25 },
-    { flight: "Flight 4", duration: 19 },
-    { flight: "Flight 5", duration: 22 },
-    { flight: "Flight 6", duration: 20 },
-    { flight: "Flight 7", duration: 23 },
-    { flight: "Flight 8", duration: 21 },
-  ]
+  useEffect(() => {
+    if (!telemetry) return
 
-  const metrics = {
-    flightTime: 21,
-    avgSpeed: 8.2,
-    maxAltitude: 53,
-    totalDistance: 3.5,
-    avgFlightDuration: 7,
-    totalFlights: 14,
-  }
+    const elapsedSec = (Date.now() - startTimeRef.current) / 1000
+    const label = `${elapsedSec.toFixed(0)}s`
+
+    if (typeof telemetry.altitude_m === "number") {
+      maxAltitudeRef.current = Math.max(maxAltitudeRef.current, telemetry.altitude_m)
+    } 
+
+    setFlightTelemtryData((prev) => {
+      const next = [...prev, { time: label, health: telemetry.battery_pct ?? 0}]
+      return next.length > MAX_LIVE_POINTS ? next.slice(-MAX_LIVE_POINTS) : next
+    })
+  }, [telemetry])
+
+  //history data from db via backend
+  const [flights, setFlights] = useState([])
+  const [summary, setSummary] = useState(null)
+  const [loadError, setLoadError] = useState("")
+
+  useEffect(() => {
+    let cancelled = false
+
+    const fetchData = async () => {
+      try {
+        const [flightsRes, summaryRes] = await Promise.all([
+          fetch(`${API_BASE}/flights?limit=7`),
+          fetch(`${API_BASE}/summary`)
+        ])
+
+        if (!flightsRes.ok || !summaryRes.ok) {
+          throw new Error("analytics endpoints returned a non 200 response :(")
+        }
+
+        const flightsData = await flightsRes.json()
+        const summaryData = await summaryRes.json()
+
+        if (!cancelled) {
+          setFlights(flightsData)
+          setSummary(summaryData)
+          setLoadError("")
+        }
+      }
+      catch (err) {
+        console.error("analytics: failed to fetch flight history", err)
+        if (!cancelled) setLoadError("could not load flight history from the server")
+      }
+    }
+
+    fetchData()
+    const intv = setInterval(fetchData, 5000)
+    return () => {
+      cancelled = true
+      clearInterval(intv)
+    }
+  }, [])
+}
 
   return (
     <div className="space-y-6">
