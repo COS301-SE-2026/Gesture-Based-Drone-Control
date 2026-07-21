@@ -4,12 +4,12 @@
 All input routes, REST and WebSockets
 
 REST:
-    POST input/connect
-    POST input/disconnect
-    GET input/status - return a snapshot of adapter state
+	POST input/connect
+	POST input/disconnect
+	GET input/status - return a snapshot of adapter state
 
 WebSockets:
-    inputt/ws/keyboard - keyboard input listener
+	inputt/ws/keyboard - keyboard input listener
 
 """
 
@@ -51,6 +51,11 @@ def _build_input_adapter(body: ConnectInputRequest) -> InputAdapter:
 		from services.input.sources.keyboard_adapter import KeyboardAdapter
 
 		return KeyboardAdapter()
+
+	elif body.adapter == 'gamepad':
+		from services.input.sources.gamepad_adapter import GamepadAdpater
+
+		return GamepadAdpater()
 
 	# add more as they get developed here
 
@@ -176,3 +181,39 @@ async def keyboard(websocket: WebSocket, state: Annotated[AppState, Depends(get_
 		logger.info('input/ws/keyboard: client disconnected')
 	except Exception as ex:
 		logger.exception(f'input/ws/keyboard: error caught: {ex}')
+
+@router.websocket('/ws/gamepad')
+async def gamepad(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
+	'''
+	Receive snapshots of the controller state and forward them to the GamepadAdapter
+	Should happen about once per frame, so 60fps or so. 
+	
+	Format: 
+		{
+			"left_x": 0.73, "left_y": -0.41,
+			"right_x": 0.0, "right_y": 0.0,
+			"ltrigger": 0.0, "rtrigger": 0.0,
+			"a": false, "b": false, "x": false, "y": false,
+			"lb": false, "rb": false,
+			"up": false, "down": false, "left": false, "right": false,
+			"start": false, "back": false, "lclick": false, "rclick": false
+		}
+	The browser should apply some cleaning to the data before sending.
+	Messages are silently dropped if the adapter type is not 'gamepad'
+	so we can keep the connection open even when an adapter is switched.
+	'''
+	await websocket.accept()
+	logger.info('input/ws/gamepad: client connected')
+	try:
+		while True:
+			data = await websocket.receive_json()
+
+			if state.input is None or state.input_name != 'gamepad':
+				logger.debug('input/ws/gamepad: no gamepad adapter connected, ignoring message')
+				continue
+			# assume valid input... add better handling later
+			await state.input.handle_message(data)
+	except WebSocketDisconnect:
+		logger.info('input/ws/gamepad: client disconnected')
+	except Exception as ex:
+		logger.exception(f'input/ws/gamepad: error caught: {ex}')
