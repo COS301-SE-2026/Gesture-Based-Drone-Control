@@ -44,7 +44,7 @@ from app.cv.calibration import (
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix='/api/calibration', tags=['calibration'])
+router = APIRouter(prefix='/calibration', tags=['calibration'])
 
 # single shared manager for the whole app, same pattern as stream in
 # gestures.py, calibration is app-wide state (one camera, one user)
@@ -67,7 +67,7 @@ class CalibrationStatusOut(BaseModel):
 		default=None, description='Sequence progress, null unless a session is in progress'
 	)
 	sequence: list[str] = Field(
-		default=list(CALIBRATION_SEQUENCE),
+		default_factory=lambda: list(CALIBRATION_SEQUENCE),
 		description='Full ordered list of gestures the calibration run covers',
 	)
 	last_frame: CalibrationFramePayload | None = Field(
@@ -199,13 +199,13 @@ async def calibration_websocket(websocket: WebSocket) -> None:
 
 	await websocket.accept()
 	session = manager.start()
-	queue = await stream.subscribe()
-	logger.info(
-		'calibration client connected, run started (target=%s)',
-		session.target_gesture,
-	)
-
+	queue = None
 	try:
+		queue = await stream.subscribe()
+		logger.info(
+			'calibration client connected, run started (traget=%s)',
+			session.target_gesture,
+		)
 		while True:
 			frame = await queue.get()
 			payload = manager.process_frame(frame)
@@ -215,5 +215,8 @@ async def calibration_websocket(websocket: WebSocket) -> None:
 				break
 	except WebSocketDisconnect:
 		logger.info('calibration client disconnected (status=%s)', manager.status.value)
+	except Exception:
+		logger.exception('calibration stream failed')
 	finally:
-		await stream.unsubscribe(queue)
+		if queue is not None:
+			await stream.unsubscribe(queue)
