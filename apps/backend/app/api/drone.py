@@ -24,10 +24,13 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.backend.app.dependencies import get_state, get_ws_state
 from apps.backend.app.state import AppState
 from services.commands.command import Command, CommandType
+from services.database_manager.database import AsyncSessionLocal, get_db
+from services.database_manager.managers.flight_manager import flight_manager
 from services.drone_control.adapters.drone_adapter import DroneAdapter
 
 logger = logging.getLogger(__name__)
@@ -91,7 +94,11 @@ async def health():
 
 
 @router.post('/connect', response_model=ConnectResponse)
-async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
+async def connect(
+	body: ConnectRequest,
+	state: Annotated[AppState, Depends(get_state)],
+	db: Annotated[AsyncSession, Depends(get_db)],
+):  # NOSONAR
 	# fuckass sonarqube would break this... dependencies are supposed to be injected like this
 	"""
 	connect to a drone adapter.
@@ -121,6 +128,13 @@ async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_s
 	state.adapter = adapter
 	state.adapter_name = body.adapter
 
+	# start flight record
+	drone_row = await flight_manager.get_or_create_drone(
+		db, display_name=body.adapter, is_simulated=(body.adapter != 'hardware')
+	)
+	flight = await flight_manager.start_flight(db, drone_id=drone_row.id)
+	state.current_flight_id = flight.id
+
 	logger.info('/drone/connect: connected via %s', state.adapter)
 	return ConnectResponse(
 		connected=True,
@@ -135,7 +149,9 @@ class DisconnectResponse(BaseModel):
 
 
 @router.post('/disconnect', response_model=DisconnectResponse)
-async def disconnect(state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
+async def disconnect(
+	state: Annotated[AppState, Depends(get_state)], db: Annotated[AsyncSession, Depends(get_db)]
+):  # NOSONAR
 	"""
 	Simply disconnects from the connected drone if there is one connected.
 	Returns a false for failure cases
@@ -145,6 +161,8 @@ async def disconnect(state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
 
 	# there is an adapter connected, simply call disconnect and see if it works
 	name = state.adapter_name
+	if state.current_flight_id is not None:
+		await flight_manager.end_flight(db, state.current_flight_id)
 	await state.adapter.disconnect()
 	state.reset()
 	return DisconnectResponse(success=True, message=f'{name} adapter successfully disconnected')
@@ -178,16 +196,40 @@ async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get
 	If no adapter is connected, the socket stays open and silently waits
 		- this is to allow telemetry listening to occur immediately, without reconnecting
 	data will flow once /drone/connect is called
+
+	every 10th tick (probably +- a second) also persists a telemtry row to the db
+	for the currently active flight, so analytics has histroy to chart
 	"""
 	await websocket.accept()
 	state.clients.add(websocket)
 	logger.info('/drone/ws/telemetry: client connected (with %d total) ', len(state.clients))
+	tick = 0
 	try:
 		while True:
 			if state.adapter is not None:
 				try:
 					telemetry = await state.adapter.get_telemetry()
 					await websocket.send_json(asdict(telemetry))  # easy convert to json
+
+					tick += 1
+					if tick % 10 == 0 and state.current_flight_id is not None:
+						try:
+							async with AsyncSessionLocal() as db:
+								await flight_manager.record_telemetry(
+									db,
+									flight_id=state.current_flight_id,
+									displacement_x=telemetry.x_displacement,
+									displacement_y=telemetry.y_displacement,
+									altitude=telemetry.altitude_m,
+									battery_level=telemetry.battery_pct,
+									speed=telemetry.speed_ms,
+								)
+						except Exception as ex:
+							logger.exception(
+								logger.exception(
+									'/drone/ws/telemetry: error recording telemetry row - %s', ex
+								)
+							)
 				except Exception as ex:
 					logger.exception('/drone/ws/telemetry: error getting telemetry - %s', ex)
 			await asyncio.sleep(0.1)  # adjust this polling rate as needed

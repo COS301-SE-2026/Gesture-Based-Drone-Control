@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import uuid
 from dataclasses import dataclass, field
 
 from services.drone_control.adapters.drone_adapter import DroneAdapter
@@ -39,6 +40,9 @@ class AppState:
 	# handler for telemetry streaming
 	telemetry_task: asyncio.Task | None = None
 
+	# id of the flight_summary row for the curr connected session
+	current_flight_id: uuid.UUID | None = None
+
 	@property
 	def is_connected(self) -> bool:
 		return self.adapter is not None
@@ -53,6 +57,7 @@ class AppState:
 		"""
 		self.adapter = None
 		self.adapter_name = None
+		self.current_flight_id = None
 		if self.telemetry_task and not self.telemetry_task.done():
 			self.telemetry_task.cancel()
 		self.telemetry_task = None
