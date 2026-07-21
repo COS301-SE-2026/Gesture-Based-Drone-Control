@@ -292,3 +292,79 @@ def test_ws_keyboard_multiple_messages():
 		ws.send_json({'key': ' ', 'event': 'keydown'})
 
 	assert state.input.handle_message.await_count == 3
+
+# WS /input/ws/gamepad
+# pretty much copied over from keyboard above
+
+# WS /input/ws/gamepad
+
+
+def test_gamepad_forwards_msg():
+	"""
+	A valid controller snapshot should be forwarded to the GamepadAdapter.
+	"""
+	state = connected_input_state("gamepad")
+	client = TestClient(make_app(state))
+
+	msg = {
+		"left_x": 0.4,
+		"left_y": -0.8,
+		"right_x": 0.2,
+		"right_y": 0.0,
+		"ltrigger": 0.0,
+		"rtrigger": 0.0,
+		"a": False,
+		"b": False,
+	}
+
+	with client.websocket_connect("/input/ws/gamepad") as ws:
+		ws.send_json(msg)
+
+	state.input.handle_message.assert_awaited_once_with(msg)
+
+
+def test_gamepad_no_crash():
+	"""
+	The websocket should remain alive even if no gamepad adapter
+	is currently connected.
+	"""
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	with client.websocket_connect("/input/ws/gamepad") as ws:
+		ws.send_json(
+			{
+				"left_x": 0.0,
+				"left_y": 0.0,
+				"right_x": 0.0,
+				"right_y": 0.0,
+			}
+		)
+
+
+def test_ws_gamepad_multiple_messages():
+	"""
+	Multiple controller snapshots should all be forwarded.
+	"""
+	state = connected_input_state("gamepad")
+	client = TestClient(make_app(state))
+
+	with client.websocket_connect("/input/ws/gamepad") as ws:
+		ws.send_json({"left_x": 0.0, "left_y": -1.0})
+		ws.send_json({"left_x": 0.6, "right_x": 0.2})
+		ws.send_json({"a": True})
+
+	assert state.input.handle_message.await_count == 3
+
+
+def test_ws_gamepad_wrong_adapter():
+	"""
+	If another adapter is connected, gamepad messages should be ignored
+	"""
+	state = connected_input_state("keyboard")
+	client = TestClient(make_app(state))
+
+	with client.websocket_connect("/input/ws/gamepad") as ws:
+		ws.send_json({"left_x": 1.0})
+
+	state.input.handle_message.assert_not_awaited()
