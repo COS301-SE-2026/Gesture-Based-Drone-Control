@@ -131,6 +131,38 @@ class GamepadAdpater(InputAdapter):
         Read the stick and trigger values, apply deadzone normalization,
         and emit an ANALOG command if any value exceeds the threshold
         """
+        def clean_inputs(key: str) -> float:
+            """helper to apply deadzone normalization"""
+            k = float(msg.get(key, 0.0))
+            return k if abs(k) >= DEADZONE else 0.0
+        
+        analog = AnalogInput(
+            left_x = clean_inputs('left_x')
+            left_y = clean_inputs('left_y')
+            right_x = clean_inputs('right_x')
+            right_y = clean_inputs('right_y')
+            ltrigger = clean_inputs('ltrigger')
+            rtrigger = clean_inputs('rtrigger')
+        )
+        
+        # only emit if at least one axis is doing anything, else
+        # needless spamming
+        any_active = any([
+            analog.left_x, analog.left_y,
+            analog.right_x, analog.right_y,
+            analog.ltrigger, analog.rtrigger,
+        ])
+        
+        if not any_active:
+            logger.debug('GamepadAdapter: Dropping analog input with 0 magnitude.')
+            return
+        
+        logger.debug('GamepadAdapter: executing analog command %r', analog)
+        self._emit(Command(
+            CommandType.ANALOG,
+            payload = {'input': analog},
+            source = 'gamepad'
+        ))
         
     def _process_digital(self, msg: dict[str, Any]) -> None:
         """
