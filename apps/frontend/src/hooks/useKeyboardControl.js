@@ -1,4 +1,4 @@
-import {useEffect, useRef,useState,useCallback} from "resct"
+import {useEffect, useRef,useState,useCallback} from "react"
 import{API_BASE_URL} from "../lib/api"
 
 const RECONNECT_DELAY_MS =2000
@@ -28,7 +28,7 @@ export function useKeyboardControl(enabled){
         const connectAdapter = async() => {
             try
             {
-                await fetch(`${API_BASE_URL}/input/connect`,{
+                await fetch(`${API_BASE_URL}/api/input/connect`,{
                     method:"POST",
                     headers: {"Content-Type" : "application/json"},
                     body: JSON.stringify({adapter: "keyboard"}),
@@ -49,7 +49,7 @@ export function useKeyboardControl(enabled){
                 return
             }
 
-            fetch(`${API_BASE_URL}/input/disconnect`,{method:"POST"}).catch(
+            fetch(`${API_BASE_URL}/api/input/disconnect`,{method:"POST"}).catch(
             (err)=> console.error("useKeyboardControl: failed to connevct adapter", err)
             )
         }
@@ -64,13 +64,13 @@ export function useKeyboardControl(enabled){
         let cancelled = false
 
         const connectSocket = () => {
-            const ws = new WebSocket(`${WS_BASE_URL}/input/ws/keyboard`)
+            const ws = new WebSocket(`${WS_BASE_URL}/api/input/ws/keyboard`)
             wsRef.current = ws
 
             ws.onopen = () => setConnected (true)
             ws.onclose = () => {
                 setConnected(false)
-                if(!camcelled){
+                if(!cancelled){
                     reconnectTimer.current = setTimeout(connectSocket,RECONNECT_DELAY_MS)
                 }
             }
@@ -79,7 +79,8 @@ export function useKeyboardControl(enabled){
         connectSocket()
 
         return() => {
-            cancelled = trueclearTimeout(reconnectTimer.current)
+            cancelled = true
+            Timeout(reconnectTimer.current)
             wsRef.current?.close()
             wsRef.current=null
             setConnected(false)
