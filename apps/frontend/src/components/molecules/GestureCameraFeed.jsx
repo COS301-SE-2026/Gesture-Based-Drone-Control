@@ -164,7 +164,7 @@ function drawLabel(ctx, text, x, y, { clamp = false } = {}) {
 
   if (clamp) {
     bx = Math.min(Math.max(bx, 0), ctx.canvas.width - boxWidth)
-    by = Math.min(Math.max(by, 0), (ctx.canvas.height - boxHeight))
+    by = Math.min(Math.max(by, 0), ctx.canvas.height - boxHeight)
   }
 
   ctx.fillStyle = LABEL_BG

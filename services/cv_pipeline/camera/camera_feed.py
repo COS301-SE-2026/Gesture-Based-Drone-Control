@@ -70,7 +70,13 @@ class CameraFeed:
 				raise ValueError('CameraConfig.video_path must be set when source=FILE.')
 			self._cap = cv2.VideoCapture(self._config.video_path)
 		else:
-			self._cap = cv2.VideoCapture(self._config.device_index)
+			import sys
+
+			if sys.platform == 'win32':
+				# damn windows MSMF rubbish!!!
+				self._cap = cv2.VideoCapture(self._config.device_index, cv2.CAP_DSHOW)
+			else:
+				self._cap = cv2.VideoCapture(self._config.device_index)
 
 		if not self._cap.isOpened():
 			raise RuntimeError('Failed to open camera')
@@ -121,9 +127,13 @@ class CameraFeed:
 		ret, raw = self._cap.read()
 
 		if not ret:
-			logger.warning('Cam returned no frame')
+			# rate limiting
+			self._read_failures = getattr(self, '_read_failures', 0) + 1
+			if self._read_failures == 1 or self._read_failures % 100 == 0:
+				logger.warning('Cam returned no frame (x%d)', self._read_failures)
 			return None
 
+		self._read_failures = 0
 		return self._preprocess(raw)
 
 	# preprocessing
