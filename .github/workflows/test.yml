@@ -24,9 +24,10 @@ jobs:
         with: 
           python-version: 3.11
 
-      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
+      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 
         with:
-          enable-cache: true 
+          repo-token: ${{secrets.GITHUB_TOKEN}}
+
 
 
       - name: Install Dependencies
@@ -118,9 +119,9 @@ jobs:
         with: 
           python-version: 3.11
 
-      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
+      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 
         with:
-          enable-cache: true 
+          repo-token: ${{secrets.GITHUB_TOKEN}}
 
       - name: Install Dependencies
         run: task install
@@ -170,10 +171,10 @@ jobs:
         with: 
           python-version: 3.11
 
-      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
+      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 
         with:
-          enable-cache: true 
-
+          repo-token: ${{secrets.GITHUB_TOKEN}}
+      
       - name: Install Dependencies
         run: task install
 
