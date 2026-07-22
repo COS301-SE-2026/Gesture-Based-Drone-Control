@@ -9,6 +9,7 @@ from services.auth.auth_manager import (
 	InvalidCredentialsError,
 	SessionTokens,
 	EmailAlreadyRegisteredError,
+	InvalidRefreshTokenError,
 )
 
 app = FastAPI()
@@ -110,5 +111,43 @@ class TestSignupEndpoint:
 		assert response.status_code == 409
 		assert response.json() == {
 			"detail" : "A user with this email already exists"
+		}
+		mock_set_auth_cookies.assert_not_called()
+
+class TestRefreshEndpoint:
+	@patch("apps.backend.app.api.auth.set_auth_cookies")
+	@patch.object(auth_manager, "refresh", new_callable=AsyncMock)
+	def test_refresh_success(self, mock_refresh, mock_set_auth_cookies):
+		mock_refresh.return_value = sample_tokens()
+
+		response = client.post(
+			"/auth/refresh",
+			json = {
+				"refresh_token": "refresh-token"
+			}
+		)
+		assert response.status_code == 201
+		assert response.json() == {
+			"message": "Token Refresh Successful"
+		}
+		mock_refresh.assert_awaited_once_with(
+			db=ANY,
+			refresh_token = "refresh-token"
+		)
+
+	@patch("apps.backend.app.api.auth.set_auth_cookies")
+	@patch.object(auth_manager, "refresh", new_callable=AsyncMock)
+	def test_refresh_invalid_token(self, mock_refresh, mock_set_auth_cookies):
+		mock_refresh.side_effect = InvalidRefreshTokenError("Invalid token")
+
+		response = client.post(
+			"/auth/refresh",
+			json = {
+				"refresh_token": "invalid-token"
+			}
+		)
+		assert response.status_code == 401
+		assert response.json() == {
+			"detail": "Invalid token"
 		}
 		mock_set_auth_cookies.assert_not_called()
