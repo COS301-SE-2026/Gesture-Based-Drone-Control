@@ -24,7 +24,7 @@ from app.cv.stream import GestureStream
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix='/api/gestures', tags=['gestures'])
+router = APIRouter(prefix='/gestures', tags=['gestures'])
 
 # single shared stream instance for the whole app
 # camera opens lazily on first WS connection and closes when the last one disconnects
@@ -63,6 +63,11 @@ async def get_gesture_stream_status() -> GestureStreamStatus:
 	return GestureStreamStatus(running=stream.is_running, connected_clients=stream.client_count)
 
 
+@router.get('/health')
+async def health():
+	return {'status': 'ok'}
+
+
 @router.websocket('/stream')
 async def gesture_websocket(websocket: WebSocket) -> None:
 	"""
@@ -92,13 +97,17 @@ async def gesture_websocket(websocket: WebSocket) -> None:
 	The connection stays open until the client disconnects
 	"""
 	await websocket.accept()
-	queue = await stream.subscribe()
-	logger.info('gesture client connected (total =%d)', stream.client_count)
+	queue = None
 	try:
+		queue = await stream.subscribe()
+		logger.info('gesture client connected (total =%d)', stream.client_count)
 		while True:
 			payload = await queue.get()
 			await websocket.send_json(payload.model_dump())
 	except WebSocketDisconnect:
 		logger.info('gesture client disconnected')
+	except Exception:
+		logger.exception('gesture stream failed')
 	finally:
-		await stream.unsubscribe(queue)
+		if queue is not None:
+			await stream.unsubscribe(queue)

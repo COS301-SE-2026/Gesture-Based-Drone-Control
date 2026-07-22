@@ -14,7 +14,8 @@ import logging
 from typing import Optional
 
 from app.cv.serialization import GestureFramePayload, serialize_event
-from cv_pipeline.processing.pipeline import CvPipeline, PipelineConfig
+
+from services.cv_pipeline.processing.pipeline import CvPipeline, PipelineConfig
 
 logger = logging.getLogger(__name__)
 
@@ -44,9 +45,9 @@ class GestureStream:
 		Register a new client queue and ensure the pipeline is running
 		"""
 
+		await self._ensure_started()
 		queue: asyncio.Queue[GestureFramePayload] = asyncio.Queue(maxsize=1)
 		self._clients.add(queue)
-		await self._ensure_started()
 		return queue
 
 	async def unsubscribe(self, queue: 'asyncio.Queue[GestureFramePayload]') -> None:

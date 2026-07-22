@@ -106,7 +106,7 @@ class KeyboardAdapter(InputAdapter):
 		"""
 		logger.info('KeyboardAdapter: ready (waiting for WebSocket messages)')
 
-	def handle_message(self, message: dict[str, Any]) -> None:
+	async def handle_message(self, message: dict[str, Any]) -> None:
 		"""
 		Process a single forwarded key event from the browser.
 

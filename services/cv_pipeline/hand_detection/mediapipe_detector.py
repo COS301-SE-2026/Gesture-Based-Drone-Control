@@ -17,7 +17,7 @@ import mediapipe as mp
 import numpy as np
 
 # camera_feed.py imports -> 1st in chain then this file
-from cv_pipeline.camera.camera_feed import CapturedFrame
+from services.cv_pipeline.camera.camera_feed import CapturedFrame
 
 logger = logging.getLogger(__name__)
 
