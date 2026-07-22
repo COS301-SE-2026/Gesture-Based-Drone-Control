@@ -1,6 +1,6 @@
 // \apps\frontend\src\hooks\useWebSocket.js
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 /**
  * an abstraction allowing us to keep a generic websocket connection
@@ -101,6 +101,36 @@ export function useWebSocket(wsUrl, {onMessage} = {}){
             }, delay); //ugly ahh js
         };
     }, [onMessage]); //ew
+
+    // other stuff extracted from implementations
+
+    // keep latest connect call available for the reconnect timer
+    useEffect(() => {
+        connectRef.current = connect;
+    }, [connect]);
+
+    // if url changes, future reconnects use updated
+    useEffect(() => {
+        wsUrlRef.current = wsUrl;
+    }, [wsUrl]);
+
+    useEffect(() => {
+        isUnmountedRef.current = false;
+
+        clearTimeout(reconnectTimeoutRef.current);
+
+        if (socketRef.current){
+            socketRef.current.close();
+            socketRef.current = null;
+        };
+    }, []);
+
+    /**
+     * return the socket reference
+     * different hooks send different payloads
+     * they implement whatever helper they want
+     */
+    return {socketRef, status};
 
 }
 
