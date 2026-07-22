@@ -18,3 +18,4 @@ site/
 .DS_Store
 :Zone.Identifier
 apps/backend/coverage.xml
+*.db

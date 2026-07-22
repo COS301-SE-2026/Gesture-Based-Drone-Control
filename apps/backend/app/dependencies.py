@@ -15,13 +15,14 @@ to store info that may be relevant to endpoints at different times
 
 from __future__ import annotations
 
-from fastapi import Depends, HTTPException, Request
+from fastapi import Depends, HTTPException
+from starlette.requests import HTTPConnection
 
 from apps.backend.app.state import AppState
 from services.drone_control.adapters.drone_adapter import DroneAdapter
 
 
-def get_state(request: Request) -> AppState:
+def get_state(request: HTTPConnection) -> AppState:
 	"""Returns the global state according to how main sees it"""
 	return request.app.state.app
 
@@ -36,3 +37,31 @@ def get_adapter(state: AppState = Depends(get_state)) -> DroneAdapter:
 			detail='No drone adapter connected.',
 		)
 	return state.adapter
+
+
+def require_calibrated() -> None:
+	"""
+	For use in flight-command routes: rejects the request until the user has
+	completed (or skipped) calibration
+
+	Usage on a single route:
+		@router.post('/takeoff', dependencies=[Depends(require_calibrated)])
+
+	Or gate every flight route at once on the router:
+		router = APIRouter(..., dependencies=[Depends(require_calibrated)])
+
+	Imported lazily to avoid an import cycle: this module is imported by routers,
+	and the calibration manager lives in a router module
+	(same module-level singleton pattern as GestureStream)
+	"""
+	from app.api.calibration import manager
+
+	if not manager.is_calibrated:
+		raise HTTPException(
+			status_code=409,  # conflicting state
+			detail=(
+				'Gesture calibration required before flight. '
+				'Complete it via WS /api/calibration/stream or skip it '
+				'via POST /api/calibration/skip'
+			),
+		)
