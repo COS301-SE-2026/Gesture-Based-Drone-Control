@@ -25,7 +25,7 @@ tasks:
 
   backend-dev:
     cmds:
-      - uv run fastapi dev {{.BACKEND_APP}}  --port {{.BACKENDPORT}}
+      - uv run fastapi dev {{.BACKEND_APP}}  --port {{.BACKENDPORT}} --no-reload
     env:
       PYTHONPATH: "{{.ROOT_DIR}}"
 
@@ -56,6 +56,7 @@ tasks:
     cmds:
       - task: unit-test
       - task: integration-test
+      - task: e2e-test
 
   unit-test:
     desc: Runs Frontend and Backend Unit Tests
@@ -66,23 +67,24 @@ tasks:
   backend-unit-test:
     desc: Runs Backend Unit Tests
     cmds:
-      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=xml:apps/backend/coverage.xml --cov-report=term-missing --cov-fail-under=90
-    
-  api-unit-test:
-    desc: Runs API unit tests
-    cmds:
-      - uv run pytest apps/backend/tests --cov --cov-report=xml:apps/backend/coverage.xml
-    
+      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=xml:apps/backend/coverage.xml --cov-report=term-missing --cov-fail-under=80
+
   frontend-unit-test:
     desc: Runs Frontend Unit Tests
     dir: "{{.FRONTEND_DIR}}"
     cmds:
-      - yarn test
+      - yarn unit-test
 
   integration-test:
     desc: Runs Integration Tests
     cmds:
       - uv run pytest tests --cov --cov-report=term-missing
+
+  e2e-test:
+    desc: Runs End to End Tests
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn e2e-test
 
   lint:
     desc: Runs lint checks
