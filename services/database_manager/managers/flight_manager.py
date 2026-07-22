@@ -18,14 +18,16 @@ class FlightManager:
 		result = await db.execute(select(Drone).where(Drone.display_name == display_name))
 		drone = result.scalar_one_or_none()
 		if drone is not None:
-			return Drone
+			return drone
 		drone = Drone(display_name=display_name, is_simulated=is_simulated)
 		db.add(drone)
 		await db.commit()
 		await db.refresh(drone)
 		return drone
 
-	async def start_flight(self, db: AsyncSession, drone_id: int, user_id: uuid) -> FlightSummary:
+	async def start_flight(
+		self, db: AsyncSession, drone_id: int, user_id: uuid.UUID | None = None
+	) -> FlightSummary:
 		flight = FlightSummary(
 			drone_id=drone_id,
 			user_id=user_id,
@@ -57,7 +59,7 @@ class FlightManager:
 		flight.control_count = reading_count
 
 		await db.commit()
-		await db.refreah(flight)
+		await db.refresh(flight)
 		return flight
 
 	async def record_telemetry(

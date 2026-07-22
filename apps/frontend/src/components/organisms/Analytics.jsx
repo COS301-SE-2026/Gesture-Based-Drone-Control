@@ -54,36 +54,49 @@ import { useEffect, useRef, useState } from "react"
 //     totalFlights: 14,
 //   }
 
-const MAX_LIVE_POINTS = 60 //might change this depending
+const MAX_LIVE_POINTS = 30 //might change this depending
 const MS_TO_KMH = 3.6
 const API_BASE = "http://localhost:3001/api/analytics"
-
-function fmt(value, digits = 0) {
-  return typeof value === "number" ? value.toFixed(digits) : "--"
-}
 
 const Analytics = () => {
   const { telemetry } = useTelemetry()
 
   //live, in sess charts, built client side from websocket
-  const [flightTelemetryData, setFlightTelemtryData] = useState([])
+  const [flightTelemetryData, setFlightTelemetryData] = useState([])
   const [batteryHealthData, setBatteryHealthData] = useState([])
-  const startTimeRef = useRef(Date.now())
-  const maxAltitudeRef = useRef(0)
+  const startTimeRef = useRef(null)
+  const [maxAltitude, setMaxAltitude] = useState(0)
 
   useEffect(() => {
     if (!telemetry) return
 
+    if (startTimeRef.current === null) {
+      startTimeRef.current = Date.now()
+    }
     const elapsedSec = (Date.now() - startTimeRef.current) / 1000
     const label = `${elapsedSec.toFixed(0)}s`
 
-    if (typeof telemetry.altitude_m === "number") {
-      maxAltitudeRef.current = Math.max(maxAltitudeRef.current, telemetry.altitude_m)
-    } 
+    Promise.resolve().then(() => {
+      if (typeof telemetry.altitude_m === "number") {
+        setMaxAltitude((prev) => Math.max(prev, telemetry.altitude_m))
+      }
 
-    setFlightTelemtryData((prev) => {
-      const next = [...prev, { time: label, health: telemetry.battery_pct ?? 0}]
-      return next.length > MAX_LIVE_POINTS ? next.slice(-MAX_LIVE_POINTS) : next
+      setFlightTelemetryData((prev) => {
+        const next = [...prev, { time: label, value: telemetry.speed_ms ?? 0 }]
+        return next.length > MAX_LIVE_POINTS
+          ? next.slice(-MAX_LIVE_POINTS)
+          : next
+      })
+
+      setBatteryHealthData((prev) => {
+        const next = [
+          ...prev,
+          { time: label, health: telemetry.battery_pct ?? 0 },
+        ]
+        return next.length > MAX_LIVE_POINTS
+          ? next.slice(-MAX_LIVE_POINTS)
+          : next
+      })
     })
   }, [telemetry])
 
@@ -99,7 +112,7 @@ const Analytics = () => {
       try {
         const [flightsRes, summaryRes] = await Promise.all([
           fetch(`${API_BASE}/flights?limit=7`),
-          fetch(`${API_BASE}/summary`)
+          fetch(`${API_BASE}/summary`),
         ])
 
         if (!flightsRes.ok || !summaryRes.ok) {
@@ -114,10 +127,10 @@ const Analytics = () => {
           setSummary(summaryData)
           setLoadError("")
         }
-      }
-      catch (err) {
+      } catch (err) {
         console.error("analytics: failed to fetch flight history", err)
-        if (!cancelled) setLoadError("could not load flight history from the server")
+        if (!cancelled)
+          setLoadError("could not load flight history from the server")
       }
     }
 
@@ -128,10 +141,31 @@ const Analytics = () => {
       clearInterval(intv)
     }
   }, [])
-}
+
+  //shape flights (most recent from backend) for bar chart
+  const performanceData = [...flights].reverse().map((f, idx) => ({
+    flight: `flight ${idx + 1}`,
+    duration:
+      typeof f.duration_min === "number"
+        ? Number(f.duration_min.toFixed(1))
+        : 0,
+  }))
+
+  const metrics = {
+    avgSpeed:
+      typeof telemetry?.speed_ms === "number"
+        ? (telemetry.speed_ms * MS_TO_KMH).toFixed(1)
+        : "--",
+    maxAltitude: maxAltitude ? maxAltitude.toFixed(1) : "--",
+    totalFlights: summary?.total_flights ?? "--",
+    avgFlightDuration: summary?.avg_flight_duration_min ?? "--",
+    //no cumulative path distance field is tracked by backend
+    totalDistance: "--",
+  }
 
   return (
     <div className="space-y-6">
+      {loadError && <p className="text-red-500 text-sm">{loadError}</p>}
       {/* top metric cards */}
       <div className="grid grid-cols-3 gap-4">
         {/* flight time card */}
@@ -139,13 +173,12 @@ const Analytics = () => {
           <div className="flex flex-col gap-3">
             <Clock className="w-6 h-6 text-Red" />
             <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
-              Flight time
+              Total Flights
             </p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
-                {metrics.flightTime}
+                {metrics.totalFlights}
               </span>
-              <span className="text-sm text-DarkGrey">mins</span>
             </div>
           </div>
         </Card>
@@ -171,25 +204,26 @@ const Analytics = () => {
           <div className="flex flex-col gap-3">
             <Mountain className="w-6 h-6 text-Red" />
             <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
-              Max Altitude
+              Max Altitude (session)
             </p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
                 {metrics.maxAltitude}
               </span>
-              <span className="text-sm text-DarkGrey">mins</span>
+              <span className="text-sm text-DarkGrey">km/h</span>
             </div>
           </div>
         </Card>
       </div>
 
       {/* the two charts go here */}
+      {/* these should be live now, driven by telem websocket */}
       <div className="grid grid-cols-2 gap-6">
         {/* flight telemetry */}
         <Card variant="glass">
           <div className="flex flex-col gap-4">
             <h3 className="text-md font-semibold text-OffBlack dark:text-OffWhite">
-              Flight Telemetry
+              Live Speed (this session)
             </h3>
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={flightTelemetryData}>
@@ -224,7 +258,7 @@ const Analytics = () => {
         <Card variant="glass">
           <div className="flex flex-col gap-4">
             <h3 className="text-md font-semibold text-OffBlack dark:text-OffWhite">
-              Battery Health
+              Battery Health (this session)
             </h3>
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={batteryHealthData}>
@@ -257,31 +291,39 @@ const Analytics = () => {
       </div>
 
       {/* bar graph here */}
+      {/* this graph is from the db */}
       <Card variant="glass">
         <div className="flex flex-col gap-4">
           <h3 className="text-md font-semibold text-OffBlack dark:text-OffWhite">
-            Performance Metrics
+            Performance Metrics (recent flights)
           </h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={performanceData}>
-              <CartesianGrid stroke="#D3D3D3" opacity={0.1} />
-              <XAxis
-                dataKey="flight"
-                stroke="#B1A7A6"
-                style={{ fontSize: "12px" }}
-              />
-              <YAxis stroke="#B1A7A6" style={{ fontSize: "12px" }} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#D3D3D3",
-                  border: "1px solid #161A1D",
-                  borderRadius: "6px",
-                  fontSize: "12px",
-                }}
-              />
-              <Bar dataKey="duration" fill="#A4161A" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {performanceData.length === 0 ? (
+            <p className="text-md text-DarkGrey">
+              No completed flights recorded yet. Connect a drone to log a flight
+              now
+            </p>
+          ) : (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={performanceData}>
+                <CartesianGrid stroke="#D3D3D3" opacity={0.1} />
+                <XAxis
+                  dataKey="flight"
+                  stroke="#B1A7A6"
+                  style={{ fontSize: "12px" }}
+                />
+                <YAxis stroke="#B1A7A6" style={{ fontSize: "12px" }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#D3D3D3",
+                    border: "1px solid #161A1D",
+                    borderRadius: "6px",
+                    fontSize: "12px",
+                  }}
+                />
+                <Bar dataKey="duration" fill="#A4161A" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </Card>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { CommandHistory, GestureGuide, DroneModeCard } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge, Camera } from "lucide-react"
@@ -140,14 +140,17 @@ const GestureControl = () => {
   }
   //add hardware mode when drone works
 
+  const hasConnected = useRef(false)
   useEffect(() => {
-    //initially connect to dummy or airsim for testing
-    Promise.resolve().then(() => connectToDrone("dummy"))
+    if (hasConnected.current) return
+    //initially connect to dummy for testing
+    hasConnected.current = true
+    connectToDrone("dummy")
   }, [])
 
   return (
     <div className="p-6 space-y-6">
-      <div className-="flex items-center gap-4 text-sm">
+      <div className="flex items-center gap-4 text-sm">
         <span className="text-DarkGrey">Drone status:</span>
         <span
           className={`font-semibold ${

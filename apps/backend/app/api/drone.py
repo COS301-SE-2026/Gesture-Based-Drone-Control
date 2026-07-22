@@ -25,6 +25,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.websockets import WebSocketState
 
 from apps.backend.app.dependencies import get_state, get_ws_state
 from apps.backend.app.state import AppState
@@ -206,6 +207,9 @@ async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get
 	tick = 0
 	try:
 		while True:
+			if websocket.client_state != WebSocketState.CONNECTED:
+				break
+
 			if state.adapter is not None:
 				try:
 					telemetry = await state.adapter.get_telemetry()
@@ -230,6 +234,9 @@ async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get
 									'/drone/ws/telemetry: error recording telemetry row - %s', ex
 								)
 							)
+				except (RuntimeError, WebSocketDisconnect):
+					logger.info('/drone/ws/telemetry: client disconnected mid-send')
+					break
 				except Exception as ex:
 					logger.exception('/drone/ws/telemetry: error getting telemetry - %s', ex)
 			await asyncio.sleep(0.1)  # adjust this polling rate as needed
