@@ -42,6 +42,9 @@ class AppState:
 
 	# id of the flight_summary row for the curr connected session
 	current_flight_id: uuid.UUID | None = None
+ 
+	# DIYA YOU WERE SUPPOSED TO ADD THIS 🫵
+	current_drone_id: uuid.UUID | None = None
 
 	@property
 	def is_connected(self) -> bool:

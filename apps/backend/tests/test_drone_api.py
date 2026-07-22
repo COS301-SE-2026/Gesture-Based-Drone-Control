@@ -24,6 +24,7 @@ from services.drone_control.adapters.drone_adapter import TelemetryData
 def make_app(state: AppState) -> FastAPI:
 	app = FastAPI()
 	app.include_router(router)
+	app.state.app = state
 	app.dependency_overrides[get_state] = lambda: state
 	return app
 
