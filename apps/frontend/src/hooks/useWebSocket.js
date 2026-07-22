@@ -41,7 +41,7 @@ export function useWebSocket(wsUrl, { onMessage } = {}) {
 
     // if socket exists already, dispose and make new
     if (socketRef.current) {
-      socketRef.current.close
+      socketRef.current.close()
       socketRef.current = null
     }
 

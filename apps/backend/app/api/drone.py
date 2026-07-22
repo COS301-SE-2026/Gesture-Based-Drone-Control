@@ -133,7 +133,6 @@ async def connect(
 	drone_row = await flight_manager.get_or_create_drone(
 		db, display_name=body.adapter, is_simulated=(body.adapter != 'hardware')
 	)
-	# flight = await flight_manager.start_flight(db, drone_id=drone_row.id)
 	state.current_drone_id = drone_row.id
 
 	logger.info('/drone/connect: connected via %s', state.adapter)
