@@ -117,40 +117,48 @@ class TestRefreshEndpoint:
 	@patch.object(auth_manager, 'refresh', new_callable=AsyncMock)
 	def test_refresh_success(self, mock_refresh, mock_set_auth_cookies):
 		mock_refresh.return_value = sample_tokens()
+		client.cookies.set('refresh_cookie', 'refresh-token')
 
 		response = client.post('/auth/refresh', json={'refresh_token': 'refresh-token'})
 		assert response.status_code == 201
 		assert response.json() == {'message': 'Token Refresh Successful'}
 		mock_refresh.assert_awaited_once_with(db=ANY, refresh_token='refresh-token')
+		client.cookies.delete('refresh_cookie')
 
 	@patch('apps.backend.app.api.auth.set_auth_cookies')
 	@patch.object(auth_manager, 'refresh', new_callable=AsyncMock)
 	def test_refresh_invalid_token(self, mock_refresh, mock_set_auth_cookies):
 		mock_refresh.side_effect = InvalidRefreshTokenError('Invalid token')
+		client.cookies.set('refresh_cookie', 'refresh-token')
 
 		response = client.post('/auth/refresh', json={'refresh_token': 'invalid-token'})
 		assert response.status_code == 401
 		assert response.json() == {'detail': 'Invalid token'}
 		mock_set_auth_cookies.assert_not_called()
+		client.cookies.delete('refresh_cookie')
 
 
 class TestLogoutEndpoint:
 	@patch('apps.backend.app.api.auth.clear_auth_cookies')
 	@patch.object(auth_manager, 'logout', new_callable=AsyncMock)
 	def test_logout_success(self, mock_logout, mock_clear_auth_cookies):
+		client.cookies.set('refresh_cookie', 'refresh-token')
 		response = client.post('/auth/logout', json={'refresh_token': 'refresh-token'})
 		assert response.status_code == 200
 		assert response.json() == {'message': 'Logout Successful'}
 		mock_logout.assert_awaited_once_with(db=ANY, refresh_token='refresh-token')
 		mock_clear_auth_cookies.assert_called_once()
+		client.cookies.delete('refresh_cookie')
 
 	@patch('apps.backend.app.api.auth.clear_auth_cookies')
 	@patch.object(auth_manager, 'logout', new_callable=AsyncMock)
 	def test_logout_invalid_token(self, mock_logout, mock_clear_auth_cookies):
 		mock_logout.side_effect = InvalidRefreshTokenError('Invalid token')
+		client.cookies.set('refresh_cookie', 'refresh-token')
 
 		response = client.post('/auth/logout', json={'refresh_token': 'invalid-token'})
 		assert response.status_code == 401
 		assert response.json() == {'detail': 'Invalid token'}
 
 		mock_clear_auth_cookies.asser_not_called()
+		client.cookies.delete('refresh_cookie')

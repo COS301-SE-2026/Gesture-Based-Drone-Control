@@ -10,7 +10,7 @@ const AccountActions = () => {
       const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials:"include",
+        credentials: "include",
       })
 
       if (!response.ok) {
