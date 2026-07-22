@@ -113,7 +113,7 @@ export function useWebSocket(wsUrl, {onMessage} = {}){
     useEffect(() => {
         wsUrlRef.current = wsUrl;
     }, [wsUrl]);
-
+    
     useEffect(() => {
         isUnmountedRef.current = false;
 
