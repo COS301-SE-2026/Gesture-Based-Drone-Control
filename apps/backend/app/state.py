@@ -58,6 +58,7 @@ class AppState:
 		self.adapter = None
 		self.adapter_name = None
 		self.current_flight_id = None
+		self.current_drone_id = None
 		if self.telemetry_task and not self.telemetry_task.done():
 			self.telemetry_task.cancel()
 		self.telemetry_task = None

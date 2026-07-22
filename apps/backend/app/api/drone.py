@@ -133,8 +133,8 @@ async def connect(
 	drone_row = await flight_manager.get_or_create_drone(
 		db, display_name=body.adapter, is_simulated=(body.adapter != 'hardware')
 	)
-	flight = await flight_manager.start_flight(db, drone_id=drone_row.id)
-	state.current_flight_id = flight.id
+	# flight = await flight_manager.start_flight(db, drone_id=drone_row.id)
+	state.current_drone_id = drone_row.id
 
 	logger.info('/drone/connect: connected via %s', state.adapter)
 	return ConnectResponse(
@@ -230,9 +230,7 @@ async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get
 								)
 						except Exception as ex:
 							logger.exception(
-								logger.exception(
-									'/drone/ws/telemetry: error recording telemetry row - %s', ex
-								)
+								'/drone/ws/telemetry: error recording telemetry row - %s', ex
 							)
 				except (RuntimeError, WebSocketDisconnect):
 					logger.info('/drone/ws/telemetry: client disconnected mid-send')
@@ -299,6 +297,29 @@ async def command(websocket: WebSocket, state: Annotated[AppState, Depends(get_w
 			logger.info('drone/ws/commands: executing %s', command_type.name)
 
 			await state.adapter.execute(cmd)
+			# await websocket.send_json({'ok': True, 'command': command_type.name})
+			# start a flight record on takeoff, end on land
+			if command_type is CommandType.TAKEOFF and state.current_flight_id is None:
+				if state.current_drone_id is not None:
+					async with AsyncSessionLocal() as db:
+						flight = await flight_manager.start_flight(
+							db, drone_id=state.current_drone_id
+						)
+						state.current_flight_id = flight.id
+					logger.info('drone/ws/commands: flight %s started', state.current_flight_id)
+				else:
+					logger.warning('drone/ws/commands: TAKEOFF recieved but no drone_id in state')
+
+			# end flight on normal landing OR emrgency stop
+			elif command_type in (CommandType.LAND, CommandType.EMERGENCY_STOP) and (
+				state.current_flight_id is not None
+			):
+				ended_id = state.current_flight_id
+				async with AsyncSessionLocal() as db:
+					await flight_manager.end_flight(db, ended_id)
+				logger.info('drone/ws/commands: flight %s ended', state.current_flight_id)
+				state.current_flight_id = None
+
 			await websocket.send_json({'ok': True, 'command': command_type.name})
 
 	except WebSocketDisconnect:

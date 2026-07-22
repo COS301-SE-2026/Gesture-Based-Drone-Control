@@ -11,7 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"
-import { useTelemetry } from "@/hooks/useTelemetry"
+import { useTelemetry } from "@/context/TelemetryContext"
 import { useEffect, useRef, useState } from "react"
 
 // const Analytics = () => {
@@ -54,7 +54,8 @@ import { useEffect, useRef, useState } from "react"
 //     totalFlights: 14,
 //   }
 
-const MAX_LIVE_POINTS = 30 //might change this depending
+const MAX_LIVE_POINTS = 10
+//might change this depending
 const MS_TO_KMH = 3.6
 const API_BASE = "http://localhost:3001/api/analytics"
 
@@ -65,16 +66,23 @@ const Analytics = () => {
   const [flightTelemetryData, setFlightTelemetryData] = useState([])
   const [batteryHealthData, setBatteryHealthData] = useState([])
   const startTimeRef = useRef(null)
+  const lastUpdateRef = useRef(0)
   const [maxAltitude, setMaxAltitude] = useState(0)
 
   useEffect(() => {
     if (!telemetry) return
 
+    const now = Date.now()
+    if (now - lastUpdateRef.current < 1000) {
+      return
+    }
+    lastUpdateRef.current = now
+
     if (startTimeRef.current === null) {
       startTimeRef.current = Date.now()
     }
     const elapsedSec = (Date.now() - startTimeRef.current) / 1000
-    const label = `${elapsedSec.toFixed(0)}s`
+    const label = `${elapsedSec.toFixed(1)}s`
 
     Promise.resolve().then(() => {
       if (typeof telemetry.altitude_m === "number") {
@@ -210,7 +218,7 @@ const Analytics = () => {
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
                 {metrics.maxAltitude}
               </span>
-              <span className="text-sm text-DarkGrey">km/h</span>
+              <span className="text-sm text-DarkGrey">m</span>
             </div>
           </div>
         </Card>

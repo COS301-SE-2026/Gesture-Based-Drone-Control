@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react"
 import { CommandHistory, GestureGuide, DroneModeCard } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge, Camera } from "lucide-react"
-import { useTelemetry } from "@/hooks/useTelemetry"
-import { useCommands } from "@/hooks/useCommands"
+import { useTelemetry } from "@/context/TelemetryContext"
+import { useCommands } from "@/context/CommandsContext"
 
 const MS_TO_KMH = 3.6
 
