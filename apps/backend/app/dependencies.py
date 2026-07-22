@@ -16,12 +16,13 @@ to store info that may be relevant to endpoints at different times
 from __future__ import annotations
 
 from fastapi import Depends, HTTPException, Request
+from starlette.requests import HTTPConnection
 
 from apps.backend.app.state import AppState
 from services.drone_control.adapters.drone_adapter import DroneAdapter
 
 
-def get_state(request: Request) -> AppState:
+def get_state(request: HTTPConnection) -> AppState:
 	"""Returns the global state according to how main sees it"""
 	return request.app.state.app
 
