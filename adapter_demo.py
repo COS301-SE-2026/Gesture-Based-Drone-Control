@@ -273,6 +273,8 @@ class AppState:
 				'battery_pct': t.battery_pct,
 				'heading_deg': t.heading_deg,
 				'is_flying': t.is_flying,
+				'x_displacement': t.x_displacement,
+				'y_displacement': t.y_displacement,
 				'source': t.source,
 			}
 		except Exception as ex:
@@ -774,6 +776,16 @@ FRONTEND_HTML = """
         </div>
 
         <div class="telem-cell">
+          <div class="telem-label">X Displacement</div>
+          <div class="telem-value" id="t-x">-</div>
+        </div>
+
+        <div class="telem-cell">
+          <div class="telem-label">Y Displacement</div>
+          <div class="telem-value" id="t-y">-</div>
+        </div>
+
+        <div class="telem-cell">
           <div class="telem-label">Speed</div>
           <div class="telem-value" id="t-spd">-</div>
         </div>
@@ -939,6 +951,16 @@ function updateTelemetry(d) {
   setText(
     "t-alt",
     d.altitude_m !== undefined ? d.altitude_m.toFixed(2) : "-"
+  );
+
+  setText(
+    "t-x",
+    d.x_displacement !== undefined ? d.x_displacement.toFixed(2) : "-"
+  );
+
+  setText(
+    "t-y",
+    d.y_displacement !== undefined ? d.y_displacement.toFixed(2) : "-"
   );
 
   setText(

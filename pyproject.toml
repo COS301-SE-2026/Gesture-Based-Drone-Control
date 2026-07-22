@@ -21,7 +21,7 @@ dependencies = [
     "projectairsim",
     "pydantic[email]>=2.13.4",
     "asyncpg>=0.31.0",
-    "sqlalchemy>=2.0",
+    "sqlalchemy[asyncio]>=2.0",
     "pydantic-settings>=2.14.2",
     "aiosqlite>=0.22.1",
     "bcrypt>=5.0.0",
