@@ -56,10 +56,6 @@ export function useKeyboardControl(enabled){
     },[enabled])
 
     useEffect(() => {
-        if (!enabled) 
-        {
-            return
-        }
 
         let cancelled = false
 
@@ -85,7 +81,7 @@ export function useKeyboardControl(enabled){
             wsRef.current=null
             setConnected(false)
         }
-    },[enabled])
+    },[])
 
     useEffect(() =>  {
         if(!enabled)
