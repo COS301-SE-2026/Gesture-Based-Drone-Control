@@ -442,7 +442,7 @@ async def test_analog_left_stick_translation():
 
 	assert math.isclose(args[0], 0.75 * DEFAULT_SPEED_MS)
 	assert math.isclose(args[1], 0.5 * DEFAULT_SPEED_MS)
-	assert math.isclose(args[2], 0)
+	assert math.isclose(args[2], 0, abs_tol=0.0)
 
 
 @pytest.mark.asyncio
