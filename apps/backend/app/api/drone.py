@@ -32,7 +32,7 @@ from apps.backend.app.state import AppState
 from services.commands.command import Command, CommandType
 from services.database_manager.database import AsyncSessionLocal, get_db
 from services.database_manager.managers.flight_manager import flight_manager
-from services.drone_control.adapters.drone_adapter import DroneAdapter
+from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 logger = logging.getLogger(__name__)
 
@@ -210,42 +210,59 @@ async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get
 			if websocket.client_state != WebSocketState.CONNECTED:
 				break
 
-			if state.adapter is not None:
-				try:
-					telemetry = await state.adapter.get_telemetry()
-					await websocket.send_json(asdict(telemetry))  # easy convert to json
+			if state.adapter is None:
+				await asyncio.sleep(0.1)
+				continue
+				
+			try:
+				telemetry = await state.adapter.get_telemetry()
 
-					tick += 1
-					if tick % 10 == 0 and state.current_flight_id is not None:
-						try:
-							async with AsyncSessionLocal() as db:
-								await flight_manager.record_telemetry(
-									db,
-									flight_id=state.current_flight_id,
-									displacement_x=telemetry.x_displacement,
-									displacement_y=telemetry.y_displacement,
-									altitude=telemetry.altitude_m,
-									battery_level=telemetry.battery_pct,
-									speed=telemetry.speed_ms,
-								)
-						except Exception as ex:
-							logger.exception(
-								'/drone/ws/telemetry: error recording telemetry row - %s', ex
-							)
-				except (RuntimeError, WebSocketDisconnect):
-					logger.info('/drone/ws/telemetry: client disconnected mid-send')
-					break
-				except Exception as ex:
-					logger.exception('/drone/ws/telemetry: error getting telemetry - %s', ex)
-			await asyncio.sleep(0.1)  # adjust this polling rate as needed
+				await websocket.send_json(asdict(telemetry))
+    
+				tick += 1
+				if tick % 10 == 0:
+					await _record_telemetry(state, telemetry)
+
+			except (RuntimeError, WebSocketDisconnect):
+				logger.info("/drone/ws/telemetry: client disconnected mid-send")
+				break
+
+			except Exception as ex:
+				logger.exception("/drone/ws/telemetry: error getting telemetry - %s", ex)
+			
+			await asyncio.sleep(0.1)
+   
 	except WebSocketDisconnect:
-		state.clients.discard(websocket)
-		logger.exception(
-			'/drone/ws/telemetry: client disconnected, %d remaining', len(state.clients)
-		)
+		logger.info("/drone/ws/telemetry: client disconnected, %d remaining", len(state.clients) -1)
+  
 	finally:
 		state.clients.discard(websocket)
 
+# helper function record the telemetry.
+async def _record_telemetry(state: AppState, telemetry: TelemetryData,) -> None:
+	"""
+	Does nothing if no active flight is happening
+	"""
+	if state.current_flight_id is None:
+		return
+	
+	try:
+		async with AsyncSessionLocal() as db:
+			await flight_manager.record_telemetry(
+				db,
+				flight_id=state.current_flight_id,
+				displacement_x=telemetry.x_displacement,
+				displacement_y=telemetry.y_displacement,
+				altitude=telemetry.altitude_m,
+				battery_level=telemetry.battery_pct,
+				speed=telemetry.speed_ms,
+			)
+	except Exception as ex:
+		logger.exception(
+			'/drone/ws/telemetry: error recording telemetry row - %s', ex
+		)
+		
+	
 
 @router.websocket('/ws/commands')
 async def command(websocket: WebSocket, state: Annotated[AppState, Depends(get_ws_state)]):
