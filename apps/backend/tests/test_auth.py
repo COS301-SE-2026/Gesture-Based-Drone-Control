@@ -6,10 +6,10 @@ from fastapi.testclient import TestClient
 
 from apps.backend.app.api.auth import auth_manager, router
 from services.auth.auth_manager import (
-	InvalidCredentialsError,
-	SessionTokens,
 	EmailAlreadyRegisteredError,
+	InvalidCredentialsError,
 	InvalidRefreshTokenError,
+	SessionTokens,
 )
 
 app = FastAPI()
@@ -67,87 +67,90 @@ class TestLoginEndpoint:
 		assert response.json() == {'detail': 'Invalid email or password'}
 		mock_set_auth_cookies.assert_not_called()
 
+
 class TestSignupEndpoint:
-	@patch("apps.backend.app.api.auth.set_auth_cookies")
-	@patch.object(auth_manager, "register", new_callable=AsyncMock)
+	@patch('apps.backend.app.api.auth.set_auth_cookies')
+	@patch.object(auth_manager, 'register', new_callable=AsyncMock)
 	def test_signup_success(self, mock_register, mock_set_auth_cookies):
 		mock_register.return_value = sample_tokens()
 		response = client.post(
-			"/auth/signup",
-			json ={
-				"email" : "USER@GMAIL.COM",
-				"password": "Password123!", #NOSONAR
-				"first_name": "Jane",
-				"last_name": "Doe"
-			}
+			'/auth/signup',
+			json={
+				'email': 'USER@GMAIL.COM',
+				'password': 'Password123!',  # NOSONAR
+				'first_name': 'Jane',
+				'last_name': 'Doe',
+			},
 		)
 		assert response.status_code == 201
-		assert response.json() == {
-			"message": "Signup Successful"
-		}
+		assert response.json() == {'message': 'Signup Successful'}
 		mock_register.assert_awaited_once_with(
 			db=ANY,
-			email = "user@gmail.com",
-			password="Password123!", #NOSONAR
-			first_name = "Jane",
-			last_name= "Doe"
+			email='user@gmail.com',
+			password='Password123!',  # NOSONAR
+			first_name='Jane',
+			last_name='Doe',
 		)
 		mock_set_auth_cookies.assert_called_once()
 
-	@patch("apps.backend.app.api.auth.set_auth_cookies")
-	@patch.object(auth_manager, "register", new_callable=AsyncMock)
+	@patch('apps.backend.app.api.auth.set_auth_cookies')
+	@patch.object(auth_manager, 'register', new_callable=AsyncMock)
 	def test_signup_existing_email(self, mock_register, mock_set_auth_cookies):
 		mock_register.side_effect = EmailAlreadyRegisteredError()
 
 		response = client.post(
-			"/auth/signup",
-			json ={
-				"email" : "USER@GMAIL.COM",
-				"password": "Password123!", #NOSONAR
-				"first_name": "Jane",
-				"last_name": "Doe"
-			}
+			'/auth/signup',
+			json={
+				'email': 'USER@GMAIL.COM',
+				'password': 'Password123!',  # NOSONAR
+				'first_name': 'Jane',
+				'last_name': 'Doe',
+			},
 		)
 		assert response.status_code == 409
-		assert response.json() == {
-			"detail" : "A user with this email already exists"
-		}
+		assert response.json() == {'detail': 'A user with this email already exists'}
 		mock_set_auth_cookies.assert_not_called()
 
+
 class TestRefreshEndpoint:
-	@patch("apps.backend.app.api.auth.set_auth_cookies")
-	@patch.object(auth_manager, "refresh", new_callable=AsyncMock)
+	@patch('apps.backend.app.api.auth.set_auth_cookies')
+	@patch.object(auth_manager, 'refresh', new_callable=AsyncMock)
 	def test_refresh_success(self, mock_refresh, mock_set_auth_cookies):
 		mock_refresh.return_value = sample_tokens()
 
-		response = client.post(
-			"/auth/refresh",
-			json = {
-				"refresh_token": "refresh-token"
-			}
-		)
+		response = client.post('/auth/refresh', json={'refresh_token': 'refresh-token'})
 		assert response.status_code == 201
-		assert response.json() == {
-			"message": "Token Refresh Successful"
-		}
-		mock_refresh.assert_awaited_once_with(
-			db=ANY,
-			refresh_token = "refresh-token"
-		)
+		assert response.json() == {'message': 'Token Refresh Successful'}
+		mock_refresh.assert_awaited_once_with(db=ANY, refresh_token='refresh-token')
 
-	@patch("apps.backend.app.api.auth.set_auth_cookies")
-	@patch.object(auth_manager, "refresh", new_callable=AsyncMock)
+	@patch('apps.backend.app.api.auth.set_auth_cookies')
+	@patch.object(auth_manager, 'refresh', new_callable=AsyncMock)
 	def test_refresh_invalid_token(self, mock_refresh, mock_set_auth_cookies):
-		mock_refresh.side_effect = InvalidRefreshTokenError("Invalid token")
+		mock_refresh.side_effect = InvalidRefreshTokenError('Invalid token')
 
-		response = client.post(
-			"/auth/refresh",
-			json = {
-				"refresh_token": "invalid-token"
-			}
-		)
+		response = client.post('/auth/refresh', json={'refresh_token': 'invalid-token'})
 		assert response.status_code == 401
-		assert response.json() == {
-			"detail": "Invalid token"
-		}
+		assert response.json() == {'detail': 'Invalid token'}
 		mock_set_auth_cookies.assert_not_called()
+
+
+class TestLogoutEndpoint:
+	@patch('apps.backend.app.api.auth.clear_auth_cookies')
+	@patch.object(auth_manager, 'logout', new_callable=AsyncMock)
+	def test_logout_success(self, mock_logout, mock_clear_auth_cookies):
+		response = client.post('/auth/logout', json={'refresh_token': 'refresh-token'})
+		assert response.status_code == 200
+		assert response.json() == {'message': 'Logout Successful'}
+		mock_logout.assert_awaited_once_with(db=ANY, refresh_token='refresh-token')
+		mock_clear_auth_cookies.assert_called_once()
+
+	@patch('apps.backend.app.api.auth.clear_auth_cookies')
+	@patch.object(auth_manager, 'logout', new_callable=AsyncMock)
+	def test_logout_invalid_token(self, mock_logout, mock_clear_auth_cookies):
+		mock_logout.side_effect = InvalidRefreshTokenError('Invalid token')
+
+		response = client.post('/auth/logout', json={'refresh_token': 'invalid-token'})
+		assert response.status_code == 401
+		assert response.json() == {'detail': 'Invalid token'}
+
+		mock_clear_auth_cookies.asser_not_called()
