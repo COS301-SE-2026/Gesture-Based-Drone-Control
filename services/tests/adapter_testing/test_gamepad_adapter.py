@@ -1,4 +1,5 @@
 import pytest
+from math import isclose
 
 from services.commands.command import AnalogInput, CommandType
 from services.input.sources.gamepad_adapter import DEADZONE, GamepadAdpater
@@ -110,12 +111,12 @@ async def test_analog_command_emitted(adapter):
 	analog = cmd.payload['input']
 
 	assert isinstance(analog, AnalogInput)
-	assert analog.left_x == 0.5
-	assert analog.left_y == -1.0
-	assert analog.right_x == 0.25
-	assert analog.right_y == 0.75
-	assert analog.ltrigger == 0.1
-	assert analog.rtrigger == 0.0
+	assert isclose(analog.left_x, 0.5)
+	assert isclose(analog.left_y, -1.0)
+	assert isclose(analog.right_x, 0.25)
+	assert isclose(analog.right_y, 0.75)
+	assert isclose(analog.ltrigger, 0.1)
+	assert isclose(analog.rtrigger, 0.0)
 
 
 @pytest.mark.asyncio
@@ -135,9 +136,9 @@ async def test_deadzone_zeroes_small(adapter):
 
 	analog = received[0].payload['input']
 
-	assert analog.left_x == 0.5
-	assert analog.left_y == 0.0
-	assert analog.ltrigger == 0.0
+	assert isclose(analog.left_x, 0.5)
+	assert isclose(analog.left_y, 0.0)
+	assert isclose(analog.ltrigger, 0.0)
 
 
 @pytest.mark.asyncio

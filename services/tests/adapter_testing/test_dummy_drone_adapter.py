@@ -1,5 +1,5 @@
 import pytest
-
+from math import isclose
 from services.commands.command import AnalogInput, CommandType
 from services.drone_control.adapters.dummy_drone_adapter import (
 	DEFAULT_ALT_STEP_M,
@@ -23,13 +23,13 @@ async def test_takeoff_and_land():
 	t = await adapter.get_telemetry()
 
 	assert t.is_flying is True
-	assert t.altitude_m == 1.5
+	assert isclose(t.altitude_m, 1.5)
 
 	await adapter.land()
 	t = await adapter.get_telemetry()
 
 	assert t.is_flying is False
-	assert t.altitude_m == 0.0
+	assert isclose(t.altitude_m, 0.0)
 
 
 @pytest.mark.asyncio
@@ -42,7 +42,7 @@ async def test_move_changes_position():
 	t = await adapter.get_telemetry()
 
 	assert t.x_displacement > 0.0
-	assert t.y_displacement == 0.0
+	assert isclose(t.y_displacement, 0.0)
 
 
 @pytest.mark.asyncio
@@ -57,7 +57,7 @@ async def test_change_altitude():
 	await adapter.move(CommandType.MOVE_DOWN)
 
 	t = await adapter.get_telemetry()
-	assert t.altitude_m == 0.0
+	assert isclose(t.altitude_m, 0.0)
 
 
 @pytest.mark.asyncio
@@ -80,7 +80,7 @@ async def test_analog_move_and_rotate():
 
 	assert t.x_displacement > 0
 	assert t.y_displacement > 0
-	assert t.heading_deg == DEFAULT_ROTATE_DEG
+	assert isclose(t.heading_deg, DEFAULT_ROTATE_DEG)
 
 
 @pytest.mark.asyncio
@@ -113,7 +113,7 @@ async def test_emergency_stop_clears_flying_state():
 
 	t = await adapter.get_telemetry()
 
-	assert t.is_flying is False
+	assert not t.is_flying
 
 
 @pytest.mark.asyncio
@@ -122,7 +122,7 @@ async def test_disconnect():
 
 	await adapter.disconnect()
 
-	assert adapter._connected is False
+	assert not adapter._connected
 
 
 @pytest.mark.asyncio
