@@ -63,6 +63,7 @@ jobs:
 
     env:
       BACKENDPORT: 3001
+      YARN_ENABLE_SCRIPTS: false
 
     steps: 
       - uses: actions/checkout@v4

@@ -188,9 +188,10 @@ class TestHashRefreshToken:
 
 	def test_hash_deterministic(self):
 		token = 'my-refresh-token'  # NOSONAR
-		assert TokenService.hash_refresh_token(token) == TokenService.hash_refresh_token(
-			token
-		)  # NOSONAR
+		token_hash_1 = TokenService.hash_refresh_token(token)
+		token_hash_2 = TokenService.hash_refresh_token(token)
+
+		assert token_hash_1 == token_hash_2  # NOSONAR
 
 	def test_diff_token_produce_diff_hash(self):
 		assert TokenService.hash_refresh_token('token1') != TokenService.hash_refresh_token(
