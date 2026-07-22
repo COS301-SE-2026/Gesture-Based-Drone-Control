@@ -1,5 +1,7 @@
-import pytest
 from math import isclose
+
+import pytest
+
 from services.commands.command import AnalogInput, CommandType
 from services.drone_control.adapters.dummy_drone_adapter import (
 	DEFAULT_ALT_STEP_M,

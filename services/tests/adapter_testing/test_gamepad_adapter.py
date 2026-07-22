@@ -1,5 +1,6 @@
-import pytest
 from math import isclose
+
+import pytest
 
 from services.commands.command import AnalogInput, CommandType
 from services.input.sources.gamepad_adapter import DEADZONE, GamepadAdpater
