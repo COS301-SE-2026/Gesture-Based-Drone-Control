@@ -182,12 +182,12 @@ class TestRefreshToken:
 
 class TestHashRefreshToken:
 	def test_hash_matches_sha256(self):
-		token = 'my-refresh-token' #NOSONAR
+		token = 'my-refresh-token'  # NOSONAR
 		expected = hashlib.sha256(token.encode('utf-8')).hexdigest()
 		assert TokenService.hash_refresh_token(token) == expected
 
 	def test_hash_deterministic(self):
-		token = 'my-refresh-token' #NOSONAR
+		token = 'my-refresh-token'  # NOSONAR
 		assert TokenService.hash_refresh_token(token) == TokenService.hash_refresh_token(token)
 
 	def test_diff_token_produce_diff_hash(self):
