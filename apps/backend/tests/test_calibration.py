@@ -273,7 +273,7 @@ def client():
 	from app.dependencies import require_calibrated
 
 	app = FastAPI()
-	app.include_router(calibration_module.router)
+	app.include_router(calibration_module.router, prefix='/api')
 
 	@app.post('/api/drone/takeoff-test', dependencies=[Depends(require_calibrated)])
 	async def takeoff_test() -> dict:
