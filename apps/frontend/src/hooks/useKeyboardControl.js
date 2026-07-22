@@ -76,7 +76,7 @@ export function useKeyboardControl(enabled){
 
         return() => {
             cancelled = true
-            Timeout(reconnectTimer.current)
+            clearTimeout(reconnectTimer.current)
             wsRef.current?.close()
             wsRef.current=null
             setConnected(false)
