@@ -23,12 +23,13 @@ class RefreshTokenManager:
 		)
 		db.add(token)
 		await db.flush()
+		await db.commit()
 		return token
 
 	async def get_valid_by_hash(self, db: AsyncSession, token_hash: str) -> RefreshToken | None:
 		result = await db.execute(
 			select(RefreshToken)
-			.where(RefreshToken.token_hash == token_hash, not RefreshToken.revoked)
+			.where(RefreshToken.token_hash == token_hash, RefreshToken.revoked.is_(False))
 			.order_by(desc(RefreshToken.created_at))
 			.limit(1)
 		)

@@ -100,12 +100,15 @@ class AuthManager:
 
 	async def logout(self, *, db: AsyncSession, refresh_token: str) -> None:
 		token_hash = token_service.hash_refresh_token(refresh_token)
-		stored_token = await refresh_token_manager.get_valid_by_hash(token_hash=token_hash)
+		stored_token = await refresh_token_manager.get_valid_by_hash(db= db,token_hash=token_hash)
+		print(token_hash)
+		print(stored_token)
 
 		if stored_token is None:
 			raise InvalidRefreshTokenError('Refresh token is invalid')
 
-		user = await user_manager.get_by_id(db=db, id=stored_token.id)
+
+		user = await user_manager.get_by_id(db=db, id=stored_token.user_id)
 
 		if user is None:
 			raise InvalidRefreshTokenError('User no longer exists')

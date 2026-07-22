@@ -86,7 +86,7 @@ async def signup(
 
 @router.post('/refresh', response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
 async def refresh(
-	repsonse: Response,
+	response: Response,
 	db :Annotated[AsyncSession,Depends(get_db)],
 	refresh_token: Annotated[str| None, Cookie(alias=settings.refresh_cookie_name)]= None,
 ):
@@ -97,7 +97,7 @@ async def refresh(
 
 	try:
 		tokens: SessionTokens = await auth_manager.refresh(
-			db=db, refresh_token=request.refresh_token
+			db=db, refresh_token= refresh_token
 		)
 
 		set_auth_cookies(
@@ -124,7 +124,7 @@ async def logout(
 		return AuthResponse(message='LOgout Succesful')
 	
 	try:
-		await auth_manager.logout(db=db, refresh_token=request.refresh_token)
+		await auth_manager.logout(db=db, refresh_token= refresh_token)
 
 		clear_auth_cookies(response=response)
 
