@@ -15,7 +15,7 @@ to store info that may be relevant to endpoints at different times
 
 from __future__ import annotations
 
-from fastapi import Depends, HTTPException, Request
+from fastapi import Depends, HTTPException
 from starlette.requests import HTTPConnection
 
 from apps.backend.app.state import AppState
