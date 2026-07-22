@@ -1,6 +1,6 @@
 // \apps\frontend\src\hooks\useWebSocket.js
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * an abstraction allowing us to keep a generic websocket connection
@@ -16,7 +16,6 @@ import { useCallback, useEffect, useRef } from "react";
  *  - exposes connection status for components that need it 
  */
 
-const BASE_RECONNECT_DELAY_MS = 1000;
 const MAX_RECONNECT_DELAY_MS = 10000;
 
 export function useWebSocket(wsUrl, {onMessage} = {}){
@@ -113,7 +112,7 @@ export function useWebSocket(wsUrl, {onMessage} = {}){
     useEffect(() => {
         wsUrlRef.current = wsUrl;
     }, [wsUrl]);
-    
+
     useEffect(() => {
         isUnmountedRef.current = false;
 
