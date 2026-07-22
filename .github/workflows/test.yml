@@ -9,6 +9,8 @@ jobs:
   Backend-Unit-Tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
 
     steps:
       - uses: actions/checkout@v4
@@ -24,9 +26,10 @@ jobs:
         with: 
           python-version: 3.11
 
-      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
+      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 
         with:
-          enable-cache: true 
+          repo-token: ${{secrets.GITHUB_TOKEN}}
+
 
 
       - name: Install Dependencies
@@ -53,10 +56,13 @@ jobs:
 
   Frontend-Unit-Tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 60
     defaults: 
       run: 
         working-directory: apps/frontend
+
+    env:
+      BACKENDPORT: 3001
 
     steps: 
       - uses: actions/checkout@v4
@@ -74,7 +80,7 @@ jobs:
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/frontend/yarn.lock') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/frontend/package.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
 
@@ -83,13 +89,25 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright testing
-        run: yarn test
+        run: yarn unit-test
+
+      - name: Upload Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: |
+            apps/frontend/test-results
+            apps/frontend/playwright-report
 
   Integration-Tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     needs: ["Frontend-Unit-Tests", "Backend-Unit-Tests"]
+
+    env:
+      JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
 
     steps:
 
@@ -106,9 +124,9 @@ jobs:
         with: 
           python-version: 3.11
 
-      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
+      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 
         with:
-          enable-cache: true 
+          repo-token: ${{secrets.GITHUB_TOKEN}}
 
       - name: Install Dependencies
         run: task install
