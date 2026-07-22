@@ -34,7 +34,7 @@ class TestSetAuthCookies:
 			domain=None,
 			path='/',
 		)
-		access_call, refresh_call = response.set_cookie.call_args_list
+		_, refresh_call = response.set_cookie.call_args_list
 		assert refresh_call.args == ('refresh_token', 'refresh')
 		assert refresh_call.kwargs['httponly'] is True
 		assert refresh_call.kwargs['secure'] is False
