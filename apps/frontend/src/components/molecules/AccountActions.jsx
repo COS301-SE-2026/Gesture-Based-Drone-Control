@@ -5,30 +5,21 @@ import { API_BASE_URL } from "@/lib/api"
 const AccountActions = () => {
   const navigate = useNavigate()
 
-  const handleLogout =async() => {
-    try 
-    {
-      const response = await fetch(`${API_BASE_URL}/api/auth/logout`,{
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
       })
 
-      if (!response.ok){
+      if (!response.ok) {
         console.warn("Logout request failed with status:", response.status)
       }
-    }
-
-    catch(err) 
-    {
-      console.warn("Logout request could not reach the server:" , err)
-    }
-
-    finally 
-    {
+    } catch (err) {
+      console.warn("Logout request could not reach the server:", err)
+    } finally {
       navigate("/login")
     }
-
-
   }
 
   return (
