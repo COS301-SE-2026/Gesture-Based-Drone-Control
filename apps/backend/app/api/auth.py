@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import (
 	APIRouter,
+	Cookie,
 	Depends,
 	HTTPException,
 	Response,
@@ -18,10 +19,13 @@ from services.auth.auth_manager import (
 	SessionTokens,
 	auth_manager,
 )
+
+from services.auth.auth_settings import get_auth_settings
 from services.auth.cookies import clear_auth_cookies, set_auth_cookies
-from services.auth.schemas import AuthResponse, LoginRequest, RefreshRequest, SignupRequest
+from services.auth.schemas import AuthResponse, LoginRequest, SignupRequest
 from services.database_manager.database import get_db
 
+settings=get_auth_settings()
 router = APIRouter(prefix='/auth', tags=['auth'])
 
 
@@ -82,8 +86,14 @@ async def signup(
 
 @router.post('/refresh', response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
 async def refresh(
-	request: RefreshRequest, response: Response, db: Annotated[AsyncSession, Depends(get_db)]
+	repsonse: Response,
+	db :Annotated[AsyncSession,Depends(get_db)],
+	refresh_token: Annotated[str| None, Cookie(alias=settings.refresh_cookie_name)]= None,
 ):
+	if refresh_token is None:
+		raise HTTPException(
+			status_code = status.HTTP_401_UNAUTHORIZED, detail = 'No refresh toekn provided'
+		)
 
 	try:
 		tokens: SessionTokens = await auth_manager.refresh(
@@ -104,8 +114,15 @@ async def refresh(
 
 @router.post('/logout', response_model=AuthResponse, status_code=status.HTTP_200_OK)
 async def logout(
-	request: RefreshRequest, response: Response, db: Annotated[AsyncSession, Depends(get_db)]
+	response :Response,
+	db: Annotated[AsyncSession,Depends(get_db)],
+	refresh_token: Annotated[str|None,Cookie(alias=settings.refresh_cookie_name)]= None,
+
 ):
+	if refresh_token is None:
+		clear_auth_cookies(response=response)
+		return AuthResponse(message='LOgout Succesful')
+	
 	try:
 		await auth_manager.logout(db=db, refresh_token=request.refresh_token)
 
