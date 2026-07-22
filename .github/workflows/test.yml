@@ -27,9 +27,6 @@ jobs:
           python-version: 3.11
 
       - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
-        with:
-          enable-cache: true 
-
 
       - name: Install Dependencies
         run: task install
@@ -124,8 +121,7 @@ jobs:
           python-version: 3.11
 
       - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
-        with:
-          enable-cache: true 
+        
 
       - name: Install Dependencies
         run: task install
@@ -140,6 +136,7 @@ jobs:
     needs: ["Integration-Tests"]
     env:
       BACKENDPORT: 3001
+      JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
 
     steps:
 
@@ -176,8 +173,7 @@ jobs:
           python-version: 3.11
 
       - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
-        with:
-          enable-cache: true 
+  
 
       - name: Install Dependencies
         run: task install
