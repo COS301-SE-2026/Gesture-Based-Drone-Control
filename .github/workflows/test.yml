@@ -9,6 +9,8 @@ jobs:
   Backend-Unit-Tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
 
     steps:
       - uses: actions/checkout@v4
@@ -104,6 +106,9 @@ jobs:
 
     needs: ["Frontend-Unit-Tests", "Backend-Unit-Tests"]
 
+    env:
+      JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
+
     steps:
 
       - uses: actions/checkout@v4
@@ -136,6 +141,7 @@ jobs:
     needs: ["Integration-Tests"]
     env:
       BACKENDPORT: 3001
+      JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
 
     steps:
 
