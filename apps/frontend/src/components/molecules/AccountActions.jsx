@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { Button } from "../atoms"
-import { API_BASE_URL } from "@/lib/api"
+import { API_BASE_URL } from "../../lib/api"
 
 const AccountActions = () => {
   const navigate = useNavigate()
@@ -27,7 +27,7 @@ const AccountActions = () => {
       <Button variant="secondary" onClick={() => navigate("/login")}>
         Switch Profile
       </Button>
-      <Button onClick={() => navigate("/login")}>Logout</Button>
+      <Button onClick={handleLogout}>Logout</Button>
     </div>
   )
 }
