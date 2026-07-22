@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<style>
+pre{
+    background:#202020;
+    font-size:14px;
+    color: azure;
+    overflow:auto;
+}
+</style>
+
+<h2>Gamepad API test</h2>
+
+<div id="status">No controller connected</div>
+
+<pre id="out"></pre>
+
+<script>
+
+let controller = null;
+const statusEl = document.getElementById("status");
+const outEl = document.getElementById("out");
+
+window.addEventListener("gamepadconnected", e=>{
+    controller = e.gamepad.index;
+    statusEl.textContent = "Connected: " + e.gamepad.id
+});
+
+window.addEventListener("gamepaddisconnected", () =>{
+    controller = null;
+    statusEl.textContent= "Disconnected"
+});
+
+// add a deadzone and ignore all inputs below this deadzone.
+// adjust higher for shittier controllers
+const DEADZONE = 0.08;
+
+// sanitize all analog inputs to ignore anything within the deadzone
+function cleanAxis(axis){
+    if(Math.abs(axis) < DEADZONE)
+        return 0;
+    return Number(axis.toFixed(3));
+}
+
+// call 60ish times a second and in implementation, chuck this into the websocket
+function poll(){
+    if (controller !== null){
+        const pad = navigator.getGamepads()[controller];
+
+        if(pad){
+            // likely will be the exact json schema used in the actual controller 
+            const payload = {
+                
+                // stick inputs within [-1, 1] inclusive
+                left_x: cleanAxis(pad.axes[0]), //right==1, ,left==-1
+                left_y: cleanAxis(pad.axes[1]), //down==1, up==-1
+
+                right_x: cleanAxis(pad.axes[2]),
+                right_y: cleanAxis(pad.axes[3]),
+                //fully depressed == 1
+                ltrigger: Number(((pad.buttons[6]?.value)||0).toFixed(3)),
+                rtrigger:Number(((pad.buttons[7]?.value)||0).toFixed(3)),
+                a: pad.buttons[0]?.pressed || false, //x
+                b: pad.buttons[1]?.pressed || false, //o
+                x: pad.buttons[2]?.pressed || false, //square
+                y: pad.buttons[3]?.pressed || false, //triangle
+                lb: pad.buttons[4]?.pressed || false,
+                rb: pad.buttons[5]?.pressed || false,
+                back: pad.buttons[8]?.pressed || false,
+                start: pad.buttons[9]?.pressed || false,
+                lclick: pad.buttons[10]?.pressed || false, //left stick click
+                rclick: pad.buttons[11]?.pressed || false, //right stick click
+                up: pad.buttons[12]?.pressed || false, //dpad
+                down: pad.buttons[13]?.pressed || false,
+                left: pad.buttons[14]?.pressed || false,
+                right: pad.buttons[15]?.pressed || false
+            };
+
+            outEl.textContent = JSON.stringify(payload,null,4);
+        }
+    }
+    requestAnimationFrame(poll);
+}
+
+poll()
+
+</script>
