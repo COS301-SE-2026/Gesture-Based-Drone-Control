@@ -7,7 +7,7 @@ REST:
 
 POST /drone/connect - connect to a drone adapter
 POST /drone.disconnect - disconnect the active drone adapter
-GET /dtrone/status - connection state + telemetry
+GET /drone/status - connection state + telemetry
 
 WebSockets:
 
@@ -24,11 +24,15 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.websockets import WebSocketState
 
-from apps.backend.app.dependencies import get_state
+from apps.backend.app.dependencies import get_state, get_ws_state
 from apps.backend.app.state import AppState
 from services.commands.command import Command, CommandType
-from services.drone_control.adapters.drone_adapter import DroneAdapter
+from services.database_manager.database import AsyncSessionLocal, get_db
+from services.database_manager.managers.flight_manager import flight_manager
+from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 logger = logging.getLogger(__name__)
 
@@ -91,17 +95,18 @@ async def health():
 
 
 @router.post('/connect', response_model=ConnectResponse)
-async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
+async def connect(
+	body: ConnectRequest,
+	state: Annotated[AppState, Depends(get_state)],
+	db: Annotated[AsyncSession, Depends(get_db)],
+):  # NOSONAR
 	# fuckass sonarqube would break this... dependencies are supposed to be injected like this
 	"""
 	connect to a drone adapter.
 	if there is already an adapter connected, this endpoint handles disconnecting it
 	should be seamless switching
 	"""
-	if state.adapter is not None:
-		logger.info('drone/connect: replacing existing adapter %s', state.adapter_name)
-		await state.adapter.disconnect()
-		state.reset()
+
 	try:
 		adapter = _build_adapter(body)
 	except ValueError as ex:
@@ -115,9 +120,20 @@ async def connect(body: ConnectRequest, state: Annotated[AppState, Depends(get_s
 			message=f'Cannot connect to {body.adapter} at {body.host}.',
 		)
 
+	if state.adapter is not None:
+		logger.info('drone/connect: replacing existing adapter %s', state.adapter_name)
+		await state.adapter.disconnect()
+		state.reset()
+
 	# update global state
 	state.adapter = adapter
 	state.adapter_name = body.adapter
+
+	# start flight record
+	drone_row = await flight_manager.get_or_create_drone(
+		db, display_name=body.adapter, is_simulated=(body.adapter != 'hardware')
+	)
+	state.current_drone_id = drone_row.id
 
 	logger.info('/drone/connect: connected via %s', state.adapter)
 	return ConnectResponse(
@@ -133,7 +149,9 @@ class DisconnectResponse(BaseModel):
 
 
 @router.post('/disconnect', response_model=DisconnectResponse)
-async def disconnect(state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
+async def disconnect(
+	state: Annotated[AppState, Depends(get_state)], db: Annotated[AsyncSession, Depends(get_db)]
+):  # NOSONAR
 	"""
 	Simply disconnects from the connected drone if there is one connected.
 	Returns a false for failure cases
@@ -143,6 +161,8 @@ async def disconnect(state: Annotated[AppState, Depends(get_state)]):  # NOSONAR
 
 	# there is an adapter connected, simply call disconnect and see if it works
 	name = state.adapter_name
+	if state.current_flight_id is not None:
+		await flight_manager.end_flight(db, state.current_flight_id)
 	await state.adapter.disconnect()
 	state.reset()
 	return DisconnectResponse(success=True, message=f'{name} adapter successfully disconnected')
@@ -169,37 +189,85 @@ async def status(state: Annotated[AppState, Depends(get_state)]):
 
 
 @router.websocket('/ws/telemetry')
-async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
+async def telemetry(websocket: WebSocket, state: Annotated[AppState, Depends(get_ws_state)]):
 	"""
 	Simply send telemetry to connected clients every 0.1 seconds.
 
 	If no adapter is connected, the socket stays open and silently waits
 		- this is to allow telemetry listening to occur immediately, without reconnecting
 	data will flow once /drone/connect is called
+
+	every 10th tick (probably +- a second) also persists a telemtry row to the db
+	for the currently active flight, so analytics has histroy to chart
 	"""
 	await websocket.accept()
 	state.clients.add(websocket)
 	logger.info('/drone/ws/telemetry: client connected (with %d total) ', len(state.clients))
+	tick = 0
 	try:
 		while True:
-			if state.adapter is not None:
-				try:
-					telemetry = await state.adapter.get_telemetry()
-					await websocket.send_json(asdict(telemetry))  # easy convert to json
-				except Exception as ex:
-					logger.exception('/drone/ws/telemetry: error getting telemetry - %s', ex)
-			await asyncio.sleep(0.1)  # adjust this polling rate as needed
+			if websocket.client_state != WebSocketState.CONNECTED:
+				break
+
+			if state.adapter is None:
+				await asyncio.sleep(0.1)
+				continue
+
+			try:
+				telemetry = await state.adapter.get_telemetry()
+
+				await websocket.send_json(asdict(telemetry))
+
+				tick += 1
+				if tick % 10 == 0:
+					await _record_telemetry(state, telemetry)
+
+			except (RuntimeError, WebSocketDisconnect):
+				logger.info('/drone/ws/telemetry: client disconnected mid-send')
+				break
+
+			except Exception as ex:
+				logger.exception('/drone/ws/telemetry: error getting telemetry - %s', ex)
+
+			await asyncio.sleep(0.1)
+
 	except WebSocketDisconnect:
-		state.clients.discard(websocket)
-		logger.exception(
-			'/drone/ws/telemetry: client disconnected, %d remaining', len(state.clients)
+		logger.info(
+			'/drone/ws/telemetry: client disconnected, %d remaining', len(state.clients) - 1
 		)
+
 	finally:
 		state.clients.discard(websocket)
 
 
+# helper function record the telemetry.
+async def _record_telemetry(
+	state: AppState,
+	telemetry: TelemetryData,
+) -> None:
+	"""
+	Does nothing if no active flight is happening
+	"""
+	if state.current_flight_id is None:
+		return
+
+	try:
+		async with AsyncSessionLocal() as db:
+			await flight_manager.record_telemetry(
+				db,
+				flight_id=state.current_flight_id,
+				displacement_x=telemetry.x_displacement,
+				displacement_y=telemetry.y_displacement,
+				altitude=telemetry.altitude_m,
+				battery_level=telemetry.battery_pct,
+				speed=telemetry.speed_ms,
+			)
+	except Exception as ex:
+		logger.exception('/drone/ws/telemetry: error recording telemetry row - %s', ex)
+
+
 @router.websocket('/ws/commands')
-async def command(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
+async def command(websocket: WebSocket, state: Annotated[AppState, Depends(get_ws_state)]):
 	"""
 	A 'backdoor' of sorts to allow the user to directly issue a command to a drone.
 	This can be done to easily wire up simple UI like the on screen buttons, without
@@ -248,6 +316,29 @@ async def command(websocket: WebSocket, state: Annotated[AppState, Depends(get_s
 			logger.info('drone/ws/commands: executing %s', command_type.name)
 
 			await state.adapter.execute(cmd)
+			# await websocket.send_json({'ok': True, 'command': command_type.name})
+			# start a flight record on takeoff, end on land
+			if command_type is CommandType.TAKEOFF and state.current_flight_id is None:
+				if state.current_drone_id is not None:
+					async with AsyncSessionLocal() as db:
+						flight = await flight_manager.start_flight(
+							db, drone_id=state.current_drone_id
+						)
+						state.current_flight_id = flight.id
+					logger.info('drone/ws/commands: flight %s started', state.current_flight_id)
+				else:
+					logger.warning('drone/ws/commands: TAKEOFF recieved but no drone_id in state')
+
+			# end flight on normal landing OR emrgency stop
+			elif command_type in (CommandType.LAND, CommandType.EMERGENCY_STOP) and (
+				state.current_flight_id is not None
+			):
+				ended_id = state.current_flight_id
+				async with AsyncSessionLocal() as db:
+					await flight_manager.end_flight(db, ended_id)
+				logger.info('drone/ws/commands: flight %s ended', state.current_flight_id)
+				state.current_flight_id = None
+
 			await websocket.send_json({'ok': True, 'command': command_type.name})
 
 	except WebSocketDisconnect:

@@ -7,13 +7,14 @@ Comprehensive testing for all drone endpoints:
 """
 
 import math
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import ANY, AsyncMock, MagicMock, patch
+from uuid import uuid4
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from apps.backend.app.api.drone import router
+from apps.backend.app.api.drone import ConnectRequest, _build_adapter, _record_telemetry, router
 from apps.backend.app.dependencies import get_state
 from apps.backend.app.state import AppState
 from services.drone_control.adapters.drone_adapter import TelemetryData
@@ -24,6 +25,7 @@ from services.drone_control.adapters.drone_adapter import TelemetryData
 def make_app(state: AppState) -> FastAPI:
 	app = FastAPI()
 	app.include_router(router)
+	app.state.app = state
 	app.dependency_overrides[get_state] = lambda: state
 	return app
 
@@ -403,3 +405,215 @@ def test_telemetry_no_crash():
 
 	with client.websocket_connect('/drone/ws/telemetry'):
 		assert len(state.clients) == 1
+
+
+# all the junk sonarqube and codecov are whining about
+
+
+def test_build_projectairsim_adapter():
+	with patch(
+		'services.drone_control.adapters.project_airsim_adapter.ProjectAirSimAdapter'
+	) as cls:
+		body = ConnectRequest(
+			adapter='projectairsim',
+			host='1.2.3.4',
+			vehicle_name='Drone',
+			topics_port=123,
+			services_port=456,
+		)
+
+		_build_adapter(body)
+
+		cls.assert_called_once_with(
+			host='1.2.3.4',
+			vehicle_name='Drone',
+			topics_port=123,
+			services_port=456,
+		)
+
+
+def test_build_airsim_adapter():
+	with patch('services.drone_control.adapters.airsim_adapter.AirSimAdapter') as cls:
+		body = ConnectRequest(
+			adapter='airsim',
+			host='localhost',
+			port=5000,
+			vehicle_name='Drone',
+		)
+
+		_build_adapter(body)
+
+		cls.assert_called_once_with(
+			host='localhost',
+			port=5000,
+			vehicle_name='Drone',
+		)
+
+
+def test_health():
+	client = TestClient(make_app(AppState()))
+	r = client.get('/drone/health')
+	assert r.status_code == 200
+	assert r.json() == {'status': 'ok'}
+
+
+@pytest.mark.asyncio
+async def test_connect_set_drone():
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	adapter = make_mock_adapter()
+
+	drone = MagicMock(id=42)
+
+	with (
+		patch(
+			'apps.backend.app.api.drone._build_adapter',
+			return_value=adapter,
+		),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.get_or_create_drone',
+			AsyncMock(return_value=drone),
+		),
+	):
+		client.post('/drone/connect', json={'adapter': 'dummy'})
+
+	assert state.current_drone_id == 42
+
+
+@pytest.mark.asyncio
+async def test_record_telemetry_no_flight():
+	state = AppState()
+
+	telemetry = TelemetryData(
+		altitude_m=1,
+		speed_ms=2,
+		battery_pct=3,
+		heading_deg=4,
+		is_flying=True,
+		source='jomama',
+	)
+
+	await _record_telemetry(state, telemetry)
+
+
+@pytest.mark.asyncio
+async def test_record_telemetry_records():
+	from apps.backend.app.api.drone import _record_telemetry
+
+	state = AppState()
+	state.current_flight_id = uuid4()
+
+	telemetry = TelemetryData(
+		altitude_m=102,
+		speed_ms=12,
+		battery_pct=2,
+		heading_deg=0,
+		is_flying=True,
+		source='aaaaaaaa',
+	)
+
+	with patch(
+		'apps.backend.app.api.drone.flight_manager.record_telemetry',
+		AsyncMock(),
+	) as record:
+		await _record_telemetry(state, telemetry)
+
+	record.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_record_telemetry_exception():
+	from apps.backend.app.api.drone import _record_telemetry
+
+	state = AppState()
+	state.current_flight_id = uuid4()
+
+	telemetry = TelemetryData(
+		altitude_m=1,
+		speed_ms=1,
+		battery_pct=1,
+		heading_deg=1,
+		is_flying=True,
+		source='pleaseworkiwannagoeepytime',
+	)
+
+	with patch(
+		'apps.backend.app.api.drone.flight_manager.record_telemetry',
+		AsyncMock(side_effect=RuntimeError),
+	):
+		await _record_telemetry(state, telemetry)
+
+
+def test_telemetry_records_every_tenth():
+	state = connected_state()
+
+	client = TestClient(make_app(state))
+
+	with patch('apps.backend.app.api.drone._record_telemetry', AsyncMock()) as record:
+		with client.websocket_connect('/drone/ws/telemetry') as ws:
+			for _ in range(10):
+				ws.receive_json()
+
+		record.assert_awaited_once()
+
+
+def test_takeoff_starts_flight():
+	state = connected_state()
+
+	drone_id = uuid4()
+	state.current_drone_id = drone_id
+
+	flight_id = uuid4()
+	flight = MagicMock(id=flight_id)
+
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.drone.flight_manager.start_flight',
+		AsyncMock(return_value=flight),
+	):
+		with client.websocket_connect('/drone/ws/commands') as ws:
+			ws.send_json({'command': 'TAKEOFF'})
+			response = ws.receive_json()
+
+	assert response['ok'] is True
+	assert state.current_flight_id == flight_id
+
+
+def test_land_ends_flight():
+	state = connected_state()
+
+	flight_id = uuid4()
+	state.current_flight_id = flight_id
+
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.drone.flight_manager.end_flight',
+		AsyncMock(),
+	) as end:
+		with client.websocket_connect('/drone/ws/commands') as ws:
+			ws.send_json({'command': 'LAND'})
+			response = ws.receive_json()
+
+	assert response['ok'] is True
+	end.assert_awaited_once_with(ANY, flight_id)
+	assert state.current_flight_id is None
+
+
+@pytest.mark.asyncio
+async def test_disconnect_ends_active_flight():
+	state = connected_state()
+
+	state.current_flight_id = uuid4()
+
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.drone.flight_manager.end_flight',
+		AsyncMock(),
+	) as end:
+		client.post('/drone/disconnect')
+
+	end.assert_awaited_once()

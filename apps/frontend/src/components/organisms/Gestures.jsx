@@ -1,8 +1,17 @@
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { CommandHistory, GestureGuide, DroneModeCard } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge, Camera } from "lucide-react"
+import { useTelemetry } from "@/context/TelemetryContext"
+import { useCommands } from "@/context/CommandsContext"
 
+const MS_TO_KMH = 3.6
+
+function fmt(value, digits = 0) {
+  return typeof value === "number" ? value.toFixed(digits) : "--"
+}
+
+//TODO: this is still mocked for now
 const GestureControl = () => {
   const [commands] = useState([
     { action: "swipe up - move up", timestamp: "18:50:43" },
@@ -11,24 +20,182 @@ const GestureControl = () => {
     { action: "swipe left - move left", timestamp: "18:50:42" },
   ])
 
-  //mock data for drone status
-  const droneMetrics = {
-    battery: 56,
-    speed: 5.6,
-    altitude: 72,
-    signal: 71,
+  //from gesture guide molecule to backend commandType name
+  const ACTION_TO_COMMAND = {
+    moveForward: "MOVE_FORWARD",
+    moveBackward: "MOVE_BACKWARD",
+    moveLeft: "MOVE_LEFT",
+    moveRight: "MOVE_RIGHT",
+    goUp: "MOVE_UP",
+    goDown: "MOVE_DOWN",
+    rotateLeft: "ROTATE_CCW",
+    rotateRight: "ROTATE_CW",
+    takeoff: "TAKEOFF",
+    land: "LAND",
+    hover: "HOVER",
+    emergencyStop: "EMERGENCY_STOP",
   }
 
+  const { telemetry, status } = useTelemetry()
+  const { sendCommand, status: commandStatus, lastResp } = useCommands()
+
+  const handleControlAcion = (action) => {
+    const commandName = ACTION_TO_COMMAND[action]
+    if (!commandName) {
+      console.warn(
+        "GestureControl: no command mapping for this action: ",
+        action
+      )
+      return
+    }
+    sendCommand(commandName, { source: "onscreen" })
+  }
+
+  // //mock data for drone status
+  // const droneMetrics = {
+  //   battery: 56,
+  //   speed: 5.6,
+  //   altitude: 72,
+  //   signal: 71,
+  // }
+
   const [droneMode, setDroneMode] = useState("DroneSim")
+  const [isConnecting, setIsConnecting] = useState(false)
+  const [connectionStatus, setConnectionStatus] = useState("disconnected")
+  const [connectionError, setConnectionError] = useState("")
+
+  //hardware isnt wired for now so we dont want to show the stale sim data
+  const displayTelem = droneMode === "Hardware" ? null : telemetry
+
+  //auto connect to airsim when the component is mounted
+
+  const connectToDrone = async (adapterType) => {
+    setIsConnecting(true)
+    setConnectionError("")
+    try {
+      let requestBody = {
+        adapter: adapterType,
+        host: "127.0.0.1",
+      }
+
+      if (adapterType === "projectairsim") {
+        requestBody = {
+          ...requestBody,
+          vehicle_name: "Drone1",
+          topics_port: 8989,
+          services_port: 8990,
+        }
+      } else if (adapterType === "dummy") {
+        requestBody = {
+          ...requestBody,
+          vehicle_name: "Drone-1",
+        }
+      }
+      //add xfly adapter later here
+
+      const response = await fetch("http://localhost:3001/api/drone/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      })
+      const data = await response.json()
+      // setConnectionStatus(data.connected ? "connected" : "failed")
+      console.log("drone connection: ", data)
+
+      if (data.connected) {
+        setConnectionStatus("connected")
+        console.log(`connected to ${adapterType} adapter`)
+      } else {
+        setConnectionStatus("failed")
+        setConnectionError(data.message || "connection failed")
+        console.error("connection failed: ", data.message)
+      }
+    } catch (error) {
+      console.error("failed to connect to drone:", error)
+      setConnectionStatus("failed")
+    } finally {
+      setIsConnecting(false)
+    }
+  }
+
+  //handle mode changes
+  const handleModeChange = async (mode) => {
+    setDroneMode(mode)
+
+    //disconnec curr adapter
+    try {
+      await fetch("http://localhost:3001/api/drone/disconnect", {
+        method: "POST",
+      })
+      console.log("disconnected from current adapter")
+    } catch (error) {
+      console.warn("error disconnecting:", error)
+    }
+
+    if (mode === "DroneSim") {
+      await connectToDrone("projectairsim")
+    } else if (mode === "Manual" || mode === "Autonomous") {
+      await connectToDrone("dummy")
+    }
+  }
+  //add hardware mode when drone works
+
+  const hasConnected = useRef(false)
+  useEffect(() => {
+    if (hasConnected.current) return
+    //initially connect to dummy for testing
+    hasConnected.current = true
+    connectToDrone("dummy")
+  }, [])
 
   return (
     <div className="p-6 space-y-6">
+      <div className="flex items-center gap-4 text-sm">
+        <span className="text-DarkGrey">Drone status:</span>
+        <span
+          className={`font-semibold ${
+            connectionStatus === "connected"
+              ? "text-green-500"
+              : connectionStatus === "failed"
+                ? "text-red-500"
+                : "text-yellow-500"
+          }`}
+        >
+          {isConnecting ? "connecting..." : connectionStatus}
+        </span>
+        {connectionError && (
+          <span className="text-red-500 text-xs">{connectionError}</span>
+        )}
+        <span className="text-DarkGrey">Telemetry:</span>
+        <span
+          className={`font-semibold ${
+            status === "open" ? "text-green-500" : "text-yellow-500"
+          }`}
+        >
+          {status}
+        </span>
+        <span className="text-DarkGrey">Commands:</span>
+        <span
+          className={`font-semibold ${
+            commandStatus === "open" ? "text-green-500" : "text-yellow-500"
+          }`}
+        >
+          {commandStatus}
+        </span>
+        <span className="text-DarkGrey">Mode:</span>
+        <span className="font-semibold text-blue-500">{droneMode}</span>
+        {lastResp?.error && (
+          <span className="text-semibold text-blue-500">{lastResp.error}</span>
+        )}
+      </div>
       <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">
         <Card variant="glass">
-          <Label size="md" className="shrink-0">
-            {" "}
-            Stats{" "}
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label size="md" className="shrink-0">
+              {" "}
+              Stats{" "}
+            </Label>
+          </div>
           <div className="flex items-center justify-between gap-4 flex-wrap h-full">
             <div className="flex items-center gap-3">
               <Battery className="w-6 h-6 text-Red" />
@@ -37,7 +204,7 @@ const GestureControl = () => {
                   Battery
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {droneMetrics.battery}%
+                  {fmt(displayTelem?.battery_pct)}%
                 </p>
               </div>
             </div>
@@ -49,7 +216,8 @@ const GestureControl = () => {
                   Signal
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {droneMetrics.signal}%
+                  {/* TODO: this is still mocked for now - theres no signl_pct field on the telem return yet */}
+                  100%
                 </p>
               </div>
             </div>
@@ -61,7 +229,13 @@ const GestureControl = () => {
                   Speed
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {droneMetrics.speed} km/h
+                  {fmt(
+                    typeof displayTelem?.speed_ms === "number"
+                      ? displayTelem.speed_ms * MS_TO_KMH
+                      : undefined,
+                    1
+                  )}{" "}
+                  km/h
                 </p>
               </div>
             </div>
@@ -73,7 +247,7 @@ const GestureControl = () => {
                   Altitude
                 </p>
                 <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {droneMetrics.altitude}m
+                  {fmt(displayTelem?.altitude_m, 1)}m
                 </p>
               </div>
             </div>
@@ -82,7 +256,7 @@ const GestureControl = () => {
 
         <DroneModeCard
           currentMode={droneMode}
-          onModeChange={setDroneMode}
+          onModeChange={handleModeChange}
           className="w-72"
         />
       </div>
@@ -106,7 +280,7 @@ const GestureControl = () => {
           </div>
         </Card>
 
-        <GestureGuide className="h-full" />
+        <GestureGuide className="h-full" onControlAction={handleControlAcion} />
       </div>
 
       <CommandHistory commands={commands} />
