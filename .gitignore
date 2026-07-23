@@ -20,3 +20,5 @@ site/
 *.db
 apps/backend/coverage.xml
 package-lock.json
+build/
+backend.spec
