@@ -543,7 +543,7 @@ async def test_record_telemetry_exception():
 		AsyncMock(side_effect=RuntimeError),
 	):
 		await _record_telemetry(state, telemetry)
-  
+
 
 def test_telemetry_records_every_tenth():
 	state = connected_state()
