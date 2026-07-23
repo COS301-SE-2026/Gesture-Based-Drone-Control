@@ -497,6 +497,54 @@ async def test_record_telemetry_no_flight():
 	await _record_telemetry(state, telemetry)
 
 
+@pytest.mark.asyncio
+async def test_record_telemetry_records():
+	from apps.backend.app.api.drone import _record_telemetry
+
+	state = AppState()
+	state.current_flight_id = uuid4()
+
+	telemetry = TelemetryData(
+		altitude_m=102,
+		speed_ms=12,
+		battery_pct=2,
+		heading_deg=0,
+		is_flying=True,
+		source='aaaaaaaa',
+	)
+
+	with patch(
+		'apps.backend.app.api.drone.flight_manager.record_telemetry',
+		AsyncMock(),
+	) as record:
+		await _record_telemetry(state, telemetry)
+
+	record.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_record_telemetry_exception():
+	from apps.backend.app.api.drone import _record_telemetry
+
+	state = AppState()
+	state.current_flight_id = uuid4()
+
+	telemetry = TelemetryData(
+		altitude_m=1,
+		speed_ms=1,
+		battery_pct=1,
+		heading_deg=1,
+		is_flying=True,
+		source='pleaseworkiwannagoeepytime',
+	)
+
+	with patch(
+		'apps.backend.app.api.drone.flight_manager.record_telemetry',
+		AsyncMock(side_effect=RuntimeError),
+	):
+		await _record_telemetry(state, telemetry)
+
+
 def test_telemetry_records_every_tenth():
 	state = connected_state()
 
@@ -552,3 +600,20 @@ def test_land_ends_flight():
 	assert response['ok'] is True
 	end.assert_awaited_once_with(ANY, flight_id)
 	assert state.current_flight_id is None
+
+
+@pytest.mark.asyncio
+async def test_disconnect_ends_active_flight():
+	state = connected_state()
+
+	state.current_flight_id = uuid4()
+
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.drone.flight_manager.end_flight',
+		AsyncMock(),
+	) as end:
+		client.post('/drone/disconnect')
+
+	end.assert_awaited_once()
