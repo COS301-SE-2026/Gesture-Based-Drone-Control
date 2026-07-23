@@ -13,6 +13,7 @@ so no sleeping and no flakiness
 from __future__ import annotations
 
 import pytest
+from app.cv import calibration as cv_calibration
 from app.cv.calibration import (
 	CALIBRATION_SEQUENCE,
 	CalibrationManager,
@@ -309,11 +310,14 @@ class _ScriptedStream:
 
 
 @pytest.fixture()
-def client():
+def calibration_app():
 	"""
 	Fresh app with the calibration router and a dummy gate flight route.
 	The module-lvel manager is reset around each test so tests
 	cannot leak state into each other.
+
+	Yields the router module too, so socket tests can swap out its
+	'stream' import.
 	"""
 	from app.api import calibration as calibration_module
 	from app.dependencies import require_calibrated
@@ -326,8 +330,14 @@ def client():
 		return {'ok': True}
 
 	calibration_module.manager.reset()
-	yield TestClient(app)
+	yield calibration_module, app
 	calibration_module.manager.reset()
+
+
+@pytest.fixture()
+def client(calibration_app):
+	_, app = calibration_app
+	return TestClient(app)
 
 
 class TestCalibrationEndpoints:
@@ -370,3 +380,179 @@ class TestCalibrationEndpoints:
 
 		client.post('/api/calibration/start')
 		assert client.post('/api/drone/takeoff-test').status_code == 409
+
+
+# WebSocket stream
+
+
+class TestCalibrationWebSocket:
+	def test_connecting_starts_a_run_and_subscribes(self, calibration_app, monkeypatch):
+		module, app = calibration_app
+		stream = _ScriptedStream(frames=[make_frame(1, DT, CALIBRATION_SEQUENCE[0])])
+		monkeypatch.setattr(module, 'stream', stream)
+
+		with TestClient(app).websocket_connect(WS_URL) as ws:
+			ws.receive_json()
+			assert module.manager.status is CalibrationStatus.IN_PROGRESS
+
+		assert stream.subscribed == 1
+
+	def test_pushes_one_payload_per_frame(self, calibration_app, monkeypatch):
+		module, app = calibration_app
+		target = CALIBRATION_SEQUENCE[0]
+		frames = [make_frame(i, i * DT, target) for i in range(1, 4)]
+		monkeypatch.setattr(module, 'stream', _ScriptedStream(frames=frames))
+
+		with TestClient(app).websocket_connect(WS_URL) as ws:
+			messages = [ws.receive_json() for _ in range(3)]
+
+		assert [m['frame_index'] for m in messages] == [1, 2, 3]
+		for message in messages:
+			assert message['type'] == 'calibration_frame'
+			assert message['phase'] == 'awaiting_gesture'
+			assert message['target_gesture'] == target
+			assert message['progress']['total'] == len(CALIBRATION_SEQUENCE)
+
+	def test_payload_carries_the_overlay_contract(self, calibration_app, monkeypatch):
+		"""Frontend needs landmarks + the matched flag to colour the skeleton."""
+		module, app = calibration_app
+		target = CALIBRATION_SEQUENCE[0]
+		frames = [
+			make_frame(1, DT, 'UNKNOWN'),
+			make_frame(2, 2 * DT, target),
+			make_frame(3, 3 * DT, None),
+		]
+		monkeypatch.setattr(module, 'stream', _ScriptedStream(frames=frames))
+
+		with TestClient(app).websocket_connect(WS_URL) as ws:
+			wrong, right, empty = (ws.receive_json() for _ in range(3))
+
+			assert wrong['matched'] is False
+			assert wrong['detected_gesture'] == 'UNKNOWN'
+			assert len(wrong['hands'][0]['landmarks']) == 21
+
+			assert right['matched'] is True
+			assert right['detected_gesture'] == target
+			assert right['window']['required_ratio'] == pytest.approx(0.8)
+
+			assert empty['matched'] is False
+			assert empty['detected_gesture'] is None
+			assert empty['hands'] == []
+
+	def test_client_disconnect_unsubscribes(self, calibration_app, monkeypatch):
+		module, app = calibration_app
+		stream = _ScriptedStream(frames=[make_frame(1, DT, CALIBRATION_SEQUENCE[0])])
+		monkeypatch.setattr(module, 'stream', stream)
+
+		with TestClient(app).websocket_connect(WS_URL) as ws:
+			ws.receive_json()
+
+		# queue ran dry -> WebSocketDisconnect -> finally releases the slot
+		assert len(stream.unsubscribed) == 1
+
+	def test_completed_run_closes_the_stream(self, calibration_app, monkeypatch):
+		"""
+		Drive a real session to DONE over the socket.
+
+		The default sequence would need ~650 frames, so the session is
+		swapped for a two-gesture, three-frame variant. Each frame shows
+		both gestures at once, so it matches whichever target is current.
+		"""
+		module, app = calibration_app
+
+		def quick_session(*_args, **_kwargs):
+			return CalibrationSession(
+				sequence=('OPEN_PALM', 'FIST'),
+				min_frames=3,
+				success_display_seconds=0.1,
+			)
+
+		monkeypatch.setattr(cv_calibration, 'CalibrationSession', quick_session)
+
+		frames = [make_multi_hand_frame(i, i * DT, ('OPEN_PALM', 'FIST')) for i in range(1, 21)]
+		stream = _ScriptedStream(frames=frames)
+		monkeypatch.setattr(module, 'stream', stream)
+
+		phases = []
+		with TestClient(app).websocket_connect(WS_URL) as ws:
+			for _ in range(len(frames)):
+				message = ws.receive_json()
+				phases.append(message['phase'])
+				if message['phase'] == 'done':
+					break
+
+		assert phases[-1] == 'done'
+		assert 'success_display' in phases
+		assert module.manager.status is CalibrationStatus.COMPLETED
+		assert module.manager.is_calibrated is True
+		# server stopped reading before the frame list was exhausted
+		assert len(stream.unsubscribed) == 1
+
+	def test_unexpected_error_is_swallowed_and_unsubscribed(self, calibration_app, monkeypatch):
+		"""A pipeline blow-up must not leak a subscriber slot."""
+		module, app = calibration_app
+		stream = _ScriptedStream(
+			frames=[make_frame(1, DT, CALIBRATION_SEQUENCE[0])],
+			then=RuntimeError('pipeline exploded'),
+		)
+		monkeypatch.setattr(module, 'stream', stream)
+
+		with TestClient(app).websocket_connect(WS_URL) as ws:
+			ws.receive_json()
+
+		assert len(stream.unsubscribed) == 1
+
+	def test_subscribe_failure_skips_unsubscribe(self, calibration_app, monkeypatch):
+		"""queue is still None, so finally must not call unsubscribe(None)."""
+		module, app = calibration_app
+		stream = _ScriptedStream(subscribe_error=RuntimeError('no camera'))
+		monkeypatch.setattr(module, 'stream', stream)
+
+		with TestClient(app).websocket_connect(WS_URL):
+			pass
+
+		assert stream.subscribed == 1
+		assert stream.unsubscribed == []
+
+	def test_reconnecting_restarts_the_run(self, calibration_app, monkeypatch):
+		"""A second client restarts the shared run rather than resuming it."""
+		module, app = calibration_app
+		target = CALIBRATION_SEQUENCE[0]
+		monkeypatch.setattr(
+			module,
+			'stream',
+			_ScriptedStream(frames=[make_frame(i, i * DT, target) for i in range(1, 3)]),
+		)
+		test_client = TestClient(app)
+
+		with test_client.websocket_connect(WS_URL) as ws:
+			ws.receive_json()
+			ws.receive_json()
+
+		monkeypatch.setattr(
+			module,
+			'stream',
+			_ScriptedStream(frames=[make_frame(1, DT, target)]),
+		)
+		with test_client.websocket_connect(WS_URL) as ws:
+			message = ws.receive_json()
+
+		assert message['window']['frames'] == 1
+		assert message['progress']['completed'] == []
+
+	def test_connecting_regates_flight(self, calibration_app, monkeypatch):
+		module, app = calibration_app
+		monkeypatch.setattr(
+			module,
+			'stream',
+			_ScriptedStream(frames=[make_frame(1, DT, CALIBRATION_SEQUENCE[0])]),
+		)
+		test_client = TestClient(app)
+
+		test_client.post('/api/calibration/skip')
+		assert test_client.post('/api/drone/takeoff-test').status_code == 200
+
+		with test_client.websocket_connect(WS_URL) as ws:
+			ws.receive_json()
+
+		assert test_client.post('/api/drone/takeoff-test').status_code == 409
