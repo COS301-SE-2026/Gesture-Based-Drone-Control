@@ -21,11 +21,24 @@ from app.cv.calibration import (
 	CalibrationStatus,
 )
 from app.cv.serialization import GestureFramePayload, HandOut, LandmarkOut
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, WebSocketDisconnect
 from fastapi.testclient import TestClient
 
 FPS = 30.0
 DT = 1.0 / FPS
+
+WS_URL = '/api/calibration/stream'
+
+
+def make_hand(gesture: str) -> HandOut:
+	return HandOut(
+		handedness='RIGHT',
+		gesture=gesture,
+		fingers=0,
+		confidence=0.95,
+		speed=0.01,
+		landmarks=[LandmarkOut(x=0.5, y=0.5, z=0.0) for _ in range(21)],
+	)
 
 
 def make_frame(
@@ -38,21 +51,25 @@ def make_frame(
 	"""
 	hands: list[HandOut] = []
 	if gesture is not None:
-		hands.append(
-			HandOut(
-				handedness='RIGHT',
-				gesture=gesture,
-				fingers=0,
-				confidence=0.95,
-				speed=0.01,
-				landmarks=[LandmarkOut(x=0.5, y=0.5, z=0.0) for _ in range(21)],
-			)
-		)
+		hands.append(make_hand(gesture))
 	return GestureFramePayload(
 		frame_index=frame_index,
 		timestamp=timestamp,
 		fps=FPS,
 		hands=hands,
+	)
+
+
+def make_multi_hand_frame(
+	frame_index: int,
+	timestamp: float,
+	gestures: tuple[str, ...],
+) -> GestureFramePayload:
+	return GestureFramePayload(
+		frame_index=frame_index,
+		timestamp=timestamp,
+		fps=FPS,
+		hands=[make_hand(g) for g in gestures],
 	)
 
 
@@ -257,6 +274,35 @@ class TestCalibrationManager:
 		manager.start()
 		assert manager.status is CalibrationStatus.IN_PROGRESS
 		assert manager.is_calibrated is False
+
+
+class _ScriptedQueue:
+	def __init__(self, frames, then) -> None:
+		self._frames = list(frames)
+		self._then = then
+
+	async def get(self):
+		if self._frames:
+			return self._frames.pop(0)
+		raise self._then
+
+
+class _ScriptedStream:
+	def __init__(self, frames=(), then=None, subscribe_error=None) -> None:
+		self.frames = list(frames)
+		self.then = then if then is not None else WebSocketDisconnect(code=1000)
+		self.subscribe_error = subscribe_error
+		self.subscribed = 0
+		self.unsubscribed: list = []
+
+	async def subscribe(self):
+		self.subscribed += 1
+		if self.subscribe_error is not None:
+			raise self.subscribe_error
+		return _ScriptedQueue(self.frames, self.then)
+
+	async def unsubscribe(self, queue) -> None:
+		self.unsubscribed.append(queue)
 
 
 # REST endpoints + flight gating
