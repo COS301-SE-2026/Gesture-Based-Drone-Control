@@ -267,7 +267,6 @@ const GestureControl = () => {
             <div className="flex items-center justify-between">
               <Label className="text-lg font-semibold">Gesture Detection</Label>
             </div>
-
           </div>
         </Card>
 
