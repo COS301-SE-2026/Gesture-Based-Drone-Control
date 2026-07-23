@@ -5,6 +5,7 @@ import sys
 
 # need to slow stuff down
 import time
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -27,6 +28,8 @@ from services.cv_pipeline.hand_detection.mediapipe_detector import (  # noqa: E4
 )
 from services.cv_pipeline.processing.pipeline import (  # noqa: E402
 	CvPipeline,
+	FpsMeter,
+	HandMetrics,
 	PipelineConfig,
 	PipelineEvent,
 )
@@ -52,6 +55,35 @@ def make_engine_result(frame_idx: int = 1, gesture: Gesture = Gesture.FIST) -> G
 		confidence=0.9,
 	)
 	return GestureEngineResult(hand_gestures=[gr], frame_index=frame_idx)
+
+
+def wrist(x: float, y: float):
+	"""Minimal landmark stand in, motion tracker only reads./x / .y"""
+	return SimpleNamespace(x=x, y=y, z=0.9)
+
+
+class _FakeHand:
+	"""Mimics one detected hand as far as pipeline cares aboit it"""
+
+	def __init__(
+		self,
+		handedness: Handedness = Handedness.RIGHT,
+		confidence: float = 0.9,
+		x: float = 0.5,
+		y: float = 0.5,
+	):
+		self.handedness = handedness
+		self.confidence = confidence
+		self.landmarks = [wrist(x, y)]
+
+
+class _FakeDetection:
+	"""Mimics HandDetectionResult"""
+
+	def __init__(self, frame_index: int, hands=None):
+		self.frame_index = frame_index
+		self.hands = list(hands or [])
+		self.has_hands = bool(self.hands)
 
 
 class _FakeCamera:
@@ -121,6 +153,15 @@ class _FakeEngine:
 		self.process_calls += 1
 		return make_engine_result(frame_idx=detection.frame_index)
 
+	class _StuckThread:
+		"""a cammera thread that refuses to die"""
+
+		def join(self, timeout=None):
+			return None
+
+		def is_alive(self):
+			return True
+
 
 @pytest.fixture
 def fake_pipeline_deps(monkeypatch):
@@ -153,6 +194,54 @@ def fake_pipeline_deps(monkeypatch):
 	monkeypatch.setattr('services.cv_pipeline.processing.pipeline.GestureEngine', make_engine)
 
 	return fakes
+
+
+class TestFpsMeter:
+	def test_starts_at_zero(self):
+		meter = FpsMeter()
+		assert meter.fps == 0.0
+
+	def test_first_sample_has_no_delta_yet(self):
+		"""One timestamp is not enough to derive a rate"""
+		meter = FpsMeter()
+		assert meter.update(1.0) == 0.0
+		assert meter.fps == 0.0
+
+	def test_second_sample_seeds_instantaneous_fps(self):
+		meter = FpsMeter()
+		meter.update(0.0)
+		assert meter.update(0.1) == pytest.approx(10.0)
+		assert meter.fps == pytest.approx(10.0)
+
+	def test_ema_smooths_towards_the_new_value(self):
+		meter = FpsMeter(alpha=0.5)
+		meter.update(0.0)
+		meter.update(0.1)
+		assert meter.update(0.15) == pytest.approx(15.0)
+
+	def test_default_alpha_barely_moves_on_one_sample(self):
+		meter = FpsMeter()
+		meter.update(0.0)
+		meter.update(0.1)
+		assert meter.update(0.15) == pytest.approx(11.0)
+
+	def test_non_positive_delta_is_ignored(self):
+		meter = FpsMeter()
+		meter.update(1.0)
+		meter.update(2.0)
+		steady = meter.fps
+
+		assert meter.update(2.0) == pytest.approx(steady)
+		assert meter.update(1.5) == pytest.approx(steady)
+		assert meter.fps == pytest.approx(steady)
+
+
+class TestHandMetrics:
+	def test_fields_stored(self):
+		m = HandMetrics(handedness=Handedness.LEFT, confidence=0.87, speed=0.42)
+		assert m.handedness is Handedness.LEFT
+		assert m.confidence == pytest.approx(0.87)
+		assert m.speed == pytest.approx(0.42)
 
 
 # PipelineConfig
