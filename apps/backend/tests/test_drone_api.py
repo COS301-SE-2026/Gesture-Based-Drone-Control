@@ -7,13 +7,14 @@ Comprehensive testing for all drone endpoints:
 """
 
 import math
+from uuid import uuid4
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from apps.backend.app.api.drone import ConnectRequest, _build_adapter, router
+from apps.backend.app.api.drone import ConnectRequest, _build_adapter, _record_telemetry, router
 from apps.backend.app.dependencies import get_state
 from apps.backend.app.state import AppState
 from services.drone_control.adapters.drone_adapter import TelemetryData
@@ -478,3 +479,42 @@ async def test_connect_set_drone():
 		client.post('/drone/connect', json={'adapter': 'dummy'})
 
 	assert state.current_drone_id == 42
+
+
+@pytest.mark.asyncio
+async def test_record_telemetry_no_flight():
+	state = AppState()
+
+	telemetry = TelemetryData(
+		altitude_m=1,
+		speed_ms=2,
+		battery_pct=3,
+		heading_deg=4,
+		is_flying=True,
+		source='jomama',
+	)
+
+	await _record_telemetry(state, telemetry)
+
+def test_telemetry_records_every_tenth():
+	state = connected_state()
+	
+	client = TestClient(make_app(state))
+	
+	with patch("apps.backend.app.api.drone._record_telemetry",
+			AsyncMock()) as record:
+		with client.websocket_connect("/drone/ws/telemetry") as ws:
+			for _ in range(10):
+				ws.receive_json()
+	
+		record.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_connect_sets_current_drone():
+    state = AppState()
+    client = TestClient(make_app(state))
+    
+    adapter = make_mock_adapter()
+    
+    drone_id  = uuid4()
+    drone = MagicMock(id=drone_id)
