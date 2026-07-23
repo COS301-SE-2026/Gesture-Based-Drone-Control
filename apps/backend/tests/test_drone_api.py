@@ -510,17 +510,6 @@ def test_telemetry_records_every_tenth():
 		record.assert_awaited_once()
 
 
-@pytest.mark.asyncio
-async def test_connect_sets_current_drone():
-	state = AppState()
-	client = TestClient(make_app(state))
-
-	adapter = make_mock_adapter()
-
-	drone_id = uuid4()
-	drone = MagicMock(id=drone_id)
-
-
 def test_takeoff_starts_flight():
 	state = connected_state()
 
