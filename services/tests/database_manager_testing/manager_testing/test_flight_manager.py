@@ -119,3 +119,30 @@ async def test_end_flight_w_no_telem_sets(manager, db):
 	assert mock_flight.avg_speed is None
 	assert mock_flight.control_count == 0
 	assert result is mock_flight
+
+
+@patch('services.database_manager.managers.flight_manager.Telemetry')
+async def test_record_telem_builds_and_adds_rows(mock_telemetry_cls, manager, db):
+	mock_instance = MagicMock()
+	mock_telemetry_cls.return_value = mock_instance
+	flight_id = uuid.uuid4()
+	await manager.record_telemetry(
+		db,
+		flight_id=flight_id,
+		displacement_x=1.0,
+		displacement_y=2.0,
+		altitude=10.0,
+		battery_level=90.00,
+		speed=3.5,
+	)
+	mock_telemetry_cls.assert_called_once_with(
+		flight_id=flight_id,
+		displacement_x=1.0,
+		displacement_y=2.0,
+		altitude=10.0,
+		battery_level=90.0,
+		speed=3.5,
+	)
+	db.add.assert_called_once_with(mock_instance)
+	db.commit.assert_awaited_once()
+	db.refresh.assert_not_awaited()
