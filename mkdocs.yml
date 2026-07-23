@@ -25,8 +25,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 
-  font:
-    false
+  font: false
 
   features:
     # Navigation
