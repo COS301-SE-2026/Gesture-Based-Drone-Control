@@ -38,7 +38,7 @@ jobs:
         
       - name: Install landing page dependencies
         working-directory: landing_page
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --ignore-scripts
 
       - name: Build landing page
         working-directory: landing_page
@@ -74,7 +74,7 @@ jobs:
           cp -r site_build/* deploy/docs/
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./deploy

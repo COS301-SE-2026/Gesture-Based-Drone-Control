@@ -1,7 +1,13 @@
 /* Gesture-Based Drone Control — extra.js
    Runs after MkDocs Material's own scripts. */
 
-const TX_GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#_/\\<>"
+const TX_GLYPHS = String.raw`ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#_/\<>`
+const TX_RAND = new Uint32Array(1)
+
+function txRand(max) {
+  crypto.getRandomValues(TX_RAND)
+  return TX_RAND[0] % max
+}
 
 function txScramble(el, duration = 900) {
   if (el.dataset.txScrambled) return
@@ -18,7 +24,7 @@ function txScramble(el, duration = 900) {
       if (i < settled || ch === " " || ch === "·") {
         out += ch
       } else {
-        out += TX_GLYPHS[Math.floor(Math.random() * TX_GLYPHS.length)]
+        out += TX_GLYPHS[txRand(TX_GLYPHS.length)]
       }
     }
     el.textContent = out
@@ -57,7 +63,7 @@ function txBackLink() {
 
   const search = header.querySelector(".md-search")
   if (search) {
-    header.insertBefore(a, search)
+    search.before(a)
   } else {
     header.appendChild(a)
   }
