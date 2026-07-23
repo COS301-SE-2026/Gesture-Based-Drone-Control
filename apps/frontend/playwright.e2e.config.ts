@@ -1,4 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from "node:path"
+import dotenv from "dotenv"
 
 /**
  * Read environment variables from file.
@@ -11,6 +13,13 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+
+dotenv.config({
+  path: path.resolve(process.cwd(), "../../.env"),
+});
+
+const port = process.env.BACKENDPORT ?? 3001;
+
 export default defineConfig({
   testDir: './tests',
   /* Run tests in files in parallel */
@@ -66,11 +75,21 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-   webServer: {
+   webServer: [
+    {
+      command: "task backend-dev",
+      cwd: path.resolve(process.cwd(), "../.."),
+      url: `http://localhost:${port}/api/health`,
+      reuseExistingServer: !process.env.CI,
+      env:{
+        PYTHONUTF8: "1"
+      }
+    },
+    {
      command: 'yarn dev',
      url: 'http://localhost:3000',
      reuseExistingServer: !process.env.CI,
-   },
+   }]
 
    
 });
