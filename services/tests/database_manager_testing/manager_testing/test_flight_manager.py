@@ -1,4 +1,6 @@
-from unittest.mock import AsyncMock, MagicMock
+import uuid
+from datetime import datetime
+from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -45,3 +47,28 @@ async def test_get_or_create_drone_creates_new_drone_when_missing(manager, db):
 	db.commit.assert_awaited_once()
 	db.refresh.assert_awaited_once_with(added_drone)
 	assert result is added_drone
+
+
+@patch('services.database_manager.manager.flight_manager.FlightSummary')
+async def start_flight_w_user_id(mock_flight_cls, manager, db):
+	mock_instance = MagicMock()
+	mock_flight_cls.return_value = mock_instance
+	user_id = uuid.uuid4()
+
+	result = await manager.start_flight(db, drone_id=1, user_id=user_id)
+	mock_flight_cls.assert_called_once_with(drone_id=1, user_id=user_id, started_at=ANY)
+	db.add.assert_called_once_with(mock_instance)
+	db.commit.assert_awaited_once()
+	db.refresh.assert_awaited_once_with(mock_instance)
+	assert result is mock_instance
+
+
+@patch('services.database_manager.manager.flight_manager.FlightSummary')
+async def start_flight_wo_user_id(mock_flight_cls, manager, db):
+	mock_instance = MagicMock()
+	mock_flight_cls.return_value = mock_instance
+	await manager.start_flight(db, drone_id=7)
+	_, kwargs = mock_flight_cls.call_args
+	assert kwargs['drone_id'] == 7
+	assert kwargs['user_id'] is None
+	assert isinstance(kwargs['started_at'], datetime)
