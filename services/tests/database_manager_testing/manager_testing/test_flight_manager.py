@@ -72,3 +72,50 @@ async def start_flight_wo_user_id(mock_flight_cls, manager, db):
 	assert kwargs['drone_id'] == 7
 	assert kwargs['user_id'] is None
 	assert isinstance(kwargs['started_at'], datetime)
+
+
+async def end_flight_returns_when_flight_not_found(manager, db):
+	result_mock = MagicMock()
+	result_mock.scalar_one_or_none.return_value = None
+	db.execute.return_value = result_mock
+
+	result = await manager.end_flight(db, flight_id=uuid.uuid4())
+
+	assert result is None
+	db.execute.assert_awaited_once()
+	db.commit.assert_not_awaited()
+
+
+async def end_flight_aggre_telem_plus_updates_flight(manager, db):
+	mock_flight = MagicMock()
+	flight_result = MagicMock()
+	flight_result.scalar_one_or_none.return_value = mock_flight
+
+	aggr_res = MagicMock()
+	aggr_res.one.return_value = (30.0, 4.0, 3)
+
+	db.execute.side_effect = [flight_result, aggr_res]
+
+	result = await manager.end_flight(db, flight_id=uuid.uuid4())
+
+	assert mock_flight.max_altitude == 30.0
+	assert mock_flight.avg_speed == 4.0
+	assert mock_flight.control_count == 3
+	assert isinstance(mock_flight.ended_at, datetime)
+	db.commit.assert_awaited_once()
+	db.refresh.assert_awaited_once_with(mock_flight)
+	assert result is mock_flight
+
+
+async def end_flight_w_no_telem_sets(manager, db):
+	mock_flight = MagicMock()
+	flight_result = MagicMock()
+	flight_result.scalar_one_or_none.return_value = mock_flight
+	aggr_res = MagicMock()
+	aggr_res.one.return_value = (None, None, 0)
+	db.execute.side_effect = [flight_result, aggr_res]
+	result = await manager.end_flight(db, flight_id=uuid.uuid4())
+	assert mock_flight.max_altitude is None
+	assert mock_flight.avg_speed is None
+	assert mock_flight.control_count == 0
+	assert result is mock_flight
