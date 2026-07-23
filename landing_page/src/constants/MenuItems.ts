@@ -15,6 +15,7 @@ export const NAV_LINKS: NavItem[] = [
   { label: "Simulator", href: "#sim" },
   { label: "Download", href: "#download" },
   { label: "FAQ", href: "#faq" },
+  { label: "Docs", href: "#docs" },
 ]
 
 export const SIDE_LINKS: SideLink[] = [
@@ -24,4 +25,5 @@ export const SIDE_LINKS: SideLink[] = [
   { n: "04", t: "Simulator", h: "#sim" },
   { n: "05", t: "Download", h: "#download" },
   { n: "06", t: "FAQ", h: "#faq" },
+  { n: "07", t: "Docs", h: "#docs" },
 ]
