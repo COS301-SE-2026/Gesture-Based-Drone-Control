@@ -1,7 +1,7 @@
 import Scramble from "../atoms/Scramble"
 import Magnet from "../atoms/Magnet"
 import Button from "../atoms/Button"
-import { REPO, RELEASES } from "../../constants/config"
+import { REPO, RELEASES, DOCS } from "../../constants/config"
 import logo from "../../assets/codex_merchants_logo.png"
 import "./Footer.css"
 
@@ -35,7 +35,7 @@ export default function Footer() {
           <h4>Resources</h4>
           <a href={REPO}>GitHub repository</a>
           <a href={RELEASES}>Releases</a>
-          <a href={REPO + "#readme"}>Documentation</a>
+          <a href={DOCS}>Documentation</a>
         </div>
         <div>
           <h4>Team</h4>
