@@ -23,8 +23,8 @@
     "react-dom": "^18.0.0",
     "react-is": "18",
     "react-router-dom": "^7.15.1",
-    "validator": "^13.15.35",
-    "three": "^0.160.0"
+    "three": "^0.160.0",
+    "validator": "^13.15.35"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -35,6 +35,7 @@
     "@types/three": "^0.160.0",
     "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.5.0",
+    "esbuild": "^0.28.1",
     "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.1.1",

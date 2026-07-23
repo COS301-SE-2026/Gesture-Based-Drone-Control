@@ -8,6 +8,8 @@ on:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
+      - 'landing_page/**'
+      - '.github/workflows/docs.yml'
 
 # Required for GitHub Pages deployment from Actions
 permissions:
@@ -26,6 +28,23 @@ jobs:
           # Full history required for git-revision-date-localized plugin
           fetch-depth: 0
 
+      # landing page
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: landing_page/yarn.lock
+        
+      - name: Install landing page dependencies
+        working-directory: landing_page
+        run: yarn install --frozen-lockfile
+
+      - name: Build landing page
+        working-directory: landing_page
+        run: yarn build
+
+      # docs (mkdocs)
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -43,10 +62,20 @@ jobs:
             pillow \
             cairosvg
 
-      - name: Configure Git identity for gh-deploy
-        run: |
-          git config --global user.name  "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Build docs
+        run: mkdocs build --clean --site-dir site_build
 
+        # combine landing page at root, docs under /docs
       - name: Build and deploy to GitHub Pages
-        run: mkdocs gh-deploy --force --clean --verbose
+        run: |
+          mkdir -p deploy
+          cp -r landing_page/dist/* deploy/
+          mkdir -p deploy/docs
+          cp -r site_build/* deploy/docs/
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./deploy
+          force_orphan: true
