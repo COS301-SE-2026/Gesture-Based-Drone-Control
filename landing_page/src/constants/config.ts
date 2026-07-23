@@ -3,4 +3,4 @@ export const REPO =
 export const RELEASES = REPO + "/releases"
 // gesture cycle timer
 export const CYCLE = 4.6
-export const DOCS ="docs/"
+export const DOCS = "docs/"
