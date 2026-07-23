@@ -7,6 +7,7 @@ export default function ThemeToggle() {
   const next: Theme = theme === "dark" ? "light" : "dark"
   return (
     <button
+      type="button"
       className="md-toggle"
       onClick={() => setTheme(next)}
       aria-label={"Switch to " + next + " mode"}

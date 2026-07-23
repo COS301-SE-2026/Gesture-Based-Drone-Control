@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "react"
 import { reducedMotion } from "../../lib/motion"
 
-export default function Scramble({ text }: { text: string }) {
+const rand = new Uint32Array(1)
+
+function randInt(max: number) {
+  crypto.getRandomValues(rand)
+  return rand[0] % max
+}
+
+export default function Scramble({ text }: Readonly<{ text: string }>) {
   const ref = useRef<HTMLSpanElement | null>(null)
   const [out, setOut] = useState(text)
   const played = useRef(false)
@@ -10,7 +17,7 @@ export default function Scramble({ text }: { text: string }) {
     const el = ref.current
     if (!el || reducedMotion()) return
     // copy pasted this glyph symbols dont kill me
-    const glyphs = "▓▒░<>/\\|=+#01AF"
+    const glyphs = String.raw`▓▒░<>/\\|=+#01AF`
     let timer = 0
     const io = new IntersectionObserver(
       ([entry]) => {
@@ -28,7 +35,7 @@ export default function Scramble({ text }: { text: string }) {
               // special · char pasted (scrambles with normal full stop)
               text[i] === " " || text[i] === "·"
                 ? text[i]
-                : glyphs[(Math.random() * glyphs.length) | 0]
+                : glyphs[randInt(glyphs.length)]
           }
           setOut(s)
           if (reveal >= text.length) {

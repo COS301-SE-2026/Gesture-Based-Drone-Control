@@ -99,7 +99,11 @@ export default function GestureShowcase() {
             <ol className="md-railnames">
               {GESTURES.map((g, i) => (
                 <li key={g.cmd} className={i === active ? "md-on" : ""}>
-                  <button onClick={() => jump(i)} aria-pressed={i === active}>
+                  <button
+                    type="button"
+                    onClick={() => jump(i)}
+                    aria-pressed={i === active}
+                  >
                     <em>{g.name}</em>
                     <span>{g.verb}</span>
                   </button>

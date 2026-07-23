@@ -27,6 +27,7 @@ export default function Sidebar() {
   return (
     <>
       <button
+        type="button"
         className={"md-sbtab" + (open ? " md-sbtab-on" : "")}
         onClick={() => setOpen(!open)}
         aria-expanded={open}
@@ -79,6 +80,7 @@ export default function Sidebar() {
 
         <div className="md-sbfoot">
           <button
+            type="button"
             className="md-sbtheme"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >

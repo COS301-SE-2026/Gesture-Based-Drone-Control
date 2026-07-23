@@ -1,12 +1,11 @@
-import { ReactNode, useState } from "react"
+import { ReactNode, useMemo, useState } from "react"
 import { Theme } from "../lib/motion"
 import { ThemeContext } from "./ThemeContext"
 
-export default function ThemeProvider({ children }: { children: ReactNode }) {
+export default function ThemeProvider({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const [theme, setTheme] = useState<Theme>("dark")
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  )
+  const value = useMemo(() => ({ theme, setTheme }), [theme])
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
