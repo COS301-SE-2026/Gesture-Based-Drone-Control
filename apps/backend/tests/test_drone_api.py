@@ -13,7 +13,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from apps.backend.app.api.drone import router
+from apps.backend.app.api.drone import ConnectRequest, _build_adapter, router
 from apps.backend.app.dependencies import get_state
 from apps.backend.app.state import AppState
 from services.drone_control.adapters.drone_adapter import TelemetryData
@@ -404,3 +404,77 @@ def test_telemetry_no_crash():
 
 	with client.websocket_connect('/drone/ws/telemetry'):
 		assert len(state.clients) == 1
+
+
+# all the junk sonarqube and codecov are whining about
+
+
+def test_build_projectairsim_adapter():
+	with patch(
+		'services.drone_control.adapters.project_airsim_adapter.ProjectAirSimAdapter'
+	) as cls:
+		body = ConnectRequest(
+			adapter='projectairsim',
+			host='1.2.3.4',
+			vehicle_name='Drone',
+			topics_port=123,
+			services_port=456,
+		)
+
+		_build_adapter(body)
+
+		cls.assert_called_once_with(
+			host='1.2.3.4',
+			vehicle_name='Drone',
+			topics_port=123,
+			services_port=456,
+		)
+
+
+def test_build_airsim_adapter():
+	with patch('services.drone_control.adapters.airsim_adapter.AirSimAdapter') as cls:
+		body = ConnectRequest(
+			adapter='airsim',
+			host='localhost',
+			port=5000,
+			vehicle_name='Drone',
+		)
+
+		_build_adapter(body)
+
+		cls.assert_called_once_with(
+			host='localhost',
+			port=5000,
+			vehicle_name='Drone',
+		)
+
+
+def test_health():
+	client = TestClient(make_app(AppState()))
+	r = client.get('/drone/health')
+	assert r.status_code == 200
+	assert r.json() == {'status': 'ok'}
+
+
+@pytest.mark.asyncio
+async def test_connect_set_drone():
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	adapter = make_mock_adapter()
+
+	drone = MagicMock(id=42)
+
+	with (
+		patch(
+			'apps.backend.app.api.drone._build_adapter',
+			return_value=adapter,
+		),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.get_or_create_drone',
+			AsyncMock(return_value=drone),
+		),
+	):
+		client.post('/drone/connect', json={'adapter': 'dummy'})
+
+	assert state.current_drone_id == 42
