@@ -13,7 +13,7 @@ pytestmark = pytest.mark.asyncio
 def user_payload() -> dict:
 	return {
 		'email': 'jsmith@example.com',
-		'password': 'S3curePassword!',
+		'hashed_password': 'S3curePassword!',
 		'first_name': 'J',
 		'last_name': 'Smith',
 	}
@@ -35,13 +35,6 @@ class TestUserManagerCreate:
 		created = await user_manager.create(session, **user_payload)
 
 		assert isinstance(created.id, uuid.UUID)
-
-	async def test_create_hashes_password(self, session, user_payload):
-		created = await user_manager.create(session, **user_payload)
-
-		assert created.hashed_password != user_payload['password']
-		assert created.hashed_password
-		assert len(created.hashed_password) > len(user_payload['password'])
 
 	async def test_is_active_defaults_true(self, session, user_payload):
 		created = await user_manager.create(session, **user_payload)

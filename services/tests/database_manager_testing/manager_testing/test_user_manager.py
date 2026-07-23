@@ -39,24 +39,19 @@ async def test_get_by_email_returns_none_when_not_found(manager, db):
 	assert result is None
 
 
-@patch('services.database_manager.managers.user_manager.hash_password')
 @patch('services.database_manager.managers.user_manager.User')
-async def test_create_builds_user_with_hashed_password(
-	mock_user_cls, mock_hash_password, manager, db
-):
-	mock_hash_password.return_value = 'hashed_pw'
+async def test_create_builds_user(mock_user_cls, manager, db):
 	mock_instance = MagicMock()
 	mock_user_cls.return_value = mock_instance
 
 	result = await manager.create(
 		db,
 		email='new@example.com',
-		password='plaintext',  # NOSONAR
+		hashed_password='hashed_pw',  # NOSONAR
 		first_name='Jane',
 		last_name='Doe',
 	)
 
-	mock_hash_password.assert_called_once_with('plaintext')
 	mock_user_cls.assert_called_once_with(
 		email='new@example.com',
 		hashed_password='hashed_pw',  # NOSONAR
@@ -66,9 +61,8 @@ async def test_create_builds_user_with_hashed_password(
 	assert result is mock_instance
 
 
-@patch('services.database_manager.managers.user_manager.hash_password')
 @patch('services.database_manager.managers.user_manager.User')
-async def test_create_adds_commits_and_refreshes(mock_user_cls, mock_hash_password, manager, db):
+async def test_create_adds_commits_and_refreshes(mock_user_cls, manager, db):
 	mock_instance = MagicMock()
 	mock_user_cls.return_value = mock_instance
 
@@ -79,15 +73,10 @@ async def test_create_adds_commits_and_refreshes(mock_user_cls, mock_hash_passwo
 	db.refresh.assert_awaited_once_with(mock_instance)
 
 
-@patch('services.database_manager.managers.user_manager.hash_password')
 @patch('services.database_manager.managers.user_manager.User')
-async def test_create_never_stores_plaintext_password(
-	mock_user_cls, mock_hash_password, manager, db
-):
-	mock_hash_password.return_value = 'hashed_pw'
+async def test_create_uses_supplied_hash(mock_user_cls, manager, db):
 
-	await manager.create(db, 'a@example.com', 'supersecret', 'A', 'B')  # NOSONAR
+	await manager.create(db, 'a@example.com', 'hashed_pw', 'A', 'B')  # NOSONAR
 
 	call_kwargs = mock_user_cls.call_args.kwargs
 	assert call_kwargs['hashed_password'] == 'hashed_pw'
-	assert 'supersecret' not in call_kwargs.values()

@@ -17,5 +17,6 @@ site/
 *.fig
 .DS_Store
 :Zone.Identifier
-apps/backend/coverage.xml
 *.db
+apps/backend/coverage.xml
+package-lock.json

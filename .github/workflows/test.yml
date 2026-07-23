@@ -63,6 +63,7 @@ jobs:
 
     env:
       BACKENDPORT: 3001
+      YARN_ENABLE_SCRIPTS: false
 
     steps: 
       - uses: actions/checkout@v4
@@ -86,7 +87,7 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: yarn playwright install --with-deps
 
       - name: Run Playwright testing
         run: yarn unit-test
@@ -133,3 +134,56 @@ jobs:
 
       - name: Integration Testing
         run: task integration-test
+
+  End-To-End-Tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    needs: ["Integration-Tests"]
+    env:
+      BACKENDPORT: 3001
+      JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
+
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.0'
+          cache: 'yarn'
+          cache-dependency-path: 'apps/frontend/yarn.lock'
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/frontend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b        
+        with: 
+          version: "0.11.13"
+          enable-cache: true
+
+      - uses: actions/setup-python@v5
+        with: 
+          python-version: 3.11
+
+      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 
+        with:
+          repo-token: ${{secrets.GITHUB_TOKEN}}
+      
+      - name: Install Dependencies
+        run: task install
+
+      - name: End To End Testing
+        run: task e2e-test
