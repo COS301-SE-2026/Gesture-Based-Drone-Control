@@ -7,8 +7,8 @@ Comprehensive testing for all drone endpoints:
 """
 
 import math
+from unittest.mock import ANY, AsyncMock, MagicMock, patch
 from uuid import uuid4
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import FastAPI
@@ -496,25 +496,70 @@ async def test_record_telemetry_no_flight():
 
 	await _record_telemetry(state, telemetry)
 
+
 def test_telemetry_records_every_tenth():
 	state = connected_state()
-	
+
 	client = TestClient(make_app(state))
-	
-	with patch("apps.backend.app.api.drone._record_telemetry",
-			AsyncMock()) as record:
-		with client.websocket_connect("/drone/ws/telemetry") as ws:
+
+	with patch('apps.backend.app.api.drone._record_telemetry', AsyncMock()) as record:
+		with client.websocket_connect('/drone/ws/telemetry') as ws:
 			for _ in range(10):
 				ws.receive_json()
-	
+
 		record.assert_awaited_once()
+
 
 @pytest.mark.asyncio
 async def test_connect_sets_current_drone():
-    state = AppState()
-    client = TestClient(make_app(state))
-    
-    adapter = make_mock_adapter()
-    
-    drone_id  = uuid4()
-    drone = MagicMock(id=drone_id)
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	adapter = make_mock_adapter()
+
+	drone_id = uuid4()
+	drone = MagicMock(id=drone_id)
+
+
+def test_takeoff_starts_flight():
+	state = connected_state()
+
+	drone_id = uuid4()
+	state.current_drone_id = drone_id
+
+	flight_id = uuid4()
+	flight = MagicMock(id=flight_id)
+
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.drone.flight_manager.start_flight',
+		AsyncMock(return_value=flight),
+	):
+		with client.websocket_connect('/drone/ws/commands') as ws:
+			ws.send_json({'command': 'TAKEOFF'})
+			response = ws.receive_json()
+
+	assert response['ok'] is True
+	assert state.current_flight_id == flight_id
+
+
+def test_land_ends_flight():
+	state = connected_state()
+
+	flight_id = uuid4()
+	state.current_flight_id = flight_id
+
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.drone.flight_manager.end_flight',
+		AsyncMock(),
+	) as end:
+		with client.websocket_connect('/drone/ws/commands') as ws:
+			ws.send_json({'command': 'LAND'})
+			response = ws.receive_json()
+
+	assert response['ok'] is True
+	end.assert_awaited_once_with(ANY, flight_id)
+	assert state.current_flight_id is None
