@@ -49,8 +49,8 @@ async def test_get_or_create_drone_creates_new_drone_when_missing(manager, db):
 	assert result is added_drone
 
 
-@patch('services.database_manager.manager.flight_manager.FlightSummary')
-async def start_flight_w_user_id(mock_flight_cls, manager, db):
+@patch('services.database_manager.managers.flight_manager.FlightSummary')
+async def test_start_flight_w_user_id(mock_flight_cls, manager, db):
 	mock_instance = MagicMock()
 	mock_flight_cls.return_value = mock_instance
 	user_id = uuid.uuid4()
@@ -63,8 +63,8 @@ async def start_flight_w_user_id(mock_flight_cls, manager, db):
 	assert result is mock_instance
 
 
-@patch('services.database_manager.manager.flight_manager.FlightSummary')
-async def start_flight_wo_user_id(mock_flight_cls, manager, db):
+@patch('services.database_manager.managers.flight_manager.FlightSummary')
+async def test_start_flight_wo_user_id(mock_flight_cls, manager, db):
 	mock_instance = MagicMock()
 	mock_flight_cls.return_value = mock_instance
 	await manager.start_flight(db, drone_id=7)
@@ -74,7 +74,7 @@ async def start_flight_wo_user_id(mock_flight_cls, manager, db):
 	assert isinstance(kwargs['started_at'], datetime)
 
 
-async def end_flight_returns_when_flight_not_found(manager, db):
+async def test_end_flight_returns_when_flight_not_found(manager, db):
 	result_mock = MagicMock()
 	result_mock.scalar_one_or_none.return_value = None
 	db.execute.return_value = result_mock
@@ -86,7 +86,7 @@ async def end_flight_returns_when_flight_not_found(manager, db):
 	db.commit.assert_not_awaited()
 
 
-async def end_flight_aggre_telem_plus_updates_flight(manager, db):
+async def test_end_flight_aggre_telem_plus_updates_flight(manager, db):
 	mock_flight = MagicMock()
 	flight_result = MagicMock()
 	flight_result.scalar_one_or_none.return_value = mock_flight
@@ -107,7 +107,7 @@ async def end_flight_aggre_telem_plus_updates_flight(manager, db):
 	assert result is mock_flight
 
 
-async def end_flight_w_no_telem_sets(manager, db):
+async def test_end_flight_w_no_telem_sets(manager, db):
 	mock_flight = MagicMock()
 	flight_result = MagicMock()
 	flight_result.scalar_one_or_none.return_value = mock_flight
