@@ -20,7 +20,7 @@ import {
   OctagonX,
 } from "lucide-react"
 import { useDroneControls } from "../../hooks/useDroneControls"
-
+import ControllerLayout from "./ControllerLayout"//visual part of the controller which will show when it is swutched to the controller tab
 const tabs = [
   { id: "onscreen", label: "On Screen", icon: Monitor },
   { id: "gestures", label: "Gestures", icon: Hand },
@@ -327,7 +327,8 @@ const GestureGuide = ({ className = "", onControlAction }) => {
         </div>
 
         {/* control the content being displayed */}
-        {activeTab === "onscreen" ? onScreenControls() : otherControls()}
+        {activeTab === "onscreen" ? (onScreenControls()) : activeTab === "controller" ? (<ControllerLayout />) : otherControls()}
+        
       </div>
     </Card>
   )
