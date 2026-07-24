@@ -1,0 +1,42 @@
+.md-pipe {
+  padding: 110px 6vw;
+  border-top: 1px solid var(--line);
+}
+.md-pipeflow {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  margin-top: 54px;
+  flex-wrap: nowrap;
+}
+.md-link {
+  width: 44px;
+  flex: 0 0 44px;
+  align-self: center;
+}
+.md-dash {
+  stroke: var(--red);
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+  animation: md-march 1s linear infinite;
+}
+.md-arrow {
+  stroke: var(--red);
+  stroke-width: 2;
+}
+@keyframes md-march {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+@media (max-width: 980px) {
+  .md-pipeflow {
+    flex-direction: column;
+  }
+  .md-link {
+    transform: rotate(90deg);
+    align-self: flex-start;
+    margin-left: 28px;
+    height: 30px;
+  }
+}

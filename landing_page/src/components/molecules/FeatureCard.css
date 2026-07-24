@@ -1,0 +1,48 @@
+.md-card {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 26px 24px 30px;
+  position: relative;
+  transition:
+    transform 0.25s,
+    border-color 0.25s;
+}
+.md-card::before,
+.md-card::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 0 solid var(--red);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.md-card::before {
+  top: 10px;
+  left: 10px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+.md-card::after {
+  bottom: 10px;
+  right: 10px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}
+.md-card:hover {
+  transform: translateY(-5px);
+}
+.md-card:hover::before,
+.md-card:hover::after {
+  opacity: 1;
+}
+.md-card h3 {
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.md-card p {
+  margin: 0;
+  color: var(--dim);
+  font-size: 14.5px;
+}

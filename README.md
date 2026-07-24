@@ -10,18 +10,21 @@
 
 <br/>
 
+<a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/"><img src="docs/assets/readme/btn-website.svg" height="46" alt="Visit the landing page"/></a>&nbsp;&nbsp;<a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/"><img src="docs/assets/readme/btn-docs.svg" height="46" alt="Open the docs hub"/></a>
+
 [![Test](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/test.yml?style=for-the-badge&logo=github-actions&logoColor=F5F3F4&label=TEST&color=A4161A&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/test.yml)
 [![Lint](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/lint.yml?style=for-the-badge&logo=github-actions&logoColor=F5F3F4&label=LINT&color=BA181B&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/lint.yml)
-[![Docs](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/docs.yml?style=for-the-badge&logo=readthedocs&logoColor=F5F3F4&label=DOCS&color=A4161A&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/docs.yml)
+[![Site](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/docs.yml?style=for-the-badge&logo=readthedocs&logoColor=F5F3F4&label=SITE&color=A4161A&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/docs.yml)
 [![Issues](https://img.shields.io/github/issues/COS301-SE-2026/Gesture-Based-Drone-Control?style=for-the-badge&logo=github&logoColor=F5F3F4&label=ISSUES&color=E5383B&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/issues)
 
 <br/>
 
-[![SRS](https://img.shields.io/badge/SRS-Requirements_Spec-A4161A?style=flat-square&logo=readthedocs&logoColor=F5F3F4&labelColor=161A1D)](docs/SRS.md)
+[![SRS](https://img.shields.io/badge/SRS-Requirements_Spec-A4161A?style=flat-square&logo=readthedocs&logoColor=F5F3F4&labelColor=161A1D)](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/)
+[![SAS](https://img.shields.io/badge/SAS-Architecture_Spec-A4161A?style=flat-square&logo=readthedocs&logoColor=F5F3F4&labelColor=161A1D)](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SAS/)
 [![Project Board](https://img.shields.io/badge/Project_Board-GitHub_Projects-A4161A?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D)](https://github.com/orgs/COS301-SE-2026/projects/70)
-[![Design](https://img.shields.io/badge/Design-Wireframes_%26_Branding-BA181B?style=flat-square&logo=figma&logoColor=F5F3F4&labelColor=161A1D)](docs/DESIGN.md)
-[![API](https://img.shields.io/badge/API-Reference-BA181B?style=flat-square&logo=swagger&logoColor=F5F3F4&labelColor=161A1D)](docs/api/API_REFERENCE.md)
-[![Testing](https://img.shields.io/badge/Testing-Strategy-E5383B?style=flat-square&logo=pytest&logoColor=F5F3F4&labelColor=161A1D)](docs/testing/TESTING.md)
+[![Brand](https://img.shields.io/badge/Brand-Design_System-BA181B?style=flat-square&logo=figma&logoColor=F5F3F4&labelColor=161A1D)](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/BRAND/)
+[![API](https://img.shields.io/badge/API-Reference-BA181B?style=flat-square&logo=swagger&logoColor=F5F3F4&labelColor=161A1D)](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/api/API_REFERENCE/)
+[![Testing](https://img.shields.io/badge/Testing-Manual-E5383B?style=flat-square&logo=pytest&logoColor=F5F3F4&labelColor=161A1D)](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/testing/TESTING/)
 
 <br/>
 
@@ -42,75 +45,65 @@
 
 <div align="center">
 
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
-
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <h3>CORE INTELLIGENCE</h3>
-      <p><sub>MediaPipe driven landmark detection feeding a dual <b>rule based plus TFLite</b> recognition engine over an asyncio bounded queue.</sub></p>
-    </td>
-    <td align="center" width="33%">
-      <h3>REAL TIME PIPELINE</h3>
-      <p><sub>Live camera, 21 point hand detection, gesture classification, command translation, drone. All in milliseconds.</sub></p>
-    </td>
-    <td align="center" width="33%">
-      <h3>SAFETY FIRST</h3>
-      <p><sub>Hover on tracking loss, emergency stop gesture, idle detection auto land, and full telemetry observer chain.</sub></p>
-    </td>
-  </tr>
-</table>
-
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
+<img src="docs/assets/readme/feature-cards.svg" width="100%" alt="Core intelligence, real-time pipeline, safety first"/>
 
 </div>
 
 <br/>
 
-## <img src="docs/assets/propeller.svg" width="24" align="center"/> &nbsp;Documentation
+<img src="docs/assets/readme/header-docs.svg" width="100%" alt="Website and Documentation"/>
 
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
-
-> Every artefact required by the Demo 1 rubric lives in the repo as either Markdown or PDF. No Google Drive, no external links.
+> The project ships a live site: the **[landing page](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/)** introduces the product, and the **[documentation hub](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/)** hosts every deliverable. All documents also live in the repo under [`docs/`](docs/) as Markdown or PDF.
 
 <table>
   <tr>
     <th width="40">#</th><th>Document</th><th>Purpose</th><th width="120">Link</th>
   </tr>
   <tr>
-    <td align="center">01</td><td><b>Software Requirements Specification</b></td><td>Functional requirements, use cases, domain model, quality requirements</td><td><a href="docs/SRS.md">SRS</a></td>
+    <td align="center">01</td><td><b>User Manual</b></td><td>Set up, sign in, and fly the drone with your hand</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/MANUAL/">Manual</a></td>
   </tr>
   <tr>
-    <td align="center">02</td><td><b>Architecture and Design</b></td><td>Brand style guide, wireframes, architectural patterns</td><td><a href="docs/DESIGN.md">Design</a></td>
+    <td align="center">02</td><td><b>Software Requirements Specification</b></td><td>Functional requirements, use cases, domain model, quality requirements</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/">SRS</a></td>
   </tr>
   <tr>
-    <td align="center">03</td><td><b>API Reference</b></td><td>REST and WebSocket contracts, schemas, examples</td><td><a href="docs/api/API_REFERENCE.md">API</a></td>
+    <td align="center">03</td><td><b>Software Architecture Specification</b></td><td>Architectural patterns, services, design decisions, diagrams</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SAS/">SAS</a></td>
   </tr>
   <tr>
-    <td align="center">04</td><td><b>Testing Strategy</b></td><td>Unit, integration, E2E coverage approach</td><td><a href="docs/testing/TESTING.md">Testing</a></td>
+    <td align="center">04</td><td><b>Brand and Design System</b></td><td>Style guide, wireframes, colour palette, typography</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/BRAND/">Brand</a></td>
   </tr>
   <tr>
-    <td align="center">05</td><td><b>CI/CD Pipeline</b></td><td>GitHub Actions workflows and quality gates</td><td><a href="docs/CICD.md">CI/CD</a></td>
+    <td align="center">05</td><td><b>Coding Standards</b></td><td>Conventions, linting rules, review requirements</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/CODING/">Coding</a></td>
   </tr>
   <tr>
-    <td align="center">06</td><td><b>Git Conventions</b></td><td>Branching, commits, PR rules</td><td><a href="docs/GIT.md">Git</a></td>
+    <td align="center">06</td><td><b>Testing Policy</b></td><td>Testing types, coverage targets, acceptance criteria</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/POLICY/">Policy</a></td>
   </tr>
   <tr>
-    <td align="center">07</td><td><b>Project Plan</b></td><td>Roadmap, milestones, demo deliverables</td><td><a href="docs/PLAN.md">Plan</a></td>
+    <td align="center">07</td><td><b>Testing Manual</b></td><td>How to run the suites and what they cover</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/testing/TESTING/">Testing</a></td>
   </tr>
   <tr>
-    <td align="center">08</td><td><b>Tender Document</b></td><td>Original proposal submitted to client</td><td><a href="docs/reports/tender.pdf">Tender</a></td>
+    <td align="center">08</td><td><b>API Reference</b></td><td>REST and WebSocket contracts, schemas, examples</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/api/API_REFERENCE/">API</a></td>
   </tr>
   <tr>
-    <td align="center">09</td><td><b>GitHub Project Board</b></td><td>Live sprint board, backlog, in progress</td><td><a href="https://github.com/orgs/COS301-SE-2026/projects/70">Board</a></td>
+    <td align="center">09</td><td><b>Project Plan</b></td><td>Roadmap, milestones, demo deliverables</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/PLAN/">Plan</a></td>
+  </tr>
+  <tr>
+    <td align="center">10</td><td><b>Git Conventions</b></td><td>Branching, commits, PR rules</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/GIT/">Git</a></td>
+  </tr>
+  <tr>
+    <td align="center">11</td><td><b>CI/CD Pipeline</b></td><td>GitHub Actions workflows and quality gates</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/CICD/">CI/CD</a></td>
+  </tr>
+  <tr>
+    <td align="center">12</td><td><b>Tender Document</b></td><td>Original proposal submitted to client</td><td><a href="docs/reports/tender.pdf">Tender</a></td>
+  </tr>
+  <tr>
+    <td align="center">13</td><td><b>GitHub Project Board</b></td><td>Live sprint board, backlog, in progress</td><td><a href="https://github.com/orgs/COS301-SE-2026/projects/70">Board</a></td>
   </tr>
 </table>
 
 <br/>
 
-## <img src="docs/assets/drone.svg" width="24" align="center"/> &nbsp;The Team. Codex Merchants
-
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
+<a id="the-team-codex-merchants"></a>
+<img src="docs/assets/readme/header-team.svg" width="100%" alt="The Team. Codex Merchants"/>
 
 <div align="center">
 
@@ -235,98 +228,9 @@ Considerable statistical and data analysis skills. UI engineering across React a
 
 <br/>
 
-## <img src="docs/assets/reticle.svg" width="24" align="center"/> &nbsp;System Architecture
+<img src="docs/assets/readme/header-architecture.svg" width="100%" alt="System Architecture"/>
 
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
-
-<div align="center">
-
-The system is structured across **six integrated tiers**, from raw hardware input through to deployed application and CI/CD automation. The diagram below renders interactively on GitHub.
-
-</div>
-
-```mermaid
-%%{init: {'theme':'dark', 'themeVariables': {
-  'primaryColor':'#A4161A', 'primaryTextColor':'#F5F3F4',
-  'primaryBorderColor':'#E5383B', 'lineColor':'#B1A7A6',
-  'secondaryColor':'#161A1D','tertiaryColor':'#0B090A','background':'#0B090A',
-  'fontSize':'14px'
-}}}%%
-flowchart TD
-    subgraph T1[" "]
-    direction LR
-        T1L["<b>Tier 1. Hardware Input</b>"]
-        CAM(["OpenCV Camera Feed"])
-        DRV(["xFly SDK / DJI Tello SDK"])
-        SIM(["AirSim / Gazebo plus ArduPilot"])
-    end
-
-    subgraph T2["Tier 2. CV and Gesture Pipeline. Core Intelligence"]
-    direction LR
-        MP(["MediaPipe Hands. 21 landmarks"])
-        RB(["Rule Based Recognizer"])
-        ML(["TFLite ML Recognizer"])
-        AS(["Asyncio Bounded Queue"])
-    end
-
-    subgraph T3["Tier 3. Backend API. Orchestration"]
-        FA(["FastAPI. REST plus WebSocket"])
-        DB[("SQLite / PostgreSQL")]
-    end
-
-    subgraph T4["Tier 4. Frontend. Command and Control"]
-        RE(["React plus TypeScript"])
-        RC(["Recharts. Live Telemetry"])
-    end
-
-    subgraph T5["Tier 5. Deployment"]
-    direction LR
-        EL(["Electron"])
-        CA(["PWA plus Capacitor"])
-        DK(["Docker"])
-    end
-
-    subgraph T6["Tier 6. DevOps and Docs"]
-    direction LR
-        GH(["GitHub Actions"])
-        SW(["SwaggerDocs"])
-        MK(["MkDocs"])
-    end
-
-    CAM --> MP
-    DRV --> AS
-    SIM --> AS
-    MP --> RB
-    MP --> ML
-    RB --> AS
-    ML --> AS
-    AS --> FA
-    FA --> DB
-    FA -.WebSocket.-> RE
-    RE --> RC
-    RE --> EL
-    RE --> CA
-    FA --> DK
-    GH -.CI.-> FA
-    GH -.CI.-> RE
-    SW -.docs.-> FA
-    MK -.docs.-> GH
-
-    classDef tier1 fill:#0B090A,stroke:#A4161A,color:#F5F3F4
-    classDef tier2 fill:#0B090A,stroke:#E5383B,color:#F5F3F4
-    classDef tier3 fill:#0B090A,stroke:#BA181B,color:#F5F3F4
-    classDef tier4 fill:#0B090A,stroke:#660708,color:#F5F3F4
-    classDef tier5 fill:#0B090A,stroke:#A4161A,color:#F5F3F4
-    classDef tier6 fill:#0B090A,stroke:#B1A7A6,color:#F5F3F4
-    class CAM,DRV,SIM tier1
-    class MP,RB,ML,AS tier2
-    class FA,DB tier3
-    class RE,RC tier4
-    class EL,CA,DK tier5
-    class GH,SW,MK tier6
-```
-
-<br/>
+> The full architecture — six integrated tiers from raw hardware input through to deployed application and CI/CD automation, with all diagrams — lives in the **[Software Architecture Specification](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SAS/)**.
 
 <details>
 <summary><b>Gesture to Command sequence diagram. Click to expand.</b></summary>
@@ -364,43 +268,35 @@ sequenceDiagram
 
 <br/>
 
-## <img src="docs/assets/drone-side.svg" width="24" align="center"/> &nbsp;Repository Structure
-
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
+<img src="docs/assets/readme/header-repo.svg" width="100%" alt="Repository Structure"/>
 
 > Monorepo, trunk based. Below is the actual tree (depth 3).
 
 ```
-gesture-drone-control/
+Gesture-Based-Drone-Control/
 ├── .github/workflows/         # CI: docs.yml, lint.yml, test.yml
 ├── apps/
 │   ├── backend/               # FastAPI, uv managed, Pytest
 │   │   ├── app/               # api, core, dependencies
-│   │   ├── tests/             # Pytest unit and integration tests
-│   │   ├── pyproject.toml
-│   │   └── makefile
+│   │   └── tests/             # Pytest unit and integration tests
 │   ├── desktop/               # Electron wrapper (Win, Linux, macOS)
-│   │   ├── main.js
-│   │   └── preload.js
 │   ├── frontend/              # React, TS, Vite, Tailwind
 │   │   ├── src/               # Components, pages, hooks
-│   │   ├── tests/             # Playwright E2E
-│   │   ├── vite.config.js
-│   │   └── tailwind.config.js
+│   │   └── tests/             # Playwright E2E and unit
 │   └── mobile/                # Capacitor (iOS, Android)
-│       ├── android/
-│       └── ios/
+│
+├── landing_page/              # Public site (React, TS, Vite, Three.js)
+│   └── src/                   # Atomic design: atoms, molecules, organisms
 │
 ├── services/                  # Core Python service layer
+│   ├── auth/                  # Auth manager, tokens, cookies
 │   ├── cv_pipeline/           # camera, gestures, hand_detection, processing
-│   │   └── gestures/recognizers/   # rule based and ML
-│   ├── drone_control/         # adapters/ (AirSim, xFly), controller.py
+│   ├── drone_control/         # adapters/ (AirSim, dummy, keyboard)
 │   ├── input/sources/         # gesture, keyboard, generic
 │   ├── commands/              # Command model and dispatch
-│   ├── telemetry/             # observer, manager, storage (SQLite/Postgres)
-│   ├── tests/                 # cv_pipeline_testing, adapter_testing
-│   ├── pyproject.toml
-│   └── makefile
+│   ├── database_manager/      # DB models and managers
+│   ├── telemetry/             # observer, manager, storage
+│   └── tests/                 # Per module test suites
 │
 ├── packages/                  # Shared across apps and services
 │   ├── contracts/             # python (Pydantic) and typescript types
@@ -411,17 +307,20 @@ gesture-drone-control/
 │   ├── docker/                # backend.Dockerfile, frontend.Dockerfile, airsim/
 │   └── scripts/               # Setup utilities
 │
-├── docs/
-│   ├── SRS.md, DESIGN.md, CICD.md, GIT.md, PLAN.md
+├── docs/                      # Documentation hub source (MkDocs)
+│   ├── SRS.md, SAS.md, BRAND.md, CODING.md, POLICY.md
+│   ├── MANUAL.md, PLAN.md, GIT.md, CICD.md
 │   ├── api/API_REFERENCE.md
 │   ├── testing/TESTING.md
-│   ├── demo/Deployment.md
+│   ├── frontend/              # atoms, molecules, organisms, routing
+│   ├── services/              # Adapter and service reference
 │   ├── diagrams/              # drawio sources
 │   └── reports/tender.pdf
 │
+├── init-db/                   # SQL bootstrap scripts
+├── vendors/                   # projectairsim submodule, sim configs
 ├── sandbox/                   # Throwaway scripts (not shipped)
 ├── tests/integration/         # Cross service integration tests
-├── site/                      # MkDocs generated site
 │
 ├── docker-compose.yml
 ├── makefile
@@ -431,9 +330,7 @@ gesture-drone-control/
 
 <br/>
 
-## <img src="docs/assets/propeller.svg" width="24" align="center"/> &nbsp;Technology Stack
-
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
+<img src="docs/assets/readme/header-stack.svg" width="100%" alt="Technology Stack"/>
 
 <div align="center">
 
@@ -509,6 +406,7 @@ gesture-drone-control/
 | ![Electron](https://img.shields.io/badge/-Electron-A4161A?style=flat-square&logo=electron&logoColor=F5F3F4&labelColor=161A1D) | Native desktop packaging (Win, Linux, macOS) | `latest` |
 | PWA plus Capacitor | Cross platform mobile delivery (iOS, Android) | `latest` |
 | ![Docker](https://img.shields.io/badge/-Docker-A4161A?style=flat-square&logo=docker&logoColor=F5F3F4&labelColor=161A1D) | Containerisation. Backend on port 8000, frontend on 5173 | `latest` |
+| GitHub Pages | Landing page and documentation hub hosting | `gh-pages` |
 
 </details>
 
@@ -518,9 +416,9 @@ gesture-drone-control/
 
 | Technology | Purpose |
 |:---|:---|
-| ![GitHub Actions](https://img.shields.io/badge/-GitHub_Actions-A4161A?style=flat-square&logo=github-actions&logoColor=F5F3F4&labelColor=161A1D) | CI/CD. Automated testing, linting, quality gates |
+| ![GitHub Actions](https://img.shields.io/badge/-GitHub_Actions-A4161A?style=flat-square&logo=github-actions&logoColor=F5F3F4&labelColor=161A1D) | CI/CD. Automated testing, linting, quality gates, site deployment |
 | ![Git](https://img.shields.io/badge/-Git-A4161A?style=flat-square&logo=git&logoColor=F5F3F4&labelColor=161A1D) | Version control. Trunk based. `main`, `dev`, `feature/*` |
-| MkDocs | Static site generation for documentation hub (`mkdocs.yml`) |
+| MkDocs Material | Documentation hub (`mkdocs.yml`), deployed with the landing page |
 | SwaggerDocs | Auto generated interactive API documentation |
 | Overleaf | Formal LaTeX documentation |
 
@@ -528,11 +426,9 @@ gesture-drone-control/
 
 <br/>
 
-## <img src="docs/assets/reticle.svg" width="24" align="center"/> &nbsp;Use Cases
+<img src="docs/assets/readme/header-usecases.svg" width="100%" alt="Use Cases"/>
 
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
-
-> Use cases are tracked as GitHub Issues and linked to the [Project Board](https://github.com/orgs/COS301-SE-2026/projects/70). Core cases target Demo 1. Optional cases extend toward Demo 2 and beyond.
+> Use cases are tracked as GitHub Issues and linked to the [Project Board](https://github.com/orgs/COS301-SE-2026/projects/70). The full use case catalogue with diagrams lives in the [SRS](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/).
 
 <table>
   <tr>
@@ -545,35 +441,42 @@ gesture-drone-control/
   <tr>
     <td align="center"><code>UC1</code></td>
     <td><b>Hand Tracking and Gesture Recognition.</b> Live camera feed, MediaPipe landmark detection, rule based and ML classification, gesture to command mapping, safety logic</td>
-    <td align="center">Core. Demo 1</td>
+    <td align="center">Core</td>
     <td align="center"><img src="https://img.shields.io/badge/HIGH-E5383B?style=flat-square&labelColor=161A1D"/></td>
     <td align="center"><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/issues?q=is%3Aissue+UC1">#72 #74 #36</a></td>
   </tr>
   <tr>
     <td align="center"><code>UC2</code></td>
     <td><b>Statistics Dashboard and Telemetry Logging.</b> Real time telemetry display, gesture event history, WebSocket feed, Recharts visualisations, Playwright testing</td>
-    <td align="center">Core. Demo 1</td>
+    <td align="center">Core</td>
     <td align="center"><img src="https://img.shields.io/badge/MED-BA181B?style=flat-square&labelColor=161A1D"/></td>
     <td align="center"><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/issues?q=is%3Aissue+UC2">#71</a></td>
   </tr>
   <tr>
     <td align="center"><code>UC3</code></td>
     <td><b>Drone Simulator Controls and Adapter.</b> Dynamic adapter switching across AirSim, xFly and Tello, gamepad input adapter, demo script for live adapter swap</td>
-    <td align="center">Core. Demo 1</td>
+    <td align="center">Core</td>
     <td align="center"><img src="https://img.shields.io/badge/HIGH-E5383B?style=flat-square&labelColor=161A1D"/></td>
     <td align="center"><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/issues?q=is%3Aissue+UC3">#77 #82</a></td>
   </tr>
   <tr>
+    <td align="center"><code>UC8</code></td>
+    <td><b>Gesture Calibration.</b> Guided calibration flow with REST and WebSocket endpoints, state machine backend, flight gating</td>
+    <td align="center">Core</td>
+    <td align="center"><img src="https://img.shields.io/badge/HIGH-E5383B?style=flat-square&labelColor=161A1D"/></td>
+    <td align="center"><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/issues?q=is%3Aissue+UC8">UC8</a></td>
+  </tr>
+  <tr>
     <td align="center"><code>Base</code></td>
     <td><b>User Registration and Login.</b> Auth flow, form validation, light and dark themes</td>
-    <td align="center">Core. Demo 1</td>
+    <td align="center">Core</td>
     <td align="center"><img src="https://img.shields.io/badge/HIGH-E5383B?style=flat-square&labelColor=161A1D"/></td>
     <td align="center"><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/issues?q=is%3Aissue+Base+Feature">#37 #38 #39</a></td>
   </tr>
   <tr>
     <td align="center"><code>DevOps</code></td>
-    <td><b>Infrastructure and CI/CD.</b> Docker Compose setup, GitHub Actions pipelines, wiki documentation</td>
-    <td align="center">Core. Demo 1</td>
+    <td><b>Infrastructure and CI/CD.</b> Docker Compose setup, GitHub Actions pipelines, site deployment, documentation hub</td>
+    <td align="center">Core</td>
     <td align="center"><img src="https://img.shields.io/badge/MED-BA181B?style=flat-square&labelColor=161A1D"/></td>
     <td align="center"><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/issues?q=is%3Aissue+Devops">#40 #46 #61</a></td>
   </tr>
@@ -581,9 +484,7 @@ gesture-drone-control/
 
 <br/>
 
-## <img src="docs/assets/signal.svg" width="24" align="center"/> &nbsp;Getting Started
-
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
+<img src="docs/assets/readme/header-start.svg" width="100%" alt="Getting Started"/>
 
 **Prerequisites**
 
@@ -676,11 +577,9 @@ make fix     # ruff --fix plus ruff format plus yarn format
 
 <br/>
 
-## <img src="docs/assets/drone.svg" width="24" align="center"/> &nbsp;Branching Strategy
+<img src="docs/assets/readme/header-branching.svg" width="100%" alt="Branching Strategy"/>
 
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
-
-> Four tier model. `main` must always be in a deployable state. All merges happen before each demo. Aligns with the **Demo 1 spec configuration requirements**: every commit attributed via Git CLI, GitHub username matched `user.name`, no GUI Git clients. Full conventions in [GIT.md](docs/GIT.md).
+> Four tier model. `main` must always be in a deployable state. All merges happen before each demo. Every commit attributed via Git CLI, GitHub username matched `user.name`, no GUI Git clients. Full conventions in the [Git docs](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/GIT/).
 
 ```mermaid
 %%{init: {'theme':'dark', 'themeVariables': {
@@ -705,33 +604,6 @@ flowchart LR
     classDef feat fill:#E5383B,color:#0B090A,stroke:none
 ```
 
-```mermaid
-%%{init: {'theme':'dark','themeVariables':{'primaryColor':'#A4161A','primaryBorderColor':'#E5383B','lineColor':'#B1A7A6','tertiaryColor':'#161A1D','background':'#0B090A','git0':'#660708','git1':'#A4161A','git2':'#BA181B','git3':'#E5383B'},'gitGraph':{'mainBranchName':'main','showCommitLabel':true,'rotateCommitLabel':false}}}%%
-gitGraph
-    commit id: "Initial"
-    branch dev
-    checkout dev
-    commit id: "Setup"
-    branch UC2
-    checkout UC2
-    commit id: "UC2 base"
-    branch feature/UC2/gesture-engine
-    checkout feature/UC2/gesture-engine
-    commit id: "Rule based"
-    commit id: "Tests pass"
-    checkout UC2
-    merge feature/UC2/gesture-engine
-    branch feature/UC2/ml-recognizer
-    checkout feature/UC2/ml-recognizer
-    commit id: "TFLite wired"
-    checkout UC2
-    merge feature/UC2/ml-recognizer
-    checkout dev
-    merge UC2
-    checkout main
-    merge dev tag: "Demo 1"
-```
-
 | Branch | Purpose |
 |:---|:---|
 | `main` | Production. Protected. Merged into before every demo. |
@@ -743,9 +615,7 @@ gitGraph
 
 <br/>
 
-## <img src="docs/assets/signal.svg" width="24" align="center"/> &nbsp;CI/CD and Code Quality
-
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
+<img src="docs/assets/readme/header-cicd.svg" width="100%" alt="CI/CD and Code Quality"/>
 
 > Every shield below is a live status indicator. The repo's quality gates run on every push, on every PR, and before every merge to `main`.
 
@@ -764,9 +634,9 @@ gitGraph
     <td>ruff (Python) plus eslint and prettier (TypeScript). No style drift</td>
   </tr>
   <tr>
-    <td><b>Docs</b></td>
-    <td><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/docs.yml?style=flat-square&logo=github-actions&logoColor=F5F3F4&label=docs&color=A4161A&labelColor=161A1D"/></a></td>
-    <td>MkDocs site builds on every push to main</td>
+    <td><b>Site</b></td>
+    <td><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/docs.yml?style=flat-square&logo=github-actions&logoColor=F5F3F4&label=site&color=A4161A&labelColor=161A1D"/></a></td>
+    <td>Landing page and docs hub build and deploy to GitHub Pages</td>
   </tr>
   <tr>
     <td><b>Coverage</b></td>
@@ -792,9 +662,7 @@ gitGraph
 
 <br/>
 
-## <img src="docs/assets/reticle.svg" width="24" align="center"/> &nbsp;Project Constraints
-
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
+<img src="docs/assets/readme/header-constraints.svg" width="100%" alt="Project Constraints"/>
 
 | Constraint | Detail |
 |:---|:---|
@@ -804,17 +672,13 @@ gitGraph
 
 <br/>
 
-## <img src="docs/assets/propeller.svg" width="24" align="center"/> &nbsp;Methodology
-
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
+<img src="docs/assets/readme/header-methodology.svg" width="100%" alt="Methodology"/>
 
 We work **Agile** with **Feature Driven Development**: weekly sprint planning, twice weekly stand ups (5 to 15 minutes, logged on ClickUP per the COS 301 spec), and sprint review. New tech (xFly SDK, AirSim) is learned on the job alongside delivery.
 
 <br/>
 
-## <img src="docs/assets/signal.svg" width="24" align="center"/> &nbsp;Contact
-
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
+<img src="docs/assets/readme/header-contact.svg" width="100%" alt="Contact"/>
 
 | Role | Name | Email |
 |:---|:---|:---|
@@ -826,14 +690,7 @@ We work **Agile** with **Feature Driven Development**: weekly sprint planning, t
 
 <div align="center">
 
-<img src="docs/assets/glowline.svg" width="100%" alt=""/>
-
-<br/>
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=A4161A&height=120&section=footer" width="100%"/>
-
-<sub><i>COS 301 Software Engineering. University of Pretoria. 2026. EPI-USE Labs.</i></sub><br/>
-<sub><i>Codex Merchants.</i></sub>
+<img src="docs/assets/readme/footer.svg" width="100%" alt="Codex Merchants — COS 301 Software Engineering, University of Pretoria, EPI-USE Labs, 2026"/>
 
 <br/><br/>
 

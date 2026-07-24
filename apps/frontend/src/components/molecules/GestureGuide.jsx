@@ -21,6 +21,8 @@ import {
 } from "lucide-react"
 import { useDroneControls } from "../../hooks/useDroneControls"
 import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tab
+import { useKeyboardControl } from "../../hooks/useKeyboardControl"
+
 const tabs = [
   { id: "onscreen", label: "On Screen", icon: Monitor },
   { id: "gestures", label: "Gestures", icon: Hand },
@@ -160,6 +162,12 @@ const GestureGuide = ({ className = "", onControlAction }) => {
   const [activeTab, setActiveTab] = useState("onscreen")
   const { handleControlPress, isControlActive } =
     useDroneControls(onControlAction)
+
+  /**will only be active when the keyboard tab is selected and handles connecting  the backend keyboard input adapter,
+    opening the /input/ws/keyboard/socket, and listening for real key events **/
+  const { connected: keyboardConnected } = useKeyboardControl(
+    activeTab === "keyboard"
+  )
 
   const onScreenControls = () => (
     <div className="flex gap-6 py-4">
@@ -325,6 +333,21 @@ const GestureGuide = ({ className = "", onControlAction }) => {
             </Button>
           ))}
         </div>
+
+        {activeTab === "keyboard" && (
+          <div className="flex items-center gap-2 text-xs">
+            <span
+              className={`w-2 h-2 rounded-full ${
+                keyboardConnected ? "bg-green-500 animate-pulse" : "bg-Grey/40"
+              }`}
+            />
+            <span className="text-OffBlack/70 dark:text-OffWhite/70">
+              {keyboardConnected
+                ? "Kyeboard control active"
+                : "Connecting keyboard control..."}
+            </span>
+          </div>
+        )}
 
         {/* control the content being displayed */}
         {activeTab === "onscreen" ? (

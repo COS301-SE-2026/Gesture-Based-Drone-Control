@@ -112,7 +112,7 @@ class CalibrationFramePayload(BaseModel):
 
 	type: str = Field(default='calibration_frame', description='Discriminator for message type')
 	frame_index: int = Field(..., description='Monotonic frame counter since pipeline start')
-	timestamp: float = Field(..., description='Current phase of the session state machine')
+	timestamp: float = Field(..., description='Frame capture time (monotonix clock, seconds)')
 	phase: CalibrationPhase = Field(..., description='Current phase of the session state machine')
 	target_gesture: str | None = Field(
 		..., description='Gesture the user must perform now; null once session complete'
@@ -318,7 +318,7 @@ class CalibrationManager:
 
 	@property
 	def session(self) -> CalibrationSession | None:
-		"""True when flight commands may be accepted"""
+		"""Active session, None when no run is in progress"""
 		return self._session
 
 	@property

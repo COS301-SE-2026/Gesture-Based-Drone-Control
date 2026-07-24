@@ -97,13 +97,17 @@ async def gesture_websocket(websocket: WebSocket) -> None:
 	The connection stays open until the client disconnects
 	"""
 	await websocket.accept()
-	queue = await stream.subscribe()
-	logger.info('gesture client connected (total =%d)', stream.client_count)
+	queue = None
 	try:
+		queue = await stream.subscribe()
+		logger.info('gesture client connected (total =%d)', stream.client_count)
 		while True:
 			payload = await queue.get()
 			await websocket.send_json(payload.model_dump())
 	except WebSocketDisconnect:
 		logger.info('gesture client disconnected')
+	except Exception:
+		logger.exception('gesture stream failed')
 	finally:
-		await stream.unsubscribe(queue)
+		if queue is not None:
+			await stream.unsubscribe(queue)
