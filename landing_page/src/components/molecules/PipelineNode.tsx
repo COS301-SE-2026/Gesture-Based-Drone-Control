@@ -9,7 +9,12 @@ interface Props {
   delay?: number
 }
 
-export default function PipelineNode({ n, title, body, delay = 0 }: Props) {
+export default function PipelineNode({
+  n,
+  title,
+  body,
+  delay = 0,
+}: Readonly<Props>) {
   return (
     <Reveal
       as="article"

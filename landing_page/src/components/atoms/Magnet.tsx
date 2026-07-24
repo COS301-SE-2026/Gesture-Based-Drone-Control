@@ -2,7 +2,9 @@ import React, { useRef } from "react"
 import { reducedMotion } from "../../lib/motion"
 
 // magnet: children lead toward cursor
-export default function Magnet({ children }: { children: React.ReactNode }) {
+export default function Magnet({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const ref = useRef<HTMLSpanElement | null>(null)
   const onMove = (e: React.MouseEvent) => {
     const el = ref.current

@@ -14,7 +14,7 @@ export default function Button({
   ghost = false,
   onClick,
   children,
-}: ButtonProps) {
+}: Readonly<ButtonProps>) {
   return (
     <a
       className={"md-btn" + (ghost ? " md-ghost" : "")}

@@ -10,7 +10,12 @@ interface Props {
   delay?: number
 }
 
-export default function DownloadCard({ os, ext, req, delay = 0 }: Props) {
+export default function DownloadCard({
+  os,
+  ext,
+  req,
+  delay = 0,
+}: Readonly<Props>) {
   return (
     <Reveal
       as="a"

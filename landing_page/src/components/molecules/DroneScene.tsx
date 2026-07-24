@@ -99,10 +99,13 @@ export default function DroneScene() {
     // dust field
     const count = 260
     const pos = new Float32Array(count * 3)
+    const seed = new Uint32Array(count * 3)
+    crypto.getRandomValues(seed)
+    const unit = (i: number) => seed[i] / 0xffffffff
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 18
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 9
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 10 - 1
+      pos[i * 3] = (unit(i * 3) - 0.5) * 18
+      pos[i * 3 + 1] = (unit(i * 3 + 1) - 0.5) * 9
+      pos[i * 3 + 2] = (unit(i * 3 + 2) - 0.5) * 10 - 1
     }
     const dustGeo = new THREE.BufferGeometry()
     dustGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3))
@@ -173,8 +176,7 @@ export default function DroneScene() {
       window.removeEventListener("mousemove", onMove)
       window.removeEventListener("resize", onResize)
       renderer.dispose()
-      if (renderer.domElement.parentNode === mount)
-        mount.removeChild(renderer.domElement)
+      if (renderer.domElement.parentNode === mount) renderer.domElement.remove()
     }
   }, [])
 

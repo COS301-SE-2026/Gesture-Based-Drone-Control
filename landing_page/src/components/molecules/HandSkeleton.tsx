@@ -8,7 +8,11 @@ interface Props {
 }
 
 //Pipeline hand type layout, drawn from forawrd kinematics
-export default function HandSkeleton({ pose, sway = 0, bob = 0 }: Props) {
+export default function HandSkeleton({
+  pose,
+  sway = 0,
+  bob = 0,
+}: Readonly<Props>) {
   const fingers = FINGERS.map((f, i) => digitJoints(f, pose[i]))
   const bases = FINGERS.map((f) => f.base)
   // fist extends nothing, whole fist is the signal

@@ -8,7 +8,11 @@ interface Props {
   delay?: number
 }
 
-export default function FeatureCard({ title, body, delay = 0 }: Props) {
+export default function FeatureCard({
+  title,
+  body,
+  delay = 0,
+}: Readonly<Props>) {
   return (
     <Reveal
       as="article"

@@ -7,10 +7,10 @@ interface Props {
   onToggle: () => void
 }
 
-export default function FaqItem({ q, a, open, onToggle }: Props) {
+export default function FaqItem({ q, a, open, onToggle }: Readonly<Props>) {
   return (
     <div className={"md-qa" + (open ? " md-openqa" : "")}>
-      <button onClick={onToggle} aria-expanded={open}>
+      <button type="button" onClick={onToggle} aria-expanded={open}>
         <span>{q}</span>
         <i aria-hidden="true">{open ? "-" : "+"}</i>
       </button>

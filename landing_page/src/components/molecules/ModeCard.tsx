@@ -17,7 +17,7 @@ export default function ModeCard({
   title,
   body,
   delay = 0,
-}: Props) {
+}: Readonly<Props>) {
   return (
     <Reveal
       as="article"
