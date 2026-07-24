@@ -11,7 +11,7 @@ const Calibration = () => {
     const [runKey, setRunKey] = useState(0)
 
     return (
-        <div className="p-6 space y-6 max-w-3x1 mx-auto">
+        <div className="p-6 space-y-6 max-w-3xl mx-auto">
             <div>
                 <Label className="text-lg font-semibold">Calibration</Label>
                 <p className="text-sm text-DarkGrey mt-1">
