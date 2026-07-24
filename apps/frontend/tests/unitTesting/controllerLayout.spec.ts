@@ -3,6 +3,26 @@ import{test, expect, Page} from "@playwright/test"
 /*So basically since this is just unit TestTubes, it will have a fake gamepad so that individual tests can like affect/mutate 
 the button or part of the controller.*/
 
+interface MockGameButton{
+    pressed:boolean
+    touched:boolean
+    value: number
+}
+
+interface MockGamepad{
+    id:string
+    index: number
+    connected:boolean
+    mapping:string
+    buttons: MockGameButton[]
+    axes:number[]
+    timestamp:number
+}
+
+interface MockWindow extends Window {
+    __mockPad:MockGamepad
+}
+
 async function mockGamepad(page: Page) {
     await page.addInitScript(() => {
         const mockPad={
@@ -15,7 +35,7 @@ async function mockGamepad(page: Page) {
             timestamp:performance.now(),
         }
 
-        ;(window as any).__mockPad =mockPad
+        ;(window as unknown as MockWindow).__mockPad =mockPad
         navigator.getGamepads = (() => [mockPad]) as unknown as typeof navigator.getGamepads
     })
 }
@@ -67,7 +87,7 @@ test.describe('ControllerLayout',() => {
             const crossBtn =page.getByTestId('btn-cross')
             await expect(crossBtn).not.toHaveClass(/fill-Red/)
             await page.evaluate(()=>{
-                ;(window as any).__mockPad.buttons[0].pressed =true
+                ;(window as unknown as MockWindow).__mockPad.buttons[0].pressed =true
             })
             await expect(crossBtn).toHaveClass(/fill-Red/)
         })
@@ -77,7 +97,7 @@ test.describe('ControllerLayout',() => {
             const down = page.getByTestId('dpad-down')
 
             await page.evaluate(() => {
-                ;(window as any).__mockPad.buttons[12].pressed =true
+                ;(window as unknown as MockWindow).__mockPad.buttons[12].pressed =true
             })
 
             await expect(up).toHaveClass(/fill-Red/)
@@ -89,7 +109,7 @@ test.describe('ControllerLayout',() => {
             const initialCx =Number(await knob.getAttribute('cx'))
 
             await page.evaluate(() =>{
-                ;(window as any).__mockPad.axes[0] =1
+                ;(window as unknown as MockWindow).__mockPad.axes[0] =1
             })
 
             await expect
@@ -102,7 +122,7 @@ test.describe('ControllerLayout',() => {
             const initialCx =await knob.getAttribute('cx')??''
 
             await page.evaluate(() =>{
-                ;(window as any).__mockPad.axes[0] =0.03//cause when the deadzone was declared it was below .08
+                ;(window as unknown as MockWindow).__mockPad.axes[0] =0.03//cause when the deadzone was declared it was below .08
             })
 
             await page.waitForTimeout(100)
