@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from "react"
-import { CommandHistory, GestureGuide, DroneModeCard } from "../molecules"
+import {
+  CommandHistory,
+  GestureGuide,
+  DroneModeCard,
+  GestureCameraFeed,
+} from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
 import { useTelemetry } from "@/context/TelemetryContext"
@@ -267,6 +272,8 @@ const GestureControl = () => {
             <div className="flex items-center justify-between">
               <Label className="text-lg font-semibold">Gesture Detection</Label>
             </div>
+
+            <GestureCameraFeed className="flex-1" />
           </div>
         </Card>
 

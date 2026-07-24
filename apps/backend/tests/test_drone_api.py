@@ -53,6 +53,7 @@ def connected_state(adapter_name: str = 'dummy') -> AppState:
 	state = AppState()
 	state.adapter = make_mock_adapter()
 	state.adapter_name = adapter_name
+	state.is_connected = True
 	return state
 
 
@@ -68,8 +69,20 @@ async def test_connect_dummy():
 	client = TestClient(make_app(state))
 
 	mock_adapter = make_mock_adapter()
+	mock_drone = MagicMock()
+	mock_drone.id = 42
 
-	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
+	with (
+		patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.get_or_create_drone',
+			AsyncMock(return_value=mock_drone),
+		),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.start_flight',
+			AsyncMock(return_value=MagicMock(id=uuid4())),
+		),
+	):
 		response = client.post('/drone/connect', json={'adapter': 'dummy'})
 
 	assert response.status_code == 200
@@ -85,8 +98,20 @@ async def test_connect_projectairsim():
 	client = TestClient(make_app(state))
 
 	mock_adapter = make_mock_adapter()
+	mock_drone = MagicMock()
+	mock_drone.id = 43
 
-	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
+	with (
+		patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.get_or_create_drone',
+			AsyncMock(return_value=mock_drone),
+		),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.start_flight',
+			AsyncMock(return_value=MagicMock(id=uuid4())),
+		),
+	):
 		response = client.post(
 			'/drone/connect',
 			json={
@@ -108,8 +133,20 @@ async def test_connect_airsim():
 	client = TestClient(make_app(state))
 
 	mock_adapter = make_mock_adapter()
+	mock_drone = MagicMock()
+	mock_drone.id = 44
 
-	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
+	with (
+		patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.get_or_create_drone',
+			AsyncMock(return_value=mock_drone),
+		),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.start_flight',
+			AsyncMock(return_value=MagicMock(id=uuid4())),
+		),
+	):
 		response = client.post(
 			'/drone/connect',
 			json={
@@ -164,11 +201,24 @@ async def test_connect_replaces_existing_adapter():
 	old_adapter = make_mock_adapter()
 	state.adapter = old_adapter
 	state.adapter_name = 'dummy'
+	state.is_connected = True
 
 	new_adapter = make_mock_adapter()
+	mock_drone = MagicMock()
+	mock_drone.id = 46
 	client = TestClient(make_app(state))
 
-	with patch('apps.backend.app.api.drone._build_adapter', return_value=new_adapter):
+	with (
+		patch('apps.backend.app.api.drone._build_adapter', return_value=new_adapter),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.get_or_create_drone',
+			AsyncMock(return_value=mock_drone),
+		),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.start_flight',
+			AsyncMock(return_value=MagicMock(id=uuid4())),
+		),
+	):
 		response = client.post('/drone/connect', json={'adapter': 'projectairsim'})
 
 	assert response.status_code == 200
@@ -191,8 +241,8 @@ async def test_disconnect_when_connected():
 	state = connected_state('dummy')
 	state.adapter
 	client = TestClient(make_app(state))
-
-	response = client.post('/drone/disconnect')
+	with patch('apps.backend.app.api.drone.flight_manager.end_flight', AsyncMock()):
+		response = client.post('/drone/disconnect')
 
 	assert response.status_code == 200
 	assert response.json()['success'] is True
