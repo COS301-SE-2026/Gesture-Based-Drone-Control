@@ -138,6 +138,12 @@ tasks:
     cmds:
       - uv run python -m services.cv_pipeline.processing.pipeline
 
+  landing:
+    desc: Runs the landing page (seperate port from frontend)
+    dir: landing_page
+    cmds:
+      - yarn dev
+
   sim-as:
     desc: Runs the old pain in the ass sim
     cmds:

@@ -1,0 +1,48 @@
+.md-qa {
+  border-bottom: 1px solid var(--line);
+}
+.md-qa:last-child {
+  border-bottom: none;
+}
+.md-qa button {
+  width: 100%;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+  font-family: "Chakra Petch", sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-align: left;
+  padding: 20px 4px;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.md-qa button:hover span {
+  color: var(--red);
+}
+.md-qa button i {
+  font-style: normal;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 20px;
+  color: var(--red);
+  flex: 0 0 auto;
+}
+.md-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+.md-openqa .md-a {
+  max-height: 240px;
+}
+.md-a p {
+  margin: 0 0 22px;
+  padding: 0 4px;
+  color: var(--dim);
+  font-size: 14.5px;
+  max-width: 62ch;
+}
