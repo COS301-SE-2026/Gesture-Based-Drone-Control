@@ -32,7 +32,7 @@ test.describe('ControllerLayout',() => {
     })
 
     test('the status dot gotta be grey when disconnected', async ({page}) => {
-        const dot = page.locator('.w-2.h-2.rounded-Fullscreen.bg-Grey\\/40')
+        const dot = page.locator('.w-2.h-2.rounded-full.bg-Grey\\/40')
         await expect(dot).toBeVisible()
     })
 
@@ -42,8 +42,8 @@ test.describe('ControllerLayout',() => {
     })
 
     test('renders the select and start labels',async({page})=>{
-        await expect(page.getByText('SELECT')).toBeVisible()
-        await expect(page.getByText('START')).toBeVisible()
+        await expect(page.getByText('SELECT',{exact:true})).toBeVisible()
+        await expect(page.getByText('START',{exact:true})).toBeVisible()
     })
 
     test.describe('with a mock gamepad connected', () =>{
@@ -89,7 +89,7 @@ test.describe('ControllerLayout',() => {
             const initialCx =Number(await knob.getAttribute('cx'))
 
             await page.evaluate(() =>{
-                ;(window as any).__mockpad.axes[0] =1
+                ;(window as any).__mockPad.axes[0] =1
             })
 
             await expect
@@ -113,7 +113,7 @@ test.describe('ControllerLayout',() => {
         const rightStickKnob = page.getByTestId('stick-right-knob')
         await expect(rightStickKnob).not.toHaveClass(/fill-Red/)
         await page.evaluate(()=>{
-            ;(window as any).__mockPad.buttons[11].pressed = true   
+            ;(window as unknown as MockWindow).__mockPad.buttons[11].pressed = true   
         })
 
         await expect(rightStickKnob).toHaveClass(/fill-Red/)
