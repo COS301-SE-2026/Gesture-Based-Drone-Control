@@ -63,7 +63,7 @@ export function useWebSocket(wsUrl, { onMessage } = {}) {
       if (isUnmountedRef.current) return
 
       if (onMessage) {
-        onmessage(event)
+        onMessage(event)
       }
     }
 
