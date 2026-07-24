@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react"
 import { Card, Label } from "../atoms"
 import { DisplacementStat, DroneMap } from "../molecules"
-import { useTelemetry } from "@/hooks/useTelemetry"
+import { useTelemetry } from "@/context/TelemetryContext"
 
 const DIRECTION = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 
