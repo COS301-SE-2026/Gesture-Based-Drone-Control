@@ -21,7 +21,7 @@ import {
 } from "lucide-react"
 import { useDroneControls } from "../../hooks/useDroneControls"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
-import ControllerLayout from "./ControllerLayout"//visual part of the controller which will show when it is swutched to the controller tabimport { useKeyboardControl } from "../../hooks/useKeyboardControl"
+import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tabimport { useKeyboardControl } from "../../hooks/useKeyboardControl"
 
 const tabs = [
   { id: "onscreen", label: "On Screen", icon: Monitor },
@@ -350,8 +350,13 @@ const GestureGuide = ({ className = "", onControlAction }) => {
         )}
 
         {/* control the content being displayed */}
-        {activeTab === "onscreen" ? (onScreenControls()) : activeTab === "controller" ? (<ControllerLayout />) : otherControls()}
-        
+        {activeTab === "onscreen" ? (
+          onScreenControls()
+        ) : activeTab === "controller" ? (
+          <ControllerLayout />
+        ) : (
+          otherControls()
+        )}
       </div>
     </Card>
   )

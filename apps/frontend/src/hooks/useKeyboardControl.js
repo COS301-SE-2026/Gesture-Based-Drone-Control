@@ -1,93 +1,69 @@
-import { useEffect, useRef, useState, useCallback } from "react"
-import { API_BASE_URL } from "../lib/api"
+import { useEffect, useCallback } from "react"
+import { API_BASE_URL, getWsUrl } from "../lib/api"
+import { useWebSocket } from "./useWebSocket"
 
-const RECONNECT_DELAY_MS = 2000
-const WS_BASE_URL = API_BASE_URL.replace(/^http/, "ws")
+export function useKeyboardControl(
+  enabled,
+  wsUrl = getWsUrl("/api/input/ws/keyboard")
+) {
+  const { socketRef, status } = useWebSocket(wsUrl)
 
-export function useKeyboardControl(enabled) {
-  const wsRef = useRef(null)
-  const reconnectTimer = useRef(null)
-  const [connected, setConnected] = useState(false)
+  // helper to actually send the req to be processed
+  const send = useCallback(
+    (payload) => {
+      const socket = socketRef.current
 
-  const send = useCallback((payload) => {
-    const ws = wsRef.current
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify(payload))
-    }
-  }, [])
+      if (!socket || socket.readyState !== WebSocket.OPEN) {
+        return false
+      }
+      socket.send(JSON.stringify(payload))
+      return true
+    },
+    [socketRef]
+  )
 
   useEffect(() => {
-    if (!enabled) {
-      return
-    }
+    if (!enabled) return
 
-    let cancelled = false
-    const connectAdapter = async () => {
-      try {
-        await fetch(`${API_BASE_URL}/api/input/connect`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ adapter: "keyboard" }),
-        })
-      } catch (err) {
-        console.error("useKeyboardControl: failed to connect adapter", err)
-      }
-    }
-
-    connectAdapter()
+    fetch(`${API_BASE_URL}/api/input/connect`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        adapter: "keyboard",
+      }),
+    }).catch((err) =>
+      console.error("useKeyboardControl: failed to connect adapter", err)
+    )
 
     return () => {
-      if (cancelled) {
-        return
-      }
-
-      fetch(`${API_BASE_URL}/api/input/disconnect`, { method: "POST" }).catch(
-        (err) =>
-          console.error("useKeyboardControl: failed to connevct adapter", err)
+      fetch(`${API_BASE_URL}/api/input/disconnect`, {
+        method: "POST",
+      }).catch((err) =>
+        console.error("useKeyboardControl: failed to disconnect adapter", err)
       )
     }
   }, [enabled])
 
   useEffect(() => {
-    let cancelled = false
+    if (!enabled) return
 
-    const connectSocket = () => {
-      const ws = new WebSocket(`${WS_BASE_URL}/api/input/ws/keyboard`)
-      wsRef.current = ws
-
-      ws.onopen = () => setConnected(true)
-      ws.onclose = () => {
-        setConnected(false)
-        if (!cancelled) {
-          reconnectTimer.current = setTimeout(connectSocket, RECONNECT_DELAY_MS)
-        }
-      }
-      ws.onerror = () => ws.close()
-    }
-    connectSocket()
-
-    return () => {
-      cancelled = true
-      clearTimeout(reconnectTimer.current)
-      wsRef.current?.close()
-      wsRef.current = null
-      setConnected(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!enabled) {
-      return
-    }
-
+    // keydown events are actually handled
+    // send them as they come, hold down means continuous input
     const handleKeyDown = (e) => {
-      if (e.repeat) {
-        return
-      }
-      send({ key: e.key, event: "keydown" })
+      send({
+        key: e.key,
+        event: "keydown",
+      })
     }
+
+    // keyup dont do anything yet
     const handleKeyUp = (e) => {
-      send({ key: e.key, event: "keyup" })
+      send({
+        key: e.key,
+        event: "keyup",
+      })
     }
 
     window.addEventListener("keydown", handleKeyDown)
@@ -99,5 +75,8 @@ export function useKeyboardControl(enabled) {
     }
   }, [enabled, send])
 
-  return { connected }
+  return {
+    connected: status === "open",
+    status,
+  }
 }
