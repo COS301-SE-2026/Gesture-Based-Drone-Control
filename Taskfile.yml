@@ -120,19 +120,22 @@ tasks:
 
   cv-camera:
     desc: Camera feed only
+    dir: "{{.SERVICES_DIR}}"
     cmds:
-      - uv run python -m services.cv_pipeline.camera.camera_feed
+      - uv run python -m cv_pipeline.camera.camera_feed
 
   cv-detector:
     desc: Camera + hand detection
+    dir: "{{.SERVICES_DIR}}"
     cmds:
-      - uv run python -m services.cv_pipeline.hand_detection.mediapipe_detector
+      - uv run python -m cv_pipeline.hand_detection.mediapipe_detector
 
   cv-engine:
     desc: Camera + detector + gesture engine
+    dir: "{{.SERVICES_DIR}}"
     cmds:
-      - uv run python -m services.cv_pipeline.gestures.gesture_engine
-  
+      - uv run python -m cv_pipeline.gestures.gesture_engine
+
   cv-pipeline:
     desc: full async pipeline (landmarks + fps + speed + confidence)
     cmds:

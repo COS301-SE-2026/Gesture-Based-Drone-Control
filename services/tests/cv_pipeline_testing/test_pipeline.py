@@ -153,6 +153,7 @@ class _FakeEngine:
 		self.process_calls += 1
 		return make_engine_result(frame_idx=detection.frame_index)
 
+
 class _StuckThread:
 	"""a cammera thread that refuses to die"""
 
@@ -170,16 +171,14 @@ def fake_pipeline_deps(monkeypatch):
 		'cameras': [],
 		'detectors': [],
 		'engines': [],
-		'camera_frames':None,
+		'camera_frames': None,
 		'camera_frame_delay': 0.02,
 		'hands': [],
 	}
 
 	def make_camera(config):
 		c = _FakeCamera(
-		config,
-		frames=fakes['camera_frames'],
-		frame_delay=fakes['camera_frame_delay']
+			config, frames=fakes['camera_frames'], frame_delay=fakes['camera_frame_delay']
 		)
 		fakes['cameras'].append(c)
 		return c
@@ -290,12 +289,12 @@ class TestLifecycle:
 	async def test_start_opens_camera_and_detector(self, fake_pipeline_deps, caplog):
 		pipe = CvPipeline()
 		await pipe.start()
-		
+
 		pipe._stop_event.set()
 		real_thread = pipe._camera_thread
 		real_thread.join(timeout=2.0)
 		pipe._camera_thread = _StuckThread()
-  
+
 		with caplog.at_level(logging.WARNING):
 			await pipe.stop()
 
