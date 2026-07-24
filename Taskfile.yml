@@ -71,7 +71,7 @@ tasks:
   clean:
     desc: removes all folders related to packaged executable
     cmds: 
-      - rm -r release dist 
+      - rm -r release dist apps/frontend/dist
 
   test:
     desc: Runs Unit Tests, Integration and End to End tests
