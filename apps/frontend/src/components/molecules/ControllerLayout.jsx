@@ -91,52 +91,63 @@ const ControllerLayout = ({className = ""}) => {
          <rect x= "63" y="55" width="745" height="220" rx="50" className="fill-Grey/70 dark:fill-DarkGrey" />
 
         {/* top rectange thingies, i dont game so idk what its call man, dont judge */}
-         <rect x= "130" y="10" width="150" height="45" rx="10" className="fill-Grey/10 dark:fill-DarkGrey/60" />
-         <rect x= "200" y="0" width="150" height="45" rx="10" className="fill-Grey/20 dark:fill-DarkGrey/60" />
-         <rect x= "520" y="0" width="150" height="45" rx="10" className="fill-Grey/20 dark:fill-DarkGrey/60" />
-         <rect x= "590" y="10" width="150" height="45" rx="10" className="fill-Grey/10 dark:fill-DarkGrey/60" />
+         <rect x= "130" y="15" width="150" height="45" rx="10" className="fill-Grey/60 dark:fill-DarkGrey/90" />
+         <rect x= "200" y="0" width="150" height="65" rx="10" className="fill-Grey/80 dark:fill-DarkGrey/70" />
+         <rect x= "520" y="0" width="150" height="65" rx="10" className="fill-Grey/80 dark:fill-DarkGrey/70" />
+         <rect x= "590" y="15" width="150" height="45" rx="10" className="fill-Grey/60 dark:fill-DarkGrey/90" />
         {/* LHS mini circles */}
 
-         <circle cx ="160" cy="115" r="24" strokeWidth ="2" className={btnFill(12)}/>
-         <circle cx ="120" cy="155" r="24" strokeWidth ="2" className={btnFill(14)}/>
-         <circle cx ="200" cy="155" r="24" strokeWidth ="2" className={btnFill(15)}/>
-         <circle cx ="160" cy="195" r="24" strokeWidth ="2" className={btnFill(13)}/>
+         <circle cx ="160" cy="155" r="64" fill ="none" strokeWidth ="2" className="stroke-OffBlack/40 dark:stroke-OffWhite/40"/>
+          <path d="M140,155 L140,111 Q140,99 152,99 L168,99 Q180,99 180,111 L180,155 Z" strokeWidth="2" className={btnFill(12)}/>
+          <path d="M140,155 L140,199 Q140,211 152,211 L168,211 Q180,211 180,199 L180,155 Z" strokeWidth="2" className={btnFill(12)}/>
+          <path d="M160,135 L116,135 Q104,135 104,147 L104,163 Q104,175 116,175 L160,175 Z" strokeWidth="2" className={btnFill(12)}/>
+          <path d="M160,135 L204,135 Q216,135 216,147 L216,163 Q216,175 204,175 L160,175 Z" strokeWidth="2" className={btnFill(12)}/>
+
+
         {/* one in da middle */}
          <circle cx ="425" cy="110" r="26" strokeWidth ="2" className={btnFill(16)}/>
 
          <rect x= "345" y="180" width="70" height="30" rx="15" strokeWidth="2" className={btnFill(8)} />
-         <text x="380" y="222" textAnchor="middle" className="text-[9px] fill-OffBlack/60 dark:fill-OffWhite/60">SELECT</text>
+         <text x="380" y="222" textAnchor="middle" className="text-[9px] fill-OffBlack/60 dark:fill-OffWhite">SELECT</text>
 
          <rect x="435" y="180" width="70" height="30" rx="15" strokeWidth="2" className={btnFill(9)}/>
-         <text x="470" y="222" textAnchor="middle" className="text-[9px] fill-OffBlack/60 dark:fill-OffWhite/60">START</text>
+         <text x="470" y="222" textAnchor="middle" className="text-[9px] fill-OffBlack/60 dark:fill-OffWhite">START</text>
 
         {/* RHS mini circles */}
-
+        {/* cause apparently they need symbols as well */}
          <circle cx ="720" cy="115" r="24" strokeWidth ="2" className={btnFill(3)}/>
+         <polygon points = "720,106 711,122 729,122" fill="none" stroke="#2ecc71" strokeWidth="3"/>
+
          <circle cx ="680" cy="155" r="24" strokeWidth ="2" className={btnFill(2)}/>
+         <rect x="673" y="148" width="14" height="14" fill="none" stroke="#ff6bcb" strokeWidth="3"/>
+
          <circle cx ="760" cy="155" r="24" strokeWidth ="2" className={btnFill(1)}/>
+         <circle cx ="760" cy ="155" r= "8" fill="none" stroke="#ff4d4d" strokeWidth="3"/>
+
          <circle cx ="720" cy="195" r="24" strokeWidth ="2" className={btnFill(0)}/>
+         <line x1="713" y1="188" x2 ="727" y2="202" stroke="#4da6ff" strokeWidth="3"/>
+         <line x1="713" y1="202" x2 ="727" y2="188" stroke="#4da6ff" strokeWidth="3"/>
 
-         <circle cx="260" cy="250" r="55" strokeWidth="2" className="fill-Grey/80 dark:fill-DarkGrey/70 stroke-OffBlack/20 dark:stroke-OffWhite/20"/>
+         <circle cx="260" cy="250" r="55" strokeWidth="2" className="fill-Grey/80 dark:fill-DarkGrey/70 stroke-OffBlack/20 dark:stroke-OffWhite"/>
 
-         <path d ="M260,205 l-8,15 h16 z" className ="fill-OffBlack/30 dark:fill-OffWhite/30" />
-         <path d ="M260,295 l-8,-15 h16 z" className ="fill-OffBlack/30 dark:fill-OffWhite/30" />
-         <path d ="M215,250 l15,-8 v16 z" className ="fill-OffBlack/30 dark:fill-OffWhite/30" />
-         <path d ="M260,205 l-15,-8 v16 z" className ="fill-OffBlack/30 dark:fill-OffWhite/30" />
+         <path d ="M260,205 l-8,15 h16 z" className ="fill-OffBlack dark:fill-OffWhite" />
+         <path d ="M260,295 l-8,-15 h16 z" className ="fill-OffBlack dark:fill-OffWhite" />
+         <path d ="M215,250 l15,-8 v16 z" className ="fill-OffBlack dark:fill-OffWhite" />
+         <path d ="M305,250 l-15,-8 v16 z" className ="fill-OffBlack dark:fill-OffWhite" />
 
          <circle cx={leftStickX} cy={leftStickY} r="30" strokeWidth="2" className={btnFill(10)}/>
 
-         <text x="260" y="330" textAnchor="middle" className="text-[11px] fill-OffBlack/50 dark:fill-OffWhite/50">Axis 0</text>
+         <text x="260" y="330" textAnchor="middle" className="text-[11px] fill-OffBlack/50 dark:fill-OffWhite">Axis 0</text>
 
-         <circle cx="590" cy="250" r="55" strokeWidth="2" className="fill-Grey/80 dark:fill-DarkGrey/70 stroke-OffBlack/20 dark:stroke-OffWhite/20"/>
+         <circle cx="590" cy="250" r="55" strokeWidth="2" className="fill-Grey/80 dark:fill-DarkGrey/70 stroke-OffBlack/20 dark:stroke-OffWhite"/>
 
-         <path d ="M590,205 l-8,15 h16 z" className ="fill-OffBlack/30 dark:fill-OffWhite/30" />
-         <path d ="M590,295 l-8,15 h16 z" className ="fill-OffBlack/30 dark:fill-OffWhite/30" />
-         <path d ="M545,250 l15,-8 v16 z" className ="fill-OffBlack/30 dark:fill-OffWhite/30" />
-         <path d ="M635,250 l-15,-8 v16 z" className ="fill-OffBlack/30 dark:fill-OffWhite/30" />
+         <path d ="M590,205 l-8,15 h16 z" className ="fill-OffBlack dark:fill-OffWhite" />
+         <path d ="M590,295 l-8,-15 h16 z" className ="fill-OffBlack dark:fill-OffWhite" />
+         <path d ="M545,250 l15,-8 v16 z" className ="fill-OffBlack dark:fill-OffWhite" />
+         <path d ="M635,250 l-15,-8 v16 z" className ="fill-OffBlack dark:fill-OffWhite" />
 
          <circle cx={rightStickX} cy={rightStickY} r="30" strokeWidth="2" className={btnFill(11)}/>
-         <text x="590" y="330" textAnchor="middle" className="text-[11px] fill-OffBlack/50 dark:fill-OffWhite/50">Axis 1</text>
+         <text x="590" y="330" textAnchor="middle" className="text-[11px] fill-OffBlack/50 dark:fill-OffWhite">Axis 1</text>
         </svg>
     </div>
     )
