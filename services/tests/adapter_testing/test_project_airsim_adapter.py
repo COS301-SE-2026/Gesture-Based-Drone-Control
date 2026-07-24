@@ -1,11 +1,12 @@
 # tests/adapter_testing/test_project_airsim_adapter.py
 
 # i didnt even know the mocks could be async these know ball
+import math
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from services.commands.command import CommandType
+from services.commands.command import AnalogInput, CommandType
 from services.drone_control.adapters.drone_adapter import TelemetryData
 from services.drone_control.adapters.project_airsim_adapter import (
 	DEFAULT_ROTATE_DEG,
@@ -325,8 +326,8 @@ async def test_get_telemetry_success():
 	mock_drone.get_ground_truth_kinematics.return_value = {
 		'pose': {
 			'position': {
-				'x': 0.0,
-				'y': 0.0,
+				'x': 1.5,
+				'y': 2.5,
 				'z': -5.0,
 			},
 			'orientation': {
@@ -352,6 +353,8 @@ async def test_get_telemetry_success():
 	assert t.speed_ms == 5
 	assert t.is_flying is True
 	assert t.source == 'projectairsim'
+	assert math.isclose(t.x_displacement, 1.5)
+	assert math.isclose(t.y_displacement, 2.5)
 
 
 @pytest.mark.asyncio
@@ -416,3 +419,44 @@ def test_find_sim_config_failure():
 	):
 		with pytest.raises(RuntimeError):
 			_find_sim_config()
+
+
+# analog movement
+
+
+@pytest.mark.asyncio
+async def test_analog_left_stick_translation():
+	adapter, mock_drone, _ = make_connected_adapter()
+	ainput = AnalogInput(
+		left_x=0.5,
+		left_y=-0.75,
+		right_x=0.0,
+		right_y=0.0,
+		ltrigger=0.0,
+		rtrigger=0.0,
+	)
+
+	await adapter.analog(ainput)
+	mock_drone.move_by_velocity_body_frame_async.assert_awaited_once()
+	args = mock_drone.move_by_velocity_body_frame_async.await_args.args
+
+	assert math.isclose(args[0], 0.75 * DEFAULT_SPEED_MS)
+	assert math.isclose(args[1], 0.5 * DEFAULT_SPEED_MS)
+	assert math.isclose(args[2], 0, abs_tol=0.0)
+
+
+@pytest.mark.asyncio
+async def test_analog_vertical_uses_right_stick_when_stronger():
+	""">= should make the stick take precedence"""
+	adapter, mock_drone, _ = make_connected_adapter()
+
+	ainput = AnalogInput(
+		right_y=-0.8,
+		ltrigger=0.3,
+		rtrigger=0.0,
+	)
+
+	await adapter.analog(ainput)
+	args = mock_drone.move_by_velocity_body_frame_async.await_args.args
+
+	assert math.isclose(args[2], 0.8 * DEFAULT_SPEED_MS)

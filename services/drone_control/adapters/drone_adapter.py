@@ -25,7 +25,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
 
-from services.commands.command import Command, CommandType
+from services.commands.command import AnalogInput, Command, CommandType
 
 logger = logging.getLogger(__name__)
 
@@ -129,9 +129,19 @@ class DroneAdapter(ABC):
 	@abstractmethod
 	async def move(self, direction: CommandType, **kwargs) -> None:
 		"""
-		A single directional movement or rotation
+		A single discrete directional movement or rotation
 		**kwargs - Values extracted from Command.payload by execute().
 		- these will be implemented at a later stage, and are completely optional
+		"""
+		...
+
+	@abstractmethod
+	async def analog(self, input: AnalogInput) -> None:
+		"""
+		Similar to the move handler, but specifically for the
+		analog inputs we get from the controller and possibly other
+		methods in future.
+
 		"""
 		...
 
@@ -164,7 +174,7 @@ class DroneAdapter(ABC):
 		"""
 		Dispatch a command to the appropriate adapter method
 		The single entry point for all callers. Keep routing logic here
-		instad of the api or input adapters.
+		instead of the api or input adapters.
 
 		The control structure here should mirror CommandType exactly,
 		we need to be able to map all possible commands. When one is added there,
@@ -188,6 +198,8 @@ class DroneAdapter(ABC):
 		elif t is CommandType.HOVER:
 			await self.hover()
 
+		elif t is CommandType.ANALOG:
+			await self.analog(**command.payload)
 		elif t in (
 			CommandType.MOVE_UP,
 			CommandType.MOVE_DOWN,
