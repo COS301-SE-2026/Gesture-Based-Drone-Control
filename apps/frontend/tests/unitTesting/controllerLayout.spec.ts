@@ -46,6 +46,79 @@ test.describe('ControllerLayout',() => {
         await expect(page.getByText('START')).toBeVisible()
     })
 
-    
+    test.describe('with a mock gamepad connected', () =>{
+        test.beforeEach(async({page}) => {
+            await mockGamepad(page)
+            await page.goto('/gestures')
+            await page.waitForLoadState('domcontentloaded')
+            await page.getByRole('button', {name:/controller/i}).click()
+        })
+
+        test('shows thhat the controller is connected once the poll loop picks up',async ({page}) =>{
+            await expect(page.getByText(/controller connected/i)).toBeVisible()
+        })
+
+        test('the status dot turns red when connected',async ({page})=> {
+            const dot = page.locator('.w-2.h-2.rounded-full.bg-Red')
+            await expect(dot).toBeVisible()
+        })
+
+        test('pressing the cross button should highlight it red' ,async ({page}) => {
+            const crossBtn =page.getByTestId('btn-cross')
+            await expect(crossBtn).not.toHaveClass(/fill-Red/)
+            await page.evaluate(()=>{
+                ;(window as any).__mockPad.buttons[0].pressed =true
+            })
+            await expect(crossBtn).toHaveClass(/fill-Red/)
+        })
+
+        test('pressing d-pad up highlights that arm..well it should...,not the down one',async({page})=>{
+            const up = page.getByTestId('dpad-up')
+            const down = page.getByTestId('dpad-down')
+
+            await page.evaluate(() => {
+                ;(window as any).__mockPad.buttons[12].pressed =true
+            })
+
+            await expect(up).toHaveClass(/fill-Red/)
+            await expect(down).not.toHaveClass(/fill-Red/)
+        })
+
+        test('pushing the left stick fully right moves the knob to the right edge..hopefully',async ({page}) =>{
+            const knob = page.getByTestId('stick-left-knob')
+            const initialCx =Number(await knob.getAttribute('cx'))
+
+            await page.evaluate(() =>{
+                ;(window as any).__mockpad.axes[0] =1
+            })
+
+            await expect
+            .poll(async()=>Number(await knob.getAttribute('cx')))
+            .toBeGreaterThan(initialCx)
+        })
+
+        test('a tiny stick nudge inside the deadzone should not move the knob',async ({page})=>{
+            const knob = page.getByTestId('stick-left-knob')
+            const initialCx =await knob.getAttribute('cx')??''
+
+            await page.evaluate(() =>{
+                ;(window as any).__mockPad.axes[0] =0.03//cause when the deadzone was declared it was below .08
+            })
+
+            await page.waitForTimeout(100)
+            await expect(knob).toHaveAttribute('cx', initialCx)
+        })
+
+    test('clicking in the right stick should highlight it red', async ({page})=> {
+        const rightStickKnob = page.getByTestId('stick-right-knob')
+        await expect(rightStickKnob).not.toHaveClass(/fill-Red/)
+        await page.evaluate(()=>{
+            ;(window as any).__mockPad.buttons[11].pressed = true   
+        })
+
+        await expect(rightStickKnob).toHaveClass(/fill-Red/)
+    })
+
+    })
 
 })
