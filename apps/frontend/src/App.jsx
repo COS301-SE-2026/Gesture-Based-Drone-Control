@@ -9,7 +9,6 @@ import {
   Signup,
   Terms,
   Help,
-  Calibration,
 } from "./components/organisms"
 import { ThemeProvider } from "./context/ThemeProvider.jsx"
 import { TelemetryProvider } from "./context/TelemetryProvider.jsx"
@@ -28,7 +27,6 @@ function App() {
             <Route path="/" element={<RootLayout />}>
               <Route index element={<Gestures />} />
               <Route path="gestures" element={<Gestures />} />
-              <Route path="calibration" element={<Calibration />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="settings" element={<Settings />} />
               <Route path="gps" element={<GPS />} />

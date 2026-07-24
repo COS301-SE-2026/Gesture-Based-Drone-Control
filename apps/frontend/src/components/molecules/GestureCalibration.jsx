@@ -70,7 +70,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
   useEffect(() => {
     let mediaStream
     navigator.mediaDevices
-      .getUserMedia({ video: true })
+      .getUserMedia({ video: {width: {ideal:640}, height: {ideal:480 }} })
       .then((stream) => {
         mediaStream = stream
         if (videoRef.current) {
@@ -93,21 +93,29 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
       return
     }
     const ctx = canvas.getContext("2d")
-    canvas.width = video.videoWidth || canvas.clientWidth
-    canvas.height = video.videoHeight || canvas.clientHeight
+    canvas.width = canvas.clientWidth
+    canvas.height = canvas.clientHeight
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     if (!frame?.hands?.length) {
       return
     }
 
+    const vw = video.videoWidth || canvas.width
+    const vh = video.videoHeight || canvas.height
+    const scale = Math.max(canvas.width / vw, canvas.height / vh)
+    const drawW = vw * scale
+    const drawH = vh * scale
+    const offsetX = (canvas.width - drawW) / 2
+    const offsetY = (canvas.height - drawH) / 2
+
     const passState = frame.phase === "success_display" || frame.matched
     const boneColor = passState ? MATCHED_COLOR : UNMATCHED_COLOR
 
     frame.hands.forEach((hand) => {
       const points = hand.landmarks.map((lm) => ({
-        x: lm.x * canvas.width,
-        y: lm.y * canvas.height,
+        x: offsetX + lm.x * drawW,
+        y: offsetY + lm.y * drawH,
       }))
 
       //bones
