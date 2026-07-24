@@ -42,12 +42,13 @@ class CommandType(Enum):
 	ROTATE_CCW = auto()
 	HOVER = auto()
 	EMERGENCY_STOP = auto()
+	ANALOG = auto()
 
 
 # Prirority constants
 # Use these names to make things more readable
 PRIORITY_NORMAL = 1
-PRIORITY_HIGH = 10  # will be used at some points
+PRIORITY_HIGH = 10  # will be used at some point maybe
 PRIORITY_CRITICAL = 999
 
 
@@ -126,3 +127,20 @@ class Command:
 		if self.source != 'unknown':
 			parts.append(f'source={self.source!r}')
 		return f'Command({", ".join(parts)})'  # funny python string
+
+
+@dataclass(slots=True)
+class AnalogInput:
+	"""
+	Stores the data passed into the DroneAdapter for analog inputs.
+	All values are bound to  [-1, 1], where
+	right==1, left==-1
+	down==1, up==-1
+	"""
+
+	left_x: float = 0.0
+	left_y: float = 0.0
+	right_x: float = 0.0
+	right_y: float = 0.0
+	ltrigger: float = 0.0
+	rtrigger: float = 0.0

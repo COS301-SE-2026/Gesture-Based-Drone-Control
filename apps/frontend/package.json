@@ -11,10 +11,12 @@
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
     "preview": "vite preview",
-    "test": "playwright test",
+    "unit-test": "playwright test tests/unitTesting/ --config=playwright.unit.config.ts --reporter=list,html",
+    "e2e-test": "playwright test tests/end_to_end/ --workers=1 --config=playwright.e2e.config.ts",
     "ui-add": "npx shadcn@4.7.0 add"
   },
   "dependencies": {
+    "dotenv": "^17.4.2",
     "electron": "^36.3.0",
     "install-deps": "^1.1.0",
     "leaflet": "^1.9.4",
@@ -23,7 +25,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-is": "18",
-    "react-leaflet": "4",
+    "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.15.1",
     "validator": "^13.15.35"
   },

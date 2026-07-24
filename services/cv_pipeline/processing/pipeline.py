@@ -283,13 +283,16 @@ class CvPipeline:
 		assert self._camera is not None
 		assert self._frame_queue is not None
 
+		consecutive_failures = 0
 		while not self._stop_event.is_set():
 			frame = self._camera.capture_image()
 			if frame is None:
+				consecutive_failures += 1
 				# no frame available -> backoff
-				self._stop_event.wait(0.01)
+				self._stop_event.wait(min(0.01 * consecutive_failures, 1.0))
 				continue
 
+			consecutive_failures = 0
 			self._frame_queue.try_put_threadsafe(frame, loop)
 
 		logger.debug('Camera thread exiting')

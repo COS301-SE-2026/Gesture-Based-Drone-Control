@@ -1,0 +1,38 @@
+.md-mode {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 30px 28px 34px;
+  transition:
+    transform 0.25s,
+    border-color 0.25s;
+}
+.md-mode:hover {
+  transform: translateY(-5px);
+}
+.md-modeicon {
+  width: 46px;
+  height: 46px;
+  color: var(--red);
+  display: block;
+}
+.md-modechip {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--red);
+  border: 1px solid var(--line);
+  padding: 5px 9px;
+  display: inline-block;
+  margin-top: 18px;
+}
+.md-mode h3 {
+  font-size: 21px;
+  font-weight: 600;
+  margin: 16px 0 10px;
+}
+.md-mode p {
+  margin: 0;
+  color: var(--dim);
+  font-size: 14.5px;
+  max-width: 48ch;
+}
