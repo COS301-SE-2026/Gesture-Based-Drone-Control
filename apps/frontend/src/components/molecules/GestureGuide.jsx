@@ -20,6 +20,7 @@ import {
   OctagonX,
 } from "lucide-react"
 import { useDroneControls } from "../../hooks/useDroneControls"
+import { useKeyboardControl } from "@/hooks/useKeyboardControl"
 import ControllerLayout from "./ControllerLayout"//visual part of the controller which will show when it is swutched to the controller tabimport { useKeyboardControl } from "../../hooks/useKeyboardControl"
 
 const tabs = [
