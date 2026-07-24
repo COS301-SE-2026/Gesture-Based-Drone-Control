@@ -27,6 +27,12 @@ const HAND_CONNECTIONS = [
   [9, 13],
   [13, 17],
 ]
+
+const SKELETON_COLOR = "#ef4444"
+const LANDMARK_COLOR = "#ffffff"
+const LABEL_BG = "rgba(11, 9, 10, 0.75)"
+const LABEL_TEXT = "#ffffff"
+
 const GestureCameraFeed = ({ className = "" }) => {
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
@@ -64,16 +70,27 @@ const GestureCameraFeed = ({ className = "" }) => {
     canvas.height = video.videoHeight || canvas.clientHeight
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+    if (!frame) {
+      return
+    }
+
+    // fps reading, bottom left
+    if (typeof frame.fps === "number") {
+      drawLabel(ctx, `${frame.fps.toFixed(1)} FPS`, 8, canvas.height - 8)
+    }
+
     if (!frame?.hands?.length) {
       return
     }
+
     frame.hands.forEach((hand) => {
       const points = hand.landmarks.map((lm) => ({
         x: lm.x * canvas.width,
         y: lm.y * canvas.height,
       }))
 
-      ctx.strokeStyle = "#ef4444"
+      // bones
+      ctx.strokeStyle = SKELETON_COLOR
       ctx.lineWidth = 2
       HAND_CONNECTIONS.forEach(([a, b]) => {
         const p1 = points[a]
@@ -88,12 +105,23 @@ const GestureCameraFeed = ({ className = "" }) => {
         ctx.stroke()
       })
 
-      ctx.fillStyle = "#ffffff"
+      // joints
+      ctx.fillStyle = LANDMARK_COLOR
       points.forEach((p) => {
         ctx.beginPath()
         ctx.arc(p.x, p.y, 3, 0, Math.PI * 2)
         ctx.fill()
       })
+
+      //per-hand info label above wrist (landmark 0)
+      const wrist = points[0]
+      if (wrist) {
+        const confidence = Math.round((hand.confidence ?? 0) * 100)
+        const line1 = `${hand.handedness}: ${hand.gesture} (${hand.fingers})`
+        const line2 = `${confidence}% spd ${(hand.speed ?? 0).toFixed(2)}`
+        drawLabel(ctx, line1, wrist.x, wrist.y - 34, { clamp: true })
+        drawLabel(ctx, line2, wrist.x, wrist.y - 14, { clamp: true })
+      }
     })
   }, [frame])
 
@@ -106,7 +134,7 @@ const GestureCameraFeed = ({ className = "" }) => {
         autoPlay
         playsInline
         muted
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover -scale-x-100"
       />
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
       <div className="absolute top-4 right-4 flex items-center gap-2 bg-OffBlack/60 px-3 py-1 rounded-full text-xs text-OffWhite">
@@ -117,6 +145,33 @@ const GestureCameraFeed = ({ className = "" }) => {
       </div>
     </div>
   )
+}
+
+//draws text with dark pill background
+// clampp keeps label inside canvas when wrist is near an edge
+function drawLabel(ctx, text, x, y, { clamp = false } = {}) {
+  const paddingX = 6
+  const paddingY = 4
+  const fontSize = 13
+
+  ctx.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, monospace`
+  const textWidth = ctx.measureText(text).width
+  const boxWidth = textWidth + paddingX * 2
+  const boxHeight = fontSize + paddingY * 2
+
+  let bx = x
+  let by = y - fontSize - paddingY
+
+  if (clamp) {
+    bx = Math.min(Math.max(bx, 0), ctx.canvas.width - boxWidth)
+    by = Math.min(Math.max(by, 0), ctx.canvas.height - boxHeight)
+  }
+
+  ctx.fillStyle = LABEL_BG
+  ctx.fillRect(bx, by, boxWidth, boxHeight)
+
+  ctx.fillStyle = LABEL_TEXT
+  ctx.fillText(text, bx + paddingX, by + fontSize + paddingY / 2 - 1)
 }
 
 GestureCameraFeed.propTypes = {

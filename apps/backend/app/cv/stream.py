@@ -45,9 +45,9 @@ class GestureStream:
 		Register a new client queue and ensure the pipeline is running
 		"""
 
+		await self._ensure_started()
 		queue: asyncio.Queue[GestureFramePayload] = asyncio.Queue(maxsize=1)
 		self._clients.add(queue)
-		await self._ensure_started()
 		return queue
 
 	async def unsubscribe(self, queue: 'asyncio.Queue[GestureFramePayload]') -> None:

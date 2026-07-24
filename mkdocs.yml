@@ -1,6 +1,6 @@
 site_name: Gesture-Based Drone Control
 site_description: Real-time gesture-to-flight-command pipeline using MediaPipe Hands, rule-based + TFLite recognition, FastAPI WebSocket backend, and a React/TypeScript telemetry dashboard.
-site_url: https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/
+site_url: https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/
 repo_url: https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control
 repo_name: COS301-SE-2026/Gesture-Based-Drone-Control
 edit_uri: edit/main/docs/
@@ -25,9 +25,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 
-  font:
-    text: Inter
-    code: JetBrains Mono
+  font: false
 
   features:
     # Navigation
