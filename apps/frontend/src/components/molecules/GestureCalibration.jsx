@@ -169,7 +169,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
             <span
               className={`w-2 h-2 rounded-full ${
                 connected
-                  ?"bg-green-500 animate-pulse"
+                  ? "bg-green-500 animate-pulse"
                   : finished
                     ? "bg-green-500"
                     : "bg-Grey"
