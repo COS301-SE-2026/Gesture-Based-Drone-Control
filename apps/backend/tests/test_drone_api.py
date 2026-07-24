@@ -53,7 +53,6 @@ def connected_state(adapter_name: str = 'dummy') -> AppState:
 	state = AppState()
 	state.adapter = make_mock_adapter()
 	state.adapter_name = adapter_name
-	state.is_connected = True
 	return state
 
 
@@ -201,7 +200,6 @@ async def test_connect_replaces_existing_adapter():
 	old_adapter = make_mock_adapter()
 	state.adapter = old_adapter
 	state.adapter_name = 'dummy'
-	state.is_connected = True
 
 	new_adapter = make_mock_adapter()
 	mock_drone = MagicMock()
