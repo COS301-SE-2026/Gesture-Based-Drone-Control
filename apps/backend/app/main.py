@@ -59,7 +59,12 @@ app = FastAPI(
 # lets Fastapi know that requests from lclhst3000 is chill
 app.add_middleware(
 	CORSMiddleware,
-	allow_origins=['http://127.0.0.1:3000', 'http://127.0.0.1:4173'],
+	allow_origins=[
+		'http://127.0.0.1:3000',
+		'http://localhost:3000',
+		'http://127.0.0.1:4173',
+		'http://localhost:4173',
+	],
 	allow_credentials=True,
 	allow_methods=['*'],
 	allow_headers=['*'],
