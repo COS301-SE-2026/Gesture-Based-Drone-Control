@@ -1,0 +1,29 @@
+.md-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 58px 6vw;
+  border-top: 1px solid var(--line);
+}
+.md-stat strong {
+  font-family: "Chakra Petch", sans-serif;
+  font-weight: 700;
+  line-height: 1;
+  font-size: clamp(2rem, 4.6vw, 3.3rem);
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+.md-stat span {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--dim);
+  display: block;
+  margin-top: 10px;
+}
+@media (max-width: 620px) {
+  .md-stats {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 34px;
+  }
+}

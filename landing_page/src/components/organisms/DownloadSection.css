@@ -1,0 +1,31 @@
+.md-dl {
+  padding: 110px 6vw;
+  border-top: 1px solid var(--line);
+}
+.md-dlsub {
+  color: var(--dim);
+  max-width: 52ch;
+  margin: 18px 0 0;
+}
+.md-dlgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+  margin-top: 48px;
+  max-width: 980px;
+}
+.md-dlreq {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  color: var(--dim);
+  margin: 36px 0 0;
+}
+.md-dlnote {
+  color: var(--dim);
+  font-size: 13px;
+  margin: 10px 0 0;
+}
+.md-dlnote a {
+  color: var(--red);
+}

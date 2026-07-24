@@ -1,0 +1,67 @@
+.md-ambience {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.md-ambience i {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(90px);
+  will-change: transform;
+}
+.md-ambience i:nth-child(1) {
+  width: 48vw;
+  height: 48vw;
+  top: -14vw;
+  right: -10vw;
+  background: #660708;
+  opacity: 0.55;
+  animation: md-blob1 26s ease-in-out infinite alternate;
+}
+.md-ambience i:nth-child(2) {
+  width: 36vw;
+  height: 36vw;
+  bottom: -12vw;
+  left: -10vw;
+  background: #a4161a;
+  opacity: 0.3;
+  animation: md-blob2 34s ease-in-out infinite alternate;
+}
+.md-ambience i:nth-child(3) {
+  width: 26vw;
+  height: 26vw;
+  top: 42%;
+  left: 32%;
+  background: #ba181b;
+  opacity: 0.3;
+  animation: md-blob3 42s ease-in-out infinite alternate;
+}
+[data-theme="light"] .md-ambience i:nth-child(1) {
+  opacity: 0.16;
+  background: #e5383b;
+}
+[data-theme="light"] .md-ambience i:nth-child(2) {
+  opacity: 0.12;
+  background: #ba181b;
+}
+[data-theme="light"] .md-ambience i:nth-child(3) {
+  opacity: 0.08;
+}
+@keyframes md-blob1 {
+  to {
+    transform: translate(-9vw, 8vh) scale(1.18);
+  }
+}
+@keyframes md-blob2 {
+  to {
+    transform: translate(7vw, -6vh) scale(0.88);
+  }
+}
+@keyframes md-blob3 {
+  to {
+    transform: translate(-6vw, -9vh) scale(1.25);
+  }
+}

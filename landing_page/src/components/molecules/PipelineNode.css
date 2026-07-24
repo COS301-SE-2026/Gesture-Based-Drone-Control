@@ -1,0 +1,30 @@
+.md-node {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  padding: 20px 18px 22px;
+  background: var(--panel);
+  position: relative;
+  transition:
+    border-color 0.25s,
+    transform 0.25s;
+}
+.md-node:hover {
+  transform: translateY(-4px);
+}
+.md-noden {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--red);
+}
+.md-node h3 {
+  font-size: 19px;
+  font-weight: 600;
+  margin: 10px 0 8px;
+}
+.md-node p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--dim);
+}

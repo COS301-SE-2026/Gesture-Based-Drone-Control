@@ -1,0 +1,70 @@
+.md-docs {
+  padding: 110px 6vw;
+  border-top: 1px solid var(--line);
+}
+.md-docsub {
+  max-width: 560px;
+  margin-top: 18px;
+  color: var(--dim);
+  line-height: 1.7;
+}
+.md-docgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin: 48px 0;
+}
+.md-doccard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 26px 22px;
+  border: 1px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 0.25s,
+    transform 0.25s;
+}
+.md-doccard:hover {
+  border-color: var(--red);
+  transform: translateY(-4px);
+}
+.md-doccard em {
+  font-family: "JetBrains Mono", monospace;
+  font-style: normal;
+  font-size: 11px;
+  color: var(--red);
+  letter-spacing: 0.26em;
+}
+.md-doccard h3 {
+  font-size: 17px;
+  margin: 0;
+}
+.md-doccard p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--dim);
+  flex: 1;
+}
+.md-docgo {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  color: var(--dim);
+  transition: color 0.25s;
+}
+.md-doccard:hover .md-docgo {
+  color: var(--red);
+}
+@media (max-width: 980px) {
+  .md-docgrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .md-docgrid {
+    grid-template-columns: 1fr;
+  }
+}
