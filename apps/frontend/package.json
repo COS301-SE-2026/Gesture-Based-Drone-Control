@@ -16,7 +16,7 @@
     "e2e-test": "playwright test tests/end_to_end/ --workers=1 --config=playwright.e2e.config.ts",
     "ui-add": "npx shadcn@4.7.0 add",
     "electron-dev": "electron .",
-    "electron-buiild": "electron builder"
+    "electron-build": "yarn build && electron-builder"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

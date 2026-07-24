@@ -44,8 +44,26 @@ function createWindow(){
     mainWindow.loadFile(indexPath);
 }
 
-app.whenReady().then( () => {
+async function waitForBackend(){
+    while (true){
+        try{
+            const res = await fetch ('http://127.0.0.1:3001/api/health')
+
+            if (res.ok){
+                return;
+            }
+        }
+        catch{
+
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 250))
+    }
+}
+
+app.whenReady().then( async () => {
     startBackend();
+    await waitForBackend()
     createWindow();
 }); 
 
