@@ -95,13 +95,13 @@ const ControllerLayout = ({className = ""}) => {
          <rect x= "200" y="0" width="150" height="65" rx="10" className="fill-Grey/80 dark:fill-DarkGrey/70" />
          <rect x= "520" y="0" width="150" height="65" rx="10" className="fill-Grey/80 dark:fill-DarkGrey/70" />
          <rect x= "590" y="15" width="150" height="45" rx="10" className="fill-Grey/60 dark:fill-DarkGrey/90" />
-        {/* LHS mini circles */}
 
+        {/* LHS mini circles */}
          <circle cx ="160" cy="155" r="64" fill ="none" strokeWidth ="2" className="stroke-OffBlack/40 dark:stroke-OffWhite/40"/>
-          <path d="M140,155 L140,111 Q140,99 152,99 L168,99 Q180,99 180,111 L180,155 Z" strokeWidth="2" className={btnFill(12)}/>
-          <path d="M140,155 L140,199 Q140,211 152,211 L168,211 Q180,211 180,199 L180,155 Z" strokeWidth="2" className={btnFill(12)}/>
-          <path d="M160,135 L116,135 Q104,135 104,147 L104,163 Q104,175 116,175 L160,175 Z" strokeWidth="2" className={btnFill(12)}/>
-          <path d="M160,135 L204,135 Q216,135 216,147 L216,163 Q216,175 204,175 L160,175 Z" strokeWidth="2" className={btnFill(12)}/>
+          <path d="M140,155 L140,111 Q140,99 152,99 L168,99 Q180,99 180,111 L180,155 Z" strokeWidth="2" data-testid="dpad-up" className={btnFill(12)}/>
+          <path d="M140,155 L140,199 Q140,211 152,211 L168,211 Q180,211 180,199 L180,155 Z" strokeWidth="2"data-testid="dpad-down" className={btnFill(13)}/>
+          <path d="M160,135 L116,135 Q104,135 104,147 L104,163 Q104,175 116,175 L160,175 Z" strokeWidth="2" className={btnFill(14)}/>
+          <path d="M160,135 L204,135 Q216,135 216,147 L216,163 Q216,175 204,175 L160,175 Z" strokeWidth="2" className={btnFill(15)}/>
 
 
         {/* one in da middle */}
@@ -124,7 +124,7 @@ const ControllerLayout = ({className = ""}) => {
          <circle cx ="760" cy="155" r="24" strokeWidth ="2" className={btnFill(1)}/>
          <circle cx ="760" cy ="155" r= "8" fill="none" stroke="#ff4d4d" strokeWidth="3"/>
 
-         <circle cx ="720" cy="195" r="24" strokeWidth ="2" className={btnFill(0)}/>
+         <circle cx ="720" cy="195" r="24" strokeWidth ="2"  data-testid="btn-cross"className={btnFill(0)}/>
          <line x1="713" y1="188" x2 ="727" y2="202" stroke="#4da6ff" strokeWidth="3"/>
          <line x1="713" y1="202" x2 ="727" y2="188" stroke="#4da6ff" strokeWidth="3"/>
 
@@ -135,7 +135,7 @@ const ControllerLayout = ({className = ""}) => {
          <path d ="M215,250 l15,-8 v16 z" className ="fill-OffBlack dark:fill-OffWhite" />
          <path d ="M305,250 l-15,-8 v16 z" className ="fill-OffBlack dark:fill-OffWhite" />
 
-         <circle cx={leftStickX} cy={leftStickY} r="30" strokeWidth="2" className={btnFill(10)}/>
+         <circle cx={leftStickX} cy={leftStickY} r="30" strokeWidth="2" data-testid="stick-left-knob" className={btnFill(10)}/>
 
          <text x="260" y="330" textAnchor="middle" className="text-[11px] fill-OffBlack/50 dark:fill-OffWhite">Axis 0</text>
 
@@ -146,7 +146,7 @@ const ControllerLayout = ({className = ""}) => {
          <path d ="M545,250 l15,-8 v16 z" className ="fill-OffBlack dark:fill-OffWhite" />
          <path d ="M635,250 l-15,-8 v16 z" className ="fill-OffBlack dark:fill-OffWhite" />
 
-         <circle cx={rightStickX} cy={rightStickY} r="30" strokeWidth="2" className={btnFill(11)}/>
+         <circle cx={rightStickX} cy={rightStickY} r="30" strokeWidth="2" data-testid="stick-right-knob" className={btnFill(11)}/>
          <text x="590" y="330" textAnchor="middle" className="text-[11px] fill-OffBlack/50 dark:fill-OffWhite">Axis 1</text>
         </svg>
     </div>

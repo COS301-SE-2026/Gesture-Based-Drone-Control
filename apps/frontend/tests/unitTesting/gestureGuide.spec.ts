@@ -9,7 +9,7 @@ test.describe('Gesture Guide',() =>{
     test('should render the control guide heading', async ({page}) => {
         await expect(page.getByText(/control guide/i)).toBeVisible()
     })
-    test('should show all four tab buttons man',async ({page}) => {
+    test('should show all four tab buttons',async ({page}) => {
         await expect(page.getByRole('button' , {name:/on screen/i })).toBeVisible()
         await expect(page.getByRole('main').getByRole('button' , {name:/^gestures$/i})).toBeVisible()
         await expect(page.getByRole('button' , {name:/keyboard/i })).toBeVisible()
