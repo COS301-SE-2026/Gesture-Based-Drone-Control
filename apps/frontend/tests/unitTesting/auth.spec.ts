@@ -76,7 +76,7 @@ test.describe('Authentication' , () => {
 
 test.describe('Signup Page' , () =>{
     test.beforeEach(async ({page}) => {
-        await page.goto('/signup')
+        await page.goto('/#/signup')
         await page.waitForLoadState('domcontentloaded')
     })
 
