@@ -99,11 +99,7 @@ const GPS = () => {
       }
       return newPath
     })
-  }, [
-    telemData?.x_displacement,
-    telemData?.y_displacement,
-    telemData?.altitude_m,
-  ])
+  }, [telemData])
 
   //mem direction calc to prevent rerender
   const direction = useMemo(() => {

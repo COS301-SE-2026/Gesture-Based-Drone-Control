@@ -1,9 +1,30 @@
 import { StatusDot, Card } from "../atoms"
 import AccountActions from "./AccountActions"
+import { useTelemetry } from "@/context/TelemetryContext"
 
 export const GpsSideContent = () => {
-  // TODO:swap for real telemetry once gps page is wired to live data
-  const isFlying = true
+  const { telemetry } = useTelemetry()
+  const isFlying = telemetry?.is_flying ?? false
+
+  const getMode = () => {
+    if (!telemetry) return "No data"
+
+    if (telemetry.source) {
+      return (
+        telemetry.source.charAt(0).toUpperCase() + telemetry.source.slice(1)
+      )
+    }
+
+    if (
+      telemetry.altitude_m !== undefined &&
+      telemetry.x_displacement !== undefined
+    ) {
+      return "DroneSim"
+    }
+    return "Dummy"
+  }
+
+  const mode = getMode()
 
   return (
     <>
@@ -19,9 +40,11 @@ export const GpsSideContent = () => {
             </p>
             {/* TODO:make this actually return mode selected */}
             <p className="text-lg text-OffBlack font-bold dark:text-OffWhite">
-              Hardware
+              {mode}
             </p>
-            <p className="text-xs text-DarkGrey">Today, 14:44</p>
+            <p className="text-xs text-DarkGrey">
+              {telemetry ? new Date().toLocaleTimeString() : "No data"}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <StatusDot variant={isFlying ? "connected" : "idle"} size="md" />
