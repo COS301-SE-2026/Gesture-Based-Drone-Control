@@ -57,9 +57,6 @@ function readGamepad(pad) {
  */
 export function useGamepadControl(enabled, wsUrl=getWsUrl("/api/input/ws/gamepad")){
     const  {socketRef, status } = useWebSocket(wsUrl)
-
-    // index of active gamepad
-    const gamepadIndexRef  = useRef(null)
     
     //rAF to cancel on cleanup
     const rafRef = useRef(null)
@@ -84,25 +81,41 @@ export function useGamepadControl(enabled, wsUrl=getWsUrl("/api/input/ws/gamepad
         }
     }, [enabled])
 
-    // track the physical controllers connection status 
-    useEffect(() =>{
-        const onConnected = (e) => {
-            console.log("useGamepadControl: controller connected , ", e.gamepad.id)
-            gamepadIndexRef.current = e.gamepad.index
+    // polling loop that runs only when the adapter is enabled
+    // requestAnimationFrame running at about 60hz
+    useEffect(()  => {
+        if (!enabled) return
+
+        let cancelled = false
+
+        const poll  = () => {
+            if (cancelled) return
+                const pads = navigator.getGamepads ? navigator.getGamepads() : []
+                const pad  = Array.from(pads).find((p) => p && p.connected)
+                const socket = socketRef.current
+                
+                // make sure we good then send the entire state over WS
+                if  (pad && socket?.readyState === WebSocket.OPEN){
+                    // console.log(JSON.stringify(readGamepad(pad)))
+                    socket.send(JSON.stringify(readGamepad(pad)))
+                }
+                
+            // the recursionish loop
+            rafRef.current = requestAnimationFrame(poll)
         }
+        rafRef.current = requestAnimationFrame(poll)
 
-        const onDisconnected  = (e) => {
-            console.log("useGamepadControl: controller disconnected , ", e.gamepad.id)
-            gamepadIndexRef.current = null  
+        return () => {
+            cancelled = true
+            if (rafRef.current) {
+                cancelAnimationFrame(rafRef.current)
+                rafRef.current = null
+            }
         }
+    }, [enabled, socketRef])
 
-        window.addEventListener("gamepadconnected", onConnected)
-        window.addEventListener("gamepaddisconnected", onDisconnected)
-
-        return() => {
-            window.removeEventListener("gamepadconnected", onConnected)
-            window.addEventListener("gamepaddisconnected", onDisconnected)
-        }
-    },  [])
-
+    return {
+        connected: status === "open",
+        status,
+    }
 }
