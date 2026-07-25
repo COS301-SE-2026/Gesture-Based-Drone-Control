@@ -13,6 +13,6 @@ extraResources:
     to: "backend"
 
 win:
-  target: nsis
+  target: portable
 linux:
   target: AppImage
