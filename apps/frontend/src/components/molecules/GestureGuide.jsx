@@ -157,10 +157,10 @@ const controls = {
   })),
 }
 
-const GestureGuide = ({ className = "", onControlAction }) => {
+const GestureGuide = ({ className = "", sendCommand }) => {
   const [activeTab, setActiveTab] = useState("onscreen")
   const { handleControlPress, isControlActive } =
-    useDroneControls(onControlAction)
+    useDroneControls(sendCommand)
 
   /**will only be active when the keyboard tab is selected and handles connecting  the backend keyboard input adapter,
     opening the /input/ws/keyboard/socket, and listening for real key events **/
@@ -357,12 +357,12 @@ const GestureGuide = ({ className = "", onControlAction }) => {
 
 GestureGuide.propTypes = {
   className: PropTypes.string,
-  onControlAction: PropTypes.func,
+  sendCommand: PropTypes.func,
 }
 
 GestureGuide.defaultProps = {
   className: "",
-  onControlAction: null,
+  sendCommand: null,
 }
 
 export default GestureGuide

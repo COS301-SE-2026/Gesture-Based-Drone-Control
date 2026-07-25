@@ -18,12 +18,7 @@ function fmt(value, digits = 0) {
 
 //TODO: this is still mocked for now
 const GestureControl = () => {
-  const [commands] = useState([
-    { action: "swipe up - move up", timestamp: "18:50:43" },
-    { action: "swipe right - move right", timestamp: "18:50:43" },
-    { action: "swipe down - move down", timestamp: "18:50:43" },
-    { action: "swipe left - move left", timestamp: "18:50:42" },
-  ])
+  const [commands,setCommands] = useState([])
 
   //from gesture guide molecule to backend commandType name
   const ACTION_TO_COMMAND = {
@@ -146,12 +141,14 @@ const GestureControl = () => {
   //add hardware mode when drone works
 
   const hasConnected = useRef(false)
+
+  //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
   useEffect(() => {
-    if (hasConnected.current) return
-    //initially connect to dummy for testing
-    hasConnected.current = true
-    connectToDrone("dummy")
-  }, [])
+    if(lastResp?.ok && lastResp.command){
+      const timestamp = new Date().toLocaleTimeString("en-ZA",{hour1:false})
+      setCommands((prev) => [{action: lastResp.command, timestamp},...prev].slice(0, 50))
+    }
+  }, [lastResp])
 
   return (
     <div className="p-6 space-y-6">
@@ -277,7 +274,7 @@ const GestureControl = () => {
           </div>
         </Card>
 
-        <GestureGuide className="h-full" onControlAction={handleControlAcion} />
+        <GestureGuide className="h-full" sendCommand={handleControlAcion} />
       </div>
 
       <CommandHistory commands={commands} />
