@@ -145,7 +145,7 @@ const GestureControl = () => {
   //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
   useEffect(() => {
     if(lastResp?.ok && lastResp.command){
-      const timestamp = new Date().toLocaleTimeString("en-ZA",{hour1:false})
+      const timestamp = new Date().toLocaleTimeString("en-ZA",{hour12:false})
       setCommands((prev) => [{action: lastResp.command, timestamp},...prev].slice(0, 50))
     }
   }, [lastResp])

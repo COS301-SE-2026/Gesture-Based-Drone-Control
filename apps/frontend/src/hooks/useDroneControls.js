@@ -27,7 +27,7 @@ export const useDroneControls = (sendCommand) => {
       [label]: true,
     }))
 
-    onControlAction?.(ACTION_TO_COMMAND[action]||action)
+    sendCommand?.(ACTION_TO_COMMAND[action]||action)
     
 
     //reset active state
