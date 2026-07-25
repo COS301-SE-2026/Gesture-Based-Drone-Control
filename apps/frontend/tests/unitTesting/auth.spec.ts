@@ -20,7 +20,7 @@ const fillSignupForm = async (page: Page , data: SignupFormData) => {
 
 test.describe('Authentication' , () => {
     test.beforeEach(async ({page})=>{
-        await page.goto('/login')
+        await page.goto('/#/login')
         await page.waitForLoadState('domcontentloaded')
     })
 

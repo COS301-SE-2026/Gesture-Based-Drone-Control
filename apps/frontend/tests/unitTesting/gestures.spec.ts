@@ -16,7 +16,7 @@ test.describe('gesture control page aka dashboard', () =>{
             })
         })
 
-        await page.goto('/gestures')
+        await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
 
     })
