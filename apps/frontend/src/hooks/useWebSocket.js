@@ -115,12 +115,16 @@ export function useWebSocket(wsUrl, { onMessage } = {}) {
 
   useEffect(() => {
     isUnmountedRef.current = false
+    connectRef.current?.()
 
-    clearTimeout(reconnectTimeoutRef.current)
-
-    if (socketRef.current) {
-      socketRef.current.close()
-      socketRef.current = null
+    //use connectRef sp connects identity from onMessage doesnt retrigger the effect
+    return () => {
+      isUnmountedRef.current = true //flip back to true on unmount
+      clearTimeout(reconnectTimeoutRef.current)
+      if (socketRef.current) {
+        socketRef.current.close()
+        socketRef.current = null
+      }
     }
   }, [])
 
