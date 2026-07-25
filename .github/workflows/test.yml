@@ -245,3 +245,20 @@ jobs:
     runs-on: ubuntu-latest:
     steps:
       - uses: actions/checkout@v4
+
+      - name: Read Version
+        id: version
+        run: echo "version=$(node -p "require('./apps/frontend/package.json'.version)")" >> "$GITHUB_OUTPUT"
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with: 
+          path: dist
+      
+      - name: Create Github Release
+        uses: softprops/action-gh-release@v2
+        with: 
+          tag_name: v${{ steps.version.outputs.version}}
+          name: v${{steps.version.outputs.version}}
+          files: dist/**/*
+          generate_release_notes: true
