@@ -1,8 +1,8 @@
 import { app, BrowserWindow } from 'electron';
 import {spawn} from 'child_process';
-import path from 'path'
-import fs from 'fs'
-import crypto from 'crypto'
+import path from 'path';
+import fs from 'fs';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -54,7 +54,7 @@ async function waitForBackend(){
             }
         }
         catch{
-
+            // backend not ready loop must continue
         }
 
         await new Promise(resolve => setTimeout(resolve, 250))
