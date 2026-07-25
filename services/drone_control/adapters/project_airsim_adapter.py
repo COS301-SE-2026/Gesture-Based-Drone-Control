@@ -44,6 +44,7 @@ import asyncio
 import logging
 import math
 import pathlib
+import sys
 from typing import TYPE_CHECKING
 
 from services.commands.command import AnalogInput, CommandType
@@ -74,6 +75,13 @@ def _find_sim_config() -> str:
 
 	Raises a runtime error if nothing is found
 	"""
+
+	if getattr(sys, 'frozen', False):
+		meipass = pathlib.Path(getattr(sys, '_MEIPASS', ''))
+		bundled = meipass / 'vendors' / 'sim_config'
+		if bundled.is_dir():
+			return str(bundled) + '/'
+
 	# this code is so ass
 	repo_root = pathlib.Path(__file__).resolve().parent.parent.parent.parent
 

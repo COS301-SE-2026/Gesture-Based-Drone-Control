@@ -49,7 +49,7 @@ tasks:
           --collect-all asyncpg \
           --collect-all keyboard \
           --collect-all tornado \
-          --add-data "vendors/projectairsim/src/projectairsim/sim_config:projectairsim/sim_config"
+          --add-data "vendors/sim_config:vendors/sim_config" \
           --hidden-import cv2 \
           --hidden-import services \
           --hidden-import jwt.algorithms \
