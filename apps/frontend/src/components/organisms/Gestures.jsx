@@ -20,35 +20,13 @@ function fmt(value, digits = 0) {
 const GestureControl = () => {
   const [commands,setCommands] = useState([])
 
-  //from gesture guide molecule to backend commandType name
-  const ACTION_TO_COMMAND = {
-    moveForward: "MOVE_FORWARD",
-    moveBackward: "MOVE_BACKWARD",
-    moveLeft: "MOVE_LEFT",
-    moveRight: "MOVE_RIGHT",
-    goUp: "MOVE_UP",
-    goDown: "MOVE_DOWN",
-    rotateLeft: "ROTATE_CCW",
-    rotateRight: "ROTATE_CW",
-    takeoff: "TAKEOFF",
-    land: "LAND",
-    hover: "HOVER",
-    emergencyStop: "EMERGENCY_STOP",
-  }
+  
 
   const { telemetry, status } = useTelemetry()
   const { sendCommand, status: commandStatus, lastResp } = useCommands()
 
   const handleControlAcion = (action) => {
-    const commandName = ACTION_TO_COMMAND[action]
-    if (!commandName) {
-      console.warn(
-        "GestureControl: no command mapping for this action: ",
-        action
-      )
-      return
-    }
-    sendCommand(commandName, { source: "onscreen" })
+    sendCommand(action, { source: "onscreen" })
   }
 
   // //mock data for drone status
@@ -141,6 +119,14 @@ const GestureControl = () => {
   //add hardware mode when drone works
 
   const hasConnected = useRef(false)
+
+  useEffect(() => {
+    if (hasConnected.current) return
+    hasConnected.current = true
+    connectToDrone("dummy")
+  },[])
+
+
 
   //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
   useEffect(() => {
