@@ -20,7 +20,9 @@ import {
   OctagonX,
 } from "lucide-react"
 import { useDroneControls } from "../../hooks/useDroneControls"
-import { useKeyboardControl } from "../../hooks/useKeyboardControl"
+import { useKeyboardControl } from "@/hooks/useKeyboardControl"
+import { useGamepadControl } from "@/hooks/useGamepadControl"
+import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tabimport { useKeyboardControl } from "../../hooks/useKeyboardControl"
 
 const tabs = [
   { id: "onscreen", label: "On Screen", icon: Monitor },
@@ -166,6 +168,10 @@ const GestureGuide = ({ className = "", sendCommand }) => {
     opening the /input/ws/keyboard/socket, and listening for real key events **/
   const { connected: keyboardConnected } = useKeyboardControl(
     activeTab === "keyboard"
+  )
+
+  const { connected: controllerConnected } = useGamepadControl(
+    activeTab === "controller"
   )
 
   const onScreenControls = () => (
@@ -342,14 +348,37 @@ const GestureGuide = ({ className = "", sendCommand }) => {
             />
             <span className="text-OffBlack/70 dark:text-OffWhite/70">
               {keyboardConnected
-                ? "Kyeboard control active"
+                ? "Keyboard control active"
+                : "Connecting keyboard control..."}
+            </span>
+          </div>
+        )}
+
+        {activeTab === "controller" && (
+          <div className="flex items-center gap-2 text-xs">
+            <span
+              className={`w-2 h-2 rounded-full ${
+                controllerConnected
+                  ? "bg-green-500 animate-pulse"
+                  : "bg-Grey/40"
+              }`}
+            />
+            <span className="text-OffBlack/70 dark:text-OffWhite/70">
+              {controllerConnected
+                ? "Keyboard control active"
                 : "Connecting keyboard control..."}
             </span>
           </div>
         )}
 
         {/* control the content being displayed */}
-        {activeTab === "onscreen" ? onScreenControls() : otherControls()}
+        {activeTab === "onscreen" ? (
+          onScreenControls()
+        ) : activeTab === "controller" ? (
+          <ControllerLayout />
+        ) : (
+          otherControls()
+        )}
       </div>
     </Card>
   )

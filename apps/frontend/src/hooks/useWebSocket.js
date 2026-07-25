@@ -63,7 +63,7 @@ export function useWebSocket(wsUrl, { onMessage } = {}) {
       if (isUnmountedRef.current) return
 
       if (onMessage) {
-        onmessage(event)
+        onMessage(event)
       }
     }
 
@@ -116,13 +116,16 @@ export function useWebSocket(wsUrl, { onMessage } = {}) {
   useEffect(() => {
     isUnmountedRef.current = false
 
-    clearTimeout(reconnectTimeoutRef.current)
+    connect()
+    return () => {
+      isUnmountedRef.current = true
 
-    if (socketRef.current) {
-      socketRef.current.close()
+      clearTimeout(reconnectTimeoutRef.current)
+
+      socketRef.current?.close()
       socketRef.current = null
     }
-  }, [])
+  }, [connect])
 
   /**
    * return the socket reference
