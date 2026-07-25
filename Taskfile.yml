@@ -36,9 +36,8 @@ tasks:
       - yarn dev
 
   build:
-    desc: Builds the backend and frontend
+    desc: Builds and packages app into a single executable
     cmds:
-      
       - | 
           uv run pyinstaller --onefile --name backend \
           --paths . \
@@ -50,6 +49,7 @@ tasks:
           --collect-all asyncpg \
           --collect-all keyboard \
           --collect-all tornado \
+          --add-data "vendors/projectairsim/src/projectairsim/sim_config:projectairsim/sim_config"
           --hidden-import cv2 \
           --hidden-import services \
           --hidden-import jwt.algorithms \
