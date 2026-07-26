@@ -18,7 +18,7 @@ test.describe('Analytics', () =>{
             })
         })
     
-        await page.goto('/analytics')
+        await page.goto('/#/analytics')
         await page.waitForLoadState('domcontentloaded')
     })
 
