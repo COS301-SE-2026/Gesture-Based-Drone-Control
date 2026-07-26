@@ -1,3 +1,5 @@
+import time
+
 import pytest
 from _gesture_helpers import MAX_FRAMES_SHORT, SCRIPTED, requires_camera
 from app.cv.calibration import (
@@ -5,7 +7,6 @@ from app.cv.calibration import (
 	CalibrationFramePayload,
 	CalibrationStatus,
 )
-from starlette.websockets import WebSocketDisconnect
 
 WS_PATH = '/api/calibration/stream'
 
@@ -90,13 +91,17 @@ class TestSkipDuringRun:
 
 			res = client.post('/api/calibration/skip')
 			assert res.json()['status'] == 'skipped'
+			assert calibration_manager.status is CalibrationStatus.SKIPPED
+			assert calibration_manager.is_calibrated is True
 
-			with pytest.raises(WebSocketDisconnect):
-				for _ in range(MAX_FRAMES_SHORT):
-					ws.receive_json()
-
-		assert calibration_manager.status is CalibrationStatus.SKIPPED
-		assert calibration_manager.is_calibrated is True
+			deadline = time.monotonic() + 10
+			body = client.get('/api/gestures/status').json()
+			while time.monotonic() < deadline:
+				body = client.get('/api/gestures/status').json()
+				if not body['running'] and body['connected_clients'] == 0:
+					break
+				time.sleep(0.2)
+			assert body['connected_clients'] == 0
 
 
 @requires_camera

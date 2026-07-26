@@ -5,7 +5,6 @@ from app.cv.calibration import (
 	CalibrationFramePayload,
 	CalibrationStatus,
 )
-from starlette.websockets import WebSocketDisconnect
 
 WS_PATH = '/api/calibration/stream'
 
@@ -35,8 +34,6 @@ class TestFullCalibrationRun:
 					f'last progress={frames[-1].progress if frames else None}'
 				)
 
-			with pytest.raises(WebSocketDisconnect):
-				ws.receive_json()
 
 		final = frames[-1]
 

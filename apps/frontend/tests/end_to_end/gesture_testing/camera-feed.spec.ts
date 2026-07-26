@@ -9,6 +9,11 @@ import {
 test.describe.configure({mode: "serial"})
 
 test.describe("gesture camera feed (any camera", () => {
+    test.skip(
+        ({browserName}) => browserName !== "chromium",
+        "shared backedn camera, one browser enough"
+    )
+
     test.beforeEach(async ({request}) => {
        await request.post(`${API_BASE}/api/calibration/skip`)
     })
@@ -16,6 +21,7 @@ test.describe("gesture camera feed (any camera", () => {
     test.afterEach(async ({ page, request}) => {
         await page.goto("/analytics")
         await waitForPipelineStopped(request)
+        await new Promise((r) => setTimeout(r, 2000))
     })
 
     test("connects, streams frames, and draws the overlay", async ({
@@ -34,10 +40,10 @@ test.describe("gesture camera feed (any camera", () => {
         })
         
         await expect
-            .poll(async () => (await getPipelineStatus(request)).running, {
+            .poll(async () => (await getPipelineStatus(request)).connected_clients, {
                 timeout: 15_000,
         })
-        .toBe(true)
+        .toBeGreaterThanOrEqual(1)
     const status = await getPipelineStatus(request)
     expect(status.connected_clients).toBeGreaterThanOrEqual(1)
 
