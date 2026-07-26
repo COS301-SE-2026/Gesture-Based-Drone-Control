@@ -4,11 +4,10 @@ import { useWebSocket } from "./useWebSocket"
 
 export function useKeyboardControl(
   enabled,
+  onMessage,
   wsUrl = getWsUrl("/api/input/ws/keyboard")
 ) {
-  
-  const[lastResp,setLastResp] = useState(null)
-  const { socketRef, status } = useWebSocket(wsUrl, {})
+  const { socketRef, status } = useWebSocket(wsUrl)
 
   // helper to actually send the req to be processed
   const send = useCallback(
@@ -21,14 +20,24 @@ export function useKeyboardControl(
 
       try {
         socket.send(JSON.stringify(payload))
-        setLastResp(payload)
       } finally {
         return true
       }
     
     },
-    [socketRef, setLastResp]
+    [socketRef]
   )
+
+  useEffect(() => {
+    if (socketRef?.current) {
+      socketRef.current.onmessage = (event) => {
+      console.log("onm", event)
+      onMessage(event)
+    }
+    }
+  }, [socketRef])
+    
+
 
   useEffect(() => {
     if (!enabled) return
@@ -95,6 +104,5 @@ export function useKeyboardControl(
   return {
     connected: status === "open",
     status,
-    lastResp,
   }
 }

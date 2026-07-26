@@ -21,7 +21,7 @@ import {
 } from "lucide-react"
 import { useDroneControls } from "../../hooks/useDroneControls"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
-import { useGamepadControl } from "@/hooks/useGamepadControl"
+// import { useGamepadControl } from "@/hooks/useGamepadControl"
 import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tab
 
 const tabs = [
@@ -165,18 +165,18 @@ const GestureGuide = ({ className = "", sendCommand, onKeyboardResp }) => {
 
   /**will only be active when the keyboard tab is selected and handles connecting  the backend keyboard input adapter,
     opening the /input/ws/keyboard/socket, and listening for real key events **/
-  const { connected: keyboardConnected, lastResp: keyboardLastResp } =
-    useKeyboardControl(activeTab === "keyboard")
+  const { connected: keyboardConnected } =
+    useKeyboardControl(activeTab === "keyboard", onKeyboardResp)
 
-  useEffect(() => {
-    if (keyboardLastResp?.event){
-      onKeyboardResp(keyboardLastResp)
-    }
-  }, [keyboardLastResp, onKeyboardResp])
+  // useEffect(() => {
+  //   if (keyboardLastResp?.event){
+  //     onKeyboardResp(keyboardLastResp)
+  //   }
+  // }, [keyboardLastResp, onKeyboardResp])
 
-  const { connected: controllerConnected } = useGamepadControl(
-    activeTab === "controller"
-  )
+  // const { connected: controllerConnected } = useGamepadControl(
+  //   activeTab === "controller"
+  // )
 
   const onScreenControls = () => (
     <div className="flex gap-6 py-4">
