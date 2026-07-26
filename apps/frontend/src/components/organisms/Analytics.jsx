@@ -69,6 +69,9 @@ const Analytics = () => {
   const lastUpdateRef = useRef(0)
   const [maxAltitude, setMaxAltitude] = useState(0)
   const [maxSpeedKmh, setMaxSpeedKmh] = useState(0)
+  const [totalDistanceKm, setTotalDistanceKm] = useState(0)
+  const lastDisplacementRef = useRef(null)
+  const totalDistanceMetersRef = useRef(0)
 
   useEffect(() => {
     if (!telemetry) return
@@ -91,6 +94,25 @@ const Analytics = () => {
       }
       if (typeof telemetry.speed_ms === "number") {
         setMaxSpeedKmh((prev) => Math.max(prev, telemetry.speed_ms * MS_TO_KMH))
+      }
+
+      if (
+        typeof telemetry.x_displacement === "number" &&
+        typeof telemetry.y_displacement === "number"
+      ) {
+        if (lastDisplacementRef.current) {
+          const dx = telemetry.x_displacement - lastDisplacementRef.current.x
+          const dy = telemetry.y_displacement - lastDisplacementRef.current.y
+          const deltaMeters = Math.sqrt(dx * dx + dy * dy)
+          if (deltaMeters > 0.05) {
+            totalDistanceMetersRef.current += deltaMeters
+            setTotalDistanceKm(totalDistanceMetersRef.current / 1000)
+          }
+        }
+        lastDisplacementRef.current = {
+          x: telemetry.x_displacement,
+          y: telemetry.y_displacement,
+        }
       }
 
       setFlightTelemetryData((prev) => {
@@ -171,9 +193,8 @@ const Analytics = () => {
     maxAltitude: maxAltitude ? maxAltitude.toFixed(1) : "--",
     totalFlights: summary?.total_flights ?? "--",
     avgFlightDuration: summary?.avg_flight_duration_min ?? "--",
-    //no cumulative path distance field is tracked by backend
-    totalDistance: "--",
-    maxSpeed: maxSpeedKmh ? maxSpeedKmh.toFixed(1) : "--"
+    totalDistance: totalDistanceKm ? totalDistanceKm.toFixed(2) : "--",
+    maxSpeed: maxSpeedKmh ? maxSpeedKmh.toFixed(1) : "--",
   }
 
   return (
