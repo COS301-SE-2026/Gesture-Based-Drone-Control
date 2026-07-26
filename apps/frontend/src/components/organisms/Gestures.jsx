@@ -18,6 +18,11 @@ function fmt(value, digits = 0) {
   return typeof value === "number" ? value.toFixed(digits) : "--"
 }
 
+function calibrationLabel(calibrated) {
+  if (calibrated === null) return "checking..."
+  return calibrated ? "calibrated" : "required"
+}
+
 //TODO: this is still mocked for now
 const GestureControl = () => {
   const [commands] = useState([
@@ -221,11 +226,7 @@ const GestureControl = () => {
             calibrated ? "text-green-500" : "text-yellow-500"
           }`}
         >
-          {calibrated === null
-            ? "checking..."
-            : calibrated
-              ? "calibrated"
-              : "required"}
+          {calibrationLabel}
         </span>
       </div>
       <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">

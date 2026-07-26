@@ -1,35 +1,14 @@
 import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import { useGestureStream } from "../../hooks/useGestureStream"
-
-const HAND_CONNECTIONS = [
-  [0, 1],
-  [1, 2],
-  [2, 3],
-  [3, 4],
-  [0, 5],
-  [5, 6],
-  [6, 7],
-  [7, 8],
-  [0, 9],
-  [9, 10],
-  [10, 11],
-  [11, 12],
-  [0, 13],
-  [13, 14],
-  [14, 15],
-  [15, 16],
-  [0, 17],
-  [17, 18],
-  [18, 19],
-  [19, 20],
-  [5, 9],
-  [9, 13],
-  [13, 17],
-]
+import {
+  prepareCanvas,
+  coverTransform,
+  toCanvasPoints,
+  drawHand,
+} from "../../lib/handSkeleton"
 
 const SKELETON_COLOR = "#ef4444"
-const LANDMARK_COLOR = "#ffffff"
 const LABEL_BG = "rgba(11, 9, 10, 0.75)"
 const LABEL_TEXT = "#ffffff"
 
@@ -41,7 +20,9 @@ const GestureCameraFeed = ({ className = "" }) => {
   useEffect(() => {
     let mediaStream
     navigator.mediaDevices
-      .getUserMedia({ video: { ideal: 640 }, height: { ideal: 480 } })
+      .getUserMedia({ 
+        video: {width: { ideal: 640 }, height: { ideal: 480 } }
+      })
       .then((stream) => {
         mediaStream = stream
         if (videoRef.current) {
@@ -65,11 +46,7 @@ const GestureCameraFeed = ({ className = "" }) => {
       return
     }
     //faaah missing bracket
-    const ctx = canvas.getContext("2d")
-    canvas.width = canvas.clientWidth
-    canvas.height = canvas.clientHeight
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-
+    const ctx = prepareCanvas(canvas)
     if (!frame) {
       return
     }
@@ -83,42 +60,10 @@ const GestureCameraFeed = ({ className = "" }) => {
       return
     }
 
-    const vw = video.videoWidth || canvas.width
-    const vh = video.videoHeight || canvas.height
-    const scale = Math.max(canvas.width / vw, canvas.height / vh)
-    const drawW = vw * scale
-    const drawH = vh * scale
-    const offsetX = (canvas.width - drawW) / 2
-    const offsetY = (canvas.height - drawH) / 2
+    const transform = coverTransform(canvas, video)
     frame.hands.forEach((hand) => {
-      const points = hand.landmarks.map((lm) => ({
-        x: offsetX + lm.x * drawW,
-        y: offsetY + lm.y * drawH,
-      }))
-
-      // bones
-      ctx.strokeStyle = SKELETON_COLOR
-      ctx.lineWidth = 2
-      HAND_CONNECTIONS.forEach(([a, b]) => {
-        const p1 = points[a]
-        const p2 = points[b]
-        if (!p1 || !p2) {
-          return
-        }
-
-        ctx.beginPath()
-        ctx.moveTo(p1.x, p1.y)
-        ctx.lineTo(p2.x, p2.y)
-        ctx.stroke()
-      })
-
-      // joints
-      ctx.fillStyle = LANDMARK_COLOR
-      points.forEach((p) => {
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2)
-        ctx.fill()
-      })
+      const points = toCanvasPoints(hand.landmarks, transform)
+      drawHand(ctx, points, SKELETON_COLOR)
 
       //per-hand info label above wrist (landmark 0)
       const wrist = points[0]
