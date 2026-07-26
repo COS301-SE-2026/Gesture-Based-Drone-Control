@@ -4,13 +4,13 @@ import{test,expect} from '@playwright/test'
 
 test.describe('Command History',()=>{
     test('the label of the command history gets rendered', async ({page})=>{
-        await page.goto('/gestures')
+        await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByText(/command history/i)).toBeVisible()
     })
 
     test('the command entries are rendered', async ({page})=> {
-        await page.goto('/gestures')
+        await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
         await page.getByText('Command History').click()
         await expect (page.getByText(/swipe up - move up/i)).toBeVisible()
@@ -20,7 +20,7 @@ test.describe('Command History',()=>{
     })
 
     test('the timestamps alongside the commands showing up',async ({page})=> {
-        await page.goto('/gestures')
+        await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
         await page.getByText('Command History').click()
         await expect(page.getByText('18:50:43').first()).toBeVisible()

@@ -36,20 +36,42 @@ tasks:
       - yarn dev
 
   build:
-    desc: Builds the backend and frontend
-    deps:
-      - backend-build
-      - frontend-build
-
-  backend-build:
+    desc: Builds and packages app into a single executable
     cmds:
-      - uv run fastapi run  {{.BACKEND_APP}} --port {{.BACKENDPORT}}
+      - | 
+          uv run pyinstaller --onefile --name backend \
+          --paths . \
+          --collect-all mediapipe \
+          --collect-all airsim \
+          --collect-all projectairsim \
+          --collect-all cryptography \
+          --collect-all bcrypt \
+          --collect-all asyncpg \
+          --collect-all keyboard \
+          --collect-all tornado \
+          --add-data "vendors/sim_config:vendors/sim_config" \
+          --hidden-import cv2 \
+          --hidden-import services \
+          --hidden-import jwt.algorithms \
+          --hidden-import email_validator \
+          --hidden-import sqlalchemy.dialects.sqlite \
+          --hidden-import sqlalchemy.dialects.postgresql \
+          --hidden-import sqlalchemy.dialects.postgresql.asyncpg \
+          --hidden-import uvicorn.logging \
+          --hidden-import uvicorn.loops.auto \
+          --hidden-import uvicorn.protocols.http.auto \
+          --hidden-import uvicorn.protocols.websockets.auto \
+          --hidden-import uvicorn.lifespan.on \
+          --hidden-import aiosqlite \
+          apps/backend/app/main.py
+    
+      - cd apps/frontend && yarn electron-build
+      
 
-  frontend-build:
-    internal: true
-    dir: "{{.FRONTEND_DIR}}"
-    cmds:
-      - yarn build
+  clean:
+    desc: removes all folders related to packaged executable
+    cmds: 
+      - rm -r release dist apps/frontend/dist
 
   test:
     desc: Runs Unit Tests, Integration and End to End tests

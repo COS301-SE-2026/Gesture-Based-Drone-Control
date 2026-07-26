@@ -10,6 +10,14 @@ export default defineConfig([
   globalIgnores(['dist', '**/*config*']),
 
   {
+    files: ['electron/**/*.{js,jsx,ts,tsx}'],
+    extends: [js.configs.recommended],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+
+  {
     files: ['**/*.{js,jsx,ts,tsx}'],
     extends: [
       js.configs.recommended,
