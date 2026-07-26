@@ -29,8 +29,8 @@ export async function fetchCalibrationStatus() {
 }
 
 export function useCalibrationStream() {
-  const {frame, connected} = useFrameStream("/api/calibration/stream")
+  const { frame, connected } = useFrameStream("/api/calibration/stream")
   const finished = frame?.phase === "done"
 
-  return {frame, connected, finished}
+  return { frame, connected, finished }
 }
