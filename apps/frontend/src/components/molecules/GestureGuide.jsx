@@ -349,7 +349,7 @@ const GestureGuide = ({ className = "", onControlAction }) => {
             <span className="text-OffBlack/70 dark:text-OffWhite/70">
               {keyboardConnected
                 ? "Keyboard control active"
-                : "Connecting keyboard control..."}
+                : "Connecting keyboard controls..."}
             </span>
           </div>
         )}
@@ -365,8 +365,8 @@ const GestureGuide = ({ className = "", onControlAction }) => {
             />
             <span className="text-OffBlack/70 dark:text-OffWhite/70">
               {controllerConnected
-                ? "Keyboard control active"
-                : "Connecting keyboard control..."}
+                ? "Gamepad control active"
+                : "Connecting gamepad controls..."}
             </span>
           </div>
         )}

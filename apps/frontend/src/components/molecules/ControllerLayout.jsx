@@ -149,28 +149,33 @@ const ControllerLayout = ({ className = "" }) => {
           className="stroke-OffBlack/40 dark:stroke-OffWhite/40"
         />
         <path
+          data-testid="dpad-up"
           d="M140,155 L140,111 Q140,99 152,99 L168,99 Q180,99 180,111 L180,155 Z"
           strokeWidth="2"
           className={btnFill(12)}
         />
         <path
+          data-testid="dpad-down"
           d="M140,155 L140,199 Q140,211 152,211 L168,211 Q180,211 180,199 L180,155 Z"
           strokeWidth="2"
-          className={btnFill(12)}
+          className={btnFill(13)}
         />
         <path
+          data-testid="dpad-left"
           d="M160,135 L116,135 Q104,135 104,147 L104,163 Q104,175 116,175 L160,175 Z"
           strokeWidth="2"
-          className={btnFill(12)}
+          className={btnFill(14)}
         />
         <path
+          data-testid="dpad-right"
           d="M160,135 L204,135 Q216,135 216,147 L216,163 Q216,175 204,175 L160,175 Z"
           strokeWidth="2"
-          className={btnFill(12)}
+          className={btnFill(15)}
         />
 
         {/* one in da middle */}
         <circle
+          data-testid="btn-home"
           cx="425"
           cy="110"
           r="26"
@@ -179,6 +184,7 @@ const ControllerLayout = ({ className = "" }) => {
         />
 
         <rect
+          data-testid="btn-select"
           x="345"
           y="180"
           width="70"
@@ -197,6 +203,7 @@ const ControllerLayout = ({ className = "" }) => {
         </text>
 
         <rect
+          data-testid="btn-start"
           x="435"
           y="180"
           width="70"
@@ -217,6 +224,7 @@ const ControllerLayout = ({ className = "" }) => {
         {/* RHS mini circles */}
         {/* cause apparently they need symbols as well */}
         <circle
+          data-testid="btn-triangle"
           cx="720"
           cy="115"
           r="24"
@@ -231,6 +239,7 @@ const ControllerLayout = ({ className = "" }) => {
         />
 
         <circle
+          data-testid="btn-square"
           cx="680"
           cy="155"
           r="24"
@@ -248,6 +257,7 @@ const ControllerLayout = ({ className = "" }) => {
         />
 
         <circle
+          data-testid="btn-circle"
           cx="760"
           cy="155"
           r="24"
@@ -264,6 +274,7 @@ const ControllerLayout = ({ className = "" }) => {
         />
 
         <circle
+          data-testid="btn-cross"
           cx="720"
           cy="195"
           r="24"
@@ -288,6 +299,7 @@ const ControllerLayout = ({ className = "" }) => {
         />
 
         <circle
+          data-testid="stick-left-base"
           cx="260"
           cy="250"
           r="55"
@@ -313,6 +325,7 @@ const ControllerLayout = ({ className = "" }) => {
         />
 
         <circle
+          data-testid="stick-left-knob"
           cx={leftStickX}
           cy={leftStickY}
           r="30"
@@ -330,6 +343,7 @@ const ControllerLayout = ({ className = "" }) => {
         </text>
 
         <circle
+          data-testid="stick-right-base"
           cx="590"
           cy="250"
           r="55"
@@ -355,6 +369,7 @@ const ControllerLayout = ({ className = "" }) => {
         />
 
         <circle
+          data-testid="stick-right-knob"
           cx={rightStickX}
           cy={rightStickY}
           r="30"

@@ -47,13 +47,13 @@ test.describe('ControllerLayout',() => {
         await page.getByRole('button',{name:/controller/i}).click()
     })
 
-    test('shows "Noo controller detetcted" when nothing is plugged in',async ({page}) => {
+    test('shows "No controller detected" when nothing is plugged in',async ({page}) => {
         await expect(page.getByText(/no controller detected/i)).toBeVisible()
     })
 
     test('the status dot gotta be grey when disconnected', async ({page}) => {
-        const dot = page.locator('.w-2.h-2.rounded-full.bg-Grey\\/40')
-        await expect(dot).toBeVisible()
+        const dot = page.locator('.w-2.h-2.rounded-full').last()
+        await expect(dot).toHaveClass(/bg-Grey\/40/)
     })
 
     test('renders the axis labels for both sticks',async ({page}) => {
