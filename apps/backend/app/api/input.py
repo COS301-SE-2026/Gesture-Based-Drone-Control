@@ -177,6 +177,9 @@ async def keyboard(websocket: WebSocket, state: Annotated[AppState, Depends(get_
 				continue
 			# assume valid input... add better handling later
 			await state.input.handle_message(data)
+			await websocket.send_json(
+				{'ok':True, 'key' :data.get('key'), 'event':data.get('event')}
+			)
 	except WebSocketDisconnect:
 		logger.info('input/ws/keyboard: client disconnected')
 	except Exception as ex:

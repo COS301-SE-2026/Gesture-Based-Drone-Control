@@ -28,19 +28,17 @@ const GestureControl = () => {
   const handleControlAcion = (action) => {
     sendCommand(action, { source: "onscreen" })
   }
+  const handleKeyboardResp=(resp)=> {
+    const timestamp = new Date().toLocaleTimeString("en-ZA", {hour12:false})
+    setCommands((prev) => [{action: resp.key, timestamp}, ...prev].slice(0,50))
+  }
 
-  // //mock data for drone status
-  // const droneMetrics = {
-  //   battery: 56,
-  //   speed: 5.6,
-  //   altitude: 72,
-  //   signal: 71,
-  // }
 
   const [droneMode, setDroneMode] = useState("DroneSim")
   const [isConnecting, setIsConnecting] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState("disconnected")
   const [connectionError, setConnectionError] = useState("")
+  
 
   //hardware isnt wired for now so we dont want to show the stale sim data
   const displayTelem = droneMode === "Hardware" ? null : telemetry
@@ -260,7 +258,7 @@ const GestureControl = () => {
           </div>
         </Card>
 
-        <GestureGuide className="h-full" sendCommand={handleControlAcion} />
+        <GestureGuide className="h-full" sendCommand={handleControlAcion} onKeyboardResp={handleKeyboardResp} />
       </div>
 
       <CommandHistory commands={commands} />

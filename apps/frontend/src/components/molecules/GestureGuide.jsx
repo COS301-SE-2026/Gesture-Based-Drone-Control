@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import PropTypes from "prop-types"
 import { Card, Label, Button } from "../atoms"
 import {
@@ -159,16 +159,22 @@ const controls = {
   })),
 }
 
-const GestureGuide = ({ className = "", sendCommand }) => {
+const GestureGuide = ({ className = "", sendCommand, onKeyboardResp }) => {
   const [activeTab, setActiveTab] = useState("onscreen")
   const { handleControlPress, isControlActive } =
     useDroneControls(sendCommand)
 
   /**will only be active when the keyboard tab is selected and handles connecting  the backend keyboard input adapter,
     opening the /input/ws/keyboard/socket, and listening for real key events **/
-  const { connected: keyboardConnected } = useKeyboardControl(
+  const { connected: keyboardConnected,lastResp:keyboardLastResp } = useKeyboardControl(
     activeTab === "keyboard"
   )
+
+  useEffect(() => {
+    if (keyboardLastResp?.ok && keyboardLastResp.event === "keydown"){
+      onKeyboardResp?.(keyboardLastResp)
+    }
+  },[keyboardLastResp,onKeyboardResp])
 
   const { connected: controllerConnected } = useGamepadControl(
     activeTab === "controller"
@@ -387,11 +393,13 @@ const GestureGuide = ({ className = "", sendCommand }) => {
 GestureGuide.propTypes = {
   className: PropTypes.string,
   sendCommand: PropTypes.func,
+  onKeyboardResp: PropTypes.func,
 }
 
 GestureGuide.defaultProps = {
   className: "",
   sendCommand: null,
+  onKeyboardResp:null,
 }
 
 export default GestureGuide

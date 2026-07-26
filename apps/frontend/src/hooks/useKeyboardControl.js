@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react"
+import { useEffect, useCallback, useState } from "react"
 import { API_BASE_URL, getWsUrl } from "../lib/api"
 import { useWebSocket } from "./useWebSocket"
 
@@ -6,7 +6,18 @@ export function useKeyboardControl(
   enabled,
   wsUrl = getWsUrl("/api/input/ws/keyboard")
 ) {
-  const { socketRef, status } = useWebSocket(wsUrl)
+  
+  const[lastResp,setLastResp] = useState(null)
+  const { socketRef, status } = useWebSocket(wsUrl,{
+    onmessage(event){
+      try{
+        setLastResp(JSON.parse(event.data))
+      }
+      catch(err){
+        console.error("useKeyboardControl: failed to parse response",err)
+      }
+    }
+  })
 
   // helper to actually send the req to be processed
   const send = useCallback(
@@ -49,6 +60,15 @@ export function useKeyboardControl(
   useEffect(() => {
     if (!enabled) return
 
+
+    const CONTROL_KEYS = new Set([
+      "ArrowUp","ArrowDown","ArrowLeft","ArrowRight",
+      " ","Spacebar",
+      "w","a","s","d",
+      "t","l",
+      "Escape",
+    ])
+
     // keydown events are actually handled
     // send them as they come, hold down means continuous input
     const handleKeyDown = (e) => {
@@ -78,5 +98,6 @@ export function useKeyboardControl(
   return {
     connected: status === "open",
     status,
+    lastResp,
   }
 }
