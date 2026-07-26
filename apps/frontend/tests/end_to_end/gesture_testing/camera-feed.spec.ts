@@ -1,5 +1,6 @@
 import {test,expect} from "@playwright/test"
 import {
+    API_BASE,
     CAMERA_FEED_ROUTE,
     getPipelineStatus,
     waitForPipelineStopped,
@@ -8,7 +9,12 @@ import {
 test.describe.configure({mode: "serial"})
 
 test.describe("gesture camera feed (any camera", () => {
-    test.afterEach(async ({request}) => {
+    test.beforeEach(async ({request}) => {
+       await request.post(`${API_BASE}/api/calibration/skip`)
+    })
+
+    test.afterEach(async ({ page, request}) => {
+        await page.goto("/analytics")
         await waitForPipelineStopped(request)
     })
 
@@ -18,7 +24,12 @@ test.describe("gesture camera feed (any camera", () => {
     }) => {
         await page.goto(CAMERA_FEED_ROUTE)
 
-        await expect(page.getByText("Active", {exact: true})).toBeVisible ({
+        const activeBadge = page
+            .locator("video")
+            .first()
+            .locator("..")
+            .getByText("Active", {exact: true})
+        await expect(activeBadge).toBeVisible ({
             timeout: 15_000,
         })
         
@@ -62,7 +73,13 @@ test.describe("gesture camera feed (any camera", () => {
         request,
     }) => {
         await page.goto(CAMERA_FEED_ROUTE)
-        await expect(page.getByText("Active", {exact: true })).toBeVisible({
+
+        const activeBadge = page
+            .locator("video")
+            .first()
+            .locator("..")
+            .getByText("Active", {exact: true})
+        await expect(activeBadge).toBeVisible({
             timeout: 20_000,
         })
         await expect
@@ -71,7 +88,7 @@ test.describe("gesture camera feed (any camera", () => {
             })
             .toBe(true)
 
-        await page.goto("/")
+        await page.goto("/analytics")
 
         const after = await waitForPipelineStopped(request)
         expect(after.running).toBe(false)

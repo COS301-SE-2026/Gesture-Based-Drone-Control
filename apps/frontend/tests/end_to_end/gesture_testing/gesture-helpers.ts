@@ -3,8 +3,8 @@ import type { APIRequestContext } from "@playwright/test"
 const BACKEND_PORT = process.env.BACKENDPORT ?? "3001"
 export const API_BASE = `http://localhost:${BACKEND_PORT}`
 
-export const CALIBRATION_ROUTE = process.env.E2E_CALIBRATION_ROUTE ?? "/calibration"
-export const CAMERA_FEED_ROUTE = process.env.E2E_CAMERA_FEED_ROUTE ?? "/drone"
+export const CALIBRATION_ROUTE = process.env.E2E_CALIBRATION_ROUTE ?? "/gestures"
+export const CAMERA_FEED_ROUTE = process.env.E2E_CAMERA_FEED_ROUTE ?? "/gestures"
 
 export const hasScriptedCamera = process.env.GBDC_TESTS_SCRIPTED_CAMERA === '1'
 
