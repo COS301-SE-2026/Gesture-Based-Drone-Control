@@ -14,17 +14,27 @@ test.describe('Analytics', () =>{
                     {duration_min: 22 },
                     {duration_min: 20 },
                     {duration_min: 23 },
-                ])
+                ]),
+            })
+        })
+
+        await page.route('**/api/analytics/summary*', async (route) => {
+            await route.fulfill({
+                status: 200,
+                body: JSON.stringify({
+                    total_flights: 7,
+                    avg_flight_duration_min:21.1,
+                }),
             })
         })
     
         await page.goto('/analytics')
-        await page.waitForLoadState('domcontentloaded')
+        await expect(page.getByText(/Total Flights/i)).toBeVisible()
     })
 
     test('the top card labels show up', async ({page})=>{
-        await expect(page.getByText(/Total Flights/i).first()).toBeVisible()
-        await expect(page.getByText(/Average speed/i)).toBeVisible()
+        await expect(page.getByText(/Total Flights/i)).toBeVisible()
+        await expect(page.getByText(/Max Speed \(session\)/i)).toBeVisible()
         await expect(page.getByText(/Max Altitude \(session\)/i)).toBeVisible()
     })
 
@@ -48,7 +58,7 @@ test.describe('Analytics', () =>{
     test ('stats at the bottom show up',async ({page})=> {
         await expect(page.getByText(/Total Distance/i)).toBeVisible()
         await expect(page.getByText(/Average Flight Duration/i)).toBeVisible()
-        await expect(page.getByText(/Total Flights/i).last()).toBeVisible()
+        await expect(page.getByText(/Average Speed/i)).toBeVisible()
     })
 
      test ('the stats values at the bottom is rendered', async ({page})=> {
