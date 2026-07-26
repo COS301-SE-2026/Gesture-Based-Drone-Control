@@ -2,8 +2,9 @@
   "license": "UNLICENSED",
   "name": "frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.2.0",
   "type": "module",
+  "main": "electron/main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -13,11 +14,12 @@
     "preview": "vite preview",
     "unit-test": "playwright test tests/unitTesting/ --config=playwright.unit.config.ts --reporter=list,html",
     "e2e-test": "playwright test tests/end_to_end/ --workers=1 --config=playwright.e2e.config.ts",
-    "ui-add": "npx shadcn@4.7.0 add"
+    "ui-add": "npx shadcn@4.7.0 add",
+    "electron-dev": "electron .",
+    "electron-build": "yarn build && electron-builder"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
-    "electron": "^36.3.0",
     "install-deps": "^1.1.0",
     "lucide-react": "^1.14.0",
     "prop-types": "^15.8.1",
@@ -35,6 +37,8 @@
     "@types/react-dom": "18",
     "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.5.0",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
     "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.1.1",

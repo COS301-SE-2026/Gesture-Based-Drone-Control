@@ -59,9 +59,19 @@ app = FastAPI(
 # lets Fastapi know that requests from lclhst3000 is chill
 app.add_middleware(
 	CORSMiddleware,
-	allow_origins=['http://localhost:3000', 'http://127.0.0.1:3000'],
+	allow_origins=[
+		'http://127.0.0.1:3000',
+		'http://localhost:3000',
+		'http://127.0.0.1:4173',
+		'http://localhost:4173',
+	],
 	allow_credentials=True,
 	allow_methods=['*'],
 	allow_headers=['*'],
 )
 app.include_router(router)
+
+if __name__ == '__main__':
+	import uvicorn
+
+	uvicorn.run(app, host='127.0.0.1', port=3001)

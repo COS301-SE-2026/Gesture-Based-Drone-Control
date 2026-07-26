@@ -20,6 +20,9 @@ site/
 *.db
 apps/backend/coverage.xml
 package-lock.json
+build/
+backend.spec
 site_build/
 deploy/
 serve_root/
+release

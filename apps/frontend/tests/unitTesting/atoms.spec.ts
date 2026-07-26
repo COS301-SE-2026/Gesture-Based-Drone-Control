@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test'
 
 test.describe('Atom components', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/test');
+        await page.goto('/#/test');
         await page.waitForSelector('h1:has-text("Welcome")');
     });
 
