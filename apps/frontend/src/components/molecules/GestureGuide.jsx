@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, memo } from "react"
 import PropTypes from "prop-types"
 import { Card, Label, Button } from "../atoms"
 import {
@@ -159,7 +159,10 @@ const controls = {
   })),
 }
 
-const GestureGuide = ({ className = "", onControlAction }) => {
+const GestureGuide = memo(function GestureGuide({
+  className = "",
+  onControlAction,
+}) {
   const [activeTab, setActiveTab] = useState("onscreen")
   const { handleControlPress, isControlActive } =
     useDroneControls(onControlAction)
@@ -173,7 +176,7 @@ const GestureGuide = ({ className = "", onControlAction }) => {
   const { connected: controllerConnected } = useGamepadControl(
     activeTab === "controller"
   )
-  console.count("Gest")
+  console.count("Gestureguide render")
   const onScreenControls = () => (
     <div className="flex gap-6 py-4">
       <div className="flex flex-col items-center">
@@ -382,7 +385,7 @@ const GestureGuide = ({ className = "", onControlAction }) => {
       </div>
     </Card>
   )
-}
+})
 
 GestureGuide.propTypes = {
   className: PropTypes.string,
