@@ -20,6 +20,7 @@ import {
   OctagonX,
 } from "lucide-react"
 import { useDroneControls } from "../../hooks/useDroneControls"
+import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tab
 import { useKeyboardControl } from "../../hooks/useKeyboardControl"
 
 const tabs = [
@@ -349,7 +350,13 @@ const GestureGuide = ({ className = "", onControlAction }) => {
         )}
 
         {/* control the content being displayed */}
-        {activeTab === "onscreen" ? onScreenControls() : otherControls()}
+        {activeTab === "onscreen" ? (
+          onScreenControls()
+        ) : activeTab === "controller" ? (
+          <ControllerLayout />
+        ) : (
+          otherControls()
+        )}
       </div>
     </Card>
   )
