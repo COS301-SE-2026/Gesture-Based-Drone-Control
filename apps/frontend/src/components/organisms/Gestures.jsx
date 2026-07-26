@@ -19,9 +19,7 @@ function fmt(value, digits = 0) {
 //TODO: this is still mocked for now
 const GestureControl = () => {
   const [commands,setCommands] = useState([])
-
   
-
   const { telemetry, status } = useTelemetry()
   const { sendCommand, status: commandStatus, lastResp } = useCommands()
 

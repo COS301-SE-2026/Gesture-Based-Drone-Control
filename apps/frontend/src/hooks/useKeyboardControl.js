@@ -8,16 +8,7 @@ export function useKeyboardControl(
 ) {
   
   const[lastResp,setLastResp] = useState(null)
-  const { socketRef, status } = useWebSocket(wsUrl,{
-    onmessage(event){
-      try{
-        setLastResp(JSON.parse(event.data))
-      }
-      catch(err){
-        console.error("useKeyboardControl: failed to parse response",err)
-      }
-    }
-  })
+  const { socketRef, status } = useWebSocket(wsUrl, {})
 
   // helper to actually send the req to be processed
   const send = useCallback(
@@ -27,10 +18,16 @@ export function useKeyboardControl(
       if (!socket || socket.readyState !== WebSocket.OPEN) {
         return false
       }
-      socket.send(JSON.stringify(payload))
-      return true
+
+      try {
+        socket.send(JSON.stringify(payload))
+        setLastResp(payload)
+      } finally {
+        return true
+      }
+    
     },
-    [socketRef]
+    [socketRef, setLastResp]
   )
 
   useEffect(() => {
@@ -79,19 +76,19 @@ export function useKeyboardControl(
     }
 
     // keyup dont do anything yet
-    const handleKeyUp = (e) => {
-      send({
-        key: e.key,
-        event: "keyup",
-      })
-    }
+    // const handleKeyUp = (e) => {
+    //   send({
+    //     key: e.key,
+    //     event: "keyup",
+    //   })
+    // }
 
     window.addEventListener("keydown", handleKeyDown)
-    window.addEventListener("keyup", handleKeyUp)
+    // window.addEventListener("keyup", handleKeyUp)
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
-      window.removeEventListener("keyup", handleKeyUp)
+      // window.removeEventListener("keyup", handleKeyUp)
     }
   }, [enabled, send])
 
