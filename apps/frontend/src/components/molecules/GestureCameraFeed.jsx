@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import { useGestureStream } from "../../hooks/useGestureStream"
+import { useWebPreview } from "../../hooks/useWebcamPreview"
 import {
   prepareCanvas,
   coverTransform,
@@ -17,27 +18,7 @@ const GestureCameraFeed = ({ className = "" }) => {
   const canvasRef = useRef(null)
   const { frame, connected } = useGestureStream()
 
-  useEffect(() => {
-    let mediaStream
-    navigator.mediaDevices
-      .getUserMedia({
-        video: { width: { ideal: 640 }, height: { ideal: 480 } },
-      })
-      .then((stream) => {
-        mediaStream = stream
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream
-        }
-      })
-
-      .catch((err) => {
-        console.error("Couldn't access the webcam:", err)
-      })
-
-    return () => {
-      mediaStream?.getTracks().forEach((track) => track.stop())
-    }
-  }, [])
+  useWebPreview(videoRef)
 
   useEffect(() => {
     const canvas = canvasRef.current

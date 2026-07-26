@@ -7,6 +7,7 @@ import {
   skipCalibration,
   fetchCalibrationStatus,
 } from "../../hooks/useCalibrationStream"
+import { useWebPreview } from "../../hooks/useWebcamPreview"
 import {
   prepareCanvas,
   coverTransform,
@@ -64,26 +65,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
       })
   }, [])
 
-  useEffect(() => {
-    let mediaStream
-    navigator.mediaDevices
-      .getUserMedia({
-        video: { width: { ideal: 640 }, height: { ideal: 480 } },
-      })
-      .then((stream) => {
-        mediaStream = stream
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream
-        }
-      })
-      .catch((err) => {
-        console.error("Couldnt access the wbcam:", err)
-      })
-
-    return () => {
-      mediaStream?.getTracks().forEach((track) => track.stop())
-    }
-  }, [])
+  useWebPreview(videoRef)
 
   useEffect(() => {
     const canvas = canvasRef.current
