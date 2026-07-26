@@ -34,7 +34,6 @@ class TestFullCalibrationRun:
 					f'last progress={frames[-1].progress if frames else None}'
 				)
 
-
 		final = frames[-1]
 
 		assert final.progress.completed == list(CALIBRATION_SEQUENCE)
