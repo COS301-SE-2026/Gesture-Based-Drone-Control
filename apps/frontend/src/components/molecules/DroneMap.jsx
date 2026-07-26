@@ -40,9 +40,20 @@ function FitBounds({ points }) {
 
   useEffect(() => {
     if (!fitted.current && points.length > 0) {
-      const bounds = L.latLngBounds(points)
-      map.fitBounds(bounds, { padding: [60, 60] })
-      fitted.current = true
+      try {
+        const bounds = L.latLngBounds(points)
+        map.fitBounds(bounds, { padding: [60, 60] })
+        fitted.current = true
+      } catch {
+        //map not ready/valid yet
+      }
+    }
+    return () => {
+      try {
+        map.stop()
+      } catch {
+        //already torn down during unmount
+      }
     }
   }, [points, map])
 
@@ -56,7 +67,24 @@ FitBounds.propTypes = {
 function FollowDrone({ position }) {
   const map = useMap()
   useEffect(() => {
-    if (position) map.panTo(position, { animate: true })
+    if (
+      position &&
+      Number.isFinite(position[0]) &&
+      Number.isFinite(position[1])
+    ) {
+      try {
+        map.panTo(position, { animate: true })
+      } catch {
+        //map container mid-teardown or not yet sized
+      }
+    }
+    return () => {
+      try {
+        map.stop()
+      } catch {
+        //map/container already torn down during unmount
+      }
+    }
   }, [position, map])
   return null
 }
@@ -81,24 +109,37 @@ export default function DroneMap({ pathPoints, headingDeg, height }) {
   const { isDark } = useContext(ThemeContext)
   // const mapRef = useRef(null)
 
+  const altitudes = pathPoints
+    .map((p) => p.altitude_m)
+    .filter((a) => Number.isFinite(a))
   if (pathPoints.length === 0) {
     return (
       <div
         className="flex items-center justify-center bg-OffBlack/20 rounded-lg text-DarkGrey"
         style={{ height }}
       >
-        Waiting for telemtry...
+        Waiting for telemetry...
       </div>
     )
   }
-
-  const altitudes = pathPoints.map((p) => p.altitude_m)
   const minAltitude = Math.min(...altitudes)
   const maxAltitude = Math.max(...altitudes)
-  const displacementPoints = pathPoints.map((p) => [
-    p.y_displacement,
-    p.x_displacement,
-  ])
+  const displacementPoints = pathPoints
+    .filter(
+      (p) =>
+        Number.isFinite(p.x_displacement) && Number.isFinite(p.y_displacement)
+    )
+    .map((p) => [p.y_displacement, p.x_displacement])
+  if (displacementPoints.length === 0) {
+    return (
+      <div
+        className="flex items-center justify-center bg-OffBlack/20 rounded-lg text-DarkGrey"
+        style={{ height }}
+      >
+        Waiting for telemetry...
+      </div>
+    )
+  }
   const currPos = displacementPoints[displacementPoints.length - 1]
 
   return (
