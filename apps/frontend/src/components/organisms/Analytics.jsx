@@ -275,6 +275,7 @@ const Analytics = () => {
                     borderRadius: "6px",
                     fontSize: "12px",
                   }}
+                  formatter={(value) => [`${value} m/s`, "Speed"]}
                 />
                 <Line
                   type="monotone"
@@ -310,6 +311,7 @@ const Analytics = () => {
                     borderRadius: "6px",
                     fontSize: "12px",
                   }}
+                  formatter={(value) => [`${value}%`, "Battery"]}
                 />
                 <Line
                   type="monotone"
@@ -353,6 +355,7 @@ const Analytics = () => {
                     borderRadius: "6px",
                     fontSize: "12px",
                   }}
+                  formatter={(value) => [`${value} min`, "Duration"]}
                 />
                 <Bar dataKey="duration" fill="#A4161A" radius={[8, 8, 0, 0]} />
               </BarChart>
