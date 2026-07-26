@@ -92,15 +92,18 @@ export function useGamepadControl(
 
     const poll = () => {
       if (cancelled) return
-      const pads = navigator.getGamepads ? navigator.getGamepads() : []
-      const pad = Array.from(pads).find((p) => p && p.connected)
-      const socket = socketRef.current
 
-      // make sure we good then send the entire state over WS
-      if (pad && socket?.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(readGamepad(pad)))
+      // skip polling when the tab is not visible
+      if (!document.hidden) {
+        const pads = navigator.getGamepads ? navigator.getGamepads() : []
+        const pad = Array.from(pads).find((p) => p && p.connected)
+        const socket = socketRef.current
+
+        // make sure we good then send the entire state over WS
+        if (pad && socket?.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify(readGamepad(pad)))
+        }
       }
-
       // the recursionish loop
       rafRef.current = requestAnimationFrame(poll)
     }
