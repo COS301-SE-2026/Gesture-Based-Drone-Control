@@ -3,6 +3,7 @@ import {
     API_BASE,
     CALIBRATION_ROUTE,
     PRETTY_SEQUENCE,
+    backendHasCamera,
     getCalibrationStatus,
     hasScriptedCamera,
     waitForPipelineStopped,
@@ -45,14 +46,24 @@ test.describe("gesture calibration (any camera", () => {
         for (const gesture of PRETTY_SEQUENCE) {
             await expect(page.getByText(gesture).first()).toBeVisible()
         }
+
+        test.skip(
+            !(await backendHasCamera(request)),
+            "backend has no camera, no frames to drive to UI"
+        )
         await expect(page.getByText("Show:")).toBeVisible({timeout: 20_000})
     })
 
-    test("progress UI updates while frames streeam in", async ({page}) => {
+    test("progress UI updates while frames streeam in", async ({page, request,}) => {
         await page.goto(CALIBRATION_ROUTE)
         await expect(page.getByText("Live", {exact: true})).toBeVisible({
             timeout: 20_000,
         })
+
+        test.skip(
+            !(await backendHasCamera(request)),
+            "backend has no camera, no frames to count"
+        )
 
         const counter = page.getByText(/\d+\/\d+ frames/)
         await expect(counter).toBeVisible({timeout: 30_000})

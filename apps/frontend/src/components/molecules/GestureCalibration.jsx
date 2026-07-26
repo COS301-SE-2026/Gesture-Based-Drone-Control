@@ -7,37 +7,16 @@ import {
   skipCalibration,
   fetchCalibrationStatus,
 } from "../../hooks/useCalibrationStream"
+import {
+  prepareCanvas,
+  coverTransform,
+  toCanvasPoints,
+  drawHand,
+} from "../../lib/handSkeleton"
 
 //live gesture calibration UI with ws /api/calibration/stream
 
-const HAND_CONNECTIONS = [
-  [0, 1],
-  [1, 2],
-  [2, 3],
-  [3, 4],
-  [0, 5],
-  [5, 6],
-  [6, 7],
-  [7, 8],
-  [0, 9],
-  [9, 10],
-  [10, 11],
-  [11, 12],
-  [0, 13],
-  [13, 14],
-  [14, 15],
-  [15, 16],
-  [0, 17],
-  [17, 18],
-  [18, 19],
-  [19, 20],
-  [5, 9],
-  [9, 13],
-  [13, 17],
-]
-
 const MATCHED_COLOR = "#22c55e"
-const LANDMARK_COLOR = "#ffffff"
 const UNMATCHED_COLOR = "#ef4444"
 
 // open palm
@@ -48,6 +27,24 @@ function prettyGesture(name) {
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ")
+}
+
+function connectionDotClass(connected, finished) {
+  if (connected) return "bg-green-500 animate-pulse"
+  if (finished) return "bg-green-500"
+  return "bg-Grey"
+}
+
+function connectionLabel(connected, finished) {
+  if (finished) return "Complete"
+  if (connected) return "Live"
+  return "Connecting..."
+}
+
+function chipClass(isDone, isCurrent) {
+  if (isDone) return "bg-green-500/15 border-green-500/40 text-green-500"
+  if (isCurrent) return "bg-Red/15 border-Red/50 text-Red"
+  return "bg-Grey/10 border-Grey/20 text-DarkGrey"
 }
 
 const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
@@ -94,55 +91,17 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
     if (!canvas || !video) {
       return
     }
-    const ctx = canvas.getContext("2d")
-    canvas.width = canvas.clientWidth
-    canvas.height = canvas.clientHeight
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-
+    const ctx = prepareCanvas(canvas)
     if (!frame?.hands?.length) {
       return
     }
 
-    const vw = video.videoWidth || canvas.width
-    const vh = video.videoHeight || canvas.height
-    const scale = Math.max(canvas.width / vw, canvas.height / vh)
-    const drawW = vw * scale
-    const drawH = vh * scale
-    const offsetX = (canvas.width - drawW) / 2
-    const offsetY = (canvas.height - drawH) / 2
-
+    const transform = coverTransform(canvas, video)
     const passState = frame.phase === "success_display" || frame.matched
     const boneColor = passState ? MATCHED_COLOR : UNMATCHED_COLOR
 
     frame.hands.forEach((hand) => {
-      const points = hand.landmarks.map((lm) => ({
-        x: offsetX + lm.x * drawW,
-        y: offsetY + lm.y * drawH,
-      }))
-
-      //bones
-      ctx.strokeStyle = boneColor
-      ctx.lineWidth = 2
-      HAND_CONNECTIONS.forEach(([a, b]) => {
-        const p1 = points[a]
-        const p2 = points[b]
-        if (!p1 || !p2) {
-          return
-        }
-
-        ctx.beginPath()
-        ctx.moveTo(p1.x, p1.y)
-        ctx.lineTo(p2.x, p2.y)
-        ctx.stroke()
-      })
-
-      //joints
-      ctx.fillStyle = LANDMARK_COLOR
-      points.forEach((p) => {
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2)
-        ctx.fill()
-      })
+      drawHand(ctx, toCanvasPoints(hand.landmarks, transform), boneColor)
     })
   }, [frame])
 
@@ -170,6 +129,83 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
   const requiredRatio = windowStats?.required_ratio ?? 0.8
   const chips = sequence.length ? sequence : completed
 
+  let statusArea
+  if (finished) {
+    statusArea = (
+      <div className="flex flex-col gap-3">
+        <p className="text-sm font-medium text-green-500">
+          ✓ Calibration complete, all {total || completed.length} gestures
+          passed. Flight commands are now unlocked.
+        </p>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => onComplete?.("completed")}
+            className="px-4 py-2 rounded bg-Red text-OffWhite text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            Continue
+          </button>
+          {onRestart && (
+            <button
+              type="button"
+              onClick={onRestart}
+              className="px-4 py-2 rounded border border-Grey/30 text-sm text-OffBlack dark:text-OffWhite hover:bg-Grey/10 transition-colors"
+            >
+              Recalibrate
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  } else if (phase === "success_display") {
+    statusArea = (
+      <p className="text-sm font-medium text-green-500">
+        ✓ {prettyGesture(lastPassed)} passed!
+      </p>
+    )
+  } else {
+    statusArea = (
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-OffBlack/80 dark:text-OffWhite">
+            {target ? (
+              <>
+                Show:{" "}
+                <span className="font-semibold">{prettyGesture(target)}</span>
+              </>
+            ) : (
+              "Waiting for camera stream..."
+            )}
+          </p>
+          {windowStats && (
+            <span className="text-xs text-DarkGrey">
+              {windowStats.frames}/{windowStats.min_frames} frames
+            </span>
+          )}
+        </div>
+
+        {/* rolling window match ratio, threshold marker at required ratio */}
+        <div className="relative w-full bg-Grey/20 rounded-full h-2">
+          <div
+            className="h-2 rounded-full transition-all duration-200"
+            style={{
+              width: `${Math.round(ratio * 100)}%`,
+              backgroundColor:
+                ratio >= requiredRatio ? MATCHED_COLOR : "#eab308",
+            }}
+          />
+          <div
+            className="absolute -top-0.5 h-3 w-0.5 bg-OffBlack/60 dark:bg-OffWhite/60"
+            style={{ left: `${requiredRatio * 100}%` }}
+          />
+        </div>
+        <p className="text-xs text-DarkGrey">
+          Hold the gesture steady, {Math.round(requiredRatio * 100)}% of recent
+          frames must match to pass
+        </p>
+      </div>
+    )
+  }
   return (
     <Card variant="glass" className={className}>
       <div className="flex flex-col gap-4">
@@ -177,17 +213,9 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
           <Label size="md">Gesture Calibration</Label>
           <div className="flex items-center gap-2 text-xs text-DarkGrey">
             <span
-              className={`w-2 h-2 rounded-full ${
-                connected
-                  ? "bg-green-500 animate-pulse"
-                  : finished
-                    ? "bg-green-500"
-                    : "bg-Grey"
-              }`}
+              className={`w-2 h-2 rounded-full ${connectionDotClass(connected, finished)}`}
             />
-            <span>
-              {finished ? "Complete" : connected ? "Live" : "Connecting..."}
-            </span>
+            <span>{connectionLabel(connected, finished)}</span>
           </div>
         </div>
 
@@ -211,13 +239,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
               return (
                 <span
                   key={gesture}
-                  className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-                    isDone
-                      ? "bg-green-500/15 border-green-500/40 text-green-500"
-                      : isCurrent
-                        ? "bg-Red/15 border-Red/50 text-Red"
-                        : "bg-Grey/10 border-Grey/20 text-DarkGrey"
-                  }`}
+                  className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${chipClass(isDone, isCurrent)}`}
                 >
                   {/* ✓ pasted */}
                   {isDone ? "✓ " : ""}
@@ -227,80 +249,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
             })}
           </div>
         )}
-        {/* instruction, state area */}
-        {finished ? (
-          <div className="flex flex-col gap-3">
-            <p className="text-sm font-medium text-green-500">
-              ✓ Calibration complete, all {total || completed.length} gestures
-              passed. Flight commands are now unlocked.
-            </p>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => onComplete?.("completed")}
-                className="px-4 py-2 rounded bg-Red text-OffWhite text-sm font-medium hover:opacity-90 transition-opacity"
-              >
-                Continue
-              </button>
-              {onRestart && (
-                <button
-                  type="button"
-                  onClick={onRestart}
-                  className="px-4 py-2 rounded border border-Grey/30 text-sm text-OffBlack dark:text-OffWhite hover:bg-Grey/10 transition-colors"
-                >
-                  Recalibrate
-                </button>
-              )}
-            </div>
-          </div>
-        ) : phase === "success_display" ? (
-          <p className="text-sm font-medium text-green-500">
-            ✓ {prettyGesture(lastPassed)} passed!
-          </p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-OffBlack/80 dark:text-OffWhite">
-                {target ? (
-                  <>
-                    Show:{" "}
-                    <span className="font-semibold">
-                      {prettyGesture(target)}
-                    </span>
-                  </>
-                ) : (
-                  "Waiting for camera stream..."
-                )}
-              </p>
-              {windowStats && (
-                <span className="text-xs text-DarkGrey">
-                  {windowStats.frames}/{windowStats.min_frames} frames
-                </span>
-              )}
-            </div>
-
-            {/* rolling window match ratio, threshold marker at required ratio */}
-            <div className="relative w-full bg-Grey/20 rounded-full h-2">
-              <div
-                className="h-2 rounded-full transition-all duration-200"
-                style={{
-                  width: `${Math.round(ratio * 100)}%`,
-                  backgroundColor:
-                    ratio >= requiredRatio ? MATCHED_COLOR : "#eab308",
-                }}
-              />
-              <div
-                className="absolute -top-0.5 h-3 w-0.5 bg-OffBlack/60 dark:bg-OffWhite/60"
-                style={{ left: `${requiredRatio * 100}%` }}
-              />
-            </div>
-            <p className="text-xs text-DarkGrey">
-              Hold the gesture steady, {Math.round(requiredRatio * 100)}% of
-              recent frames must match to pass
-            </p>
-          </div>
-        )}
-
+        {statusArea}
         {/* skip */}
         {!finished && (
           <div className="border-t border-Grey/20 pt-3 flex justify-end">
