@@ -15,7 +15,6 @@ function cleanAxis(value) {
 
 // read the full gamepad state and package it into the  GamepadAdapter schema
 function readGamepad(pad) {
-  
   return {
     left_x: cleanAxis(pad.axes[0]), //right==1, ,left==-1
     left_y: cleanAxis(pad.axes[1]), //down==1, up==-1
