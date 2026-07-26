@@ -156,18 +156,7 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: 'apps/frontend/yarn.lock'
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/frontend/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
-
-      - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+      
 
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b        
         with: 
@@ -184,6 +173,19 @@ jobs:
       
       - name: Install Dependencies
         run: task install
+      
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('apps/frontend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
 
       - name: End To End Testing
         run: task e2e-test
