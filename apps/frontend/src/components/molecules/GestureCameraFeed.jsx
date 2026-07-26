@@ -20,8 +20,8 @@ const GestureCameraFeed = ({ className = "" }) => {
   useEffect(() => {
     let mediaStream
     navigator.mediaDevices
-      .getUserMedia({ 
-        video: {width: { ideal: 640 }, height: { ideal: 480 } }
+      .getUserMedia({
+        video: { width: { ideal: 640 }, height: { ideal: 480 } },
       })
       .then((stream) => {
         mediaStream = stream
