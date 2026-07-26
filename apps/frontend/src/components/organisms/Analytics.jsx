@@ -68,6 +68,10 @@ const Analytics = () => {
   const startTimeRef = useRef(null)
   const lastUpdateRef = useRef(0)
   const [maxAltitude, setMaxAltitude] = useState(0)
+  const [maxSpeedKmh, setMaxSpeedKmh] = useState(0)
+  const [totalDistanceKm, setTotalDistanceKm] = useState(0)
+  const lastDisplacementRef = useRef(null)
+  const totalDistanceMetersRef = useRef(0)
 
   useEffect(() => {
     if (!telemetry) return
@@ -87,6 +91,28 @@ const Analytics = () => {
     Promise.resolve().then(() => {
       if (typeof telemetry.altitude_m === "number") {
         setMaxAltitude((prev) => Math.max(prev, telemetry.altitude_m))
+      }
+      if (typeof telemetry.speed_ms === "number") {
+        setMaxSpeedKmh((prev) => Math.max(prev, telemetry.speed_ms * MS_TO_KMH))
+      }
+
+      if (
+        typeof telemetry.x_displacement === "number" &&
+        typeof telemetry.y_displacement === "number"
+      ) {
+        if (lastDisplacementRef.current) {
+          const dx = telemetry.x_displacement - lastDisplacementRef.current.x
+          const dy = telemetry.y_displacement - lastDisplacementRef.current.y
+          const deltaMeters = Math.sqrt(dx * dx + dy * dy)
+          if (deltaMeters > 0.05) {
+            totalDistanceMetersRef.current += deltaMeters
+            setTotalDistanceKm(totalDistanceMetersRef.current / 1000)
+          }
+        }
+        lastDisplacementRef.current = {
+          x: telemetry.x_displacement,
+          y: telemetry.y_displacement,
+        }
       }
 
       setFlightTelemetryData((prev) => {
@@ -167,8 +193,8 @@ const Analytics = () => {
     maxAltitude: maxAltitude ? maxAltitude.toFixed(1) : "--",
     totalFlights: summary?.total_flights ?? "--",
     avgFlightDuration: summary?.avg_flight_duration_min ?? "--",
-    //no cumulative path distance field is tracked by backend
-    totalDistance: "--",
+    totalDistance: totalDistanceKm ? totalDistanceKm.toFixed(2) : "--",
+    maxSpeed: maxSpeedKmh ? maxSpeedKmh.toFixed(1) : "--",
   }
 
   return (
@@ -196,13 +222,13 @@ const Analytics = () => {
           <div className="flex flex-col gap-3">
             <Gauge className="w-6 h-6 text-Red" />
             <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
-              Average speed
+              Max Speed (session)
             </p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
-                {metrics.avgSpeed}
+                {metrics.maxSpeed}
               </span>
-              <span className="text-sm text-DarkGrey">m/s</span>
+              <span className="text-sm text-DarkGrey">km/h</span>
             </div>
           </div>
         </Card>
@@ -249,6 +275,7 @@ const Analytics = () => {
                     borderRadius: "6px",
                     fontSize: "12px",
                   }}
+                  formatter={(value) => [`${value} m/s`, "Speed"]}
                 />
                 <Line
                   type="monotone"
@@ -284,6 +311,7 @@ const Analytics = () => {
                     borderRadius: "6px",
                     fontSize: "12px",
                   }}
+                  formatter={(value) => [`${value}%`, "Battery"]}
                 />
                 <Line
                   type="monotone"
@@ -327,6 +355,7 @@ const Analytics = () => {
                     borderRadius: "6px",
                     fontSize: "12px",
                   }}
+                  formatter={(value) => [`${value} min`, "Duration"]}
                 />
                 <Bar dataKey="duration" fill="#A4161A" radius={[8, 8, 0, 0]} />
               </BarChart>
@@ -371,13 +400,13 @@ const Analytics = () => {
         <Card variant="glass">
           <div className="text-center">
             <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
-              Total Flights
+              Average speed
             </p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
-                {metrics.totalFlights}
+                {metrics.avgSpeed}
               </span>
-              <span className="text-sm text-DarkGrey">flights</span>
+              <span className="text-sm text-DarkGrey">m/s</span>
             </div>
           </div>
         </Card>
