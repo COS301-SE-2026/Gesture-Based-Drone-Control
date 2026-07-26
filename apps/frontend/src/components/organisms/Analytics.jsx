@@ -68,6 +68,7 @@ const Analytics = () => {
   const startTimeRef = useRef(null)
   const lastUpdateRef = useRef(0)
   const [maxAltitude, setMaxAltitude] = useState(0)
+  const [maxSpeedKmh, setMaxSpeedKmh] = useState(0)
 
   useEffect(() => {
     if (!telemetry) return
@@ -87,6 +88,9 @@ const Analytics = () => {
     Promise.resolve().then(() => {
       if (typeof telemetry.altitude_m === "number") {
         setMaxAltitude((prev) => Math.max(prev, telemetry.altitude_m))
+      }
+      if (typeof telemetry.speed_ms === "number") {
+        setMaxSpeedKmh((prev) => Math.max(prev, telemetry.speed_ms * MS_TO_KMH))
       }
 
       setFlightTelemetryData((prev) => {
@@ -169,6 +173,7 @@ const Analytics = () => {
     avgFlightDuration: summary?.avg_flight_duration_min ?? "--",
     //no cumulative path distance field is tracked by backend
     totalDistance: "--",
+    maxSpeed: maxSpeedKmh ? maxSpeedKmh.toFixed(1) : "--"
   }
 
   return (
@@ -196,13 +201,13 @@ const Analytics = () => {
           <div className="flex flex-col gap-3">
             <Gauge className="w-6 h-6 text-Red" />
             <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
-              Average speed
+              Max Speed (session)
             </p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
-                {metrics.avgSpeed}
+                {metrics.maxSpeed}
               </span>
-              <span className="text-sm text-DarkGrey">m/s</span>
+              <span className="text-sm text-DarkGrey">km/h</span>
             </div>
           </div>
         </Card>
@@ -371,13 +376,13 @@ const Analytics = () => {
         <Card variant="glass">
           <div className="text-center">
             <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
-              Total Flights
+              Average speed
             </p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
-                {metrics.totalFlights}
+                {metrics.avgSpeed}
               </span>
-              <span className="text-sm text-DarkGrey">flights</span>
+              <span className="text-sm text-DarkGrey">m/s</span>
             </div>
           </div>
         </Card>
