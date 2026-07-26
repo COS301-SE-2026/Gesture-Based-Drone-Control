@@ -459,4 +459,4 @@ async def test_analog_vertical_uses_right_stick_when_stronger():
 	await adapter.analog(ainput)
 	args = mock_drone.move_by_velocity_body_frame_async.await_args.args
 
-	assert math.isclose(args[2], 0.8 * DEFAULT_SPEED_MS)
+	assert math.isclose(args[2], -0.8 * DEFAULT_SPEED_MS)

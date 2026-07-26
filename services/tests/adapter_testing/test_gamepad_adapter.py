@@ -116,7 +116,7 @@ async def test_analog_command_emitted(adapter):
 	assert isclose(analog.left_y, -1.0)
 	assert isclose(analog.right_x, 0.25)
 	assert isclose(analog.right_y, 0.75)
-	assert isclose(analog.ltrigger, 0.1)
+	assert isclose(analog.ltrigger, 0.0)  # deadzoned
 	assert isclose(analog.rtrigger, 0.0)
 
 
