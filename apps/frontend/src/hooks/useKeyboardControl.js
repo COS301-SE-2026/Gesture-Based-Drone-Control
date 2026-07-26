@@ -20,23 +20,14 @@ export function useKeyboardControl(
 
       try {
         socket.send(JSON.stringify(payload))
+        onMessage(payload)
       } finally {
         return true
       }
     
     },
-    [socketRef]
+    [socketRef, onMessage]
   )
-
-  useEffect(() => {
-    if (socketRef?.current) {
-      socketRef.current.onmessage = (event) => {
-      console.log("onm", event)
-      onMessage(event)
-    }
-    }
-  }, [socketRef])
-    
 
 
   useEffect(() => {
