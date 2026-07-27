@@ -2,13 +2,26 @@
 assemble all routes into a single router that main.py uses
 
 currently added:
-    /drone - everything to do with the adapters
+    /drone - everything to do with the DroneAdapter
+    /input - everything to do with InputAdapters
+    /gestures - camera pipeline status and websocket stream
 """
 
 from fastapi import APIRouter
 
-from app.api import drone
+from app.api import analytics, auth, calibration, drone, gestures, input
 
-router = APIRouter()
+router = APIRouter(prefix='/api')
 
-router.include_router(drone.router, prefix='/drone', tags=['drone'])
+
+@router.get('/health')
+async def health():
+	return {'status': 'ok'}
+
+
+router.include_router(drone.router)
+router.include_router(gestures.router)
+router.include_router(auth.router)
+router.include_router(input.router)
+router.include_router(analytics.router)
+router.include_router(calibration.router)

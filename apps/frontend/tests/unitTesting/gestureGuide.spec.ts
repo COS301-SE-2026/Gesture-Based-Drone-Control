@@ -2,7 +2,7 @@ import{test,expect} from '@playwright/test'
 
 test.describe('Gesture Guide',() =>{
     test.beforeEach(async ({page})=> {
-        await page.goto('/gestures')
+        await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
     })
 

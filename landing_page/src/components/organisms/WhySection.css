@@ -1,0 +1,40 @@
+.md-why {
+  padding: 100px 6vw;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 54px;
+}
+.md-why h2 {
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+  font-weight: 600;
+  margin: 14px 0;
+}
+.md-why p {
+  color: var(--dim);
+  max-width: 46ch;
+  margin: 0;
+}
+.md-chips {
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 24px 0 0;
+}
+.md-chipsli {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 7px 12px;
+}
+@media (max-width: 980px) {
+  .md-why {
+    grid-template-columns: 1fr;
+    gap: 44px;
+  }
+}

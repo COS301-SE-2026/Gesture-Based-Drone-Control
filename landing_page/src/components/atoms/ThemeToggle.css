@@ -1,0 +1,18 @@
+.md-toggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    border-color,
+    0.2s transform 0.2s;
+}
+.md-toggle:hover {
+  border-color: var(--red);
+  transform: rotate(20deg);
+}

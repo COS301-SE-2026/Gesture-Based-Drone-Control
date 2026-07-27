@@ -4,13 +4,17 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [react()],
+  envDir:'../../',
+  envPrefix:['VITE_', 'BACKENDPORT'],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src")
     }
   },
   server: {
+    https: false,
     port: 3000,           // desired port
     strictPort: false,    // falls back to next available if 3000 is taken
 

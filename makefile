@@ -31,6 +31,11 @@ fix:
 	uv run ruff check --fix .
 	cd $(FRONTEND_DIR) && yarn format
 
+clean:
+	rm -f $(SERVICES_DIR)/coverage.xml $(SERVICES_DIR)/.coverage
+	rm -f $(BACKEND_DIR)/coverage.xml $(BACKEND_DIR)/.coverage
+	rm -rf $(SERVICES_DIR)/htmlcov $(BACKEND_DIR)/htmlcov
+
 #keeping services in its own corner as we're mocking everything for now
 
 services-install:
