@@ -32,7 +32,7 @@ const GestureControl = () => {
 
   const handleControlAction = useCallback(
     (command) => {
-      sendCommand(command,{source:"onscreen"})
+      sendCommand(command, { source: "onscreen" })
     },
     [sendCommand]
   )
@@ -43,8 +43,6 @@ const GestureControl = () => {
       [{ action: resp.key, timestamp }, ...prev].slice(0, 50)
     )
   }
-
-
 
   // //mock data for drone status
   // const droneMetrics = {
@@ -326,15 +324,15 @@ const GestureControl = () => {
                 )}
               </div>
 
-            <GestureCameraFeed className="flex-1" />
-          </div>
-        </Card>
-)}
+              <GestureCameraFeed className="flex-1" />
+            </div>
+          </Card>
+        )}
 
-        <GestureGuide 
-        className="h-full" 
-        sendCommand ={handleControlAction} 
-        onKeyboardResp ={handleKeyboardResp}
+        <GestureGuide
+          className="h-full"
+          sendCommand={handleControlAction}
+          onKeyboardResp={handleKeyboardResp}
         />
       </div>
 
