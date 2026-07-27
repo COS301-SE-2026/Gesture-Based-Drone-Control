@@ -44,6 +44,7 @@ import asyncio
 import logging
 import math
 import pathlib
+import sys
 from typing import TYPE_CHECKING
 
 from services.commands.command import AnalogInput, CommandType
@@ -55,12 +56,12 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # defaults for movement. tweakable, same as airsim
-DEFAULT_SPEED_MS: float = 8.0
-DEFAULT_DURATION_S: float = 0.5
-DEFAULT_ROTATE_DEG: float = 15.0
-DEFAULT_YAW_RATE_DPS: float = 75.0
+DEFAULT_SPEED_MS: float = 80.0
+DEFAULT_DURATION_S: float = 0.01
+DEFAULT_ROTATE_DEG: float = 0.2
+DEFAULT_YAW_RATE_DPS: float = 200.0
 
-DEFAULT_ANALOG_DURATION_S = 0.05
+DEFAULT_ANALOG_DURATION_S = 0.01
 
 # the drone drops like a rock, drift it up a lil every time we move horzontally
 GRAVITY_COMP_VZ: float = -0.3
@@ -74,6 +75,13 @@ def _find_sim_config() -> str:
 
 	Raises a runtime error if nothing is found
 	"""
+
+	if getattr(sys, 'frozen', False):
+		meipass = pathlib.Path(getattr(sys, '_MEIPASS', ''))
+		bundled = meipass / 'vendors' / 'sim_config'
+		if bundled.is_dir():
+			return str(bundled) + '/'
+
 	# this code is so ass
 	repo_root = pathlib.Path(__file__).resolve().parent.parent.parent.parent
 
@@ -325,7 +333,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 		vy = input.left_x * DEFAULT_SPEED_MS
 
 		# between stick and trigger, take highest magnitude
-		stickz = -input.right_y
+		stickz = input.right_y
 		triggerz = input.ltrigger - input.rtrigger
 		vert = stickz if abs(stickz) >= abs(triggerz) else triggerz
 		vz = vert * DEFAULT_SPEED_MS

@@ -4,13 +4,13 @@ import{test,expect} from '@playwright/test'
 
 test.describe('Command History',()=>{
     test('the label of the command history gets rendered', async ({page})=>{
-        await page.goto('/gestures')
+        await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByText(/command history/i)).toBeVisible()
     })
 
     test('the command entries are rendered', async ({page})=> {
-        await page.goto('/gestures')
+        await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
         await page.getByText('Command History').click()
         await expect (page.getByText(/swipe up - move up/i)).toBeVisible()
@@ -20,7 +20,7 @@ test.describe('Command History',()=>{
     })
 
     test('the timestamps alongside the commands showing up',async ({page})=> {
-        await page.goto('/gestures')
+        await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
         await page.getByText('Command History').click()
         await expect(page.getByText('18:50:43').first()).toBeVisible()
@@ -35,14 +35,14 @@ test.describe('Command History',()=>{
 
 test.describe('Sidebar',()=>{
     test('the logo comes through',async ({page})=>{
-        await page.goto('/')
+        await page.goto('/#/')
         await page.waitForLoadState('domcontentloaded')
         const logo = page.getByAltText(/codex merchants/i)
         await expect(logo).toBeVisible()
     })
 
     test('all the nav items show up', async ({page})=> {
-        await page.goto('/')
+        await page.goto('/#/')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByText(/analytics/i).first()).toBeVisible()
         await expect(page.getByText(/gestures/i).first()).toBeVisible()
@@ -55,14 +55,14 @@ test.describe('Sidebar',()=>{
 
 test.describe('DarkModeToggle',()=>{
     test('the toggle bar shows up',async ({page})=>{
-        await page.goto('/')
+        await page.goto('/#/')
         await page.waitForLoadState('domcontentloaded')
         const toggle = page.locator('input[type="checkbox"]').first()
         await expect(toggle).toBeAttached()
     })
 
     test('the dark mode adds dark class o html element',async({page})=>{
-        await page.goto('/')
+        await page.goto('/#/')
         await page.waitForLoadState('domcontentloaded')
         const toggle = page.locator('input[type="checkbox"]').first()
         await toggle.click({force:true})

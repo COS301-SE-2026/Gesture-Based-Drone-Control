@@ -556,3 +556,36 @@ class TestCalibrationWebSocket:
 			ws.receive_json()
 
 		assert test_client.post('/api/drone/takeoff-test').status_code == 409
+
+	def test_external_skip_ends_the_stream(self, calibration_app, monkeypatch):
+		"""
+		Skip pressed while socket live, manager.process_frame raises RuntimeError because
+		session is goen, and route logs it and breaks out instead of blowing up
+		"""
+		module, app = calibration_app
+		target = CALIBRATION_SEQUENCE[0]
+
+		class _SkipMidRunQueue:
+			def __init__(self, manager) -> None:
+				self._manager = manager
+				self._sent = 0
+
+			async def get(self):
+				self._sent += 1
+				if self._sent > 1:
+					self._manager.skip()
+				return make_frame(self._sent, self._sent * DT, target)
+
+		class _SkipMidRunStream(_ScriptedStream):
+			async def subscribe(self):
+				self.subscribed += 1
+				return _SkipMidRunQueue(module.manager)
+
+		stream = _SkipMidRunStream()
+		monkeypatch.setattr(module, 'stream', stream)
+
+		with TestClient(app).websocket_connect(WS_URL) as ws:
+			assert ws.receive_json()['frame_index'] == 1
+
+		assert module.manager.status is CalibrationStatus.SKIPPED
+		assert len(stream.unsubscribed) == 1

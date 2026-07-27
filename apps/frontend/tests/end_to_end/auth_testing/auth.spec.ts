@@ -24,7 +24,7 @@ test.describe('Signup then Login flow',() => {
     test('successful signup redirects to the login page', async ({page})=>{
         const uniqueEmail = `e2e+${Date.now()}@example.com`
 
-        await page.goto('/signup')
+        await page.goto('/#/signup')
         await page.waitForLoadState('domcontentloaded')
         await fillSignupForm(page,{
             firstName:'Sarah',
@@ -43,7 +43,7 @@ test.describe('Signup then Login flow',() => {
         const uniqueEmail = `e2e+${Date.now()}@example.com`
         const password = "SpectacularPassword@123"
 
-        await page.goto('/signup')
+        await page.goto('/#/signup')
         await page.waitForLoadState('domcontentloaded')
         await fillSignupForm(page,{
             firstName:'Shreya',
@@ -60,7 +60,7 @@ test.describe('Signup then Login flow',() => {
         await page.getByLabel(/password/i).fill(password)
         await page.getByRole('button',{name:/sign in/i}).click()
 
-        await expect(page).toHaveURL('/')
+        await expect(page).toHaveURL('/#/')
     })
 
 
@@ -68,7 +68,7 @@ test.describe('Signup then Login flow',() => {
         const uniqueEmail = `e2e+${Date.now()}@example.com`
         const correctPassword ='GoodPassword@123'
 
-        await page.goto('/signup')
+        await page.goto('/#/signup')
         await page.waitForLoadState('domcontentloaded')
         await fillSignupForm(page,{
             firstName:'Nitara',
@@ -94,7 +94,7 @@ test.describe('Signup then Login flow',() => {
         const uniqueEmail = `e2e+${Date.now()}@example.com`
         const password = 'GoodPassword@123'
 
-        await page.goto('/signup')
+        await page.goto('/#/signup')
         await page.waitForLoadState('domcontentloaded')
         await fillSignupForm(page,{
             firstName:'Coffee',
@@ -108,7 +108,7 @@ test.describe('Signup then Login flow',() => {
         await page.getByRole('button',{name:/sign up/i}).click()
         await expect(page).toHaveURL(/\/login/)
 
-        await page.goto('/signup')
+        await page.goto('/#/signup')
         await page.waitForLoadState('domcontentloaded')
         await fillSignupForm(page,{
             firstName:'Coffee',

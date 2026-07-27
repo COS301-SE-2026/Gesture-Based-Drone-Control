@@ -1,35 +1,15 @@
 import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import { useGestureStream } from "../../hooks/useGestureStream"
-
-const HAND_CONNECTIONS = [
-  [0, 1],
-  [1, 2],
-  [2, 3],
-  [3, 4],
-  [0, 5],
-  [5, 6],
-  [6, 7],
-  [7, 8],
-  [0, 9],
-  [9, 10],
-  [10, 11],
-  [11, 12],
-  [0, 13],
-  [13, 14],
-  [14, 15],
-  [15, 16],
-  [0, 17],
-  [17, 18],
-  [18, 19],
-  [19, 20],
-  [5, 9],
-  [9, 13],
-  [13, 17],
-]
+import { useWebPreview } from "../../hooks/useWebcamPreview"
+import {
+  prepareCanvas,
+  coverTransform,
+  toCanvasPoints,
+  drawHand,
+} from "../../lib/handSkeleton"
 
 const SKELETON_COLOR = "#ef4444"
-const LANDMARK_COLOR = "#ffffff"
 const LABEL_BG = "rgba(11, 9, 10, 0.75)"
 const LABEL_TEXT = "#ffffff"
 
@@ -38,25 +18,7 @@ const GestureCameraFeed = ({ className = "" }) => {
   const canvasRef = useRef(null)
   const { frame, connected } = useGestureStream()
 
-  useEffect(() => {
-    let mediaStream
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => {
-        mediaStream = stream
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream
-        }
-      })
-
-      .catch((err) => {
-        console.error("Couldn't access the webcam:", err)
-      })
-
-    return () => {
-      mediaStream?.getTracks().forEach((track) => track.stop())
-    }
-  }, [])
+  useWebPreview(videoRef)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -65,11 +27,7 @@ const GestureCameraFeed = ({ className = "" }) => {
       return
     }
     //faaah missing bracket
-    const ctx = canvas.getContext("2d")
-    canvas.width = video.videoWidth || canvas.clientWidth
-    canvas.height = video.videoHeight || canvas.clientHeight
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-
+    const ctx = prepareCanvas(canvas)
     if (!frame) {
       return
     }
@@ -83,35 +41,10 @@ const GestureCameraFeed = ({ className = "" }) => {
       return
     }
 
+    const transform = coverTransform(canvas, video)
     frame.hands.forEach((hand) => {
-      const points = hand.landmarks.map((lm) => ({
-        x: lm.x * canvas.width,
-        y: lm.y * canvas.height,
-      }))
-
-      // bones
-      ctx.strokeStyle = SKELETON_COLOR
-      ctx.lineWidth = 2
-      HAND_CONNECTIONS.forEach(([a, b]) => {
-        const p1 = points[a]
-        const p2 = points[b]
-        if (!p1 || !p2) {
-          return
-        }
-
-        ctx.beginPath()
-        ctx.moveTo(p1.x, p1.y)
-        ctx.lineTo(p2.x, p2.y)
-        ctx.stroke()
-      })
-
-      // joints
-      ctx.fillStyle = LANDMARK_COLOR
-      points.forEach((p) => {
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2)
-        ctx.fill()
-      })
+      const points = toCanvasPoints(hand.landmarks, transform)
+      drawHand(ctx, points, SKELETON_COLOR)
 
       //per-hand info label above wrist (landmark 0)
       const wrist = points[0]

@@ -9,44 +9,12 @@ const DEADZONE = 0.08
 
 // apply deadzone to an analog axis
 function cleanAxis(value) {
-  console.log("gamepadcontrol cleaning")
   if (Math.abs(value) < DEADZONE) return 0
   return Number(value.toFixed(3))
 }
 
 // read the full gamepad state and package it into the  GamepadAdapter schema
 function readGamepad(pad) {
-  console.log(
-    JSON.stringify({
-      left_x: cleanAxis(pad.axes[0]), //right==1, ,left==-1
-      left_y: cleanAxis(pad.axes[1]), //down==1, up==-1
-
-      right_x: cleanAxis(pad.axes[2]),
-      right_y: cleanAxis(pad.axes[3]),
-      //fully depressed == 1
-      ltrigger: Number((pad.buttons[6]?.value || 0).toFixed(3)),
-      rtrigger: Number((pad.buttons[7]?.value || 0).toFixed(3)),
-
-      a: pad.buttons[0]?.pressed || false, //x
-      b: pad.buttons[1]?.pressed || false, //o
-      x: pad.buttons[2]?.pressed || false, //square
-      y: pad.buttons[3]?.pressed || false, //triangle
-
-      lb: pad.buttons[4]?.pressed || false,
-      rb: pad.buttons[5]?.pressed || false,
-
-      back: pad.buttons[8]?.pressed || false,
-      start: pad.buttons[9]?.pressed || false,
-
-      lclick: pad.buttons[10]?.pressed || false, //left stick click
-      rclick: pad.buttons[11]?.pressed || false, //right stick click
-      //dpad
-      up: pad.buttons[12]?.pressed || false,
-      down: pad.buttons[13]?.pressed || false,
-      left: pad.buttons[14]?.pressed || false,
-      right: pad.buttons[15]?.pressed || false,
-    })
-  )
   return {
     left_x: cleanAxis(pad.axes[0]), //right==1, ,left==-1
     left_y: cleanAxis(pad.axes[1]), //down==1, up==-1
@@ -91,7 +59,6 @@ export function useGamepadControl(
   wsUrl = getWsUrl("/api/input/ws/gamepad")
 ) {
   const { socketRef, status } = useWebSocket(wsUrl)
-  console.log("gamepadcontrol started")
 
   //rAF to cancel on cleanup
   const rafRef = useRef(null)
@@ -125,17 +92,18 @@ export function useGamepadControl(
 
     const poll = () => {
       if (cancelled) return
-      const pads = navigator.getGamepads ? navigator.getGamepads() : []
-      const pad = Array.from(pads).find((p) => p && p.connected)
-      const socket = socketRef.current
 
-      // make sure we good then send the entire state over WS
-      if (pad && socket?.readyState === WebSocket.OPEN) {
-        console.log(JSON.stringify(readGamepad(pad)))
-        socket.send(JSON.stringify(readGamepad(pad)))
+      // skip polling when the tab is not visible
+      if (!document.hidden) {
+        const pads = navigator.getGamepads ? navigator.getGamepads() : []
+        const pad = Array.from(pads).find((p) => p && p.connected)
+        const socket = socketRef.current
+
+        // make sure we good then send the entire state over WS
+        if (pad && socket?.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify(readGamepad(pad)))
+        }
       }
-      console.log(JSON.stringify(readGamepad(pad)))
-
       // the recursionish loop
       rafRef.current = requestAnimationFrame(poll)
     }

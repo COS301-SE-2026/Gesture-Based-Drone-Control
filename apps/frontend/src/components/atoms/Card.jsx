@@ -85,7 +85,7 @@ export default function Card({
   )
 }
 
-Card.PropTypes = {
+Card.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   variant: PropTypes.oneOf(["glass", "dark"]),

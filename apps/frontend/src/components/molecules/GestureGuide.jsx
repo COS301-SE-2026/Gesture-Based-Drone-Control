@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, memo } from "react"
 import PropTypes from "prop-types"
 import { Card, Label, Button } from "../atoms"
 import {
@@ -21,7 +21,7 @@ import {
 } from "lucide-react"
 import { useDroneControls } from "../../hooks/useDroneControls"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
-// import { useGamepadControl } from "@/hooks/useGamepadControl"
+import { useGamepadControl } from "@/hooks/useGamepadControl"
 import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tab
 
 const tabs = [
@@ -159,7 +159,11 @@ const controls = {
   })),
 }
 
-const GestureGuide = ({ className = "", sendCommand, onKeyboardResp }) => {
+const GestureGuide = memo(function GestureGuide({
+  className = "",
+  sendCommand,
+  onKeyboardResp,
+}) {
   const [activeTab, setActiveTab] = useState("onscreen")
   const { handleControlPress, isControlActive } = useDroneControls(sendCommand)
 
@@ -170,16 +174,9 @@ const GestureGuide = ({ className = "", sendCommand, onKeyboardResp }) => {
     onKeyboardResp
   )
 
-  // useEffect(() => {
-  //   if (keyboardLastResp?.event){
-  //     onKeyboardResp(keyboardLastResp)
-  //   }
-  // }, [keyboardLastResp, onKeyboardResp])
-
-  // const { connected: controllerConnected } = useGamepadControl(
-  //   activeTab === "controller"
-  // )
-
+  const { connected: controllerConnected } = useGamepadControl(
+    activeTab === "controller"
+  )
   const onScreenControls = () => (
     <div className="flex gap-6 py-4">
       <div className="flex flex-col items-center">
@@ -355,12 +352,12 @@ const GestureGuide = ({ className = "", sendCommand, onKeyboardResp }) => {
             <span className="text-OffBlack/70 dark:text-OffWhite/70">
               {keyboardConnected
                 ? "Keyboard control active"
-                : "Connecting keyboard control..."}
+                : "Connecting keyboard controls..."}
             </span>
           </div>
         )}
 
-        {/* {activeTab === "controller" && (
+         {activeTab === "controller" && (
           <div className="flex items-center gap-2 text-xs">
             <span
               className={`w-2 h-2 rounded-full ${
@@ -371,12 +368,12 @@ const GestureGuide = ({ className = "", sendCommand, onKeyboardResp }) => {
             />
             <span className="text-OffBlack/70 dark:text-OffWhite/70">
               {controllerConnected
-                ? "Keyboard control active"
-                : "Connecting keyboard control..."}
+                ? "Gamepad control active"
+                : "Connecting gamepad controls..."}
             </span>
           </div>
         )}
-*/}
+
         {/* control the content being displayed */}
         {activeTab === "onscreen" ? (
           onScreenControls()
@@ -388,7 +385,7 @@ const GestureGuide = ({ className = "", sendCommand, onKeyboardResp }) => {
       </div>
     </Card>
   )
-}
+})
 
 GestureGuide.propTypes = {
   className: PropTypes.string,

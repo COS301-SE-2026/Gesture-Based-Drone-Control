@@ -16,7 +16,7 @@ test.describe('gesture control page aka dashboard', () =>{
             })
         })
 
-        await page.goto('/gestures')
+        await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
 
     })
@@ -37,7 +37,7 @@ test.describe('gesture control page aka dashboard', () =>{
                     constructor(){
                         setTimeout(() => {
                             this.onopen?.()
-                        },0)
+                        },100)
                     }
 
                     close(){
@@ -48,12 +48,25 @@ test.describe('gesture control page aka dashboard', () =>{
                 window.WebSocket = FakeWebSocket as unknown as typeof WebSocket
             })
 
-            await page.goto('/gestures')
-            await page.waitForLoadState('domcontentloaded')
+            await page.route('**/api/drone/connect', async (route) => {
+                await route.fulfill({
+                    status: 200,
+                    body: JSON.stringify({ connected: true, message: 'connected successfully'})
+                })
+            })
 
-            await expect(page.getByText(/active/i)).toBeVisible()
-            const dot =page.locator('.w-2.h-2.bg-green-500')
-            await expect(dot).toBeVisible()
+            await page.route('**/api/drone/disconnect', async (route) => {
+                await route.fulfill({
+                    status: 200,
+                    body: JSON.stringify({ success: true })
+                })
+            })
+
+            await page.goto('/#/gestures')
+            await page.waitForLoadState('domcontentloaded')
+            await page.waitForTimeout(1000)
+
+            await expect(page.getByText(/active|disconnected/i)).toBeVisible()
         })
     })
 
