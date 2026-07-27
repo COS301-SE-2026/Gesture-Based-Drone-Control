@@ -176,7 +176,6 @@ const GestureGuide = memo(function GestureGuide({
   const { connected: controllerConnected } = useGamepadControl(
     activeTab === "controller"
   )
-  console.count("Gestureguide render")
   const onScreenControls = () => (
     <div className="flex gap-6 py-4">
       <div className="flex flex-col items-center">
