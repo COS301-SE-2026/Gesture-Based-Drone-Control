@@ -203,12 +203,19 @@ async def calibration_websocket(websocket: WebSocket) -> None:
 	try:
 		queue = await stream.subscribe()
 		logger.info(
-			'calibration client connected, run started (traget=%s)',
+			'calibration client connected, run started (target=%s)',
 			session.target_gesture,
 		)
 		while True:
 			frame = await queue.get()
-			payload = manager.process_frame(frame)
+			try:
+				payload = manager.process_frame(frame)
+			except RuntimeError:
+				logger.info(
+					'calibration run ended externally, closing stream (status=%s)',
+					manager.status.value,
+				)
+				break
 			await websocket.send_json(payload.model_dump())
 			if payload.phase is CalibrationPhase.DONE:
 				logger.info('calibration run complete, closing stream')
