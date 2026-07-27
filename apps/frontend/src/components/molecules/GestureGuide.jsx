@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import PropTypes from "prop-types"
 import { Card, Label, Button } from "../atoms"
 import {
@@ -165,8 +165,10 @@ const GestureGuide = ({ className = "", sendCommand, onKeyboardResp }) => {
 
   /**will only be active when the keyboard tab is selected and handles connecting  the backend keyboard input adapter,
     opening the /input/ws/keyboard/socket, and listening for real key events **/
-  const { connected: keyboardConnected } =
-    useKeyboardControl(activeTab === "keyboard", onKeyboardResp)
+  const { connected: keyboardConnected } = useKeyboardControl(
+    activeTab === "keyboard",
+    onKeyboardResp
+  )
 
   // useEffect(() => {
   //   if (keyboardLastResp?.event){
@@ -358,7 +360,7 @@ const GestureGuide = ({ className = "", sendCommand, onKeyboardResp }) => {
           </div>
         )}
 
-        {activeTab === "controller" && (
+        {/* {activeTab === "controller" && (
           <div className="flex items-center gap-2 text-xs">
             <span
               className={`w-2 h-2 rounded-full ${
@@ -374,7 +376,7 @@ const GestureGuide = ({ className = "", sendCommand, onKeyboardResp }) => {
             </span>
           </div>
         )}
-
+*/}
         {/* control the content being displayed */}
         {activeTab === "onscreen" ? (
           onScreenControls()

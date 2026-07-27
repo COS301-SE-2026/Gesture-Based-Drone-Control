@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from "react"
+import { useEffect, useCallback } from "react"
 import { API_BASE_URL, getWsUrl } from "../lib/api"
 import { useWebSocket } from "./useWebSocket"
 
@@ -21,14 +21,13 @@ export function useKeyboardControl(
       try {
         socket.send(JSON.stringify(payload))
         onMessage(payload)
-      } finally {
+      } catch (err) {
+        console.error("useKeyboardControl: failed to send", err)
         return true
       }
-    
     },
     [socketRef, onMessage]
   )
-
 
   useEffect(() => {
     if (!enabled) return
@@ -57,18 +56,28 @@ export function useKeyboardControl(
   useEffect(() => {
     if (!enabled) return
 
-
     const CONTROL_KEYS = new Set([
-      "ArrowUp","ArrowDown","ArrowLeft","ArrowRight",
-      " ","Spacebar",
-      "w","a","s","d",
-      "t","l",
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+      " ",
+      "Spacebar",
+      "w",
+      "a",
+      "s",
+      "d",
+      "t",
+      "l",
       "Escape",
     ])
 
     // keydown events are actually handled
     // send them as they come, hold down means continuous input
     const handleKeyDown = (e) => {
+      if (!CONTROL_KEYS.has(e.key)) {
+        return
+      }
       send({
         key: e.key,
         event: "keydown",

@@ -18,25 +18,25 @@ function fmt(value, digits = 0) {
 
 //TODO: this is still mocked for now
 const GestureControl = () => {
-  const [commands,setCommands] = useState([])
-  
+  const [commands, setCommands] = useState([])
+
   const { telemetry, status } = useTelemetry()
   const { sendCommand, status: commandStatus, lastResp } = useCommands()
 
   const handleControlAcion = (action) => {
     sendCommand(action, { source: "onscreen" })
   }
-  const handleKeyboardResp=(resp)=> {
-    const timestamp = new Date().toLocaleTimeString("en-ZA", {hour12:false})
-    setCommands((prev) => [{action: resp.key, timestamp}, ...prev].slice(0,50))
+  const handleKeyboardResp = (resp) => {
+    const timestamp = new Date().toLocaleTimeString("en-ZA", { hour12: false })
+    setCommands((prev) =>
+      [{ action: resp.key, timestamp }, ...prev].slice(0, 50)
+    )
   }
-
 
   const [droneMode, setDroneMode] = useState("DroneSim")
   const [isConnecting, setIsConnecting] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState("disconnected")
   const [connectionError, setConnectionError] = useState("")
-  
 
   //hardware isnt wired for now so we dont want to show the stale sim data
   const displayTelem = droneMode === "Hardware" ? null : telemetry
@@ -120,15 +120,20 @@ const GestureControl = () => {
     if (hasConnected.current) return
     hasConnected.current = true
     connectToDrone("dummy")
-  },[])
-
-
+  }, [])
 
   //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
   useEffect(() => {
-    if(lastResp?.ok && lastResp.command){
-      const timestamp = new Date().toLocaleTimeString("en-ZA",{hour12:false})
-      setCommands((prev) => [{action: lastResp.command, timestamp},...prev].slice(0, 50))
+    if (lastResp?.ok && lastResp.command) {
+      const timestamp = new Date().toLocaleTimeString("en-ZA", {
+        hour12: false,
+      })
+      // setStae has to be called in use effect here because lastResp is not in this component
+      //its basically coming from useCommands in the websocket, so that whenever there is a new response its added to the local log.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCommands((prev) =>
+        [{ action: lastResp.command, timestamp }, ...prev].slice(0, 50)
+      )
     }
   }, [lastResp])
 
@@ -256,7 +261,11 @@ const GestureControl = () => {
           </div>
         </Card>
 
-        <GestureGuide className="h-full" sendCommand={handleControlAcion} onKeyboardResp={handleKeyboardResp} />
+        <GestureGuide
+          className="h-full"
+          sendCommand={handleControlAcion}
+          onKeyboardResp={handleKeyboardResp}
+        />
       </div>
 
       <CommandHistory commands={commands} />
