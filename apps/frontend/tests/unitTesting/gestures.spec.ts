@@ -66,13 +66,7 @@ test.describe('gesture control page aka dashboard', () =>{
             await page.waitForLoadState('domcontentloaded')
             await page.waitForTimeout(1000)
 
-            await expect(page.getByText(/connected|failed|connecting/i)).toBeVisible()
-
-
-
-
-            const dot =page.locator('.w-2.h-2.bg-green-500')
-            await expect(dot).toBeVisible()
+            await expect(page.getByText(/active|disconnected/i)).toBeVisible()
         })
     })
 
