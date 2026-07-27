@@ -401,6 +401,24 @@ recognised:
 > This is once again its own subsystem, that when in use, acts as a 'filter' for the general CV pipeline.
 > This tutorial subsystem is not standalone, but rather interfaces heavily with the rest of the system, similar to training wheels.
 
+### R10: Telemetry Data Management
+
+  - **R10.1** The system shall ingest telemetry frames from the drone adapter.
+    - **R10.1.1** The system shall normalize incoming telemetry data to the standard schema (altitude, speed, displacement, battery, heading, flight state).
+    - **R10.1.2** The system shall reject malformed telemetry frames and log a warning.
+  - **R10.2** The system shall forward telemetry to all connected dashboard clients via WebSockets.
+    - **R10.2.1** Each telemtry frame shall include a UTC timestamp and be sent as structured JSON.
+    - **R10.2.2** Telemetry forwarding shall continue regardless of gesture recognition status.
+  - **R10.3** The system shall log telemetry data to SQLite at every frame for diagnostic purposes.
+    - **R10.3.1** Telemetry logs older than 30 days shall be pruned.
+    - **R10.3.2** The system shall expose a REST endpoint for retrieving historical telemetry data.
+  - **R10.4** The system shall detect and alert on telemetry anomalies.
+    - **R10.4.1** Battery below 30% shall trigger a dashboard warning notification.
+    - **R10.4.2** No telemetry received for more than 2 seconds will surface a "No Data" banner alert.
+  - **R10.5** The dashboard shall display real-time telemetry visualisation.
+    - **R10.5.1** Current altitude, battery level, speed, heading, x/y displacement and flight state shall be displayed
+    - **R10.5.2** All displays shall update at the same rate that telemetry is received 
+
 ### 3.3 Non-Functional (Quality) Requirements
 
 The Demo 2 brief targets *five* quantified quality requirements. The five
