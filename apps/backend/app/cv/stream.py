@@ -55,7 +55,7 @@ class GestureStream:
 		Remove a client queue and stop the pipeline if it was the last one
 		"""
 		self._clients.discard(queue)
-		await self._maybe_stop()
+		await asyncio.shield(self._maybe_stop())
 
 	async def shutdown(self) -> None:
 		"""

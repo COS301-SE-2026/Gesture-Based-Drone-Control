@@ -4,16 +4,23 @@ import {
   GestureGuide,
   DroneModeCard,
   GestureCameraFeed,
+  GestureCalibration,
 } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
 import { useTelemetry } from "@/context/TelemetryContext"
 import { useCommands } from "@/context/CommandsContext"
+import { fetchCalibrationStatus } from "@/hooks/useCalibrationStream"
 
 const MS_TO_KMH = 3.6
 
 function fmt(value, digits = 0) {
   return typeof value === "number" ? value.toFixed(digits) : "--"
+}
+
+function calibrationLabel(calibrated) {
+  if (calibrated === null) return "checking..."
+  return calibrated ? "calibrated" : "required"
 }
 
 //TODO: this is still mocked for now
@@ -70,6 +77,27 @@ const GestureControl = () => {
   const [isConnecting, setIsConnecting] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState("disconnected")
   const [connectionError, setConnectionError] = useState("")
+
+  //calibration gate for camera card
+  // null = still checking, false = calibration UI, true = normal detection feed
+  const [calibrated, setCalibrated] = useState(null)
+  // bumping this remounts GestureCalibration, which starts a fresh backend run
+  const [calRunKey, setCalRunKey] = useState(0)
+
+  useEffect(() => {
+    fetchCalibrationStatus()
+      .then((s) => setCalibrated(Boolean(s.is_calibrated)))
+      .catch((err) => {
+        console.warn("couldnt fetch calibration status:", err)
+        //backend unreachable: show the normal feed rather then blowing up the page
+        setCalibrated(true)
+      })
+  }, [])
+
+  const handleRecalibrate = () => {
+    setCalRunKey((k) => k + 1)
+    setCalibrated(false)
+  }
 
   //hardware isnt wired for now so we dont want to show the stale sim data
   const displayTelem = droneMode === "Hardware" ? null : telemetry
@@ -194,6 +222,14 @@ const GestureControl = () => {
         {lastResp?.error && (
           <span className="text-semibold text-blue-500">{lastResp.error}</span>
         )}
+        <span className="text-DarkGrey">Calibration:</span>
+        <span
+          className={`font-semibold ${
+            calibrated ? "text-green-500" : "text-yellow-500"
+          }`}
+        >
+          {calibrationLabel}
+        </span>
       </div>
       <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">
         <Card variant="glass">
@@ -269,16 +305,43 @@ const GestureControl = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        <Card variant="glass" className="h-full flex flex-col">
-          <div className="flex flex-col gap-4 flex-1">
-            <div className="flex items-center justify-between">
-              <Label className="text-lg font-semibold">Gesture Detection</Label>
+        {calibrated === false ? (
+          <GestureCalibration
+            key={calRunKey}
+            className="h-full"
+            onComplete={() => setCalibrated(true)}
+            onRestart={handleRecalibrate}
+          />
+        ) : (
+          <Card variant="glass" className="h-full flex flex-col">
+            <div className="flex flex-col gap-4 flex-1">
+              <div className="flex items-center justify-between">
+                <Label className="text-lg font-semibold">
+                  Gesture Detection
+                </Label>
+                {calibrated && (
+                  <button
+                    type="button"
+                    onClick={handleRecalibrate}
+                    className="text-xs text-DarkGrey hover:text-OffBlack dark:hover:text-OffWhite underline underline-offset-2 transition-colors"
+                  >
+                    Recalibrate
+                  </button>
+                )}
+              </div>
+
+              {calibrated === null ? (
+                <div className="flex-1 flex items-center justify-center min-h-[400px] bg-OffBlack/50 rounded border border-Grey/20">
+                  <p className="text-sm text-DarkGrey">
+                    Checking calibration...
+                  </p>
+                </div>
+              ) : (
+                <GestureCameraFeed className="flex-1" />
+              )}
             </div>
-
-            <GestureCameraFeed className="flex-1" />
-          </div>
-        </Card>
-
+          </Card>
+        )}
         <GestureGuide className="h-full" onControlAction={handleControlAcion} />
       </div>
 

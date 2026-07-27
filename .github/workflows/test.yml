@@ -143,6 +143,9 @@ jobs:
     env:
       BACKENDPORT: 3001
       JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
+      YARN_ENABLE_SCRIPTS: false
+      #runners have no webcam dont remove this or ci fails
+      GBDC_E2E_NO_CAMERA: "1"
 
     steps:
 
@@ -171,7 +174,7 @@ jobs:
       
       - name: Install Dependencies
         run: task install
-
+      
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
@@ -187,78 +190,3 @@ jobs:
 
       - name: End To End Testing
         run: task e2e-test
-  
-  Build:
-    needs: ["End-To-End-Tests"]
-    if: github.ref == 'refs/heads/main'
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            platform: win
-          - os: ubuntu-latest
-            platform: linux
-    runs-on: ${{ matrix.os}}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22.22.0'
-          cache: 'yarn'
-          cache-dependency-path: 'apps/frontend/yarn.lock'
-      
-      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b        
-        with: 
-          version: "0.11.13"
-          enable-cache: true
-
-      - uses: actions/setup-python@v5
-        with: 
-          python-version: 3.11
-
-      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 
-        with:
-          repo-token: ${{secrets.GITHUB_TOKEN}}
-
-      - name: Install dependencies
-        run:  task install
-
-      - name: Build Executable
-        run: task build
-
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        with: 
-          name: gbdc-${{matrix.platform}}
-          path: |
-            releases/*.exe
-            releases/*.AppImage
-          if-no-files-found: error
-
-  Release:
-    needs: ["Build"]
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Read Version
-        id: version
-        run: echo "version=$(node -p "require('./apps/frontend/package.json'.version)")" >> "$GITHUB_OUTPUT"
-
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with: 
-          path: dist
-      
-      - name: Create Github Release
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
-        with: 
-          tag_name: v${{ steps.version.outputs.version}}
-          name: v${{steps.version.outputs.version}}
-          files: dist/**/*
-          generate_release_notes: true
