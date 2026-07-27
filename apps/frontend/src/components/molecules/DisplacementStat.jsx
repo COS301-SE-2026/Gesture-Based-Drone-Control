@@ -14,8 +14,9 @@ export default function DisplacementStat({
   size = "md",
   variant = "glass",
 }) {
-  const formattedValue =
-    typeof value === "number" ? value.toFixed(decimals) : (value ?? "-")
+  const formattedValue = Number.isFinite(value)
+    ? value.toFixed(decimals)
+    : (value ?? "-")
   return (
     <Card variant={variant} className="flex flex-col gap-2">
       <Label>{label}</Label>
