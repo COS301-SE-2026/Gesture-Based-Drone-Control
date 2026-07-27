@@ -29,7 +29,8 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  // pipeline follows singleton pattern all e2e and integration tests will fail if this is greater than 1
+  workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -45,12 +46,29 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+        permissions: ['camera'],
+        launchOptions: {
+        args: [
+          '--use-fake-ui-for-media-stream',
+          '--use-fake-device-for-media-stream',
+        ],
+      },
+      },
     },
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: { 
+        ...devices['Desktop Firefox'] ,
+        launchOptions: {
+          firefoxUserPrefs: {
+            'media.navigator.streams.fake': true,
+            'media.navigator.permission.disabled': true,
+          },
+        },
+      },
     },
 
     /* Test against mobile viewports. */

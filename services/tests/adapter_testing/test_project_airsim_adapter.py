@@ -2,6 +2,7 @@
 
 # i didnt even know the mocks could be async these know ball
 import math
+import sys
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -419,6 +420,44 @@ def test_find_sim_config_failure():
 	):
 		with pytest.raises(RuntimeError):
 			_find_sim_config()
+
+
+def test_find_sim_config_meipass_bundled_found(tmp_path):
+	bundled = tmp_path / 'vendors' / 'sim_config'
+	bundled.mkdir(parents=True)
+
+	with (
+		patch('sys.frozen', True, create=True),
+		patch('sys._MEIPASS', str(tmp_path), create=True),
+	):
+		result = _find_sim_config()
+
+	assert result == str(bundled) + '/'
+
+
+def test_find_sim_config_meipass_missing_dir_falls_through():
+	with (
+		patch('sys.frozen', True, create=True),
+		patch('sys._MEIPASS', 'fake/meipass', create=True),
+		patch('pathlib.Path.is_dir', return_value=False),
+	):
+		with pytest.raises(RuntimeError):
+			_find_sim_config()
+
+
+def test_find_sim_config_not_frozen_ignores_meipass_bundled(tmp_path, monkeypatch):
+	bundled = tmp_path / 'vendors' / 'sim_config'
+	bundled.mkdir(parents=True)
+
+	monkeypatch.setattr(sys, 'frozen', False, raising=False)
+	monkeypatch.setattr(sys, '_MEIPASS', str(tmp_path), raising=False)
+
+	try:
+		result = _find_sim_config()
+	except RuntimeError:
+		return
+
+	assert result != str(bundled) + '/'
 
 
 # analog movement
