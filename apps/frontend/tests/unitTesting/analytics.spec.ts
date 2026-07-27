@@ -28,7 +28,7 @@ test.describe('Analytics', () =>{
             })
         })
     
-        await page.goto('/analytics')
+        await page.goto('/#/analytics')
         await expect(page.getByText(/Total Flights/i)).toBeVisible()
     })
 

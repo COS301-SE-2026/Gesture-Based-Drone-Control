@@ -102,7 +102,7 @@ test.describe('GPS - displacement stats molecule', () => {
                 window.WebSocket = FakeWebSocket as unknown as typeof WebSocket
             }, {mockTelemetry, mockPathPoints})
 
-            await page.goto('/gps')
+            await page.goto('/#/gps')
             await page.waitForLoadState('domcontentloaded')
 
      })

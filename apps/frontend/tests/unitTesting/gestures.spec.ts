@@ -48,7 +48,7 @@ test.describe('gesture control page aka dashboard', () =>{
                 window.WebSocket = FakeWebSocket as unknown as typeof WebSocket
             })
 
-            await page.goto('/gestures')
+            await page.goto('/#/gestures')
             await page.waitForLoadState('domcontentloaded')
 
             await expect(page.getByText(/active/i)).toBeVisible()
