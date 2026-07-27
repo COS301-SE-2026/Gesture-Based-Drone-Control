@@ -143,6 +143,7 @@ jobs:
     env:
       BACKENDPORT: 3001
       JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
+      YARN_ENABLE_SCRIPTS: false
 
     steps:
 
