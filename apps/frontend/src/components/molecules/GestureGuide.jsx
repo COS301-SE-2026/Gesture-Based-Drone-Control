@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, memo } from "react"
 import PropTypes from "prop-types"
 import { Card, Label, Button } from "../atoms"
 import {
@@ -20,7 +20,9 @@ import {
   OctagonX,
 } from "lucide-react"
 import { useDroneControls } from "../../hooks/useDroneControls"
-import { useKeyboardControl } from "../../hooks/useKeyboardControl"
+import { useKeyboardControl } from "@/hooks/useKeyboardControl"
+import { useGamepadControl } from "@/hooks/useGamepadControl"
+import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tabimport { useKeyboardControl } from "../../hooks/useKeyboardControl"
 
 const tabs = [
   { id: "onscreen", label: "On Screen", icon: Monitor },
@@ -157,7 +159,10 @@ const controls = {
   })),
 }
 
-const GestureGuide = ({ className = "", onControlAction }) => {
+const GestureGuide = memo(function GestureGuide({
+  className = "",
+  onControlAction,
+}) {
   const [activeTab, setActiveTab] = useState("onscreen")
   const { handleControlPress, isControlActive } =
     useDroneControls(onControlAction)
@@ -168,6 +173,9 @@ const GestureGuide = ({ className = "", onControlAction }) => {
     activeTab === "keyboard"
   )
 
+  const { connected: controllerConnected } = useGamepadControl(
+    activeTab === "controller"
+  )
   const onScreenControls = () => (
     <div className="flex gap-6 py-4">
       <div className="flex flex-col items-center">
@@ -342,18 +350,41 @@ const GestureGuide = ({ className = "", onControlAction }) => {
             />
             <span className="text-OffBlack/70 dark:text-OffWhite/70">
               {keyboardConnected
-                ? "Kyeboard control active"
-                : "Connecting keyboard control..."}
+                ? "Keyboard control active"
+                : "Connecting keyboard controls..."}
+            </span>
+          </div>
+        )}
+
+        {activeTab === "controller" && (
+          <div className="flex items-center gap-2 text-xs">
+            <span
+              className={`w-2 h-2 rounded-full ${
+                controllerConnected
+                  ? "bg-green-500 animate-pulse"
+                  : "bg-Grey/40"
+              }`}
+            />
+            <span className="text-OffBlack/70 dark:text-OffWhite/70">
+              {controllerConnected
+                ? "Gamepad control active"
+                : "Connecting gamepad controls..."}
             </span>
           </div>
         )}
 
         {/* control the content being displayed */}
-        {activeTab === "onscreen" ? onScreenControls() : otherControls()}
+        {activeTab === "onscreen" ? (
+          onScreenControls()
+        ) : activeTab === "controller" ? (
+          <ControllerLayout />
+        ) : (
+          otherControls()
+        )}
       </div>
     </Card>
   )
-}
+})
 
 GestureGuide.propTypes = {
   className: PropTypes.string,

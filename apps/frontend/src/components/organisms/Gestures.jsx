@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import {
   CommandHistory,
   GestureGuide,
@@ -51,17 +51,19 @@ const GestureControl = () => {
   const { telemetry, status } = useTelemetry()
   const { sendCommand, status: commandStatus, lastResp } = useCommands()
 
-  const handleControlAcion = (action) => {
-    const commandName = ACTION_TO_COMMAND[action]
-    if (!commandName) {
-      console.warn(
-        "GestureControl: no command mapping for this action: ",
-        action
-      )
-      return
-    }
-    sendCommand(commandName, { source: "onscreen" })
-  }
+  const handleControlAcion = useCallback(
+    (action) => {
+      const commandName = ACTION_TO_COMMAND[action]
+
+      if (!commandName) {
+        console.warn("no mapping", action)
+        return
+      }
+
+      sendCommand(commandName, { source: "onscreen" })
+    },
+    [sendCommand]
+  )
 
   // //mock data for drone status
   // const droneMetrics = {
