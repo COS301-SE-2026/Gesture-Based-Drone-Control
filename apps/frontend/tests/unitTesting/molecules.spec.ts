@@ -13,10 +13,10 @@ test.describe('Command History',()=>{
         await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
         await page.getByText('Command History').click()
-        await expect (page.getByText(/swipe up - move up/i)).toBeVisible()
-        await expect (page.getByText(/swipe down - move down/i)).toBeVisible()
-        await expect (page.getByText(/swipe right - move right/i)).toBeVisible()
-        await expect (page.getByText(/swipe left - move left/i)).toBeVisible()
+        await expect (page.getByText(/swipe up - move up/i).first()).toBeVisible()
+        await expect (page.getByText(/swipe down - move down/i).first()).toBeVisible()
+        await expect (page.getByText(/swipe right - move right/i).first()).toBeVisible()
+        await expect (page.getByText(/swipe left - move left/i).first()).toBeVisible()
     })
 
     test('the timestamps alongside the commands showing up',async ({page})=> {
