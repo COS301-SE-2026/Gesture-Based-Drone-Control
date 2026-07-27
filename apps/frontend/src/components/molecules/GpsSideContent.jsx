@@ -38,7 +38,6 @@ export const GpsSideContent = () => {
             <p className="text-sm text-OffBlack dark:text-OffWhite">
               Current Use Mode
             </p>
-            {/* TODO:make this actually return mode selected */}
             <p className="text-lg text-OffBlack font-bold dark:text-OffWhite">
               {mode}
             </p>
