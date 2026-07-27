@@ -144,6 +144,8 @@ jobs:
       BACKENDPORT: 3001
       JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
       YARN_ENABLE_SCRIPTS: false
+      #runners have no webcam dont remove this or ci fails
+      GBDC_E2E_NO_CAMERA: "1"
 
     steps:
 
