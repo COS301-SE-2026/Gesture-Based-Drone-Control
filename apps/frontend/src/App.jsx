@@ -9,6 +9,7 @@ import {
   Signup,
   Terms,
   Help,
+  Tutorial,
 } from "./components/organisms"
 import { ThemeProvider } from "./context/ThemeProvider.jsx"
 import { TelemetryProvider } from "./context/TelemetryProvider.jsx"
@@ -31,6 +32,7 @@ function App() {
               <Route path="settings" element={<Settings />} />
               <Route path="gps" element={<GPS />} />
               <Route path="help" element={<Help />} />
+              <Route path="tutorial" element={<Tutorial />} />
               <Route path="test" element={<TestPage />} />
             </Route>
           </Routes>
