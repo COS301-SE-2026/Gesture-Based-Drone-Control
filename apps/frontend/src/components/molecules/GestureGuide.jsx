@@ -22,7 +22,7 @@ import {
 import { useDroneControls } from "../../hooks/useDroneControls"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
 import { useGamepadControl } from "@/hooks/useGamepadControl"
-import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tabimport { useKeyboardControl } from "../../hooks/useKeyboardControl"
+import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tab
 
 const tabs = [
   { id: "onscreen", label: "On Screen", icon: Monitor },
@@ -161,16 +161,17 @@ const controls = {
 
 const GestureGuide = memo(function GestureGuide({
   className = "",
-  onControlAction,
+  sendCommand,
+  onKeyboardResp,
 }) {
   const [activeTab, setActiveTab] = useState("onscreen")
-  const { handleControlPress, isControlActive } =
-    useDroneControls(onControlAction)
+  const { handleControlPress, isControlActive } = useDroneControls(sendCommand)
 
   /**will only be active when the keyboard tab is selected and handles connecting  the backend keyboard input adapter,
     opening the /input/ws/keyboard/socket, and listening for real key events **/
   const { connected: keyboardConnected } = useKeyboardControl(
-    activeTab === "keyboard"
+    activeTab === "keyboard",
+    onKeyboardResp
   )
 
   const { connected: controllerConnected } = useGamepadControl(
@@ -388,12 +389,14 @@ const GestureGuide = memo(function GestureGuide({
 
 GestureGuide.propTypes = {
   className: PropTypes.string,
-  onControlAction: PropTypes.func,
+  sendCommand: PropTypes.func,
+  onKeyboardResp: PropTypes.func,
 }
 
 GestureGuide.defaultProps = {
   className: "",
-  onControlAction: null,
+  sendCommand: null,
+  onKeyboardResp: null,
 }
 
 export default GestureGuide

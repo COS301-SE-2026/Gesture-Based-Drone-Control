@@ -4,6 +4,7 @@ import { useWebSocket } from "./useWebSocket"
 
 export function useKeyboardControl(
   enabled,
+  onMessage,
   wsUrl = getWsUrl("/api/input/ws/keyboard")
 ) {
   const { socketRef, status } = useWebSocket(wsUrl)
@@ -16,10 +17,16 @@ export function useKeyboardControl(
       if (!socket || socket.readyState !== WebSocket.OPEN) {
         return false
       }
-      socket.send(JSON.stringify(payload))
-      return true
+
+      try {
+        socket.send(JSON.stringify(payload))
+        onMessage(payload)
+      } catch (err) {
+        console.error("useKeyboardControl: failed to send", err)
+        return true
+      }
     },
-    [socketRef]
+    [socketRef, onMessage]
   )
 
   useEffect(() => {
@@ -49,9 +56,28 @@ export function useKeyboardControl(
   useEffect(() => {
     if (!enabled) return
 
+    const CONTROL_KEYS = new Set([
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+      " ",
+      "Spacebar",
+      "w",
+      "a",
+      "s",
+      "d",
+      "t",
+      "l",
+      "Escape",
+    ])
+
     // keydown events are actually handled
     // send them as they come, hold down means continuous input
     const handleKeyDown = (e) => {
+      if (!CONTROL_KEYS.has(e.key)) {
+        return
+      }
       send({
         key: e.key,
         event: "keydown",
@@ -59,19 +85,19 @@ export function useKeyboardControl(
     }
 
     // keyup dont do anything yet
-    const handleKeyUp = (e) => {
-      send({
-        key: e.key,
-        event: "keyup",
-      })
-    }
+    // const handleKeyUp = (e) => {
+    //   send({
+    //     key: e.key,
+    //     event: "keyup",
+    //   })
+    // }
 
     window.addEventListener("keydown", handleKeyDown)
-    window.addEventListener("keyup", handleKeyUp)
+    // window.addEventListener("keyup", handleKeyUp)
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
-      window.removeEventListener("keyup", handleKeyUp)
+      // window.removeEventListener("keyup", handleKeyUp)
     }
   }, [enabled, send])
 
