@@ -179,362 +179,154 @@ team considered and rejected.
 | Optional ML recogniser | **TensorFlow Lite** | 2.x | Lightweight on-device inference; opt-in via the Strategy pattern in §2.2. | Full TensorFlow - rejected; runtime costs are far too high. |
 | Local persistence | **SQLite** | 3.x | Zero-config; file-based; `R8.2` (no external service) is trivially satisfied; the storage volume cap in `R6.3` is well within SQLite's comfort zone. | PostgreSQL - rejected for Demo 2 because it adds a service to provision; the Persistence Framework style means it can be added later without domain changes. |
 | Drone simulator | **ProjectAirSim** | latest | Free, scriptable, sufficient for UC-3 demonstration without flight-hardware risk. | Gazebo - heavier setup, worse SDK. |
-| Physical drone | **xFly** | latest SDK | Low-cost, well documented, recommended by the project owners. | DJI Mavic - rejected on cost. |
 | Desktop packaging | **Electron** | latest | Ships the dashboard as a desktop app with native webcam access. Easy packaging | Tauri - viable; Electron chosen for team familiarity. |
-| Mobile packaging | **Capacitor** | latest | Reuses the same React codebase in a PWA + native wrapper; cheap to publish a "view-only" mobile companion. | React Native - rejected; would have required a parallel codebase. |
 
 ### 3.2 Build, test, and operations
 
 | Concern | Choice | Justification |
 | --- | --- | --- |
 | Python dependency manager | **uv** 0.11.x | Significantly faster installs than `pip` |
+| Task runner  | **Task(Taskfile.yml)** | Same commands on Windows, macOS and Linux; CI runs the identical targets |
 | Python lint | **Ruff** | One tool, fast, fails fast on violations. |
 | JS / TS lint & format | **ESLint + Prettier** | Lint catches bugs; Prettier eliminates style debates. |
-| Test runner (Python) | **pytest** | Industry standard; `pytest-cov` for the `R10.2` coverage gate. |
-| Test runner (JS / TS) | **Playwright** | True E2E, including WebSocket. Browsers cached in CI per [`CICD.md`](CICD.md). |
-| CI runner | **GitHub Actions** | Already available; free; matches the workflow already documented in [`CICD.md`](CICD.md). |
-| Docs site | **MkDocs Material** | Auto-deploy to GitHub Pages on push (`R15.1`). |
+| Test runner (Python) | **pytest** | backend testing coverage for api and services files |
+| Test runner (JS / TS) | **Playwright** | True E2E, including WebSocket. Browsers [`CICD.md`](CICD.md). |
+| CI runner | **GitHub Actions** | 4 workflows: lint, test,docs, release,  documented in [`CICD.md`](CICD.md). |
+| Docs site | **MkDocs Material** | Auto-deploy to GitHub Pages on push with landing page. |
 | Hosting (frontend) | **Render Static Site** | A static site on github pages that maintains our docs, landing page, and a download link for the executable. |
-| Secrets manager | **GitHub Actions Secrets** *(in use)* + **Render Environment Groups** *(planned for Demo 2)* | Realises `C6` / `R8.2`. |
+| App distribution | **GitHub Releases | Windows `.exe` and Linux `.AppImage` built and published automatically from `main`. |
 
 ---
 
 ## 4. API Contracts
 
-GBDCS exposes three contract surfaces. Each is the responsibility of the
-backend and is consumed by the frontend and the drone adapters.
+The backedn exposes everything under a single `/apiz prefix, grouped into routers. Every request and response body is a Pydantic schema, so malformed payloads are rejected with 4xx and the full contract is served at `/docs` (OpenAPI).
 
-### 4.1 REST API (`/api/v1`)
+### 4.1 Authentication (`/api/auth`)
 
-Every endpoint returns `application/json`. Every error response
-conforms to the envelope:
+Cookie-based JWT, `login` and `signup` set an access token and a refresh token as httpOnly cookies; `refresh` rotates the access token; `logout` clears both, and because the tokensa are in the cookies, the frontend and WebSocket connection authenticate without handling tokens in JS.
 
-```json
-{
-  "error": "invalid_credentials",
-  "cause":   "The email or password is incorrect.",
-  "suggestion": "Check the email field and re-enter the password.",
-  "request_id": "01J… (ULID)"
-}
-```
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/auth/signup` | Register; validates email and password strength; signs the user in. |
+| `POST` | `/api/auth/login` | Authenticate; sets auth cookies. |
+| `POST` | `/api/auth/refresh` | Issue a fresh access token from the refresh cookie. |
+| `POST` | `/api/auth/logout` | Clear auth cookies. |
+| `GET` | `/api/auth/health` | Liveness. |
 
-| Method | Path | Auth | Purpose | Realises |
-| --- | --- | --- | --- | --- |
-| `POST` | `/api/v1/auth/register` | No | Register a new user. Body: `{email, password}`. Validates per `R16.1.2`. | `R16.1.1` |
-| `POST` | `/api/v1/auth/login` | No | Authenticate; returns `{token, expires_at}` with `expires_at <= now + 30 min`. | `R8.1`, `R16.1.3` |
-| `POST` | `/api/v1/auth/logout` | Yes | Invalidate the caller's token. | `R8.1` |
-| `GET` | `/api/v1/config` | Yes | Return the current gesture->command mapping, theme, and active adapter. | `R4.2`, `R16.2.*` |
-| `PUT` | `/api/v1/config` | Yes | Update the mapping or theme; re-validated server-side. | `R4.2`, `R16.3.2` |
-| `GET` | `/api/v1/sessions` | Yes | List recorded sessions for the authenticated user. | `R6.3`, UC-5 |
-| `GET` | `/api/v1/sessions/{id}` | Yes | Fetch metadata for a single session. | UC-5 |
-| `POST` | `/api/v1/sessions/{id}/replay` | Yes | Start a replay; the server then streams the session over the WS endpoint. | UC-5 |
-| `POST` | `/api/v1/control/emergency-stop` | Yes | Immediate land. | `R6.2.3` |
+### 4.2 Drone control (`/api/drone`)
 
-Full schemas are generated from FastAPI's OpenAPI document and served
-at `/api/v1/openapi.json`.
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/drone/connect` | Connect an adapter. Body selects `adapter` (`dummy`, `airsim`, `projectairsim`) plus host/port/vehicle options; switching adapters disconnects the previous one seamlessly. |
+| `POST` | `/api/drone/disconnect` | Disconnect the current adapter. |
+| `GET` | `/api/drone/status` | Snapshot of the connected adapter's state. |
+| `WS` | `/api/drone/ws/telemetry` | Live telemetry stream. |
+| `WS` | `/api/drone/ws/commands` | Command channel to the connected drone. |
 
-### 4.2 WebSocket (`/ws/live`)
+### 4.3 Input (`/api/input`)
 
-A single multiplexed channel. The token issued by `/auth/login` is
-passed as the `?token=` query parameter on the WS handshake. Messages
-are JSON objects with a discriminator field `kind`.
+Same shape as the drone router: `connect` / `disconnect` / `status` for input adapters (`dummy`, `keyboard`, `gamepad on frontend UI`), plus `WS /api/input/ws/keybaord` and `WS /api/input/ws/gamepad` for streaming raw input events from the frontend.
 
-```json
-// kind = "gesture"
-{
-  "kind": "gesture",
-  "ts": "2026-07-31T10:14:22.103Z",
-  "gesture": "OPEN_PALM",
-  "confidence": 0.91,
-  "command": "HOVER"
-}
+## 4.4 Gestures and calibration
 
-// kind = "telemetry"
-{
-  "kind": "telemetry",
-  "ts": "2026-07-31T10:14:22.300Z",
-  "altitude_m": 1.4,
-  "battery_pct": 78,
-  "flight_mode": "MANUAL",
-  "link": "OK"
-}
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/gestures` | The gesture vocabulary the recogniser supports. |
+| `WS` | `/api/gestures/stream` | Live annotated camera frames plus recognised gestures. |
+| `GET` | `/api/calibration/status` | Current calibration state. Flight endpoints return `409` until this reports `is_calibrated: true` (completed or skipped). State is in-memory, so a backend restart resets it. |
+| `POST` | `/api/calibration/start` | Start or restart a calibration run over the full gesture sequence. |
+| `POST` | `/api/calibration/skip` | Mark the user calibrated without the sequence, for returning operators. |
+| `WS` | `/api/calibration/stream` | Live calibration progress; connecting starts a fresh run. |
 
-// kind = "alert"
-{
-  "kind": "alert",
-  "ts": "2026-07-31T10:14:25.000Z",
-  "severity": "critical",
-  "code": "LINK_LOSS",
-  "cause": "No telemetry frame received for 2.1 s.",
-  "suggestion": "Move closer to the drone or restart the adapter."
-}
-```
+## 4.5 Analytics (`/api/analytics`)
 
-| Direction | `kind` | Cadence | Realises |
-| --- | --- | --- | --- |
-| Server -> Client | `gesture` | On every recognised gesture | `R1.1.2`, `R3.2.*` |
-| Server -> Client | `telemetry` | >= 5 Hz | `R1.1.3`, `R5.1.*` |
-| Server -> Client | `alert` | On threshold trip | `R1.2.*`, `R5.2.2` |
-| Client -> Server | `ack` | On user acknowledgement of an alert | `R1.2.2` |
+`GET /api/analytics/flights` lists flight records and
+`GET /api/analytics/summary` aggregates them for Analytics page.
 
-### 4.3 `DroneAdapter` interface
+## 4.6 Adapter interfaces
 
-Every adapter (XFly, AirSim, Tello, Dummy) implements the same Python
-ABC:
-
-```python
-class DroneAdapter(Protocol):
-    async def connect(self) -> None: ...
-    async def disconnect(self) -> None: ...
-    async def takeoff(self) -> None: ...
-    async def land(self) -> None: ...
-    async def hover(self) -> None: ...
-    async def move(self, cmd: DroneCommand) -> None: ...
-    def telemetry(self) -> AsyncIterator[TelemetryFrame]: ...
-    @property
-    def state(self) -> Literal["INIT", "READY", "FLYING", "FAULT"]: ...
-```
-
-`DroneCommand` and `TelemetryFrame` are defined in
-`packages/contracts/` and shared verbatim between Python and TypeScript
-via codegen.
+Every drone adapter implements the same async interface: `connect`, `disconnect`, an `execute`/command path covering the `CommandType` enum (`TAKEOFF`, `LAND` the `MOVE_*` set, `ROTATE_SW`/`CCW`, `HOVER`, `EMERGENCY_STOP`, `ANALOG`), and a telemetry stream. Commands carry a priority: `EMERGENCY_STOP` is always `PRIORITY_CRITICAL`, so it pre-empts anything queued. Input adapters implement `set_handler` and emit `Command` objects, which is what makes any input source compatible with the drone sim.
 
 ---
 
 ## 5. Deployment
 
-!!! warning "Demo 2 deployment status"
-    The deployment described in this section is the **target topology
-    planned for Demo 2**. At the time of writing the public-URL
-    deployment is in active provisioning; the diagrams below define the
-    end state the team is wiring up. Until provisioning completes,
-    GBDCS runs locally via the **Local deployment (Docker Compose)**
-    path documented in §5.3.
-
 ### 5.1 Environments
 
-| Environment | Branch | Hosting | Auto-deployed? | Status |
-| --- | --- | --- | --- | --- |
-| **Development** | `feature/*` | Local - Docker Compose | No | In use |
-| **Staging** *(planned for Demo 2)* | `dev` | Render (separate service) | Yes - on every push to `dev` | Planned |
-| **Production** *(planned for Demo 2)* | `main` | Render | Yes - on every push to `main`, gated by Lint + Test | Planned |
+| Environment | What runs there | Deployed how |
+| --- | --- | --- |
+| **Development** | Full stack on the developer's machine: `task dev` (uvicorn + Vite). SQLite for database management. | Manual, local. |
+| **Public site** | Landing page (site root) and documentation hub (`/docs`) on GitHub Pages. | Automatic on push to `main`/`dev` through the docs workflow. |
+| **Distributed app** | Packaged desktop app: Electron to package the app and provided on windows `.exe` and and Linux `.AppImage`. | Automatic push to `main` through the release workflow; published as a versioned GitHub Release. |
 
-Once provisioned, the production URL will be announced in the
-repository README and in the Demo 2 slides.
+The public URL is 
+[cos301-se-2026.github.io/Gesture-Based-Drone-Control](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/),
+linked from the README, with the app download available from the
+repository's Releases page.
 
 ### 5.2 Deployment Diagram
 
-The diagram below shows the **target production topology** *(planned
-for Demo 2)*. The staging environment is materially identical - same
-artefact, different Render service and a separate database file - so a
-separate diagram is not warranted.
+insert mermaid  deployment diagram here @Wave2055
 
-```mermaid
-flowchart LR
-    subgraph DEV[Developer workstation]
-        IDE[IDE + git client]
-    end
-
-    subgraph CICD[GitHub - cloud]
-        REPO[(GitHub repo<br/>main / dev / feature/*)]
-        GHA[GitHub Actions<br/>Lint · Test · Deploy Docs]
-        PAGES[GitHub Pages<br/>docs site]
-    end
-
-    subgraph RENDER[Render - production - planned]
-        FE[Static Site<br/>«artifact: React bundle»<br/>Node 22 build · NGINX serve]
-        BE["Web Service<br/>«artifact: Docker image»<br/>Python 3.11 · FastAPI · uvicorn"]
-        DB[("Persistent Disk<br/>«artifact: SQLite file»<br/>gbdcs.db")]
-    end
-
-    subgraph CLIENT[Operator workstation]
-        BROWSER[Browser / Electron shell]
-        CAM[Webcam<br/>OpenCV-compatible]
-        DRONE[Drone or AirSim<br/>UDP / RPC]
-    end
-
-    IDE -- "git push (HTTPS)" --> REPO
-    REPO -- triggers --> GHA
-    GHA -- "deploy hook (HTTPS)" --> FE
-    GHA -- "deploy hook (HTTPS)" --> BE
-    GHA -- "gh-deploy (HTTPS)" --> PAGES
-
-    BROWSER -- "HTTPS :443" --> FE
-    BROWSER -- "HTTPS :443" --> BE
-    BROWSER -- "WSS :443 /ws/live" --> BE
-    BE -- "SQLite file I/O" --> DB
-    CAM -- "USB UVC" --> BROWSER
-    BROWSER -- "UDP :8889 (Tello) / RPC :41451 (AirSim)" --> DRONE
-```
-
-*Figure 5.1 - Target production deployment topology (planned for
-Demo 2). Nodes are runtime environments; artefacts are the deployed
-units; arrows are annotated with the protocol and port. The CV
-pipeline runs locally on the operator's workstation as part of the
-Electron shell - the cloud will host only the backend, the static
-frontend, and the docs site.*
-
-#### 5.2.1 Why the CV pipeline is *not* in the cloud
-
-Streaming a webcam to a cloud service would add hundreds of
-milliseconds of network latency and would violate `R8.2`'s privacy
-posture (no third-party telemetry transmission). Running MediaPipe on
-the operator's machine keeps the gesture-to-command path local and
-sub-200 ms.
+*Figure 5.1 - Production deployment topology. The entire runtime (frontend, backend, CV pipeline, database) runs on the user's workstation inside the packaged app. GitHub hosts the landing page and docs sits and distributes the builds through GitHub releases.*
 
 ### 5.3 Reproducible deployment
 
-A fresh clone of the `main` branch can be brought up by either of two
-documented paths.
+A fresh clone of the `main` comes up with:
 
-=== "Local deployment (Docker Compose) - available today"
+```bash
+git clone https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control.git
+cd Gesture-Based-Drone-Control
+ 
+cp .env.example .env      # set ports and secrets locally
+task prereqs              # optional: installs Python 3.11, uv, node, yarn
+task install              # uv sync + yarn install
+docker compose up -d      # PostgreSQL 16 + pgAdmin (optional; SQLite works without it)
+task dev                  # backend + frontend in dev mode
+```
 
-    ```bash
-    # 1. Clone & enter
-    git clone https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control.git
-    cd Gesture-Based-Drone-Control
+the packaged equivalent is `task build`, which is exactly what the release workflow runs on both OS runners, so a local build and a CI build are the same artifactt.
 
-    # 2. Configure secrets locally
-    cp .env.example .env
-    # edit .env
-
-    # 3. Bring the stack up
-    docker compose up --build
-
-    # Backend on http://localhost:8000
-    # Frontend on http://localhost:3000
-    ```
-
-=== "Cloud deployment (Render) - planned for Demo 2"
-
-    ```bash
-    # 1. Connect the repo to a Render account
-    # 2. Render reads `render.yaml` from the repo root
-    # 3. Push to main -> Render builds the Docker image and the static
-    #    site automatically
-    git push origin main
-    ```
-
-    `render.yaml` will declare both services and the persistent disk;
-    no click-ops required. This path becomes the default once
-    provisioning completes during the Demo 2 sprint.
 
 ### 5.4 CI/CD Pipeline
 
-The pipeline is documented in full in [`CICD.md`](CICD.md). The
-diagram below is the **Demo 2 deliverable view** of the same pipeline
-- commit-to-deployed-artefact, with the stages, the tools, and the
-artefacts produced. The Lint / Test / Deploy-Docs stages are **live
-today**; the cloud Deploy stages are **planned for Demo 2**.
+The pipeline is documented in full in [`CICD.md`](CICD.md). Commit to shipped artifact:
 
 ```mermaid
 flowchart LR
     DEV([Developer commit]) --> PR{Trigger}
-    PR -->|PR to any branch| LINT[Lint stage<br/>GitHub Actions<br/>Ruff · ESLint · Prettier]
-    PR -->|PR to dev / main / Use-Case*| TEST[Test stage<br/>GitHub Actions<br/>pytest · Playwright]
-
-    LINT --> GATE1{All green?}
-    TEST --> GATE1
-    GATE1 -- no --> FAIL([Block merge])
-    GATE1 -- yes --> REVIEW[Code review<br/>1–2 approvals]
-    REVIEW --> MERGE([Merge to dev / main])
-
-    MERGE -->|push to dev| BUILD_STG["Build stage (planned)<br/>Docker image · React bundle<br/>tagged dev-«sha»"]
-    MERGE -->|push to main| BUILD_PROD["Build stage (planned)<br/>Docker image · React bundle<br/>tagged main-«sha»"]
-
-    BUILD_STG --> ART1[("Artefact registry (planned)<br/>Render image · static bundle")]
-    BUILD_PROD --> ART2[("Artefact registry (planned)<br/>Render image · static bundle")]
-
-    ART1 --> DEPLOY_STG["Deploy to staging (planned)<br/>Render - auto"]
-    ART2 --> DEPLOY_PROD["Deploy to production (planned)<br/>Render - auto"]
-
-    MERGE -->|docs/** or mkdocs.yml| DOCS[Deploy Docs<br/>GitHub Actions<br/>mkdocs gh-deploy]
-    DOCS --> PAGES[(GitHub Pages)]
-
-    DEPLOY_STG -.->|health check fail| ROLLBACK_STG([Rollback to previous tag])
-    DEPLOY_PROD -.->|health check fail| ROLLBACK_PROD([Rollback to previous tag])
+    PR -->|PR to any branch| LINT[Lint<br/>Ruff · ESLint · Prettier]
+    PR -->|PR to dev / main / Use-Case*| UNIT[Unit tests<br/>pytest · Playwright]
+    UNIT --> INT[Integration tests<br/>pytest]
+    INT --> E2E[E2E tests<br/>Playwright]
+ 
+    LINT --> GATE{All green?}
+    E2E --> GATE
+    GATE -- no --> FAIL([Block merge])
+    GATE -- yes --> REVIEW[Code review] --> MERGE([Merge])
+ 
+    MERGE -->|docs / landing changed| DOCS[Deploy Docs<br/>landing build + mkdocs] --> PAGES[(GitHub Pages)]
+    MERGE -->|push to main| BUILD[Release build<br/>PyInstaller + electron-builder<br/>Windows + Linux matrix] --> ART[(GitHub Release<br/>v«version» · .exe + .AppImage)]
 ```
 
-*Figure 5.2 - CI/CD pipeline from commit to deployed artefact.
-Trigger events are dashed at the left; pipeline stages are sequential;
-artefacts produced are tagged with the commit SHA; health-check
-failures invoke the rollback path. Stages annotated *(planned)* are
-the cloud-deploy additions scheduled for the Demo 2 sprint; the
-Lint / Test / Deploy-Docs stages are live today.*
+*Figure 5.2 - Pipeline stages, tools and artifacts.*
 
 ### 5.5 Secrets Management
 
-- No secrets are committed to the repository. `.gitignore` excludes
-  `.env`; `.env.example` documents every required variable with a
-  placeholder value.
-- In CI, secrets are loaded from GitHub Actions Secrets and exposed
-  to jobs only via the `env:` block where strictly needed.
-- In production, secrets will live in Render Environment Groups and
-  will be injected into the running container at start time
-  *(planned for Demo 2)*.
-- A `gitleaks` scan is **planned for Demo 2** as a new workflow under
-  `.github/workflows/secret-scan.yml`; once added it will run on every
-  PR and any leaked secret will fail the build.
-
-This satisfies the Demo 2 brief's Secrets Management requirement and
-`R8.2`.
+- `.gitignore` `.env`; `env.example` documents every variable with a placeholder.
+- CI secrets (Codecov token, JWT test key) live in GitHub Actions Secrets and are exposed only through `env:` blocks where needed.
+- The packaged app reads its configuration from the environment at runtime; nothing sensitive baked into a build.
 
 ### 5.6 Rollback Strategy
 
-*(planned for Demo 2 - applies once cloud deployment is provisioned.)*
-Each successful build will push a Docker image tagged with the commit
-SHA - for example `gbdcs-backend:main-9a3f7c2`. To roll back:
+Every push to 'main` produces a versioned GitHub Release, so the release history is the rollback mechanism:
 
-1. Identify the last known-good SHA from the deploy history.
-2. In Render, switch the service's active image to that tag (one
-   click) - Render performs a rolling restart.
-3. Open a `fix/UC*/revert-<sha>` branch from `main` to add a
-   regression test that pins the bad behaviour, then revert the
-   bad commit via `git revert` so `main` and the deployed artefact
-   converge again.
+1. Indentify the last known-good release tag.
+2. Point users at that release's artifacts; nothing needs rebuilding
+3. 'git revert' the bad commit on `main` via PR, which produces a new fixed release.
 
-For frontend-only failures (broken bundle) the same procedure
-applies: re-point the Render static site at the previous build.
-
-For documentation failures (broken MkDocs build), Pages serves the
-last successful `gh-pages` commit, so no extra rollback action is
-needed - the next green push to `docs/**` overwrites it.
-
-Until the cloud deployment lands, rollback is the simpler local
-procedure: `git revert <bad-sha>` on `main`, push, and re-deploy via
-`docker compose up --build`.
+For the site, Pages serves the last successful `gh-pagez push, so a broken docs build changes nothing until the next green push.
 
 ---
 
-## 6. Architectural Review
-
-The architecture is reviewed against three lenses.
-
-=== "Meets requirements & objectives"
-
-    | Quality requirement | Where realised |
-    | --- | --- |
-    | `R7.*` Performance | §2.1 pipes-and-filters CV pipeline; §2.4 WS push; §3.1 rule-based recogniser as default. |
-    | `R8.*` Security | §2.3 C6 (no secrets in repo); §4.1 token-gated endpoints; §4.2 token on WS handshake; §5.5 secrets management. |
-    | `R9.*` Reliability | §2.2 Strategy pattern enables recogniser upgrades; §2.4 process isolation between pipeline and backend; §2.2 Observer pattern keeps failsafe path independent of dashboard delivery. |
-    | `R10.*` Maintainability | §2.4 one-way import graph; CI coverage gate in `CICD.md`; §5.4 push-triggered deploy. |
-    | `R11.*` Usability | §2.4 single-view dashboard; `BRAND.md` design system; §4.1 error envelope contract. |
-
-=== "Satisfies design principles"
-
-    The design honours Design for Change (Adapter / Strategy / Observer
-    patterns absorb the two highest-volatility change vectors),
-    Separation of Concerns (four logical tiers map to four package
-    roots), Information Hiding (concrete adapters and storage hidden
-    behind interfaces), High Cohesion + Low Coupling (acyclic
-    one-directional import graph), and KISS (rule-based recogniser
-    ships first; ML and PostgreSQL are opt-in upgrades).
-
-=== "Satisfies security constraints"
-
-    - Token-gated WebSocket and REST surface (§4.1, §4.2 - `R8.1`).
-    - No third-party telemetry transmission (§5.2.1 - `R8.2`).
-    - SQLite store is local-only (§3.1 - `R8.2`).
-    - Adapter layer rejects pre-`READY` take-off (`R6.2.2`).
-    - 100 % schema validation at the REST boundary (§4.1 - `R8.3`).
-    - `gitleaks` workflow planned for Demo 2 (§5.5 - `R8.2`).
