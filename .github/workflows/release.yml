@@ -48,8 +48,8 @@ jobs:
         with:
           name: gbdc-${{ matrix.platform }}
           path: |
-            releases/*.exe
-            releases/*.AppImage
+            release/*.exe
+            release/*.AppImage
           if-no-files-found: error
 
   Release:
