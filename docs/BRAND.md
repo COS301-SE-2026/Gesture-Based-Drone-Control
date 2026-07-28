@@ -19,7 +19,7 @@
 !!! note "Demo-2 alignment"
     Several deliverable expectations from the Demo 2 brief land
     on this document. Items still in flight at the time of writing
-    are tagged *(planned for Demo 2)*. They include the standalone
+    are tagged. They include the standalone
     deployed style-guide page alongside the production app, the
     additional logo variants beyond the primary mark, and the
     self-hosting of the font payload.
