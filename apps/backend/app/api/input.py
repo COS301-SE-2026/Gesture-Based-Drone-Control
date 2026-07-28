@@ -53,9 +53,12 @@ def _build_input_adapter(body: ConnectInputRequest) -> InputAdapter:
 		return KeyboardAdapter()
 
 	elif body.adapter == 'gamepad':
-		from services.input.sources.gamepad_adapter import GamepadAdpater
+		from services.input.sources.gamepad_adapter import GamepadAdapter
 
-		return GamepadAdpater()
+		return GamepadAdapter()
+
+	elif body.adapter == 'gesture':
+		pass
 
 	# add more as they get developed here
 

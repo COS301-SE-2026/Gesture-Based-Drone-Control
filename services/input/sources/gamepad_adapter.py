@@ -91,7 +91,7 @@ BUTTON_MAP: dict[str, CommandType] = {
 DEADZONE: float = 0.2
 
 
-class GamepadAdpater(InputAdapter):
+class GamepadAdapter(InputAdapter):
 	"""
 	Maps gamepad state passed from browser into Commands.
 
