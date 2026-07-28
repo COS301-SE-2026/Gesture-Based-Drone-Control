@@ -1,4 +1,7 @@
+from typing import Any
+
 import pytest
+
 from services.commands.command import Command, CommandType
 from services.input.sources.input_adapter import InputAdapter
 
@@ -6,6 +9,10 @@ from services.input.sources.input_adapter import InputAdapter
 class ConcreteInputAdapter(InputAdapter):
 	async def start(self) -> None:
 		# issa stub
+		pass
+
+	async def handle_message(self, message: dict[str, Any]) -> None:
+		# issa stub. please shut up sonarqube
 		pass
 
 

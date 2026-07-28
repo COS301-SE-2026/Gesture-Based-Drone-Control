@@ -1,37 +1,40 @@
+include .env
+export
+
 .PHONY: install test lint dev build format
 
 FRONTEND_DIR := apps/frontend
-BACKEND_DIR := apps/backend
-SERVICES_DIR := services
 
 install:
-	$(MAKE) -C $(SERVICES_DIR) install
-	$(MAKE) -C $(BACKEND_DIR) install
+	uv sync --all-groups --python 3.11
 	cd $(FRONTEND_DIR) && yarn install
 
 dev:
-	$(MAKE) -C $(BACKEND_DIR) dev &
+	uv run fastapi dev apps/backend/app/main.py --port $(BACKENDPORT) &
 	cd $(FRONTEND_DIR) && yarn dev
 
 build:
-	$(MAKE) -C $(BACKEND_DIR) build &
+	uv run fastapi run apps/backend/app/main.py --port $(BACKENDPORT) &
 	cd $(FRONTEND_DIR) && yarn build
 
 
 test:
-	$(MAKE) -C $(SERVICES_DIR) test
-	$(MAKE) -C $(BACKEND_DIR) test
+	uv run pytest --cov --cov-report=term-missing
 	cd $(FRONTEND_DIR) && yarn test
 
 lint:
-	$(MAKE) -C $(SERVICES_DIR) lint
-	$(MAKE) -C $(BACKEND_DIR) lint
+	uv run ruff check --output-format=github
 	cd $(FRONTEND_DIR) && yarn lint
 
 fix:
-	$(MAKE) -C $(SERVICES_DIR) fix
-	$(MAKE) -C $(BACKEND_DIR) fix
+	uv run ruff format .
+	uv run ruff check --fix .
 	cd $(FRONTEND_DIR) && yarn format
+
+clean:
+	rm -f $(SERVICES_DIR)/coverage.xml $(SERVICES_DIR)/.coverage
+	rm -f $(BACKEND_DIR)/coverage.xml $(BACKEND_DIR)/.coverage
+	rm -rf $(SERVICES_DIR)/htmlcov $(BACKEND_DIR)/htmlcov
 
 #keeping services in its own corner as we're mocking everything for now
 

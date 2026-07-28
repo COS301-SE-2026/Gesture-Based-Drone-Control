@@ -1,6 +1,28 @@
-import { Card, Button } from "../atoms"
+import { Card } from "../atoms"
+import AccountActions from "./AccountActions"
+import { useTelemetry } from "@/context/TelemetryContext"
 
 export const AnalyticsSideContent = () => {
+  const { telemetry } = useTelemetry()
+
+  const getMode = () => {
+    if (!telemetry) return "No data"
+    if (telemetry.source) {
+      return (
+        telemetry.source.charAt(0).toUpperCase() + telemetry.source.slice(1)
+      )
+    }
+
+    if (
+      telemetry.altitude_m !== undefined &&
+      telemetry.x_displacement !== undefined
+    ) {
+      return "DroneSim"
+    }
+    return "Dummy"
+  }
+  const mode = getMode()
+
   return (
     <>
       <h2 className="text-lg font-bold text-Red dark:text-Red mb-2">
@@ -13,17 +35,15 @@ export const AnalyticsSideContent = () => {
             <p className="text-sm text-OffBlack dark:text-OffWhite">
               Current Use Mode
             </p>
-            {/* mocked this for demo 1 */}
             <p className="text-lg text-OffBlack font-bold dark:text-OffWhite">
-              Hardware
+              {mode}
             </p>
-            <p className="text-xs text-DarkGrey">Today, 14:44</p>
+            <p className="text-xs text-DarkGrey">
+              {telemetry ? new Date().toLocaleTimeString() : "No data"}
+            </p>
           </div>
 
-          <div className="flex gap-2 mt-2 pt-2 border-t border-Grey/20">
-            <Button variant="secondary">Switch Profile</Button>
-            <Button>Logout</Button>
-          </div>
+          <AccountActions />
         </div>
       </Card>
     </>

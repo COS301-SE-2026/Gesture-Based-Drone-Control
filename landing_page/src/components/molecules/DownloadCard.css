@@ -1,0 +1,45 @@
+.md-dlcard {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 26px 24px;
+  text-decoration: none;
+  color: var(--ink);
+  position: relative;
+  transition:
+    transform 0.25s,
+    border-color 0.25s;
+}
+.md-dlcard:hover {
+  transform: translateY(-5px);
+}
+.md-dlext {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--red);
+  border: 1px solid var(--line);
+  padding: 5px 9px;
+  display: inline-block;
+}
+.md-dlcard h3 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 16px 0 6px;
+}
+.md-dlcard p {
+  margin: 0 0 24px;
+  color: var(--dim);
+  font-size: 13.5px;
+}
+.md-dlbtn {
+  font-family: "Chakra Petch", sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red);
+  transition: color 0.2s;
+}
+.md-dlcard:hover .md-dlbtn {
+  color: var(--ink);
+}

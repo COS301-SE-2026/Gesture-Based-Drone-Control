@@ -3,5 +3,12 @@
         "airsim",
         "projectairsim"
     ],
-    "python-envs.defaultEnvManager": "ms-python.python:system"
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    // so the mac errors stop screaming at me
+    "ruff.importStrategy": "fromEnvironment",
+    // so the mac stops screaming at me pt2 (prolly will be alot more parts coming soon)
+    "python.analysis.extraPaths": [
+        "./services",
+        "./apps/backend"
+    ]
 }

@@ -6,6 +6,7 @@
 # return captured frame (api call possibly)
 
 import logging
+import time
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Optional
@@ -49,6 +50,8 @@ class CapturedFrame:
 	rgb_frame: np.ndarray
 	# monotonic counter
 	frame_index: int
+	# capture time in seconds
+	timestamp: float
 
 
 class CameraFeed:
@@ -67,7 +70,13 @@ class CameraFeed:
 				raise ValueError('CameraConfig.video_path must be set when source=FILE.')
 			self._cap = cv2.VideoCapture(self._config.video_path)
 		else:
-			self._cap = cv2.VideoCapture(self._config.device_index)
+			import sys
+
+			if sys.platform == 'win32':
+				# damn windows MSMF rubbish!!!
+				self._cap = cv2.VideoCapture(self._config.device_index, cv2.CAP_DSHOW)
+			else:
+				self._cap = cv2.VideoCapture(self._config.device_index)
 
 		if not self._cap.isOpened():
 			raise RuntimeError('Failed to open camera')
@@ -76,6 +85,7 @@ class CameraFeed:
 		self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._config.frame_width)
 		self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._config.frame_height)
 		self._cap.set(cv2.CAP_PROP_FPS, self._config.target_fps)
+		self._cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
 		logger.info(
 			'Camera opened — source=%s, device=%s, target=%dx%d @ %dfps',
@@ -117,9 +127,13 @@ class CameraFeed:
 		ret, raw = self._cap.read()
 
 		if not ret:
-			logger.warning('Cam returned no frame')
+			# rate limiting
+			self._read_failures = getattr(self, '_read_failures', 0) + 1
+			if self._read_failures == 1 or self._read_failures % 100 == 0:
+				logger.warning('Cam returned no frame (x%d)', self._read_failures)
 			return None
 
+		self._read_failures = 0
 		return self._preprocess(raw)
 
 	# preprocessing
@@ -143,6 +157,7 @@ class CameraFeed:
 			bgr_frame=raw,
 			rgb_frame=rgb,
 			frame_index=self._frame_idx,
+			timestamp=time.monotonic(),
 		)
 
 

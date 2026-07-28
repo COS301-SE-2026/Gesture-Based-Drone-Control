@@ -1,0 +1,220 @@
+.md-pinwrap {
+  position: relative;
+}
+.md-pin {
+  padding: 110px 6vw;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+}
+.md-pingrid {
+  display: grid;
+  grid-template-columns: 0.85fr 1.35fr;
+  gap: 44px;
+  align-items: stretch;
+  margin-top: 44px;
+  flex: 0 1 auto;
+}
+.md-raily {
+  position: relative;
+  padding-left: 26px;
+  min-height: 320px;
+}
+.md-rail {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--line);
+}
+.md-railfill {
+  width: 100%;
+  background: var(--red);
+}
+.md-railnames {
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.md-railnames button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  font-family: "Chakra Petch", sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: var(--dim);
+  transition: color 0.25s;
+}
+.md-railnames button:hover {
+  color: var(--red);
+}
+.md-railnames button em {
+  font-style: normal;
+}
+.md-railnames button span {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.md-railnames li.md-on button {
+  color: var(--ink);
+}
+.md-railnames li.md-on button span {
+  color: var(--red);
+  opacity: 1;
+}
+.md-gcopy {
+  position: relative;
+  min-height: 150px;
+}
+.md-gcard {
+  position: absolute;
+  inset: 0;
+  will-change: opacity, transform;
+}
+.md-gcard p {
+  margin: 0 0 14px;
+  color: var(--dim);
+  font-size: 15px;
+  max-width: 34ch;
+}
+.md-cmd {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  color: var(--red);
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  display: inline-block;
+}
+.md-panel {
+  margin: 0;
+  position: relative;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  min-height: 460px;
+}
+.md-panellabel,
+.md-panelfoot {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  color: var(--dim);
+}
+.md-panelfoot {
+  color: var(--red);
+  margin-top: auto;
+  position: relative;
+  z-index: 2;
+}
+.md-verb {
+  position: absolute;
+  top: 40px;
+  right: 26px;
+  z-index: 0;
+  pointer-events: none;
+  font-family: "Chakra Petch", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(2.6rem, 6vw, 5.2rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--red);
+  opacity: 0;
+  will-change: opacity, transform;
+}
+.md-scrollhint {
+  text-align: center;
+  margin: 26px 0 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--dim);
+  transition: opacity 0.4s;
+}
+@media (max-width: 980px) {
+  .md-pingrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .md-raily {
+    min-height: 0;
+  }
+  .md-gcopy {
+    min-height: 120px;
+  }
+  .md-panel {
+    min-height: 380px;
+  }
+  .md-verb {
+    font-size: clamp(2rem, 8vw, 3.4rem);
+    top: 34px;
+    right: 18px;
+  }
+}
+@media (max-width: 620px) {
+  .md-pin {
+    padding: 80px 5vw;
+  }
+  .md-pinhead h2 br {
+    display: none;
+  }
+  .md-pingrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 22px;
+  }
+  .md-raily {
+    padding-left: 18px;
+  }
+  .md-railnames {
+    margin-bottom: 12px;
+    gap: 4px;
+  }
+  .md-railnames button {
+    font-size: 13px;
+  }
+  .md-railnames button span {
+    display: none;
+  }
+  .md-gcopy {
+    min-height: 104px;
+  }
+  .md-gcard p {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .md-panel {
+    min-height: 300px;
+    padding: 12px;
+  }
+  .md-verb {
+    font-size: 1.9rem;
+    top: 28px;
+    right: 12px;
+    -webkit-text-stroke-width: 1.5px;
+  }
+  .md-panellabel {
+    font-size: 8.5px;
+    letter-spacing: 0.18em;
+  }
+  .md-scrollhint {
+    margin-top: 14px;
+  }
+}

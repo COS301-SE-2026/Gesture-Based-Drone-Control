@@ -44,9 +44,10 @@ import asyncio
 import logging
 import math
 import pathlib
+import sys
 from typing import TYPE_CHECKING
 
-from services.commands.command import CommandType
+from services.commands.command import AnalogInput, CommandType
 from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 if TYPE_CHECKING:
@@ -55,10 +56,12 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # defaults for movement. tweakable, same as airsim
-DEFAULT_SPEED_MS: float = 8.0
-DEFAULT_DURATION_S: float = 0.5
-DEFAULT_ROTATE_DEG: float = 15.0
-DEFAULT_YAW_RATE_DPS: float = 75.0
+DEFAULT_SPEED_MS: float = 80.0
+DEFAULT_DURATION_S: float = 0.01
+DEFAULT_ROTATE_DEG: float = 0.2
+DEFAULT_YAW_RATE_DPS: float = 200.0
+
+DEFAULT_ANALOG_DURATION_S = 0.01
 
 # the drone drops like a rock, drift it up a lil every time we move horzontally
 GRAVITY_COMP_VZ: float = -0.3
@@ -72,6 +75,13 @@ def _find_sim_config() -> str:
 
 	Raises a runtime error if nothing is found
 	"""
+
+	if getattr(sys, 'frozen', False):
+		meipass = pathlib.Path(getattr(sys, '_MEIPASS', ''))
+		bundled = meipass / 'vendors' / 'sim_config'
+		if bundled.is_dir():
+			return str(bundled) + '/'
+
 	# this code is so ass
 	repo_root = pathlib.Path(__file__).resolve().parent.parent.parent.parent
 
@@ -301,12 +311,60 @@ class ProjectAirSimAdapter(DroneAdapter):
 
 		await self._drone.move_by_velocity_body_frame_async(vx, vy, vz, duration)
 
+	async def analog(self, input: AnalogInput) -> None:
+		"""
+		Equivalent to the move command, but exclusively for our analog inputs
+		Handles input from the left and right sticks, as well as triggers.
+		Bindings inspired loosely by real drones and helicopter controls in gta 5:
+			left_y = forward / backward
+			left_x = strafe left / right
+
+			right_x = yaw
+			right_y = ascend / descend
+
+			ltrigger = ascend
+			rtrigger = descend
+			(last two redundant on purpose)
+		Whichever has the highest magnitude takes precedence
+		"""
+		self._assert_connected()
+
+		vx = -input.left_y * DEFAULT_SPEED_MS
+		vy = input.left_x * DEFAULT_SPEED_MS
+
+		# between stick and trigger, take highest magnitude
+		stickz = input.right_y
+		triggerz = input.ltrigger - input.rtrigger
+		vert = stickz if abs(stickz) >= abs(triggerz) else triggerz
+		vz = vert * DEFAULT_SPEED_MS
+
+		yaw = input.right_x * DEFAULT_ROTATE_DEG
+
+		logger.debug(
+			'ProjectAirSimAdapter: analog (vx=%.2f vy=%.2f vz=%.2f yaw=%.2f)',
+			vx,
+			vy,
+			vz,
+			input.right_x,
+		)
+
+		await self._drone.move_by_velocity_body_frame_async(
+			vx,
+			vy,
+			vz,
+			DEFAULT_ANALOG_DURATION_S,
+		)
+
+		if abs(yaw) > 0.05:
+			await self._drone.rotate_by_yaw_rate_async(
+				yaw,
+				DEFAULT_ANALOG_DURATION_S,
+			)
+
 	async def hover(self) -> None:
 		"""
 		Cancel any active movement and hold a specified position
-		Should take prioriy over all commands except an emergency landing
-
-		hover_async should exist i hope
+		Should take priority over all commands except an emergency landing
 		"""
 		self._assert_connected()
 
@@ -316,7 +374,6 @@ class ProjectAirSimAdapter(DroneAdapter):
 	async def emergency_stop(self) -> None:
 		"""
 		Cancel any active movement and hold current position
-		Maybe initiate a landing, not sure what would be best
 		"""
 		if self._drone is None:
 			logger.warning('ProjectAirSimAdapter: emergency_stop called but drone is None')
@@ -364,7 +421,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 			linear_vel = twist.get('linear', {})
 
 			z = position.get('z', 0.0)
-			altitude = max(0.0, -z)
+			altitude = -z
 
 			vx = linear_vel.get('x', 0.0)
 			vy = linear_vel.get('y', 0.0)
@@ -374,7 +431,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 
 			# this where scary math happens
 			heading = self._yaw_from_quaternion_dict(orientation)
-			is_flying = altitude > 0.1
+			is_flying = abs(altitude) > 0.1
 
 			return TelemetryData(
 				altitude_m=round(altitude, 3),
@@ -382,6 +439,8 @@ class ProjectAirSimAdapter(DroneAdapter):
 				battery_pct=100.0,
 				heading_deg=heading,
 				is_flying=is_flying,
+				x_displacement=round(position.get('x', 0.0), 3),
+				y_displacement=round(position.get('y', 0.0), 3),
 				source='projectairsim',
 			)
 		except Exception as ex:
@@ -441,7 +500,7 @@ class ProjectAirSimAdapter(DroneAdapter):
 
 	def _assert_connected(self) -> None:
 		"""Raise RuntimeError if not connected. Guards every command method."""
-		if not self._connected or self._drone is None:
+		if self._drone is None or not self._connected:
 			raise RuntimeError(
 				'ProjectAirSimAdapter is not connected. Await connect() before issuing commands.'
 			)

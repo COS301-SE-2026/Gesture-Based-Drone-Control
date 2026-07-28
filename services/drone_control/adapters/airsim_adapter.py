@@ -48,7 +48,7 @@ import logging
 import math
 from typing import TYPE_CHECKING
 
-from services.commands.command import CommandType
+from services.commands.command import AnalogInput, CommandType
 from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 # allow rest of package to be imported if airsim is not installed
@@ -75,6 +75,8 @@ DEFAULT_ROTATE_DEG: float = 15.0
 
 # yaw rate used during rotation (degrees per second)
 DEFAULT_YAW_RATE_DPS: float = 45.0
+
+DEFAULT_ANALOG_DURATION_S = 0.05
 
 
 class AirSimAdapter(DroneAdapter):
@@ -135,7 +137,35 @@ class AirSimAdapter(DroneAdapter):
 		"""
 
 		try:
+			import inspect
+
 			import airsim  # type: ignore (the package does in fact exist...)
+			import msgpack
+
+			# this is the stupidest patch ever
+			# newer msgpack versions lack the encoding kewarg that msgpack-rpc-python uses
+			# patch the packer and unpacker to allow airsim and pas to work together in one env
+			# i hate it
+			# i hate it here
+			if 'encoding' not in inspect.signature(msgpack.Packer.__init__).parameters:
+				oldpacker = msgpack.Packer
+
+				class _PatchedPacker(oldpacker):
+					def __init__(self, *args, **kwargs):
+						kwargs.pop('encoding', None)  # get rid of it entirely
+						super().__init__(*args, **kwargs)  # and pass to parent
+
+				msgpack.Packer = _PatchedPacker
+
+			if 'encoding' not in inspect.signature(msgpack.Unpacker.__init__).parameters:
+				oldunpacker = msgpack.Unpacker
+
+				class _PatchedUnpacker(oldunpacker):
+					def __init__(self, *args, **kwargs):
+						kwargs.pop('encoding', None)  # get rid of it entirely
+						super().__init__(*args, **kwargs)  # and pass to parent
+
+				msgpack.Unpacker = _PatchedUnpacker
 
 			def _connect_blocking():
 				# AirSim's MultirotorClient may be broken.
@@ -329,6 +359,66 @@ class AirSimAdapter(DroneAdapter):
 		# Snap to hover after each move so the drone doesn't drift.
 		await self._run(lambda: client.hoverAsync(vehicle_name=vehicle).join())
 
+	async def analog(self, input: AnalogInput) -> None:
+		"""
+		Equivalent to the move command, but exclusively for our analog inputs
+		Handles input from the left and right sticks, as well as triggers.
+		Bindings inspired loosely by real drones and helicopter controls in gta 5:
+			left_y = forward / backward
+			left_x = strafe left / right
+
+			right_x = yaw
+			right_y = ascend / descend
+
+			ltrigger = ascend
+			rtrigger = descend
+			(last two redundant on purpose)
+		Whichever has the highest magnitude takes precedence
+		"""
+		self._assert_connected()
+
+		client = self._client
+		vehicle = self._vehicle
+
+		vx = -input.left_y * DEFAULT_SPEED_MS
+		vy = input.left_x * DEFAULT_SPEED_MS
+
+		stickz = -input.right_y
+		triggerz = input.ltrigger - input.rtrigger
+
+		vert = stickz if abs(stickz) >= abs(triggerz) else triggerz
+		vz = vert * DEFAULT_SPEED_MS
+
+		logger.debug(
+			'AirSimAdapter: analog (vx=%.2f vy=%.2f vz=%.2f yaw=%.2f)',
+			vx,
+			vy,
+			vz,
+			input.right_x,
+		)
+
+		await self._run(
+			lambda: client.moveByVelocityBodyFrameAsync(
+				vx,
+				vy,
+				vz,
+				DEFAULT_ANALOG_DURATION_S,
+				vehicle_name=vehicle,
+			).join()
+		)
+
+		yaw = input.right_x * DEFAULT_ROTATE_DEG
+
+		# i forgot just how ugly this adapter is
+		if abs(yaw) > 0.05:
+			await self._run(
+				lambda: client.rotateByYawRateAsync(
+					yaw,
+					DEFAULT_ANALOG_DURATION_S,
+					vehicle_name=vehicle,
+				).join()
+			)
+
 	# TELEMETRY DATA
 
 	async def get_telemetry(self) -> TelemetryData:
@@ -355,7 +445,7 @@ class AirSimAdapter(DroneAdapter):
 			speed = math.sqrt(vel.x_val**2 + vel.y_val**2 + vel.z_val**2)
 
 			# NED: z is negative when airborne, so negate for a positive altitude
-			altitude = max(0.0, -pos.z_val)
+			altitude = -pos.z_val
 
 			# LandedState.Landed == 1, Flying == 0 (check AirSim source)
 			# airsim is stupid and uses either a plain int or enum depending on version.
@@ -369,6 +459,8 @@ class AirSimAdapter(DroneAdapter):
 				battery_pct=100.0,  # AirSim has no battery model
 				heading_deg=self._get_heading_deg(),
 				is_flying=is_flying,
+				x_displacement=round(pos.x_val, 3),  # north offset from sim origin
+				y_displacement=round(pos.y_val, 3),  # east offset form sim origin
 				source='airsim',
 			)
 		except Exception as ex:

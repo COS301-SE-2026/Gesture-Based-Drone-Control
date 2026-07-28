@@ -14,6 +14,7 @@ This validates that:
 from unittest.mock import AsyncMock
 
 import pytest
+
 from services.commands.command import CommandType
 from services.drone_control.adapters.dummy_drone_adapter import DummyDroneAdapter
 from services.input.sources.keyboard_adapter import KeyboardAdapter
@@ -44,7 +45,7 @@ async def test_keyboard_takeoff_to_dummy_drone():
 
 	adapter.set_handler(emit_handler)
 
-	adapter.handle_message(
+	await adapter.handle_message(
 		{
 			'key': 't',
 			'event': 'keydown',
@@ -75,7 +76,7 @@ async def test_keyboard_land_to_dummy_drone():
 
 	adapter.set_handler(lambda cmd: asyncio.create_task(handler(cmd)))
 
-	adapter.handle_message(
+	await adapter.handle_message(
 		{
 			'key': 'l',
 			'event': 'keydown',
@@ -103,7 +104,7 @@ async def test_keyboard_move_forward_to_dummy_drone():
 
 	adapter.set_handler(lambda cmd: asyncio.create_task(handler(cmd)))
 
-	adapter.handle_message(
+	await adapter.handle_message(
 		{
 			'key': 'ArrowUp',
 			'event': 'keydown',
@@ -135,7 +136,7 @@ async def test_keyboard_hover_to_dummy_drone():
 
 	adapter.set_handler(lambda cmd: asyncio.create_task(handler(cmd)))
 
-	adapter.handle_message(
+	await adapter.handle_message(
 		{
 			'key': ' ',
 			'event': 'keydown',
@@ -163,7 +164,7 @@ async def test_keyboard_emergency_stop_to_dummy_drone():
 
 	adapter.set_handler(lambda cmd: asyncio.create_task(handler(cmd)))
 
-	adapter.handle_message(
+	await adapter.handle_message(
 		{
 			'key': 'Escape',
 			'event': 'keydown',
@@ -191,7 +192,7 @@ async def test_keyboard_keyup_does_not_reach_drone():
 
 	adapter.set_handler(lambda cmd: asyncio.create_task(handler(cmd)))
 
-	adapter.handle_message(
+	await adapter.handle_message(
 		{
 			'key': 't',
 			'event': 'keyup',
@@ -219,7 +220,7 @@ async def test_keyboard_invalid_key_does_not_reach_drone():
 
 	adapter.set_handler(lambda cmd: asyncio.create_task(handler(cmd)))
 
-	adapter.handle_message(
+	await adapter.handle_message(
 		{
 			'key': 'INVALID',
 			'event': 'keydown',

@@ -1,0 +1,208 @@
+# basically a makefile for windows
+version: "3"
+
+dotenv: [".env"]
+
+vars:
+  FRONTEND_DIR: apps/frontend
+  BACKEND_APP: apps/backend/app/main.py
+  SERVICES_DIR: services
+
+tasks:
+  install:
+    desc: Install backend + frontend deps
+    cmds:
+      - uv venv --python 3.11
+      - uv pip install setuptools wheel numpy msgpack-rpc-python
+      - uv sync --all-groups --python 3.11 --no-build-isolation-package airsim
+      - cmd: cd {{.FRONTEND_DIR}} && yarn install
+
+  dev:
+    desc: Runs backend and frontend in dev mode
+    deps:
+      - backend-dev
+      - frontend-dev
+
+  backend-dev:
+    cmds:
+      - uv run --no-sync uvicorn app.main:app --port {{.BACKENDPORT}} --app-dir apps/backend --reload --reload-dir apps/backend/app --reload-dir services
+    env:
+      PYTHONPATH: "{{.ROOT_DIR}}"
+
+  frontend-dev:
+    internal: true
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn dev
+
+  build:
+    desc: Builds and packages app into a single executable
+    cmds:
+      - | 
+          uv run pyinstaller --onefile --name backend \
+          --paths . \
+          --collect-all mediapipe \
+          --collect-all airsim \
+          --collect-all projectairsim \
+          --collect-all cryptography \
+          --collect-all bcrypt \
+          --collect-all asyncpg \
+          --collect-all keyboard \
+          --collect-all tornado \
+          --add-data "vendors/sim_config:vendors/sim_config" \
+          --hidden-import cv2 \
+          --hidden-import services \
+          --hidden-import jwt.algorithms \
+          --hidden-import email_validator \
+          --hidden-import sqlalchemy.dialects.sqlite \
+          --hidden-import sqlalchemy.dialects.postgresql \
+          --hidden-import sqlalchemy.dialects.postgresql.asyncpg \
+          --hidden-import uvicorn.logging \
+          --hidden-import uvicorn.loops.auto \
+          --hidden-import uvicorn.protocols.http.auto \
+          --hidden-import uvicorn.protocols.websockets.auto \
+          --hidden-import uvicorn.lifespan.on \
+          --hidden-import aiosqlite \
+          apps/backend/app/main.py
+    
+      - cd apps/frontend && yarn electron-build
+      
+
+  clean:
+    desc: removes all folders related to packaged executable
+    cmds: 
+      - rm -r release dist apps/frontend/dist
+
+  test:
+    desc: Runs Unit Tests, Integration and End to End tests
+    cmds:
+      - task: unit-test
+      - task: integration-test
+      - task: e2e-test
+
+  unit-test:
+    desc: Runs Frontend and Backend Unit Tests
+    cmds:
+      - task: backend-unit-test
+      - task: frontend-unit-test
+
+  backend-unit-test:
+    desc: Runs Backend Unit Tests
+    cmds:
+      - uv run pytest apps/backend/tests services/tests --cov  --cov-report=xml:apps/backend/coverage.xml --cov-report=term-missing --cov-fail-under=80
+
+  frontend-unit-test:
+    desc: Runs Frontend Unit Tests
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn unit-test
+
+  integration-test:
+    desc: Runs Integration Tests
+    cmds:
+      - uv run pytest tests --cov --cov-report=term-missing
+
+  e2e-test:
+    desc: Runs End to End Tests
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn e2e-test
+
+  lint:
+    desc: Runs lint checks
+    deps:
+      - backend-lint
+      - frontend-lint
+
+  backend-lint:
+    cmds:
+      - uv run ruff check --output-format=github
+
+  frontend-lint:
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn lint
+      - yarn format:check
+
+  fix:
+    desc: Automatically fixes Ruff issues
+    deps:
+      - backend-fix
+      - frontend-fix
+
+  backend-fix:
+    cmds:
+      - uv run ruff format .
+      - uv run ruff check --fix .
+
+  frontend-fix:
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn format
+
+  cv-camera:
+    desc: Camera feed only
+    dir: "{{.SERVICES_DIR}}"
+    cmds:
+      - uv run python -m cv_pipeline.camera.camera_feed
+
+  cv-detector:
+    desc: Camera + hand detection
+    dir: "{{.SERVICES_DIR}}"
+    cmds:
+      - uv run python -m cv_pipeline.hand_detection.mediapipe_detector
+
+  cv-engine:
+    desc: Camera + detector + gesture engine
+    dir: "{{.SERVICES_DIR}}"
+    cmds:
+      - uv run python -m cv_pipeline.gestures.gesture_engine
+
+  cv-pipeline:
+    desc: full async pipeline (landmarks + fps + speed + confidence)
+    cmds:
+      - uv run python -m services.cv_pipeline.processing.pipeline
+
+  landing:
+    desc: Runs the landing page (seperate port from frontend)
+    dir: landing_page
+    cmds:
+      - yarn dev
+
+  sim-as:
+    desc: Runs the old pain in the ass sim
+    cmds:
+      - cmd: powershell -Command "Start-Process '{{.AS_PATH}}'"
+        platforms: [windows]
+
+  sim-pas:
+    desc: Launches PAS, the UE5 version
+    cmds:
+      - cmd: powershell -Command "Start-Process '{{.PAS_PATH}}'"
+        platforms: [windows]
+
+  sim-pas-demo:
+    desc: Launches PAS, and the drone adapter demo
+    cmds:
+      - cmd: powershell -Command "Start-Process '{{.PAS_PATH}}'"
+        platforms: [windows]
+      - cmd: uv run adapter_demo.py
+
+  sim-beeg-demo:
+    desc: Test your laptop out
+    deps:
+      - sim-pas-demo
+      - sim-as
+
+  prereqs:
+    desc: install all prereqs (add more as identified)
+    cmds:
+      - cmd: winget install Python.Python.3.11 astral-sh.uv Microsoft.DirectX --accept-package-agreements --accept-source-agreements
+        platforms: [windows]
+      - cmd: npm install -g yarn
+        platforms: [windows]
+      - cmd: |
+          sudo apt update && sudo apt install  -y python3.11 python3.11-venv nodejs npm curl
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          npm install -g yarn
+        platforms: [linux]

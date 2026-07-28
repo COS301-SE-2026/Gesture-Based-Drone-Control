@@ -3,7 +3,7 @@
 
 import os
 import sys
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
@@ -16,6 +16,18 @@ sys.modules['mediapipe'] = _mock_mp
 # pytest from anywhere. services/ is three levels up from this test file
 # (tests/cv_pipeline_testing/test_mediapipe_detector.py -> services/)
 _services_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+from cv_pipeline.hand_detection import mediapipe_detector as _md  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _patch_mediapipe():
+	"""
+	Re-bind the detectors 'mp' to the mock regarldess of suit import
+	"""
+	with patch.object(_md, 'mp', _mock_mp):
+		yield
+
+
 sys.path.insert(0, _services_dir)
 
 # noqa :E402 stops the warnings dont remvoe those
@@ -39,6 +51,7 @@ def make_blank_frame():
 		bgr_frame=np.zeros((480, 640, 3), dtype=np.uint8),
 		rgb_frame=np.zeros((480, 640, 3), dtype=np.uint8),
 		frame_index=1,
+		timestamp=0.0,
 	)
 
 
@@ -166,6 +179,7 @@ class TestHandDetectionPipelineOpen:
 		_mock_mp.solutions.hands.Hands.assert_called_with(
 			static_image_mode=False,
 			max_num_hands=MAX_HANDS,
+			model_complexity=0,
 			min_detection_confidence=0.7,
 			min_tracking_confidence=0.5,
 		)
@@ -181,6 +195,7 @@ class TestHandDetectionPipelineOpen:
 		_mock_mp.solutions.hands.Hands.assert_called_with(
 			static_image_mode=False,
 			max_num_hands=MAX_HANDS,
+			model_complexity=0,
 			min_detection_confidence=0.9,
 			min_tracking_confidence=0.8,
 		)

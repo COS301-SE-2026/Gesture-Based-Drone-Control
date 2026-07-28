@@ -1,0 +1,86 @@
+.md-cta {
+  padding: 130px 6vw 60px;
+  text-align: center;
+  border-top: 1px solid var(--line);
+  background-image: radial-gradient(
+    circle at 50% 120%,
+    var(--red-shadow) 0%,
+    transparent 55%
+  );
+}
+[data-theme="light"] .md-cta {
+  background-image: radial-gradient(
+    circle at 50% 120%,
+    rgba(229 56, 59, 0.14) 0%,
+    transparent 55%
+  );
+}
+.md-cta h2 {
+  font-size: clamp(3rem, 11vw, 8rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 18px 0 36px;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--ink);
+  transition: -webkit-text-stroke-color 0.4s;
+}
+.md-cta h2:hover {
+  -webkit-text-stroke-color: var(--red);
+}
+.md-footlinks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  max-width: 760px;
+  margin: 80px auto 0;
+  text-align: left;
+}
+.md-footlinks h4 {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin: 0 0 12px;
+}
+.md-footlinks a {
+  display: block;
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 13.5px;
+  padding: 3px 0;
+  transition: color 0.2s;
+}
+.md-footlinks a:hover {
+  color: var(--red);
+}
+.md-footlinks p {
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
+.md-teamlogo {
+  height: 46px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+  display: block;
+  margin: 2px 0 12px;
+}
+[data-theme="light"] .md-teamlogo {
+  filter: invert(1);
+}
+.md-fine {
+  color: var(--dim);
+  font-size: 12.5px;
+  margin-top: 64px;
+}
+@media (max-width: 620px) {
+  .md-footlinks {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    margin-top: 56px;
+  }
+}
