@@ -13,6 +13,8 @@ jobs:
           - os: ubuntu-latest
             platform: linux
     runs-on: ${{ matrix.os }}
+    env: 
+      BACKENDPORT: ${{vars.BACKENDPORT || 3001}}
     steps:
       - uses: actions/checkout@v4
         with:
