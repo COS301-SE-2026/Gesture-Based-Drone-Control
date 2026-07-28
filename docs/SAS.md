@@ -282,7 +282,6 @@ cd Gesture-Based-Drone-Control
 cp .env.example .env      # set ports and secrets locally
 task prereqs              # optional: installs Python 3.11, uv, node, yarn
 task install              # uv sync + yarn install
-docker compose up -d      # PostgreSQL 16 + pgAdmin (optional; SQLite works without it)
 task dev                  # backend + frontend in dev mode
 ```
 
