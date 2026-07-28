@@ -9,7 +9,7 @@ because the CV pipeline runs entirely on backend.
 Making this interpret the broadcasted gesture data used by the frontend would mean
 backend->frontend->back->front; which is not good.
 
-Will rely on GestureStream.subscribe()  and interpret the shared queue
+Will rely on GestureStream.subscribe() and interpret the shared queue
 """
 
 from __future__ import annotations
@@ -90,7 +90,14 @@ class GestureAdapter(InputAdapter):
         self._queue: asyncio.Queue | None = None
         
         # safety and extra info
+        self._stable_key: str | None = None
         self._last_gesture_ts: float = time.monotonic()
+        self._stable_count: int = 0
+        self._last_command: CommandType  | None = None
+        
+        # used by status endpoint
+        self.last_resolution: str = "none"
+        self.last_confidence: float = 0.0
 
     async def start(self) -> None:
         """
@@ -108,6 +115,21 @@ class GestureAdapter(InputAdapter):
         """
         Unsub from stream and clean up
         """
+        logger.debug("GestureAdapter: stop() called")
+        if self._task is not None:
+            try:
+                await self._task
+                # self._task.cancel()
+            except asyncio.CancelledError:
+                pass
+            finally:
+                self._task = None
+        
+        if self._queue is not None:
+            stream = self._get_stream()
+            await  stream.unsubscribe(self._queue)
+        
+        logger.info("GestureAdapter: stopped()")
     
     async def handle_message(self, message: dict[str, Any]) -> None:
         """
@@ -136,8 +158,109 @@ class GestureAdapter(InputAdapter):
             raise
     
     def  _process_payload(self, payload: Any) -> None:
-        """TODO actually figure out that goblin code in stream"""
-        ...
+        """
+        Process the hands as given in the stream. the schema:
+        model_config = {
+                'json_schema_extra': {
+                    'examples': [
+                        {
+                            'type': 'gesture_frame',
+                            'frame_index': 142,
+                            'timestamp': 1719831600.123,
+                            'fps': 28.7,
+                            'hands': [
+                                {
+                                    'handedness': 'RIGHT',
+                                    'gesture': 'OPEN_PALM',
+                                    'fingers': 5,
+                                    'confidence': 0.95,
+                                    'speed': 0.12,
+                                    'landmarks': [{'x': 0.5, 'y': 0.5, 'z': 0.0}],
+                                }
+                            ],
+                        }
+                    ]
+                }
+            }
+        """
+        hands = getattr(payload, "hands", [])
+        
+        # filter out ambiguity. assume CV pipeline works well enough to classify
+        confident = [
+            h for h in hands
+            if h.confidence  >= self._min_confidence
+        ]
+        
+        if not confident:
+            self._reset_stability()
+            return
+        
+        # build snapshot for this frame of handedness. format better
+        by_side: dict[str, str]  = {
+            h.handedness.upper() : h.gesture for h in confident
+        }
+        # log lowest confidence frame used
+        self.last_confidence = round(min(h.confidence for h in confident), 3)
+        
+        cmd_type = self._resolve(by_side)
+        if cmd_type is None:
+            self._reset_stability()
+            return
+
+        # need consecutive stable frames to emit
+        key = cmd_type.name
+        if key == self._stable_key:
+            self._stable_count += 1
+        else:
+            self._stable_key = key
+            self._stable_count = 1
+            return
+         
+        # gatekeep
+        if self._stable_count < self._min_stable_frames:
+            return
+
+        # update for logging purposes (can also use for more gatekeeping...maybe)
+        self._last_command = cmd_type
+        self._last_gesture_ts = time.monotonic()
+        self.last_resolution = key
+        
+        logger.info(
+            "GestureAdapter: executing: %s -> %s",
+                by_side,
+                cmd_type.name,
+            )
+            
+    
+    def _resolve(self, by_side: dict[str, str]) -> CommandType | None:
+        """
+        Helper to resolve a {hand:gesture} snapshot into a commandType
+        
+        priorities asymmetric two hand, then symmetric two hand, and finally single hand
+        """ 
+        right = by_side.get("RIGHT")
+        left = by_side.get("LEFT")
+        
+        # case 1: both hands present
+        if right and left:
+            # case 1.1: defined in asymmetrical map?
+            asym = ASYMMETRICAL_TWO_HAND_MAP.get((right, left))
+            if asym is not None:
+                return asym
+            # case  1.2: defined in symmetrical map?
+            sym = TWO_HAND_MAP.get(frozenset({right, left}))
+            if sym is not None:
+                return sym
+        
+        # case 2: one or the other
+        single = right or left
+        if single:
+            return SINGLE_HAND_MAP.get(single)
+        
+        # case oopsy
+        return None
+        
+        
     
     def _check_idle(self) -> None:
         """
@@ -145,7 +268,15 @@ class GestureAdapter(InputAdapter):
         """
         elapsed = time.monotonic() - self._last_gesture_ts
         if elapsed >= self._idle_timeout:
+            logger.info("GestureAdapter: idle %.1fs, HOVERing", elapsed)
+            self._last_command = CommandType.HOVER
+            self.last_resolution =  "idle-hover"
             self._emit(Command(type=CommandType.HOVER, source="gesture-idling"))
+        
+    def _reset_stability(self) ->  None:
+        self._stable_key = None
+        self._stable_count = 0
+            
             
     @staticmethod
     def _get_stream():
