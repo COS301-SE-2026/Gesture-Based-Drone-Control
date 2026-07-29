@@ -118,8 +118,8 @@ class GestureAdapter(InputAdapter):
 		logger.debug('GestureAdapter: stop() called')
 		if self._task is not None:
 			try:
+				self._task.cancel()
 				await self._task
-				# self._task.cancel()
 			except asyncio.CancelledError:
 				pass
 			finally:
@@ -220,6 +220,9 @@ class GestureAdapter(InputAdapter):
 		self._last_command = cmd_type
 		self._last_gesture_ts = time.monotonic()
 		self.last_resolution = key
+
+		# holy shit i forgot this line
+		self._emit(Command(type=cmd_type, source='gesture'))
 
 		logger.info(
 			'GestureAdapter: executing: %s -> %s',
