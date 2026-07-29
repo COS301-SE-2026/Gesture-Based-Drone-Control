@@ -56,15 +56,15 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # defaults for movement. tweakable, same as airsim
-DEFAULT_SPEED_MS: float = 4.0
-DEFAULT_DURATION_S: float = 0.03
+DEFAULT_SPEED_MS: float = 20.0
+DEFAULT_DURATION_S: float = 0.5
 DEFAULT_ROTATE_DEG: float = 0.2
 DEFAULT_YAW_RATE_DPS: float = 200.0
 
-DEFAULT_ANALOG_DURATION_S = 0.01
+DEFAULT_ANALOG_DURATION_S = 0.001
 
 # the drone drops like a rock, drift it up a lil every time we move horzontally
-GRAVITY_COMP_VZ: float = -0.3
+GRAVITY_COMP_VZ: float = 0.0
 
 
 def _find_sim_config() -> str:

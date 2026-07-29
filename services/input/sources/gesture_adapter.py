@@ -263,7 +263,7 @@ class GestureAdapter(InputAdapter):
 		if we are idle, hover safely in place
 		"""
 		elapsed = time.monotonic() - self._last_gesture_ts
-		if elapsed >= self._idle_timeout:
+		if elapsed >= self._idle_timeout and self.last_resolution != 'idle-hover':
 			logger.info('GestureAdapter: idle %.1fs, HOVERing', elapsed)
 			self._last_command = CommandType.HOVER
 			self.last_resolution = 'idle-hover'
