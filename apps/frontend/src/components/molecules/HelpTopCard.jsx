@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"
 import { ArrowRight } from "lucide-react"
-import { Card, Label } from "../atoms"
+import { Card } from "../atoms"
 
 //help page top th that displays a radar
 
@@ -8,7 +8,6 @@ export default function HelpTopCard({
   icon: Icon,
   title,
   description,
-  article,
   onClick,
 }) {
   return (
@@ -31,7 +30,6 @@ export default function HelpTopCard({
       </div>
 
       <div className="flex items-center justify-between pt-2">
-        <Label size="xs">{article} articles</Label>
         <ArrowRight className="w-4 h-4 text-Red group-hover:text-Red group-hover:translate-x-1 transition-all" />
       </div>
     </Card>
@@ -42,11 +40,9 @@ HelpTopCard.propTypes = {
   icon: PropTypes.elementType.isRequired,
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
-  article: PropTypes.number,
   onClick: PropTypes.func,
 }
 
 HelpTopCard.defaultProps = {
-  article: 0,
   onClick: undefined,
 }
