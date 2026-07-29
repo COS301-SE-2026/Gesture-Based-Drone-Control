@@ -158,32 +158,6 @@ async def input_status(state: Annotated[AppState, Depends(get_state)]):
 	return {'connected': True, 'adapter': state.input_name}
 
 
-# mostly just for debug since this part is finicky
-@router.get('/gesture/status')
-async def gesture_status(state: Annotated[AppState, Depends(get_state)]):
-	"""
-	Snapshot of what the gesture adapter sees.
-
-	Returns:
-			active : bool  - gesture adapter is the active input
-						last_gesture : str  - most recent resolved command name
-						last_confidence : float  - lowest per-hand confidence in last frame
-						idle_timeout_s : float  - current idle timeout setting
-						min_confidence  : float  - current confidence threshold
-	"""
-	if state.input_name != 'gesture' or state.input is None:
-		return {'active': False}
-
-	adapter = state.input
-	return {
-		'active': True,
-		'last_gesture': adapter.last_resolution,
-		'last_confidence': adapter.last_confidence,
-		'idle_timeout_s': adapter._idle_timeout,
-		'min_confidence': adapter._min_confidence,
-	}
-
-
 # gonna need more of this in demo 3 I feel. testing it here
 class GestureConfigRequest(BaseModel):
 	idle_timeout_s: float = 3.0
@@ -285,3 +259,42 @@ async def gamepad(websocket: WebSocket, state: Annotated[AppState, Depends(get_s
 		logger.info('input/ws/gamepad: client disconnected')
 	except Exception as ex:
 		logger.exception(f'input/ws/gamepad: error caught: {ex}')
+
+
+# mostly just for debug since this part is finicky
+@router.websocket('/ws/gesture/status')
+async def gesture_status(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
+    """
+    push gesture adapter status to the client whenever a change occurs
+    """
+    await websocket.accept()
+    logger.info('input/ws/gesture/status: client connected')
+    
+    last_sent: dict | None = None
+    
+    try:
+        while True:
+            await asyncio.sleep(0.1) # adjust as needed for polling rate
+            
+            if state.input_name != 'gesture' or state.input is None:
+                snapshot = {'active': False}
+            else:
+                adapter = state.input
+                snapshot = {
+					'active': True,
+					'last_gesture': adapter.last_resolution,
+					'last_confidence': adapter.last_confidence,
+					'idle_timeout_s': adapter._idle_timeout,
+					'min_confidence': adapter._min_confidence,
+				}    
+                
+            # only send new snapshots
+            if snapshot != last_sent:
+                await websocket.send_json(snapshot)
+                last_sent = snapshot
+             
+    except WebSocketDisconnect:
+        logger.info('/input/ws/gesture/status: client disconnected')
+        
+    except Exception as ex:
+        logger.exception('input/ws/gesture/status: error - %s', ex)
