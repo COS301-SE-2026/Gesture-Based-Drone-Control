@@ -36,7 +36,7 @@ MIN_STABLE_FRAMES: int = 2
 # use a frozen set (just an immutable set) because mutable sets cannot be hashed
 TWO_HAND_MAP: dict[frozenset, CommandType] = {
 	frozenset({'OPEN_PALM', 'OPEN_PALM'}): CommandType.EMERGENCY_STOP,
-	frozenset({'ONE_FINGER', 'ONE_FINGER'}): CommandType.TAKEOFF,
+	frozenset({'THREE_FINGERS', 'THREE_FINGERS'}): CommandType.TAKEOFF,
 	frozenset({'FIST', 'FIST'}): CommandType.LAND,
 	frozenset({'ONE_FINGER', 'ONE_FINGER'}): CommandType.MOVE_FORWARD,
 	frozenset({'TWO_FINGERS', 'TWO_FINGERS'}): CommandType.MOVE_BACKWARD,
