@@ -43,9 +43,9 @@ export default function GestureTutorialCarousel({gestures}) {
                 <Label className="text-lg font-semibold">{current.name}</Label>
                 <div className = "flex items-center gap-3">
                     <span
-                        className={`text-xs font-semibold ${passed? "text-green-500" :"test-DarkGrey"}`}
+                        className={`text-xs font-semibold ${passed? "text-green-500" :"text-DarkGrey"}`}
                         >
-                            {passed? "Matched!" : "Try the egsture..."}
+                            {passed? "Matched!" : "Try the gesture..."}
                         </span>
                         <span className="text-xs text-OffBlack/60 dark:text-OffWhite/60">
                         {index+1}/{gestures.length}
@@ -62,7 +62,7 @@ export default function GestureTutorialCarousel({gestures}) {
 
             <div className="flex flex-col gap-3">
                 <div 
-                    className="relative min-h[400px] rounded-lg border border-Grey/20 overflow-hidden"
+                    className="relative min-h-[400px] rounded-lg border border-Grey/20 overflow-hidden"
                     style={{ perspective :"1000px"}}
                     >
                         <div
@@ -80,7 +80,7 @@ export default function GestureTutorialCarousel({gestures}) {
                                 </div>
                                 <div
                                 className="absolute inset-0"
-                                style= {{ backfaceVisibility:"hidden", transform:"rotateyY(180deg)" }}
+                                style= {{ backfaceVisibility:"hidden", transform:"rotateY(180deg)" }}
                                 >
                                     <img
                                         src ={ current.droneGif}

@@ -63,7 +63,7 @@ export default function HandSkeleton ({ pose,sway=0 , bob= 0}) {
                     strokeWidth={hot[fi]? 4.4:2}
                     strokeLinecap="round"
                     opacity={hot[fi]? 1:0.35}
-                    style={hot[fi] ? {filter:"drop-shadow(0 0 6px #ef4444aa"} : undefined}
+                    style={hot[fi] ? {filter:"drop-shadow(0 0 6px #ef4444aa)"} : undefined}
                     />
 
                 ))

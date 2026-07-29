@@ -7,41 +7,32 @@ const gestureTutorials = [
     //get commands from shav
     {
         id:"open-palm",
-        name: "Open-Palm -Hover",
+        name: "Open-Palm - Hover",
         instructions:"Show an open palm to hold the drone's current position.",
         pose:POSES[0],
         droneGif: "/assets/drone-gifs/hover.gif",
-        expectedGesture:"waiting on shav",
+        expectedGesture:"OPEN_PALM",
     },
 
     {
         id:"index-up",
-        name: "Index Up",
-        instructions:"Point your index fingers up",
+        name: "Index Up - Move Up",
+        instructions:"Hold up one finger to move the drone",
         pose:POSES[1],
         droneGif: "/assets/drone-gifs/index-up.gif",
-        expectedGesture:"waiting on shav",
+        expectedGesture:"ONE_FINGER",
     },
 
     {
         id:"v-sign",
-        name:"V-Sign Orbit",
+        name:"Two Fingers - Move Down",
         instructions:"Make a V sign to do something with da drone",
         pose:POSES[2],
         droneGif: "/assets/drone-gifs/orbit.gif",
-        expectedGesture:"waiting on shav",
+        expectedGesture:"TWO_FINGERS",
     },
-    {
-        id:"fist",
-        name:"Fist- Land",
-        instructions: "Make a closed fist ti trugger landing",
-        pose:POSES[3],
-        droneGif: "/assets/drone-gifs/land.gif",
-        expectedGesture:"waiting on shav",
-
-    },
- 
     
+ 
 ]
 
 const tutorialVideos= [
