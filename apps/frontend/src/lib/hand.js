@@ -64,7 +64,7 @@ export function digitJoints(spec,d){
         const len = spec.segs[i] * (1 - d.c * 0.12)
         x += Math.cos(dir) * len
         y += Math.sin(dir) * len
-        pts.push([X, y])
+        pts.push([x, y])
     }
 
     return pts
