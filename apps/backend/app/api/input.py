@@ -264,37 +264,37 @@ async def gamepad(websocket: WebSocket, state: Annotated[AppState, Depends(get_s
 # mostly just for debug since this part is finicky
 @router.websocket('/ws/gesture/status')
 async def gesture_status(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
-    """
-    push gesture adapter status to the client whenever a change occurs
-    """
-    await websocket.accept()
-    logger.info('input/ws/gesture/status: client connected')
-    
-    last_sent: dict | None = None
-    
-    try:
-        while True:
-            await asyncio.sleep(0.1) # adjust as needed for polling rate
-            
-            if state.input_name != 'gesture' or state.input is None:
-                snapshot = {'active': False}
-            else:
-                adapter = state.input
-                snapshot = {
+	"""
+	push gesture adapter status to the client whenever a change occurs
+	"""
+	await websocket.accept()
+	logger.info('input/ws/gesture/status: client connected')
+
+	last_sent: dict | None = None
+
+	try:
+		while True:
+			await asyncio.sleep(0.1)  # adjust as needed for polling rate
+
+			if state.input_name != 'gesture' or state.input is None:
+				snapshot = {'active': False}
+			else:
+				adapter = state.input
+				snapshot = {
 					'active': True,
 					'last_gesture': adapter.last_resolution,
 					'last_confidence': adapter.last_confidence,
 					'idle_timeout_s': adapter._idle_timeout,
 					'min_confidence': adapter._min_confidence,
-				}    
-                
-            # only send new snapshots
-            if snapshot != last_sent:
-                await websocket.send_json(snapshot)
-                last_sent = snapshot
-             
-    except WebSocketDisconnect:
-        logger.info('/input/ws/gesture/status: client disconnected')
-        
-    except Exception as ex:
-        logger.exception('input/ws/gesture/status: error - %s', ex)
+				}
+
+			# only send new snapshots
+			if snapshot != last_sent:
+				await websocket.send_json(snapshot)
+				last_sent = snapshot
+
+	except WebSocketDisconnect:
+		logger.info('/input/ws/gesture/status: client disconnected')
+
+	except Exception as ex:
+		logger.exception('input/ws/gesture/status: error - %s', ex)

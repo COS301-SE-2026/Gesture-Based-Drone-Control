@@ -1,10 +1,8 @@
 // apps/frontend/src/hooks/useGestureControl.js
 
-import { useState, useRef, useEffect, useCallback } from "react"
-import { API_BASE_URL } from "@/lib/api"
-
-// adjust as needed
-const STATUS_POLL_MS = 200
+import { useState, useEffect, useCallback } from "react"
+import { API_BASE_URL, getWsUrl } from "@/lib/api"
+import { useWebSocket } from "./useWebSocket"
 
 const DEFAULT_STATUS = {
   active: false,
@@ -27,7 +25,6 @@ const DEFAULT_STATUS = {
 export function useGestureControl(enabled) {
   const [connected, setConnected] = useState(false)
   const [status, setStatus] = useState(DEFAULT_STATUS)
-  const pollRef = useRef(null)
 
   // connection handling
 
@@ -68,37 +65,28 @@ export function useGestureControl(enabled) {
     }
   }, [enabled])
 
-  // status polling, only happens when the adapter is enabled and connected
+  // websocket polling
+  const { status: wsStatus } = useWebSocket(
+    getWsUrl("api/input/ws/gesture/status"),
+    {
+      onMessage(event) {
+        const data = JSON.parse(event.data)
 
-  useEffect(() => {
-    if (!enabled || !connected) return
+        if (!data.active) {
+          setStatus(DEFAULT_STATUS)
+          return
+        }
 
-    const poll = () => {
-      fetch(`${API_BASE_URL}/api/input/gesture/status`)
-        .then((res) => (res.ok ? res.json() : null))
-        .then((data) => {
-          if (!data || !data.active) return
-
-          setStatus({
-            lastGesture: data.last_gesture ?? "none",
-            lastConfidence: data.last_confidence ?? 0,
-            idleTimeoutS: data.idle_timeout_s ?? 3.0,
-            minConfidence: data.min_confidence ?? 0.85,
-          })
+        setStatus({
+          active: data.active,
+          lastGesture: data.last_gesture,
+          lastConfidence: data.last_confidence,
+          idleTimeoutS: data.idle_timeout_s,
+          minConfidence: data.min_confidence,
         })
-        .catch(() => {}) // just wait for next polling cycle
+      },
     }
-
-    poll()
-    pollRef.current = setInterval(poll, STATUS_POLL_MS)
-
-    return () => {
-      if (pollRef.current !== null) {
-        clearInterval(pollRef.current)
-        pollRef.current = null
-      }
-    }
-  }, [enabled, connected])
+  )
 
   // runtime config to let UI tune the adapter parameters without reconnecting
 
