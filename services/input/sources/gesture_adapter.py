@@ -36,19 +36,19 @@ MIN_STABLE_FRAMES: int = 2
 # use a frozen set (just an immutable set) because mutable sets cannot be hashed
 TWO_HAND_MAP: dict[frozenset, CommandType] = {
 	frozenset({'OPEN_PALM', 'OPEN_PALM'}): CommandType.EMERGENCY_STOP,
-	frozenset({'OPEN_PALM', 'FIST'}): CommandType.TAKEOFF,
+	frozenset({'ONE_FINGER', 'ONE_FINGER'}): CommandType.TAKEOFF,
 	frozenset({'FIST', 'FIST'}): CommandType.LAND,
-	frozenset({'FIST', 'ONE_FINGER'}): CommandType.MOVE_FORWARD,
-	frozenset({'FIST', 'TWO_FINGERS'}): CommandType.MOVE_BACKWARD,
+	frozenset({'ONE_FINGER', 'ONE_FINGER'}): CommandType.MOVE_FORWARD,
+	frozenset({'TWO_FINGERS', 'TWO_FINGERS'}): CommandType.MOVE_BACKWARD,
 }
 
 # asymmetric, so [right, left] ordered
 # use an immutable tuple since order matters here
 ASYMMETRICAL_TWO_HAND_MAP: dict[tuple[str, str], CommandType] = {
-	('ONE_FINGER', 'FIST'): CommandType.ROTATE_CW,
-	('FIST', 'ONE_FINGER'): CommandType.ROTATE_CCW,
-	('FIST', 'TWO_FINGERS'): CommandType.MOVE_RIGHT,
-	('TWO_FINGERS', 'FIST'): CommandType.MOVE_LEFT,
+	('ONE_FINGER', 'OPEN_PALM'): CommandType.ROTATE_CW,
+	('OPEN_PALM', 'ONE_FINGER'): CommandType.ROTATE_CCW,
+	('OPEN_PALM', 'TWO_FINGERS'): CommandType.MOVE_LEFT,
+	('TWO_FINGERS', 'OPEN_PALM'): CommandType.MOVE_RIGHT,
 }
 
 # single handed commands. work with either one

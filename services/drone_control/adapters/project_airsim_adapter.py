@@ -56,8 +56,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # defaults for movement. tweakable, same as airsim
-DEFAULT_SPEED_MS: float = 80.0
-DEFAULT_DURATION_S: float = 0.01
+DEFAULT_SPEED_MS: float = 4.0
+DEFAULT_DURATION_S: float = 0.03
 DEFAULT_ROTATE_DEG: float = 0.2
 DEFAULT_YAW_RATE_DPS: float = 200.0
 
