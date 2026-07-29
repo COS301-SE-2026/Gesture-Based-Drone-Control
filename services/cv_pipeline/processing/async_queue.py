@@ -109,7 +109,7 @@ class BoundedFrameQueue(Generic[T]):
 		try:
 			dropped = self._queue.get_nowait()
 			self._drop_count += 1
-			logger.warning(
+			logger.debug(
 				'BoundedFrameQueue dropped oldest item (total drops = %d)',
 				self._drop_count,
 			)

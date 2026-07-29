@@ -22,6 +22,7 @@ import {
 import { useDroneControls } from "../../hooks/useDroneControls"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
 import { useGamepadControl } from "@/hooks/useGamepadControl"
+import { useGestureControl } from "@/hooks/useGestureControl"
 import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tab
 
 const tabs = [
@@ -137,7 +138,20 @@ const inputMapping = {
     "Circle",
     "Cross",
   ],
-  gestures: ["", "", "", "", "", "", "", "", "", "", "", ""],
+  gestures: [
+    "Fist + 1 finger",
+    "Fist + 2 finger",
+    "Fist + Right 2 fingers",
+    "Fist + Left 2 fingers",
+    "Any 1 finger",
+    "Any 2 fingers",
+    "Left 1 finger",
+    "Right 1 finger",
+    "Palm + Fist",
+    "Open palm",
+    "Fist + Fist",
+    "Palm + Palm",
+  ],
 }
 
 const controls = {
@@ -177,6 +191,10 @@ const GestureGuide = memo(function GestureGuide({
   const { connected: controllerConnected } = useGamepadControl(
     activeTab === "controller"
   )
+
+  const { connected: gestureConnected, status: gestureStatus } =
+    useGestureControl(activeTab === "gestures")
+
   const onScreenControls = () => (
     <div className="flex gap-6 py-4">
       <div className="flex flex-col items-center">
@@ -371,6 +389,30 @@ const GestureGuide = memo(function GestureGuide({
                 ? "Gamepad control active"
                 : "Connecting gamepad controls..."}
             </span>
+          </div>
+        )}
+
+        {activeTab === "gestures" && (
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  gestureConnected ? "bg-green-500 animate-pulse" : "bg-Grey/40"
+                }`}
+              />
+              <span className="text-OffBlack/70 dark:text-OffWhite/70">
+                {gestureConnected
+                  ? "Gesture control active"
+                  : "Connecting gesture controls..."}
+              </span>
+            </div>
+            {gestureConnected && gestureStatus.active && (
+              <span className="font-mono text-OffBlack/60 dark:text-OffWhite/60">
+                {gestureStatus.lastGesture === "none"
+                  ? "no gesture"
+                  : gestureStatus.lastGesture.toLowerCase().replace(/_/g, " ")}
+              </span>
+            )}
           </div>
         )}
 
