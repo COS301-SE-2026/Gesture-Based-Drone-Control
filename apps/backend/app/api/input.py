@@ -136,9 +136,9 @@ async def disconnect_input(state: Annotated[AppState, Depends(get_state)]):
 		return DisconnectInputResponse(success=False, message='No input adapter is connected')
 
 	name = state.input_name
+	adapter = state.input
 	state.input_reset()
 
-	adapter = state.input
 	# GestureAdapter and likely more in the future need to clean up
 	if hasattr(adapter, 'stop'):
 		await adapter.stop()

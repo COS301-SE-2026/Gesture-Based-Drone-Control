@@ -38,7 +38,7 @@ export function useGestureControl(enabled) {
 
     fetch(`${API_BASE_URL}/api/input/connect`, {
       method: "POST",
-      headers: { "Contentt-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ adapter: "gesture" }),
     })
       .then((res) => {
@@ -105,7 +105,7 @@ export function useGestureControl(enabled) {
   const configure = useCallback((params) => {
     fetch(`${API_BASE_URL}/api/input/gesture/config`, {
       method: "POST",
-      headers: { "Contentt-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(params),
     }).catch((err) =>
       console.error("useGestureControl: failed to configure adapter ", err)
