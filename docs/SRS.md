@@ -509,7 +509,7 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
 
 ### 4.1 Use-Case Diagram
 
-![Use-Case Diagram](diagrams/UseCaseDiagramv2.0.svg)
+![Use-Case Diagram](diagrams/use_case_revision.drawio.svg)
 
 *Figure 4.1 - Primary use cases and actors.*
 
