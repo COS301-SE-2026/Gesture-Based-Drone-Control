@@ -436,3 +436,62 @@ def test_gesture_config_wrong_adapter():
 
 	assert response.status_code == 200
 	assert response.json()['ok'] is False
+
+
+def test_gesture_status_inactive():
+	"""When no Gesture adapter is connected should report inactive"""
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	with client.websocket_connect('/input/ws/gesture/status') as ws:
+		data = ws.receive_json()
+
+	assert data == {'active': False}
+
+
+def test_gesture_status_active():
+	"""if connected expose status"""
+	state = AppState()
+
+	adapter = MagicMock()
+	adapter.last_resolution = 'TAKEOFF'
+	adapter.last_confidence = 0.97
+	adapter._idle_timeout = 5.0
+	adapter._min_confidence = 0.9
+
+	state.input = adapter
+	state.input_name = 'gesture'
+
+	client = TestClient(make_app(state))
+
+	with client.websocket_connect('/input/ws/gesture/status') as ws:
+		data = ws.receive_json()
+
+	assert data == {
+		'active': True,
+		'last_gesture': 'TAKEOFF',
+		'last_confidence': 0.97,
+		'idle_timeout_s': 5.0,
+		'min_confidence': 0.9,
+	}
+
+
+def test_gesture_status_logs_exception():
+	"""Catch other exceptions and log them"""
+	state = AppState()
+
+	adapter = MagicMock()
+	adapter.last_resolution = 'HOVER'
+
+	# force snapshot construction to fail
+	type(adapter).last_confidence = property(
+		lambda self: (_ for _ in ()).throw(RuntimeError('blowup'))
+	)
+
+	state.input = adapter
+	state.input_name = 'gesture'
+
+	client = TestClient(make_app(state))
+
+	with client.websocket_connect('/input/ws/gesture/status'):
+		pass
