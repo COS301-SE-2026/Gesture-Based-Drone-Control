@@ -13,7 +13,7 @@ const SKELETON_COLOR = "#ef4444"
 const LABEL_BG = "rgba(11, 9, 10, 0.75)"
 const LABEL_TEXT = "#ffffff"
 
-const GestureCameraFeed = ({ className = "",onFrame=null }) => {
+const GestureCameraFeed = ({ className = "",onFrame=null, skeletonColor = SKELETON_COLOR, }) => {
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
   const { frame, connected } = useGestureStream()
@@ -47,7 +47,7 @@ const GestureCameraFeed = ({ className = "",onFrame=null }) => {
     const transform = coverTransform(canvas, video)
     frame.hands.forEach((hand) => {
       const points = toCanvasPoints(hand.landmarks, transform)
-      drawHand(ctx, points, SKELETON_COLOR)
+      drawHand(ctx, points, skeletonColor)
 
       //per-hand info label above wrist (landmark 0)
       const wrist = points[0]
@@ -59,7 +59,7 @@ const GestureCameraFeed = ({ className = "",onFrame=null }) => {
         drawLabel(ctx, line2, wrist.x, wrist.y - 14, { clamp: true })
       }
     })
-  }, [frame])
+  }, [frame,skeletonColor])
 
   return (
     <div
@@ -113,6 +113,7 @@ function drawLabel(ctx, text, x, y, { clamp = false } = {}) {
 GestureCameraFeed.propTypes = {
   className: PropTypes.string,
   onFrame:PropTypes.func,
+  skeletonColor:PropTypes.string,
 }
 
 export default GestureCameraFeed

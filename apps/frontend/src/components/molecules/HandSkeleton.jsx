@@ -1,7 +1,7 @@
 import PropTypes from "prop-types"
 import {FINGERS,WRIST,digitJoints} from "../../lib/hand"
 
-const Red = "#A4161A"
+const RED = "#A4161A"
 const DIM = "#B1A7A6"
 const INK = "#161A1D"
 
