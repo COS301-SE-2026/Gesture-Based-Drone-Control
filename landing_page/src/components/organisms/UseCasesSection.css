@@ -1,0 +1,62 @@
+.md-uc {
+    padding: 110px 6vw;
+    border-top: 1px solid var(--line);
+}
+.md-uc h2 {
+    font-size: clamp(1.9rem, 4.4vw, 3.4rem);
+    font-weight: 600;
+    margin-top: 14px;
+}
+.md-ucsub {
+    color: var(--dim);
+    max-width: 48ch;
+    margin: 22px 0 0;
+    font-size: 16px;
+}
+.md-ucphase {
+    margin-top: 54px;
+}
+.md-ucphead {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+.md-ucplabel {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    color: var(--red);
+    white-space: nowrap;
+}
+.md-ucrule {
+    flex: 1;
+    height: 1px;
+    min-width: 20px;
+    background: linear-gradient(90deg, var(--red), var(--line) 55%, transparent);
+    opacity: 0.55;
+}
+.md-ucpnote {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    white-space: nowrap;
+}
+.md-ucgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+    gap: 18px;
+}
+@media (max-width: 700px) {
+    .md-uc h2 br {
+        display: none;
+    }
+    .md-ucpnote {
+        display: none;
+    }
+    .md-ucphase {
+        margin-top: 42px;
+    }
+}
