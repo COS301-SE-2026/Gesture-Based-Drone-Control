@@ -29,6 +29,7 @@ def make_app(state: AppState) -> FastAPI:
 def make_mock_input_adapter() -> MagicMock:
 	adapter = MagicMock()
 	adapter.start = AsyncMock()
+	adapter.stop = AsyncMock()
 	adapter.handle_message = AsyncMock()
 	adapter.set_handler = MagicMock()
 	return adapter
