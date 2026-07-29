@@ -8,7 +8,7 @@ WS /input/ws/keyboard
 """
 
 from unittest.mock import AsyncMock, MagicMock, patch
-
+from math import isclose
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -370,3 +370,66 @@ def test_ws_gamepad_wrong_adapter():
 		ws.send_json({'left_x': 1.0})
 
 	state.input.handle_message.assert_not_awaited()
+
+
+# gesture adapter testing
+
+@pytest.mark.asyncio
+async def test_connect_input_gesture():
+	"""juuuust a connect. you know the drill"""
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.input._build_input_adapter',
+		return_value=make_mock_input_adapter(),
+	):
+		response = client.post('/input/connect', json={'adapter': 'gesture'})
+
+	assert response.status_code == 200
+	assert response.json()['connected'] is True
+	assert state.input_name == 'gesture'
+
+def test_gesture_config_success():
+	"""config should be user configurable"""
+	state = connected_input_state('gesture')
+
+	state.input._idle_timeout = 3.0
+	state.input._min_confidence = 0.85
+	state.input._min_stable_frames = 2
+
+	client = TestClient(make_app(state))
+
+	response = client.post(
+		'/input/gesture/config',
+		json={
+			'idle_timeout_s': 5.0,
+			'min_confidence': 0.9,
+			'min_stable_frames': 4,
+		},
+	)
+
+	assert response.status_code == 200
+	assert response.json()['ok'] is True
+
+	assert isclose(state.input._idle_timeout, 5.0)
+	assert isclose(state.input._min_confidence, 0.9)
+	assert isclose(state.input._min_stable_frames, 4)
+
+
+def test_gesture_config_wrong_adapter():
+	"""cant config when we have a different adapter connected"""
+	state = connected_input_state('justsomebullshit')
+	client = TestClient(make_app(state))
+
+	response = client.post(
+		'/input/gesture/config',
+		json={
+			'idle_timeout_s': 5,
+			'min_confidence': 0.9,
+			'min_stable_frames': 4,
+		},
+	)
+
+	assert response.status_code == 200
+	assert response.json()['ok'] is False
