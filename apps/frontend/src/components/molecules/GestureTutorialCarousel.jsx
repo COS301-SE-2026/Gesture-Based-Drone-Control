@@ -1,10 +1,10 @@
 import{useState, useCallback} from "react"
-import propTypes from "prop-types"
+import PropTypes from "prop-types"
 import { Card,Label,Button} from "../atoms"
 import GestureCameraFeed from "./GestureCameraFeed"
 
-export default function GestureTutorialCarousel({gesture}) {
-    const [index, setIndex] = useSate(0)
+export default function GestureTutorialCarousel({gestures}) {
+    const [index, setIndex] = useState(0)
     const [showHint, setShowHint] = useState(false)
     const [passed, setPassed] = useState(false)
 
@@ -25,7 +25,7 @@ export default function GestureTutorialCarousel({gesture}) {
     )
 
     const handleNext =() => {
-        setPassword(false)
+        setPassed(false)
         setShowHint(false)
         setIndex((i) => Math.min(i + 1, gestures.length -1))
     }
@@ -34,22 +34,31 @@ export default function GestureTutorialCarousel({gesture}) {
 
     return(
         <Card variant ="glass" className="flex flex-col gap-4">
-            <div className ="flex items-conter justify-between">
-                <Label className="test-lg font-semibold">{current.name}</Label>
-                <span className="text-xs text-OffBalck/60 dark:text-OffWhite/60">
+            <div className ="flex items-center justify-between">
+                <Label className="text-lg font-semibold">{current.name}</Label>
+                <span className="text-xs text-OffBlack/60 dark:text-OffWhite/60">
                 {index+1}/{gestures.length}
                 </span>
             </div>
-
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <GestureCameraFeed className="min-h-[400px]" onFrame={handleFrame}/>
+            <div className="flex flex-col gap-3">
+                <img
+                    src={current.gif}
+                    alt={`${current.name} demo`}
+                    className="rounded-lg w-full object-cover"
+                />
 
-            {showHint && (
+                {showHint && (
                 <p className="text-sm text-OffBlack dark:text-Grey">
                     {current.instructions}
                 </p>
-            )}
+                )}
 
-            <div className="flex items-center justify-between">
+
+
+
+            <div className="flex items-center justify-between mt-auto">
                 <Button variant="secondary"  size="sm" onClick={() => setShowHint((s) => !s)}>
                     {showHint ? "Hide Hint" : "Hint"}
                 </Button>
@@ -70,17 +79,20 @@ export default function GestureTutorialCarousel({gesture}) {
                     >
                         Next
                     </Button>
+                    </div>
+                </div>
             </div>
         </Card>
     )
 }
 
-GestureTutorialCarousal.propTypes={
+GestureTutorialCarousel.propTypes={
     gestures: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
             name:PropTypes.string.isRequired,
             instructions: PropTypes.string.isRequired,
+            gif:PropTypes.string.isRequired,
             expectedGesture: PropTypes.string.isRequired,
         })
     ).isRequired,

@@ -1,20 +1,21 @@
 import {Card ,Label } from "../atoms"
-import { GestureTutorialCard, TutorialVideoCard, FAQItem} from "../molecules"
+import { GestureTutorialCarousel, TutorialVideoCard, FAQItem} from "../molecules"
 
 const gestureTutorials = [
     {
         id: "fist",
         name: "First - Hover",
-        description: "Make a closed fist to hold the drone's current position ",
-        gif:"./assets/gestures/fist.gif",
+        instructions: "Make a closed fist to hold the drone's current position ",
+        gif:"/assets/gestures/fist.gif",
+        expectedGesture:"waiting on shav",
     },
     //find the gestures and their corresponding controls from Ayush's files
     {
         id:"open-palm",
         name:"Open Palm-Land",
-        description:"Show an open palm to trigger landing. ",
-        gif: "./assets/gestures/open-palm.gif",
-
+        instructions:"Show an open palm to trigger landing. ",
+        gif: "/assets/gestures/open-palm.gif",
+        expectedGesture:"waiting on shav",
     },
 ]
 
@@ -45,10 +46,8 @@ const Tutorial = () => {
     return(
         <div className="p-6 space-y-6">
             <div className="space-y-4">
-                <Label className ="text-lg font-semibold">Gesture Controls</Label>
-                {gestureTutorials.map((g) =>(
-                    <GestureTutorialCard key={g.id} {...g}/>
-                ))}
+                <Label className="text-lg font-semibold">Gesture Controls</Label>
+                <GestureTutorialCarousel gestures={gestureTutorials}/>
             </div>
 
             <div className="space-y-4">
@@ -63,7 +62,7 @@ const Tutorial = () => {
             <Card variant="glass" className ="space-y-4">
                 <Label className ="text-lg font-semibold">FAQ</Label>
                 {faqItems.map((f,i) => (
-                    <FAQItem key={i}{...f}/>
+                    <FAQItem key={i} {...f}/>
                 ))}
             </Card>
         </div>
