@@ -14,32 +14,37 @@ import {
   FaqItem,
   Contactcard,
 } from "../molecules"
-import { Login } from "."
+import { useNavigate } from "react-router-dom"
+
+const navigate = useNavigate()
+
+const MANUAL_BASE =
+  "https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/MANUAL/"
 
 const TOPICS = [
   {
-    id: "setup",
+    id: "2-set-up-sign-in",
     icon: LogIn,
     title: "Set up & sign in",
     description:
       "Create an account, sign in, and land on the Gestures Control Dashboard.",
   },
   {
-    id: "fly",
+    id: "3-fly-the-drone-with-your-hand-uc-1",
     icon: Hand,
     title: "Fly with hand gestures",
     description:
       "Take off, hover, move, and land the drone using nothing but your hand.",
   },
   {
-    id: "telemetry",
+    id: "4-watch-what-the-drone-is-doing-uc-2",
     icon: Activity,
     title: "Telemetry & live status",
     description:
       "Read altitude, battery, flight mode, and connection status while you fly.",
   },
   {
-    id: "airsim",
+    id: "5-practise-with-the-airsim-simulator-uc-3",
     icon: MonitorPlay,
     title: "Practice in AirSim",
     description: "Fly a simulated drone before you risk a real one.",
@@ -51,7 +56,7 @@ const TOPICS = [
     description: "Watch your drone in real time as it moves.",
   },
   {
-    id: "troubleshooting",
+    id: "10-troubleshooting",
     icon: Wrench,
     title: "Troubleshooting",
     description:
@@ -111,3 +116,68 @@ const SUGGESTIONS = [
     category: "FAQ",
   })),
 ]
+
+export default function Help() {
+  return (
+    <>
+      <HelpTopBg
+        suggestion={SUGGESTIONS}
+        onSelect={(item) => console.log("selected", item)}
+        onSearch={(q) => console.log("searching", q)}
+      />
+
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 flex flex-col gap-14">
+        <HelpResource
+          onOpenManual={() => window.open(`${MANUAL_BASE}/`, "_blank")}
+          onOpenTut={() => navigate("/Tutorial")}
+        />
+
+        <section>
+          <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-6">
+            Browse by topic
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {TOPICS.map((t) => (
+              <HelpTopCard
+                key={t.id}
+                icon={t.icon}
+                title={t.title}
+                description={t.description}
+                onClick={() => window.open(`${MANUAL_BASE}/#${t.id}`, "_blank")}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-6">
+            Frequently asked questions
+          </h2>
+          <div className="flex flex-col gap-3">
+            {FAQS.map((f, i) => (
+              <FaqItem
+                key={f.id}
+                question={f.question}
+                answer={f.answer}
+                defaultOpen={i === 0}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-6">
+            Still stuck? Talk to the team
+          </h2>
+          <Contactcard
+            icon={Mail}
+            title="Email support"
+            description="For all your detailed or technical issues."
+            actionLabel="codexmerchants@gmail.com"
+            onAction={() => window.open("mailto:codexmerchants@gmail.com")}
+          />
+        </section>
+      </div>
+    </>
+  )
+}
