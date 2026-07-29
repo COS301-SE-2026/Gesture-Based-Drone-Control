@@ -95,27 +95,27 @@ export const BUILDS = [
 
 export const FAQS = [
   {
-    q: "a",
-    a: "b",
+    q: "Do I need a special camera?",
+    a: "No, any standard webcame works, the one already on your laptop almost certainly qualifies. No depth sensor, no gloves, no markers. Mudra is built for indoor use with reasonable lighting, and tracks one operator at a time.",
   },
   {
-    q: "a",
-    a: "b",
+    q: "Do I need a drone to try it?",
+    a: "No. Mudra ships with AirSim for lightweight simulation. You can learn the full gesture set and crash as often as you like before touching real hardware.",
   },
   {
-    q: "a",
-    a: "b",
+    q: "what happens if it loses sight of my hand?",
+    a: "The drone holds position. A missing hand(s) is nver read as a new instruction, so stepping out of frame makes the drone hover rather than moving it. There is also an emergency stop built in.",
   },
   {
-    q: "a",
-    a: "b",
+    q: "Can i still use a controller or keyboard?",
+    a: "Yes, as there are a range of different adapters to control the drone in the sim or the real one, a built in gamepad, a keyboard, a controller and finally your hands all applicable for use.",
   },
   {
-    q: "a",
-    a: "b",
+    q: "Where does my camera feed go?",
+    a: "Nowhere, frames are captured and classified locally by the pipeline running on your own machine; only the resulting command crosses the webSocket to the flight controller.",
   },
   {
-    q: "a",
-    a: "b",
+    q: "Isn't gesture control laggy or unreliable?",
+    a: "Its built to avoid both, but also dependent on your hardware, relatively low hardware does produce some lag, latency and lower FPS.",
   },
 ]
