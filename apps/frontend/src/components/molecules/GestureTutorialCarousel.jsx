@@ -82,11 +82,15 @@ export default function GestureTutorialCarousel({gestures}) {
                                 className="absolute inset-0"
                                 style= {{ backfaceVisibility:"hidden", transform:"rotateY(180deg)" }}
                                 >
-                                    <img
-                                        src ={ current.droneGif}
-                                        alt={`${current.name} drone movement`}
-                                        className = "w-full h-full object-cover"
-                                        />
+                                    <video
+                                    key = {current.id}
+                                    src={current.droneVideo}
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                    className="w-full h-full object-cover"
+                                    />
                                 </div>
                         </div>
                     </div>
@@ -127,7 +131,7 @@ GestureTutorialCarousel.propTypes={
             name:PropTypes.string.isRequired,
             instructions: PropTypes.string.isRequired,
             pose: PropTypes.array.isRequired,
-            droneGif: PropTypes.string.isRequired,
+            droneVideo: PropTypes.string.isRequired,
             expectedGesture: PropTypes.string.isRequired,
         })
     ).isRequired,

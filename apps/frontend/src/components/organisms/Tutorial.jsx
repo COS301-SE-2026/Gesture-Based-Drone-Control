@@ -1,5 +1,5 @@
 import {Card ,Label } from "../atoms"
-import { GestureTutorialCarousel, TutorialVideoCard, FAQItem} from "../molecules"
+import { GestureTutorialCarousel, TutorialVideoCard} from "../molecules"
 import {POSES} from "../../lib/hand"
 
 
@@ -10,7 +10,7 @@ const gestureTutorials = [
         name: "Open-Palm - Hover",
         instructions:"Show an open palm to hold the drone's current position.",
         pose:POSES[0],
-        droneGif: "/assets/drone-gifs/hover.gif",
+        droneVideo: "/assets/hover.mp4",
         expectedGesture:"OPEN_PALM",
     },
 
@@ -19,16 +19,16 @@ const gestureTutorials = [
         name: "Index Up - Move Up",
         instructions:"Hold up one finger to move the drone",
         pose:POSES[1],
-        droneGif: "/assets/drone-gifs/index-up.gif",
+        droneVideo: "/assets/move-up.mp4",
         expectedGesture:"ONE_FINGER",
     },
 
     {
         id:"v-sign",
         name:"Two Fingers - Move Down",
-        instructions:"Make a V sign to do something with da drone",
+        instructions:"Hold two fingers up to move down the drone",
         pose:POSES[2],
-        droneGif: "/assets/drone-gifs/orbit.gif",
+        droneVideo: "/assets/move-down.mp4",
         expectedGesture:"TWO_FINGERS",
     },
     
@@ -45,17 +45,7 @@ const tutorialVideos= [
     },
 ]
 
-const faqItems =[
-    {
-        question:"What if my gesture is not detected?",
-        answer:"Make sure your hand is fully visible in the frame and well lit, then retry"
-    },
 
-    {
-        question: "Can I use the drone without gestures?",
-        answer:"Yes - switch to the keyboard adapter from the mode settings.",
-    }
-]
 
 
 const Tutorial = () => {
@@ -75,12 +65,6 @@ const Tutorial = () => {
                 </div>
             </div>
 
-            <Card variant="glass" className ="space-y-4">
-                <Label className ="text-lg font-semibold">FAQ</Label>
-                {faqItems.map((f,i) => (
-                    <FAQItem key={i} {...f}/>
-                ))}
-            </Card>
         </div>
     )
 }
