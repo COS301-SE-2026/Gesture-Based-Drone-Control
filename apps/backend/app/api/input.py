@@ -249,7 +249,6 @@ async def gamepad(websocket: WebSocket, state: Annotated[AppState, Depends(get_s
 	try:
 		while True:
 			data = await websocket.receive_json()
-
 			if state.input is None or state.input_name != 'gamepad':
 				logger.debug('input/ws/gamepad: no gamepad adapter connected, ignoring message')
 				continue
@@ -274,7 +273,7 @@ async def gesture_status(websocket: WebSocket, state: Annotated[AppState, Depend
 
 	try:
 		while True:
-			await asyncio.sleep(0.1)  # adjust as needed for polling rate
+			await asyncio.sleep(0.5)  # adjust as needed for polling rate
 
 			if state.input_name != 'gesture' or state.input is None:
 				snapshot = {'active': False}

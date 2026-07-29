@@ -10,6 +10,20 @@ export default function HandSkeleton ({ pose,sway=0 , bob= 0}) {
     const bases = FINGERS.map((f) => f.base)
     let hot = pose.map((d) => d.c < 0.35)
     if (!hot.some(Boolean)) hot = hot.map(() => true)
+    
+    const allPoints = [WRIST, ...bases, ...fingers.flat()]
+    const xs = allPoints.map((p) => p[0])
+    const ys = allPoints.map((p) => p[1])
+    const minX = Math.min(...xs) , maxX = Math.max(...xs)
+    const minY = Math.min(...ys) , maxY = Math.max(...ys)
+    const boxW = maxX - minX || 1
+    const boxH = maxY - minY || 1
+    const cx = (minX + maxX) / 2
+    const cy = (minY + maxY) / 2
+
+    const TARGET_SIZE =190 
+    const scale = TARGET_SIZE /Math.max(boxW,boxH)
+
 
     return(
         <svg
@@ -21,6 +35,8 @@ export default function HandSkeleton ({ pose,sway=0 , bob= 0}) {
             <g 
                 transform={`translate(0 ${bob.toFixed(2)}) rotate(${sway.toFixed(2)} 110 175)`}
             >
+
+                <g transform ={`translate(110 135) scale(${scale.toFixed(3)}) translate(${(-cx).toFixed(2)} ${(-cy).toFixed(2)})`}>
                 {bases.map((b,i)=>(
                     <line   
                         key = {"w"+i}
@@ -84,6 +100,7 @@ export default function HandSkeleton ({ pose,sway=0 , bob= 0}) {
                     )
                 })
                 )} 
+                </g>
             </g>
         </svg>
         

@@ -14,6 +14,15 @@ export default function GestureTutorialCarousel({gestures}) {
     const [passed, setPassed] = useState(false)
 
     const current =gestures[index]
+    const matchesGesture = (hands,expected)=>{
+        if(typeof expected ==="string"){
+            return hands?.some((hand) => hand.gesture === expected)
+        }
+        const right = hands?.find((h) => h.handedness ==="RIGHT")
+        const left = hands?.find((h) => h.handedness ==="LEFT")
+        return right?.gesture === expected.right && left?.gesture === expected.left
+
+    }
 
     const handleFrame = useCallback(
         (frame) => {
@@ -21,10 +30,7 @@ export default function GestureTutorialCarousel({gestures}) {
                 {
                     return
                 } 
-            const detected = frame?.hands?.some(
-                (hand) => hand.gesture === current.expectedGesture
-            )
-            if (detected) setPassed(true)
+            if(matchesGesture(frame?.hands, current.expectedGesture))setPassed(true)
         },
     [current,passed]
     )
@@ -130,9 +136,19 @@ GestureTutorialCarousel.propTypes={
             id: PropTypes.string.isRequired,
             name:PropTypes.string.isRequired,
             instructions: PropTypes.string.isRequired,
-            pose: PropTypes.array.isRequired,
+            pose: PropTypes.oneOfType([
+                PropTypes.array,
+                PropTypes.shape({left:PropTypes.array, right:PropTypes.array}),
+            ]),
             droneVideo: PropTypes.string.isRequired,
-            expectedGesture: PropTypes.string.isRequired,
+            expectedGesture: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.shape({
+                    left: PropTypes.string.isRequired,
+                    right:PropTypes.string.isRequired,
+                }),
+
+            ]).isRequired,
         })
-    ).isRequired,
+        ).isRequired,
 }
