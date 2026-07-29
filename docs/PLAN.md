@@ -116,7 +116,7 @@ Three Scrum artifacts are maintained.
 - **Product Backlog** — the master list of every PBI for GBDCS
   (see [§4](#4-product-backlog)). Lives in the GitHub Project board.
 - **Sprint Backlog** — the PBIs the team has pulled into the current
-  sprint. Tracked as GitHub Issues with the `sprint-N` label.
+  sprint. Tracked as GitHub Issues.
 - **Burndown Chart** — the open story-point total per day of the sprint
   (see [§7](#7-burndown--velocity)).
 
@@ -131,9 +131,9 @@ meeting cadence. The team complies as follows.
 | **Every second week** | Lecturer-mentor meeting. Documentation alignment, scope, team dynamics. | Group Discussion on ClickUP, with **date, time, and attendees**. |
 | **As needed** | Industry-mentor check-in with EPI-USE. | Group Discussion on ClickUP, with **date, time, and attendees**. |
 
-The team leader is responsible for posting the minutes after every
+An assigned team member is responsible for posting the minutes after every
 meeting. Missing minutes affect the team and individual marks per the
-Demo 2 brief — they are not optional.
+Demo 2 brief; they are not optional.
 
 ---
 
@@ -167,8 +167,6 @@ Project board.
        conforming to [`GIT.md`](GIT.md).
     4. CI is green on the merge commit (lint, type-check, test).
     5. The documentation site has been updated for any user-facing change.
-    6. The PO (or mentor proxy) has accepted the change in the sprint
-       review.
 
 ---
 
@@ -178,18 +176,18 @@ The product backlog is the flat, prioritised list of every PBI for the
 system. PBIs are derived directly from the SRS — each maps to one or
 more `R` identifiers and to one or more use cases.
 
-| # | PBI | Maps to | Use case | First targeted demo |
+| # | PBI | Use case | First targeted demo |
 | --- | --- | --- | --- | --- |
-| PBI-01 | Hand tracking pipeline | `R3.1.*`, `R3.2.1` | UC-1 | Demo 1 |
-| PBI-02 | Telemetry dashboard | `R1.1.3`, `R5.1.2` | UC-2 | Demo 1 |
-| PBI-03 | AirSim simulator adapter | `R2.2` | UC-3 | Demo 1 |
-| PBI-04 | Base features (login, themes, form validation) | `R16.*` | UC-4 | Demo 1 |
-| PBI-05 | Rule-based gesture recognition | `R3.2.2`, `R3.2.3` | UC-1 | Demo 2 |
-| PBI-06 | Gesture → command translation | `R4.*` | UC-1 | Demo 2 |
-| PBI-07 | Real-drone adapter (Tello / xFly) | `R2.2`, `R5.*` | UC-1 | Demo 2 |
-| PBI-08 | Safety layer (idle, link loss, low battery, emergency stop) | `R5.2.*`, `R6.*` | UC-1, UC-2 | Demo 2 |
-| PBI-09 | Gesture overlay on dashboard feed | `R1.1.1`, `R1.1.2` | UC-1 | Demo 2 |
-| PBI-10 | Command + telemetry persistence + replay | `R6.3` | UC-5 | Demo 2 |
+| PBI-01 | Hand tracking pipeline | UC-1 | Demo 1 |
+| PBI-02 | Telemetry dashboard | UC-2 | Demo 1 |
+| PBI-03 | AirSim simulator adapter | UC-3 | Demo 1 |
+| PBI-04 | Base features (login, themes, form validation) | Base Case | Demo 1 |
+| PBI-05 | Rule-based gesture recognition | UC-1 | Demo 2 |
+| PBI-06 | Gesture → command translation | UC-1 | Demo 2 |
+| PBI-07 | Real-drone adapter  | UC-1 | Demo 3 |
+| PBI-08 | Safety layer (idle, link loss, low battery, emergency stop) | UC-1, UC-2 | Demo 3 |
+| PBI-09 | Gesture overlay on dashboard feed | UC-1 | Demo 2 |
+| PBI-10 | Command + telemetry persistence + replay | UC-5 | Demo 2 |
 
 PBIs targeted at Demo 3 and Demo 4 will be added to the backlog as the
 team approaches them. Per the Scrum value of **Focus**, the team is
@@ -203,19 +201,19 @@ All five are existing use cases from [`SRS.md` §4](SRS.md#4-use-cases),
 brought to production-quality "no mocks, full integration, unit and
 E2E testing" status for Demo 2.
 
-| Use case | New for Demo 2? | Backed by |
+| Use case | New for Demo 2? |
 | --- | --- | --- |
-| UC-1 — Control Drone via Gesture | New (Demo 1 had hand tracking only; recognition + command dispatch land in Demo 2) | PBI-05, PBI-06, PBI-07, PBI-08, PBI-09 |
-| UC-2 — Monitor Telemetry &amp; Alerts | Extended (Demo 1 telemetry pipe; Demo 2 adds the alert overlay + acknowledgement) | PBI-08 |
-| UC-3 — AirSim Implementation | Extended (Demo 1 connectivity; Demo 2 closes the loop with command dispatch) | PBI-06, PBI-07 |
-| UC-4 — Authenticate Operator Session | Hardened (Demo 1 login + theme; Demo 2 wires the short-lived token into the WS handshake) | PBI-04 carry-over + PBI-08 |
-| UC-5 — Replay a Recorded Session | New | PBI-10 |
+| UC-8 — Gesture Calibration | New (users calibrate before flying the drone) |
+| UC-7 — User Tutorial | New (user help and tutorial page) |
+| UC-4 — Different controller adapters | New (accessbility options for different ways to control the drone) |
+| UC-6 — GPS tracker | New (tracks the drones movements and displays it on a graph with telemtetry data live) |
+| UC-5 —True telemetry data live tracked | New |
 
 ---
 
 ## 5. Epics &amp; User Stories
 
-The active backlog (PBI-05 through PBI-10) is broken down into epics,
+The active backlog  is broken down into epics,
 then into user stories using the standard *"As a … I want … so that …"*
 template with Given / When / Then acceptance criteria.
 
