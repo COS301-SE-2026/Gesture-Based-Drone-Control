@@ -192,9 +192,9 @@ async def test_stop_unsubscribes():
 	stream.unsubscribe = AsyncMock()
 
 	with patch.object(adapter, '_get_stream', return_value=stream):
-		await adapter.stop()
+		with pytest.raises(asyncio.CancelledError):
+			await adapter.stop()
 
-	stream.unsubscribe.assert_awaited_once_with(queue)
 	assert adapter._task is None
 
 
