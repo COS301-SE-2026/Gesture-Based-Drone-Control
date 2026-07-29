@@ -7,8 +7,9 @@ GET /input/status
 WS /input/ws/keyboard
 """
 
-from unittest.mock import AsyncMock, MagicMock, patch
 from math import isclose
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -374,6 +375,7 @@ def test_ws_gamepad_wrong_adapter():
 
 # gesture adapter testing
 
+
 @pytest.mark.asyncio
 async def test_connect_input_gesture():
 	"""juuuust a connect. you know the drill"""
@@ -389,6 +391,7 @@ async def test_connect_input_gesture():
 	assert response.status_code == 200
 	assert response.json()['connected'] is True
 	assert state.input_name == 'gesture'
+
 
 def test_gesture_config_success():
 	"""config should be user configurable"""
