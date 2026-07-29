@@ -7,10 +7,20 @@ import { Label } from "recharts"
 
 export default function HelpTopBg({ suggestions, onSelect, onSearch }) {
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-OffBlack px-6 py-20 md:py-28">
+    <section className="relative overflow-hidden rounded-3xl bg-Grey dark:bg-OffBlack px-6 py-20 md:py-28">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        className="block dark:hidden pointer-events-none absolute inset-0 opacity-[0.35]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="hidden dark:block pointer-events-none absolute inset-0 opacity-[0.35]"
         style={{
           backgroundImage:
             "linear-gradient(to right, rgba(225, 255, 255, 0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px)",
@@ -26,7 +36,7 @@ export default function HelpTopBg({ suggestions, onSelect, onSearch }) {
         {[220, 360, 500].map((size) => (
           <div
             key={size}
-            className="absolute rounded-lg border border-OffWhite/10"
+            className="absolute rounded-lg border border-OffBlack/10 dark:border-OffWhite/10 "
             style={{
               width: size,
               height: size,
@@ -52,14 +62,14 @@ export default function HelpTopBg({ suggestions, onSelect, onSearch }) {
       </div>
 
       <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center gap-6">
-        <span className="inline-flex items-center gap-2 rounded-full border border-OffWhite/15 bg-OffWhite/5 px-3 py-1.5">
-          <Radar className="w-3.5 h-3.5 text-Red motion-safe:animate-pulse" />
-          <Label size="xs" className="!text-DarkGrey">
+        <span className="inline-flex items-center gap-2 rounded-full border border-OffBlack/15 dark:border-OffWhite/15 bg-OffBlack/5 dark:bg-OffWhite/5 px-3 py-1.5">
+          <Radar className="w-5 h-5 text-Red motion-safe:animate-pulse" />
+          <Label size="xs" className="text-DarkGrey">
             Support Center
           </Label>
         </span>
 
-        <h1 className="text-4xl md:text-5xl font-bold text-OffWhite tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-bold text-OffBlack dark:text-OffWhite tracking-tight">
           How can we Help?
         </h1>
         <p className="text-OffBlack dark:text-OffWhite text-base md:text-lg max-w-xl">

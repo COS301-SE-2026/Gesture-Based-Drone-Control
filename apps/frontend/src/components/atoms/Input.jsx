@@ -27,7 +27,7 @@ export default function Input({
     <div className="w-full">
       <div className={`relative flex items-center ${className}`}>
         {Icon && (
-          <Icon className="absolute left-3 w-5 h-5 text-Grey pointer-events-none" />
+          <Icon className="absolute left-3 w-5 h-5 text-OffBlack dark:text-OffWhite pointer-events-none" />
         )}
 
         <ShadcnInput
@@ -42,7 +42,7 @@ export default function Input({
                             h-10
                             rounded-lg
                             border
-                            ${error ? "border-DarkRed focus:border-Red focus:ring-Red" : "border-Grey focus:border-Red focus:ring-Red dark:border-DarkGrey"}
+                            ${error ? "border-DarkRed focus:border-Red focus:ring-Red" : "border-OffBlack dark:border-DarkGrey focus:border-Red focus:ring-Red"}
                             dark:bg-OffBlack
                             dark:text-OffWhite
                             dark:placeholder-DarkGrey

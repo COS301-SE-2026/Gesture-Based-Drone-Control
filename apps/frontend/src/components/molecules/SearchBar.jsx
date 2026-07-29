@@ -44,14 +44,14 @@ export default function SearchBar({
           onChange={handleChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setTimeout(() => setIsFocused(false), 150)}
-          className="h-14 text-base"
+          className="h-14 text-OffBlack dark:text-OffWhite"
         />
         {query && (
           <button
             type="button"
             onClick={clear}
             aria-label="Clear search"
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-Grey hover:text-OffBlack dark:hover:text-OffWhite transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-OffBlack dark:text-OffWhite hover:text-OffBlack dark:hover:text-OffWhite transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -61,7 +61,7 @@ export default function SearchBar({
       {showDropdown && (
         <Card
           variant="glass"
-          className="absolute z-20 mt-2 w-full !p-2 max-h-72 overflow-y-auto bg-OffWhite dark:bg-OffBlack border border-Grey/20 dark:border-DarkGrey/20 shadow/2xl"
+          className="absolute z-20 mt-2 w-full !p-2 max-h-72 overflow-y-auto bg-OffWhite dark:bg-OffBlack border border-OffBlack dark:border-DarkGrey/20 shadow-2xl"
         >
           {filtered.map((item) => (
             <button
@@ -75,7 +75,7 @@ export default function SearchBar({
               className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-OffBlack dark:text-OffWhite hover:bg-OffWhite/10 dark:hover:bg-OffWhite/10 transition-colors flex items-center justify-between group"
             >
               <span>{item.label}</span>
-              <span className="text-[10px] uppercase tracking-wider text-DarkGrey dark:text-Grey group-hover:text-Red transition-colors">
+              <span className="text-[10px] uppercase tracking-wider text-OffBlack dark:text-DarkGrey group-hover:text-Red transition-colors">
                 {item.category}
               </span>
             </button>
