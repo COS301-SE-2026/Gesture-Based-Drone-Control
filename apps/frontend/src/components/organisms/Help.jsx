@@ -1,12 +1,4 @@
-import {
-  LogIn,
-  Hand,
-  Activity,
-  MonitorPlay,
-  LocateIcon,
-  Wrench,
-  Mail,
-} from "lucide-react"
+import { LogIn, Hand, Activity, MonitorPlay, Wrench, Mail } from "lucide-react"
 import {
   HelpTopBg,
   HelpResource,
@@ -15,8 +7,6 @@ import {
   Contactcard,
 } from "../molecules"
 import { useNavigate } from "react-router-dom"
-
-const navigate = useNavigate()
 
 const MANUAL_BASE =
   "https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/MANUAL/"
@@ -50,10 +40,11 @@ const TOPICS = [
     description: "Fly a simulated drone before you risk a real one.",
   },
   {
-    id: "track",
-    icon: LocateIcon,
-    title: "Track the drones movement",
-    description: "Watch your drone in real time as it moves.",
+    id: "7-the-gesture-vocabulary",
+    icon: Hand,
+    title: "Gesture Vocabulary",
+    description:
+      "A quick reference for every hand gesture the system understands.",
   },
   {
     id: "10-troubleshooting",
@@ -117,7 +108,13 @@ const SUGGESTIONS = [
   })),
 ]
 
+const openManual = (sectionId) => {
+  const url = sectionId ? `${MANUAL_BASE}#${sectionId}` : MANUAL_BASE
+  window.open(url, "_blank")
+}
+
 export default function Help() {
+  const navigate = useNavigate()
   return (
     <>
       <HelpTopBg
@@ -128,7 +125,7 @@ export default function Help() {
 
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 flex flex-col gap-14">
         <HelpResource
-          onOpenManual={() => window.open(`${MANUAL_BASE}/`, "_blank")}
+          onOpenManual={() => openManual()}
           onOpenTut={() => navigate("/Tutorial")}
         />
 
@@ -143,7 +140,7 @@ export default function Help() {
                 icon={t.icon}
                 title={t.title}
                 description={t.description}
-                onClick={() => window.open(`${MANUAL_BASE}/#${t.id}`, "_blank")}
+                onClick={() => openManual(t.id)}
               />
             ))}
           </div>

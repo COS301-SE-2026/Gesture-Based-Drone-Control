@@ -1,11 +1,11 @@
 import PropTypes from "prop-types"
 import { Radar } from "lucide-react"
-import SearchBar from "./SearchBar"
+// import SearchBar from "./SearchBar"
 import { Label } from "recharts"
 
 //molecule that composes the searchbar molecule with a radar/telem signiture
 
-export default function HelpTopBg({ suggestions, onSelect, onSearch }) {
+export default function HelpTopBg() {
   return (
     <section className="relative overflow-hidden rounded-3xl bg-Grey dark:bg-OffBlack px-6 py-20 md:py-28">
       <div
@@ -77,12 +77,12 @@ export default function HelpTopBg({ suggestions, onSelect, onSearch }) {
           questions to get you back in the air.
         </p>
 
-        <SearchBar
+        {/* <SearchBar
           placeholder={'Search e.g "Drone not connecting to app"'}
           suggestions={suggestions}
           onSelect={onSelect}
           onSearch={onSearch}
-        />
+        /> */}
       </div>
     </section>
   )
