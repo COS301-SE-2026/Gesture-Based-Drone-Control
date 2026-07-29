@@ -66,8 +66,7 @@ export function useGestureControl(enabled) {
   }, [enabled])
 
   // websocket polling
-  const { status: wsStatus } = useWebSocket(
-    // NOSONAR
+  const { status: wsStatus } = useWebSocket( // NOSONAR
     getWsUrl("api/input/ws/gesture/status"),
     {
       onMessage(event) {
@@ -101,5 +100,5 @@ export function useGestureControl(enabled) {
     )
   }, [])
 
-  return { connected, status, configure }
+  return { connected, status, configure, wsStatus }
 }
