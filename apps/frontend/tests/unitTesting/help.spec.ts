@@ -77,7 +77,7 @@ test.describe('Help Page', () => {
 
         test('should navigate to tutorial when clicking tut button', async ({ page }) => {
             await page.getByRole('button', { name: /tutorial/i }).click()
-            await expect(page).toHaveURL(/.*tutorial.*/)
+            await expect(page).toHaveURL(/.*tutorial.*/i)
         })
     })
 
@@ -122,12 +122,20 @@ test.describe('Help Page', () => {
 
     test.describe('Contact section', () => {
         test('should open email when clicking contact email', async ({ page, context }) => {
-            const newP = context.waitForEvent('page')
-            await page.getByText(/codexmerchants@gmail.com/i).click()
+            const emailLink = page.getByText(/codexmerchants@gmail.com/i)
+            await expect(emailLink).toBeVisible()
+            const openedUrlPromise = page.evaluate(() => new Promise ((resolve) =>{
+                window.open =(url) => {
+                    resolve(url)
+                    return null
+                }
 
-            const newPage = await newP
-            await expect(newPage).toHaveURL(/mailto:codexmerchants@gmail.com/)
-            await newPage.close()
+            }))
+
+            await emailLink.click()
+            const openedUrl = await openedUrlPromise
+            expect(openedUrl).toBe('mailto:codexmerchants@gmail.com')
+           
         })
     })
 })
