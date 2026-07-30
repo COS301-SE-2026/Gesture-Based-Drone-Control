@@ -10,7 +10,7 @@
 
 <br/>
 
-<a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/"><img src="docs/assets/readme/btn-website.svg" height="46" alt="Visit the landing page"/></a>&nbsp;&nbsp;<a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/"><img src="docs/assets/readme/btn-docs.svg" height="46" alt="Open the docs hub"/></a>
+<a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/"><img src="docs/assets/readme/btn-website.svg" height="46" alt="Visit the landing page"/></a>&nbsp;&nbsp;<a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/"><img src="docs/assets/readme/btn-docs.svg" height="46" alt="Open the docs hub"/></a>&nbsp;&nbsp;<a href="https://www.youtube.com/@CodexMerchants"><img src="docs/assets/readme/btn-demo.svg" height="46" alt="Demo videos on YouTube"/></a>
 
 [![Test](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/test.yml?style=for-the-badge&logo=github-actions&logoColor=F5F3F4&label=TEST&color=A4161A&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/test.yml)
 [![Lint](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/lint.yml?style=for-the-badge&logo=github-actions&logoColor=F5F3F4&label=LINT&color=BA181B&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/lint.yml)
@@ -23,6 +23,7 @@
 [![SRS](https://img.shields.io/badge/SRS-Requirements_Spec-A4161A?style=flat-square&logo=readthedocs&logoColor=F5F3F4&labelColor=161A1D)](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/)
 [![SAS](https://img.shields.io/badge/SAS-Architecture_Spec-A4161A?style=flat-square&logo=readthedocs&logoColor=F5F3F4&labelColor=161A1D)](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SAS/)
 [![Manual](https://img.shields.io/badge/Manual-User_Guide-A4161A?style=flat-square&logo=readthedocs&logoColor=F5F3F4&labelColor=161A1D)](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/MANUAL/)
+[![Demo Videos](https://img.shields.io/badge/Demo_Videos-YouTube-A4161A?style=flat-square&logo=youtube&logoColor=F5F3F4&labelColor=161A1D)](https://www.youtube.com/@CodexMerchants)
 [![Project Board](https://img.shields.io/badge/Project_Board-GitHub_Projects-A4161A?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D)](https://github.com/orgs/COS301-SE-2026/projects/70)
 [![Brand](https://img.shields.io/badge/Brand-Design_System-BA181B?style=flat-square&logo=figma&logoColor=F5F3F4&labelColor=161A1D)](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/BRAND/)
 [![API](https://img.shields.io/badge/API-Reference-BA181B?style=flat-square&logo=swagger&logoColor=F5F3F4&labelColor=161A1D)](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/api/API_REFERENCE/)
@@ -64,49 +65,52 @@
     <th width="40">#</th><th>Document</th><th>Purpose</th><th width="120">Link</th>
   </tr>
   <tr>
-    <td align="center">01</td><td><b>User Manual</b></td><td>Set up, sign in, calibrate, and fly the drone with your hand</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/MANUAL/">Manual</a></td>
+    <td align="center">01</td><td><b>Demo Videos</b></td><td>Recorded demo walkthroughs on the Codex Merchants channel</td><td><a href="https://www.youtube.com/@CodexMerchants">Watch</a></td>
   </tr>
   <tr>
-    <td align="center">02</td><td><b>Software Requirements Specification</b></td><td>Functional requirements, use cases, domain model, quality requirements</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/">SRS</a></td>
+    <td align="center">02</td><td><b>User Manual</b></td><td>Set up, sign in, calibrate, and fly the drone with your hand</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/MANUAL/">Manual</a></td>
   </tr>
   <tr>
-    <td align="center">03</td><td><b>Software Architecture Specification</b></td><td>Architectural patterns, services, design decisions, diagrams</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SAS/">SAS</a></td>
+    <td align="center">03</td><td><b>Software Requirements Specification</b></td><td>Functional requirements, use cases, domain model, quality requirements</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/">SRS</a></td>
   </tr>
   <tr>
-    <td align="center">04</td><td><b>Brand and Design System</b></td><td>Style guide, wireframes, colour palette, typography</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/BRAND/">Brand</a></td>
+    <td align="center">04</td><td><b>Software Architecture Specification</b></td><td>Architectural patterns, services, design decisions, diagrams</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SAS/">SAS</a></td>
   </tr>
   <tr>
-    <td align="center">05</td><td><b>Coding Standards</b></td><td>Conventions, Ruff and ESLint rules, review requirements</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/CODING/">Coding</a></td>
+    <td align="center">05</td><td><b>Brand and Design System</b></td><td>Style guide, wireframes, colour palette, typography</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/BRAND/">Brand</a></td>
   </tr>
   <tr>
-    <td align="center">06</td><td><b>Testing Policy</b></td><td>Testing types, coverage targets, acceptance criteria</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/POLICY/">Policy</a></td>
+    <td align="center">06</td><td><b>Coding Standards</b></td><td>Conventions, Ruff and ESLint rules, review requirements</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/CODING/">Coding</a></td>
   </tr>
   <tr>
-    <td align="center">07</td><td><b>Testing Manual</b></td><td>How to run the suites and what they cover</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/testing/TESTING/">Testing</a></td>
+    <td align="center">07</td><td><b>Testing Policy</b></td><td>Testing types, coverage targets, acceptance criteria</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/POLICY/">Policy</a></td>
   </tr>
   <tr>
-    <td align="center">08</td><td><b>API Reference</b></td><td>REST and WebSocket contracts, schemas, examples</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/api/API_REFERENCE/">API</a></td>
+    <td align="center">08</td><td><b>Testing Manual</b></td><td>How to run the suites and what they cover</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/testing/TESTING/">Testing</a></td>
   </tr>
   <tr>
-    <td align="center">09</td><td><b>Project Plan</b></td><td>Roadmap, milestones, demo deliverables</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/PLAN/">Plan</a></td>
+    <td align="center">09</td><td><b>API Reference</b></td><td>REST and WebSocket contracts, schemas, examples</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/api/API_REFERENCE/">API</a></td>
   </tr>
   <tr>
-    <td align="center">10</td><td><b>Git Conventions</b></td><td>Branching, commits, PR rules</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/GIT/">Git</a></td>
+    <td align="center">10</td><td><b>Project Plan</b></td><td>Roadmap, milestones, demo deliverables</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/PLAN/">Plan</a></td>
   </tr>
   <tr>
-    <td align="center">11</td><td><b>CI/CD Pipeline</b></td><td>GitHub Actions workflows and quality gates</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/CICD/">CI/CD</a></td>
+    <td align="center">11</td><td><b>Git Conventions</b></td><td>Branching, commits, PR rules</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/GIT/">Git</a></td>
   </tr>
   <tr>
-    <td align="center">12</td><td><b>Component Reference</b></td><td>Frontend atoms, molecules, organisms, routing, service adapters</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/frontend/atoms/">Reference</a></td>
+    <td align="center">12</td><td><b>CI/CD Pipeline</b></td><td>GitHub Actions workflows and quality gates</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/CICD/">CI/CD</a></td>
   </tr>
   <tr>
-    <td align="center">13</td><td><b>Demo 1 Archive</b></td><td>Frozen snapshot of every Demo 1 deliverable</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/demo/demo_one_documentation/">Archive</a></td>
+    <td align="center">13</td><td><b>Component Reference</b></td><td>Frontend atoms, molecules, organisms, routing, service adapters</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/frontend/atoms/">Reference</a></td>
   </tr>
   <tr>
-    <td align="center">14</td><td><b>Tender Document</b></td><td>Original proposal submitted to client</td><td><a href="docs/reports/tender.pdf">Tender</a></td>
+    <td align="center">14</td><td><b>Demo 1 Archive</b></td><td>Frozen snapshot of every Demo 1 deliverable</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/demo/demo_one_documentation/">Archive</a></td>
   </tr>
   <tr>
-    <td align="center">15</td><td><b>GitHub Project Board</b></td><td>Live sprint board, backlog, in progress</td><td><a href="https://github.com/orgs/COS301-SE-2026/projects/70">Board</a></td>
+    <td align="center">15</td><td><b>Tender Document</b></td><td>Original proposal submitted to client</td><td><a href="docs/reports/tender.pdf">Tender</a></td>
+  </tr>
+  <tr>
+    <td align="center">16</td><td><b>GitHub Project Board</b></td><td>Live sprint board, backlog, in progress</td><td><a href="https://github.com/orgs/COS301-SE-2026/projects/70">Board</a></td>
   </tr>
 </table>
 
