@@ -157,7 +157,7 @@
     <sub><code>u23533596</code></sub><br/>
     <sub>UI/UX. Frontend. Testing</sub><br/><br/>
     <a href="https://github.com/deexglitch"><img src="https://img.shields.io/badge/-deexglitch-161A1D?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <img src="https://img.shields.io/badge/-LinkedIn-B1A7A6?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/>
+    <a href="https://www.linkedin.com/in/diya-narotam-062222412/"><img src="https://img.shields.io/badge/-LinkedIn-A4161A?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/></a>
   </td>
   <td align="center" width="20%">
     <a href="https://github.com/ChinmayiSanthosh">
