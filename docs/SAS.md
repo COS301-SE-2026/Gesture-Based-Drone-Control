@@ -127,7 +127,7 @@ Thus, elements from several architectural patters are utilized.
 
 ### 2.4 Architectural Diagram
 
-<!-- TODO add the architectural diagram -->
+![Architecture Diagram](diagrams/Architecture-Diagram.drawio.svg)
 
 *Figure 2.1 - Technology-neutral architectural diagram.
 
@@ -208,9 +208,9 @@ Cookie-based JWT, `login` and `signup` set an access token and a refresh token a
 
 | Method | Path | Purpose |
 | --- | --- | --- |
-| `POST` | `/api/auth/signup` | Register; validates email and password strength; signs the user in. |
-| `POST` | `/api/auth/login` | Authenticate; sets auth cookies. |
-| `POST` | `/api/auth/refresh` | Issue a fresh access token from the refresh cookie. |
+| `POST` | `/api/auth/signup` | Register; validates email and password strength; registers a new user. |
+| `POST` | `/api/auth/login` | Authenticate; validates an existing user and returns a set of valid tokens on success. |
+| `POST` | `/api/auth/refresh` | Issue a fresh access token and jwt stored in httponly cookies. |
 | `POST` | `/api/auth/logout` | Clear auth cookies. |
 | `GET` | `/api/auth/health` | Liveness. |
 
@@ -267,8 +267,7 @@ repository's Releases page.
 
 ### 5.2 Deployment Diagram
 
-insert mermaid  deployment diagram here @Wave2055
-
+![Deployment Diagram](diagrams/deployment-diagram.svg)
 *Figure 5.1 - Production deployment topology. The entire runtime (frontend, backend, CV pipeline, database) runs on the user's workstation inside the packaged app. GitHub hosts the landing page and docs sits and distributes the builds through GitHub releases.*
 
 ### 5.3 Reproducible deployment

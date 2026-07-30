@@ -96,7 +96,6 @@ minutes per run.
 CI invokes the same Taskfile targets and yarn scripts you have locally. Install first, then run whichever suite you need:
 
 ```bash
-# Backend
 task install               # once, after cloning (run again if devOps changes)
 
 task backend-unit-test     # pytest + coverage
@@ -159,8 +158,6 @@ Bumps the frontend `version` field as part of any PR that should produce a new r
 - `main` - requires a PR, at least one approving review, and all required checks   
    green.
 - `dev` - requires a PR and all required checks green.
-- `Use-Case*` branches - protected and essentially acts as a "mini" dev to 
-   ensure that whatever code pushed to dev is clean working code.
 
 Under no circumstances for any of these branches is that no team member is ever allowed to accept their own PR (blocked already for dev and main) and ci must always pass. `Use-Case*` branches act as a final safety net before pushing code to dev.
 
