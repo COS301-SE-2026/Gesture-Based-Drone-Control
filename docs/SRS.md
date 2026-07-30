@@ -289,6 +289,73 @@ recognised:
 
 > These requirements are delegated equally between the CV Pipeline and Adapter subsystems.
 
+### 3.1.2 User Stories / User Characteristics
+
+This sections enumerates every intented user of GBDC, descibes how each one use the system, and expresses their needs as user stories. 
+
+#### 3.1.2.1 User Classea
+
+| # | User class | Who they are | Technical expertise | Frequency of Use | Privilege level | Primary use cases |
+| --- | --- | --- | --- | --- | --- | --- |
+| **U1** | **Novice Operator** | A first-time user with no pilot training and no prior exposure to the geesture vocabulary. The archetypal end user; the accessibility case that motivates the product. | None assumed, can operate a browser. | Once or twice in a single sitting. | Authenticated user. full flight control, gated by calibration and Assist Mode. | UC-1, UC-2, UC-7, UC-8 |
+| **U2** | **Experienced Operator / Demonstrator** | A team member, mentor or evaluator presenting GBDC. Knows the gesture vocabulary, the dashboard layout, and the failure modes. | High. Undertands the pipeline and can intepret raw telemetry. | Frequent - every demo, integration test, and tuning session. | Authenticated user. Full flight control, may disable Assist Mode, may hot-swap adapters and input sources. | UC-1, UC-2, UC-3, UC-4, UC-5, UC-6, UC-8 |
+| **UC3** | **Assistive-Needs Operator** | An operaotr with limited fine-motor capability, a single usable hand, or an injury that makes a physical twin-stick controller impractical. Explicitly named as a beneficiary in sECTION 1.2. | Low to moderate. | Occasional. | Authenticated user. Full flight control via whichever input source suits them. | UC-1, UC-3, UC-4, UC-7, UC-8 |
+
+
+> **U1-U3 are the priamry actors** - they are the "Operator" actor in 
+> Figure 4.1, split here by capability and experience because those 2 
+> attributes drive genuinely different requirements (`R9` Tutorial and 
+> Assist Mode extists for U1; `R7` Alternative Input Control exist for U3;
+> `R2.2` runtime adapter swapping exists for U2).
+
+#### 3.1.2.2 U1 - Novice Operator
+
+**How the system is used.** The novice opens the dashboard, registers or logs in, and is offered the tutorial on first login with a pop-up. After completing the tutorial or skipping it, they must complete (or skip) the pre-flight gesture calibration, then can choose to fly a simulated drone sim or head on straight to flying their real drone. They have no reference of the gesture or vocabulary and learn based on the UI in front of them, the dahsboard will inform the user on what input they are making and what the drone will do.
+
+- **US-N-01** - As a novice operator, I want a guided tutorial to start 
+  automatically the first time I log in, so that i do not have to work out the system by trial and error on a live drone.
+  *Use case* UC-7
+- **US-N-02** - As a novice operator, I want the dashbaord to show me the 
+  gesture it currently recognises and the command that gestures maps to, so that I can learn the vocabulary by watching my own hand. 
+  *Use case* UC-1
+- **US-N-03** - As a novice operator, I want the system to check that my 
+  gestures are being read reliably before it lets me fly, so that I do not crash the drone because of bad lighting or a bad camera angle.
+  *Use case* UC-8
+- **US-N-04** - As a novice operator, I want to review the live telemetry of my 
+  drone after a short flight, seeing if my connection strength and battery levels are still fine so the drone doesnt crash.
+  *Use case* UC-2 UC-5
+- **US-N-05** - As a novice operator, I want to get a feel on the different c
+  controls in a virtual environment before I test it out with my real drone.
+  *Use case* UC-3 UC-4
+
+#### 3.1.2.3 U2 - Experienced Operator / Demonstrator
+
+**How the system is used.** The demonstrator runs GBDC in front of an audience (demo 2) or against a real drone (demo 3/4). They need the system to look and feel responsive, to expose enough telemetry to narrate what is happening, and to let them switch between sim and hardware, and between gesture, keyboard, and gamepad input, without resarting anything. When something breaks mid-demo they need the failure to be visible and contained.
+
+- **US-D-01** - As a demonstrator, I want gesture-to-command latency to be 
+  imperceptible, so that the audience sees the drone react to my hand rather than to a delay
+  *Use case* UC-1, UC-3, UC-4
+- **US-D-02** - As a demonstrator, I want link loss and low battery to be clearly
+  seen on the UI while flying the drone so while i am controlling it i can also see whether i need to stop flying or not because of connection or battery level.
+  *Use case* UC-2, UC-5
+- **US-D-03** - As a demonstrator, I want have a visualisation of the path im 
+  taking while flying and receive related analytics while operating with the drone sim.
+  *Use case* UC-6
+
+#### 3.1.2.4 U3 - Assistive-Needs Operator
+
+**How the system is used.** This operator flies using whichever input path matches their capability. If one hand is usable, the gesture pipeline works unchanged. If sustained fine-motor precision is the barrier, they select the keyboard or gamepad input and get an identical command vocabulary and identical safety behaviour, because every input source funnels through the same `Command` object and the same `DroneAdapter`.
+
+- **US-A-01** - As an operator with one usable hand, I want single-hand gestures
+  to be sufficient for full control, so that i am not excluded by the input method.
+  *Use case* UC-1
+- **US-A-02** - As an operator using an alternative input source, I want exactly 
+  the same commands and failsafes as a gesture operator, so that no capability is traded away for accessibility.
+  *Use case* UC-3, UC-4
+- **US-A-03** - As an operator who cannot hold a console controller, i want 
+  keyboard or gamepad control as a first-class alternative, so that I can fly using discrete key presses.
+  *Use case* UC-4, UC-3
+
 ### 3.2 Functional Requirements
 
 #### R3: Camera Capture & Detection
@@ -401,6 +468,30 @@ recognised:
 > This is once again its own subsystem, that when in use, acts as a 'filter' for the general CV pipeline.
 > This tutorial subsystem is not standalone, but rather interfaces heavily with the rest of the system, similar to training wheels.
 
+### R10: Telemetry Data Management
+
+  - **R10.1** The system shall ingest telemetry frames from the drone adapter.
+    - **R10.1.1** The system shall normalize incoming telemetry data to the standard schema (altitude, speed, displacement, battery, heading, flight state).
+    - **R10.1.2** The system shall reject malformed telemetry frames and log a warning.
+  - **R10.2** The system shall forward telemetry to all connected dashboard clients via WebSockets.
+    - **R10.2.1** Each telemtry frame shall include a UTC timestamp and be sent as structured JSON.
+    - **R10.2.2** Telemetry forwarding shall continue regardless of gesture recognition status.
+  - **R10.3** The system shall log telemetry data to SQLite at every frame for diagnostic purposes.
+    - **R10.3.1** Telemetry logs older than 30 days shall be pruned.
+    - **R10.3.2** The system shall expose a REST endpoint for retrieving historical telemetry data.
+  - **R10.4** The system shall detect and alert on telemetry anomalies.
+    - **R10.4.1** Battery below 30% shall trigger a dashboard warning notification.
+    - **R10.4.2** No telemetry received for more than 2 seconds will surface a "No Data" banner alert.
+  - **R10.5** The dashboard shall display real-time telemetry visualisation.
+    - **R10.5.1** Current altitude, battery level, speed, heading, x/y displacement and flight state shall be displayed
+    - **R10.5.2** All displays shall update at the same rate that telemetry is received 
+- **R10.6** The system shall provide GPS like tracking using displacement for path visualisation.
+    - **R10.6.1** The GPS page on the dashboard will render a live grid map using Leaflet (without tiles), displayinga marker representing the drones current position.
+    - **R10.6.2** The system shall convert received positional data (x, y, altitude_m) into map coordinates, with a base reference coordinate defining the session origin.
+    - **R10.6.3** The system shall draw and maintain a path histroy on the map, representing the drone's movement trajectory over time.
+    - **R10.6.4** The map shall display a heading direction with an orientation indicator on the drone marker.
+
+
 ### 3.3 Non-Functional (Quality) Requirements
 
 The Demo 2 brief targets *five* quantified quality requirements. The five
@@ -485,7 +576,7 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
 
 ### 4.1 Use-Case Diagram
 
-![Use-Case Diagram](diagrams/UseCaseDiagramv2.0.svg)
+![Use-Case Diagram](diagrams/use_case_revision.drawio.svg)
 
 *Figure 4.1 - Primary use cases and actors.*
 
@@ -668,34 +759,35 @@ This use case enables the collection, storage, and analysis of telemetry data or
 - *A4 - Invalid telemetry received.* If malformed telemetry data is received from the drone SDK, 
 the packet is discarded and an error is logged. Normal collection continues for subsequent valid packets (`NFR2.3`).
 
-### 4.7 UC-6 - GPS Tracking and Path Visualisation (Stubbed until real drone is tested)
+### 4.7 UC-6 - GPS like Path Visualisation
 
 This use case provides a visualisation layer for drone movement by converting
 telemetry-derived positional data into a mapped trajectory.
-The system supports a simulated GPS mapping by a simulated 2D grid.
-
-The feature uses Leaflet to render real-time drone movement as a marker on the map.
-
-This use case is currently defined at a **high-level stub** and will be expanded on.
+The system supports displacement mapping via Leaflet to render real-time drone movement as a marker on the map, with a historical path showing the drone's flight trajectory.
 
 **Actors.** Operator (primary)
 
 **Preconditions.**
 - The system is running and telemetry is being received from a DroneAdapter.
 - A base reference coordinate (a global origin) is defined for the session.
+- The dashboard is connected to the websocket endpoint for receiving telemetry updates.
 
 **Main flow.**
 
 1. The drone executes movement commands via the active DroneAdapter.
 2. The backend returns a positional change `(x, y, z)` as part of telemetry output.
-3. The frontend converts received x, y values into coordinates that fit on the grid.
-4. The visualisation layer (Leaflet) updates a live marker representing the drone’s position.
-5. A path history is optionally drawn to represent movement over time.
+3. The backend normalizes the positional update and converts the x, y values into map compatible coordinates relative to the session origin.
+4. The frontend converts received x, y values into coordinates that fit on the grid.
+5. The visualisation layer (Leaflet) updates a live marker representing the drone’s position and direction.
+6. A path history is optionally drawn to represent movement over time.
+7. The heading direction is displayed via an orientation indicator on the drone marker with its cardinal direction.
 
 **Post-conditions.**
 
 - A live visual representation of drone movement is displayed on the dashboard.
+- A historical flight path is maintained and displayed, tracking x, y and altitude dimentions to be displayed.
 - positional history is retained for the duration of the session.
+- On session end or logout, the positional history is cleared.
 
 ### 4.8 UC-7 - Interactive User Tutorial and Assist Mode
 
@@ -790,7 +882,7 @@ The analysis-level domain model captures the conceptual vocabulary of the
 problem and is the input to the design class diagram in
 [`SAS.md` Section 2.4](SAS.md#24-architectural-diagram).
 
-![Domain Model](diagrams/Domain%20Model%20v2.0.svg)
+![Domain Model](diagrams/Domain%20Model%20v2.1.drawio.png)
 
 *Figure 5.1 - Analysis-level domain model.*
 

@@ -9,7 +9,7 @@ REST:
 	GET input/status - return a snapshot of adapter state
 
 WebSockets:
-	inputt/ws/keyboard - keyboard input listener
+	input/ws/keyboard - keyboard input listener
 
 """
 
@@ -53,9 +53,14 @@ def _build_input_adapter(body: ConnectInputRequest) -> InputAdapter:
 		return KeyboardAdapter()
 
 	elif body.adapter == 'gamepad':
-		from services.input.sources.gamepad_adapter import GamepadAdpater
+		from services.input.sources.gamepad_adapter import GamepadAdapter
 
-		return GamepadAdpater()
+		return GamepadAdapter()
+
+	elif body.adapter == 'gesture':
+		from services.input.sources.gesture_adapter import GestureAdapter
+
+		return GestureAdapter()
 
 	# add more as they get developed here
 
@@ -131,7 +136,12 @@ async def disconnect_input(state: Annotated[AppState, Depends(get_state)]):
 		return DisconnectInputResponse(success=False, message='No input adapter is connected')
 
 	name = state.input_name
+	adapter = state.input
 	state.input_reset()
+
+	# GestureAdapter and likely more in the future need to clean up
+	if hasattr(adapter, 'stop'):
+		await adapter.stop()
 
 	logger.info(f'input/disconnect: disconnected {name}')
 	return DisconnectInputResponse(success=True, message=f'{name} input adapter disconnected')
@@ -146,6 +156,34 @@ async def input_status(state: Annotated[AppState, Depends(get_state)]):
 		return {'connected': False, 'adapter': 'None connected'}
 
 	return {'connected': True, 'adapter': state.input_name}
+
+
+# gonna need more of this in demo 3 I feel. testing it here
+class GestureConfigRequest(BaseModel):
+	idle_timeout_s: float = 3.0
+	min_confidence: float = 0.85
+	min_stable_frames: int = 2
+
+
+@router.post('/gesture/config')
+async def configure_gesture(
+	body: GestureConfigRequest,
+	state: Annotated[AppState, Depends(get_state)],
+):
+	"""
+	Tune the adapter on the fly. probably won't be integrated, but
+	a proof of concept for future modifications.
+	"""
+
+	if state.input_name != 'gesture' or state.input is None:
+		return {'ok': False, 'message': 'GestureAdapter is not the active input source'}
+
+	adapter = state.input
+	adapter._idle_timeout = body.idle_timeout_s
+	adapter._min_confidence = body.min_confidence
+	adapter._min_stable_frames = body.min_stable_frames
+
+	return {'ok': True, 'applied': body.model_dump()}
 
 
 # Websockets endpoints
@@ -211,7 +249,6 @@ async def gamepad(websocket: WebSocket, state: Annotated[AppState, Depends(get_s
 	try:
 		while True:
 			data = await websocket.receive_json()
-
 			if state.input is None or state.input_name != 'gamepad':
 				logger.debug('input/ws/gamepad: no gamepad adapter connected, ignoring message')
 				continue
@@ -221,3 +258,42 @@ async def gamepad(websocket: WebSocket, state: Annotated[AppState, Depends(get_s
 		logger.info('input/ws/gamepad: client disconnected')
 	except Exception as ex:
 		logger.exception(f'input/ws/gamepad: error caught: {ex}')
+
+
+# mostly just for debug since this part is finicky
+@router.websocket('/ws/gesture/status')
+async def gesture_status(websocket: WebSocket, state: Annotated[AppState, Depends(get_state)]):
+	"""
+	push gesture adapter status to the client whenever a change occurs
+	"""
+	await websocket.accept()
+	logger.info('input/ws/gesture/status: client connected')
+
+	last_sent: dict | None = None
+
+	try:
+		while True:
+			await asyncio.sleep(0.5)  # adjust as needed for polling rate
+
+			if state.input_name != 'gesture' or state.input is None:
+				snapshot = {'active': False}
+			else:
+				adapter = state.input
+				snapshot = {
+					'active': True,
+					'last_gesture': adapter.last_resolution,
+					'last_confidence': adapter.last_confidence,
+					'idle_timeout_s': adapter._idle_timeout,
+					'min_confidence': adapter._min_confidence,
+				}
+
+			# only send new snapshots
+			if snapshot != last_sent:
+				await websocket.send_json(snapshot)
+				last_sent = snapshot
+
+	except WebSocketDisconnect:
+		logger.info('/input/ws/gesture/status: client disconnected')
+
+	except Exception as ex:
+		logger.exception('input/ws/gesture/status: error - %s', ex)
