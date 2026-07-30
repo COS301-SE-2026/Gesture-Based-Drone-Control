@@ -19,7 +19,7 @@
 !!! note "Demo-2 alignment"
     Several deliverable expectations from the Demo 2 brief land
     on this document. Items still in flight at the time of writing
-    are tagged *(planned for Demo 2)*. They include the standalone
+    are tagged. They include the standalone
     deployed style-guide page alongside the production app, the
     additional logo variants beyond the primary mark, and the
     self-hosting of the font payload.
@@ -157,15 +157,14 @@ decorative weights and increase the font payload.
 
 ### 4.1 Logo
 
-The Codex Merchants logo currently ships in one form, with the
-remaining variants planned for Demo 2.
+The Codex Merchants logo currently ships in one form.
 
 | Form | File | Use | Status |
 | --- | --- | --- | --- |
 | Full (colour) | `assets/codex_merchants_logo.png` | Default. README, docs site header, landing-page hero. | Available |
-| Monogram | `assets/codex_merchants_mark.svg` | Tight spaces — favicon, browser tab, app icon, ≤ 32 px usage. | *Planned for Demo 2* |
-| Monochrome | `assets/codex_merchants_mono.svg` | Print, single-colour contexts. | *Planned for Demo 2* |
-| Inverse | `assets/codex_merchants_inverse.svg` | On red brand surfaces only. | *Planned for Demo 2* |
+| Monogram | `assets/codex_merchants_mark.png` | Tight spaces — favicon, browser tab, app icon, ≤ 32 px usage. | Available |
+| Monochrome | `assets/codex_merchants_mono.png` | Print, single-colour contexts. | Available |
+| Inverse | `assets/codex_merchants_inverse.png` | On red brand surfaces only. | Available |
 
 #### 4.1.1 Minimum size & clear space
 
@@ -543,6 +542,12 @@ cited in their captions.
     ![Analytics Light and Dark](assets/WF-Analytics.png)
 
     *Figure 11.4 - Telemetry history and flight metrics (UC-2, R1.1.3). Key stats (flight time , avg speed, max altitude) at top; flight movements and battery health charts; performance metrices bar chart; summary pills for total distance, average duration and flight count.*
+
+=== "Tutorial Page"
+
+    ![Tutorial Light and Dark](assets/WF-Tutorial.png)
+
+    *Figure 11.5 - User Tutorial (UC-7).central to left shows the live camera feed where users can try out the gestures that are shown in gif formats on the central to right side of the screen.Collapsible sections for tutorial videos and frequently asked questions are below it*
 
   
 
