@@ -23,6 +23,8 @@ test.describe('Command History',()=>{
         await page.getByText('Command History').click()
         await expect(page.getByText('18:50:43').first()).toBeVisible()
     })
+
+
 })
 
 
@@ -69,5 +71,46 @@ test.describe('DarkModeToggle',()=>{
     })
 })
 
+test.describe('HandSkeleton',() => {
+    test('test hand landmark svg renders for the current gesture', async ({page}) => {
+        await page.goto ('/#/tutorial')
+        await page.waitForLoadState('domcontentloaded')
+        await expect (page.getByRole('img',{name:/hand landmark skeleton showing the current gesture/i})).toBeVisible()
+    })
+})
 
+test.describe('GestureTargetSkeleton',() =>{
+    test('the idle taget pose shows before the gesture is matched' ,async({page}) =>{
+        await page.goto('/#/tutorial')
+        await page.waitForLoadState('domcontentloaded')
+        await expect(page.getByText(/try the gesture/i)).toBeVisible()
+        await expect(page.getByRole('img' , {name:/hand landmark skeleton showing the current gesture/i})).toBeVisible()
+    })
+})
+
+test.describe('GestureTutorialCarousel' , () =>{
+    test('the first gesture name and progress counter render' ,async ({page}) => {
+        await page.goto('/#/tutorial')
+        await page.waitForLoadState('domcontentloaded')
+        await expect(page.getByText(/open-palm - hover/i)).toBeVisible()
+        await expect(page.getByText('1/12')).toBeVisible()
+    })
+
+    test('the hint button toggles the instructions text', async ({page})=>{
+        await page.goto('/#/tutorial')
+        await page.waitForLoadState('domcontentloaded')
+        const hintButton = page.getByRole('button',{name:'Hint'})
+        await expect(page.getByText(/show an open palm to hold the drone's current position/i)).not.toBeVisible()
+        await hintButton.click()
+        await expect(page.getByText(/show an open palm to hold the drone's current position/i)).toBeVisible()
+        await expect(page.getByRole('button',{name:/hide hint/i})).toBeVisible()
+    })
+
+    test('the next button stays disabled until the gesture is matched', async ({page})=>{
+        await page.goto('/#/tutorial')
+        await page.waitForLoadState('domcontentloaded')
+        const nextButton = page.getByRole('button',{name:'Next'})
+        await expect(nextButton).toBeDisabled()
+    })
+})
 

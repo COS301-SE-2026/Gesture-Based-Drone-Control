@@ -3,13 +3,13 @@ from math import isclose
 import pytest
 
 from services.commands.command import AnalogInput, CommandType
-from services.input.sources.gamepad_adapter import DEADZONE, GamepadAdpater
+from services.input.sources.gamepad_adapter import DEADZONE, GamepadAdapter
 
 
 # create the adapter
 @pytest.fixture
 def adapter():
-	a = GamepadAdpater()
+	a = GamepadAdapter()
 	received = []
 	a.set_handler(received.append)
 	return a, received
@@ -17,7 +17,7 @@ def adapter():
 
 @pytest.mark.asyncio
 async def test_start():
-	adapter = GamepadAdpater()
+	adapter = GamepadAdapter()
 	await adapter.start()
 
 
@@ -166,7 +166,7 @@ async def test_non_dict_msg_ignore(adapter):
 
 def test_get_bindings():
 	"""this is literally just for coverage"""
-	adapter = GamepadAdpater()
+	adapter = GamepadAdapter()
 
 	bindings = adapter.get_bindings()
 

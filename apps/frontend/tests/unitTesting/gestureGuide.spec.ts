@@ -100,7 +100,7 @@ test.describe('Gesture tab' , () => {
         await page.getByRole('main').getByRole('button' , {name:/^gestures$/i}).click()
     })
 
-    test('should show all 12 control labels with "Not mapped" since no gesture input is defined', async ({page})=> {
+    test('should not have any not mapped since all labels are mapped', async ({page})=> {
         await expect(page.getByText(/move forward/i)).toBeVisible()
         await expect(page.getByText(/move backward/i)).toBeVisible()
         await expect (page.getByText('Move Left',{exact:true})).toBeVisible()
@@ -114,7 +114,7 @@ test.describe('Gesture tab' , () => {
         await expect(page.getByText(/^land$/i)).toBeVisible()
         await expect(page.getByText(/emergency stop/i)).toBeVisible()
 
-        await expect(page.getByText(/not mapped/i)).toHaveCount(12)
+        await expect(page.getByText(/not mapped/i)).toHaveCount(0)
     })
 
 
