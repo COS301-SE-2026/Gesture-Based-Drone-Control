@@ -401,6 +401,30 @@ recognised:
 > This is once again its own subsystem, that when in use, acts as a 'filter' for the general CV pipeline.
 > This tutorial subsystem is not standalone, but rather interfaces heavily with the rest of the system, similar to training wheels.
 
+### R10: Telemetry Data Management
+
+  - **R10.1** The system shall ingest telemetry frames from the drone adapter.
+    - **R10.1.1** The system shall normalize incoming telemetry data to the standard schema (altitude, speed, displacement, battery, heading, flight state).
+    - **R10.1.2** The system shall reject malformed telemetry frames and log a warning.
+  - **R10.2** The system shall forward telemetry to all connected dashboard clients via WebSockets.
+    - **R10.2.1** Each telemtry frame shall include a UTC timestamp and be sent as structured JSON.
+    - **R10.2.2** Telemetry forwarding shall continue regardless of gesture recognition status.
+  - **R10.3** The system shall log telemetry data to SQLite at every frame for diagnostic purposes.
+    - **R10.3.1** Telemetry logs older than 30 days shall be pruned.
+    - **R10.3.2** The system shall expose a REST endpoint for retrieving historical telemetry data.
+  - **R10.4** The system shall detect and alert on telemetry anomalies.
+    - **R10.4.1** Battery below 30% shall trigger a dashboard warning notification.
+    - **R10.4.2** No telemetry received for more than 2 seconds will surface a "No Data" banner alert.
+  - **R10.5** The dashboard shall display real-time telemetry visualisation.
+    - **R10.5.1** Current altitude, battery level, speed, heading, x/y displacement and flight state shall be displayed
+    - **R10.5.2** All displays shall update at the same rate that telemetry is received 
+- **R10.6** The system shall provide GPS like tracking using displacement for path visualisation.
+    - **R10.6.1** The GPS page on the dashboard will render a live grid map using Leaflet (without tiles), displayinga marker representing the drones current position.
+    - **R10.6.2** The system shall convert received positional data (x, y, altitude_m) into map coordinates, with a base reference coordinate defining the session origin.
+    - **R10.6.3** The system shall draw and maintain a path histroy on the map, representing the drone's movement trajectory over time.
+    - **R10.6.4** The map shall display a heading direction with an orientation indicator on the drone marker.
+
+
 ### 3.3 Non-Functional (Quality) Requirements
 
 The Demo 2 brief targets *five* quantified quality requirements. The five
@@ -485,7 +509,7 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
 
 ### 4.1 Use-Case Diagram
 
-![Use-Case Diagram](diagrams/UseCaseDiagramv2.0.svg)
+![Use-Case Diagram](diagrams/use_case_revision.drawio.svg)
 
 *Figure 4.1 - Primary use cases and actors.*
 
@@ -668,34 +692,35 @@ This use case enables the collection, storage, and analysis of telemetry data or
 - *A4 - Invalid telemetry received.* If malformed telemetry data is received from the drone SDK, 
 the packet is discarded and an error is logged. Normal collection continues for subsequent valid packets (`NFR2.3`).
 
-### 4.7 UC-6 - GPS Tracking and Path Visualisation (Stubbed until real drone is tested)
+### 4.7 UC-6 - GPS like Path Visualisation
 
 This use case provides a visualisation layer for drone movement by converting
 telemetry-derived positional data into a mapped trajectory.
-The system supports a simulated GPS mapping by a simulated 2D grid.
-
-The feature uses Leaflet to render real-time drone movement as a marker on the map.
-
-This use case is currently defined at a **high-level stub** and will be expanded on.
+The system supports displacement mapping via Leaflet to render real-time drone movement as a marker on the map, with a historical path showing the drone's flight trajectory.
 
 **Actors.** Operator (primary)
 
 **Preconditions.**
 - The system is running and telemetry is being received from a DroneAdapter.
 - A base reference coordinate (a global origin) is defined for the session.
+- The dashboard is connected to the websocket endpoint for receiving telemetry updates.
 
 **Main flow.**
 
 1. The drone executes movement commands via the active DroneAdapter.
 2. The backend returns a positional change `(x, y, z)` as part of telemetry output.
-3. The frontend converts received x, y values into coordinates that fit on the grid.
-4. The visualisation layer (Leaflet) updates a live marker representing the drone’s position.
-5. A path history is optionally drawn to represent movement over time.
+3. The backend normalizes the positional update and converts the x, y values into map compatible coordinates relative to the session origin.
+4. The frontend converts received x, y values into coordinates that fit on the grid.
+5. The visualisation layer (Leaflet) updates a live marker representing the drone’s position and direction.
+6. A path history is optionally drawn to represent movement over time.
+7. The heading direction is displayed via an orientation indicator on the drone marker with its cardinal direction.
 
 **Post-conditions.**
 
 - A live visual representation of drone movement is displayed on the dashboard.
+- A historical flight path is maintained and displayed, tracking x, y and altitude dimentions to be displayed.
 - positional history is retained for the duration of the session.
+- On session end or logout, the positional history is cleared.
 
 ### 4.8 UC-7 - Interactive User Tutorial and Assist Mode
 
