@@ -65,7 +65,7 @@ const FAQS = [
   },
   {
     id: 2,
-    question: "Why does the drone jsut hover on its own?",
+    question: "Why does the drone just hover on its own?",
     answer:
       "This is a built-in safety feature, not a bug. If you stop gesturing for 3 seconds, or the drone loses connection for some time, it automatically freezes in place until you take over again.",
   },
