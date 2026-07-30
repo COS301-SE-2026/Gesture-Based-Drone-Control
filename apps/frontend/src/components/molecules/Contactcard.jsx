@@ -25,22 +25,21 @@ export default function Contactcard({
         </p>
       </div>
       {href ? (
-      <a
-        href={href}
-        onClick={onAction}
-        className="text-sm font-medium text-Red hover:text-LightRed transition-colors text-left"
-      >
-        {actionLabel} &rarr;
-
+        <a
+          href={href}
+          onClick={onAction}
+          className="text-sm font-medium text-Red hover:text-LightRed transition-colors text-left"
+        >
+          {actionLabel} &rarr;
         </a>
       ) : (
-      <button
-        type="button"
-        onClick={onAction}
-        className="text-sm font-medium text-Red hover:text-LightRed transition-colors text-left"
-      >
-        {actionLabel} &rarr;
-      </button>
+        <button
+          type="button"
+          onClick={onAction}
+          className="text-sm font-medium text-Red hover:text-LightRed transition-colors text-left"
+        >
+          {actionLabel} &rarr;
+        </button>
       )}
     </Card>
   )

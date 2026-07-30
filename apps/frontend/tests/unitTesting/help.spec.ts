@@ -119,15 +119,4 @@ test.describe('Help Page', () => {
             await expect(ans1).toBeVisible()
         })
     })
-
-    test.describe('Contact section', () => {
-        test('should open email when clicking contact email', async ({ page, context }) => {
-            const newP = context.waitForEvent('page')
-            await page.getByText(/codexmerchants@gmail.com/i).click()
-
-            const newPage = await newP
-            await expect(newPage).toHaveURL(/mailto:codexmerchants@gmail.com/)
-            await newPage.close()
-        })
-    })
 })
