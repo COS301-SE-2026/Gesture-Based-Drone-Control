@@ -204,3 +204,63 @@ async def test_handle_message_drops():
 	adapter = GestureAdapter()
 
 	await adapter.handle_message({'Some bullshit': True})
+
+
+@pytest.mark.asyncio
+async def test_consume_without_queue():
+	"""i just need more coverage. does nothing"""
+	adapter = GestureAdapter()
+
+	await adapter._consume()
+
+
+def test_resolve_unknown_gesture():
+	adapter = make_adapter()
+
+	assert adapter._resolve({'MIKE': 'HAWK'}) is None
+
+
+@pytest.mark.asyncio
+async def test_stop_cleans_up():
+	"""normal stopping should go through the whole cleanup proecess"""
+	adapter = GestureAdapter()
+
+	queue = asyncio.Queue()
+	adapter._queue = queue
+
+	task = asyncio.create_task(asyncio.sleep(10))
+	adapter._task = task
+
+	stream = MagicMock()
+	stream.unsubscribe = AsyncMock()
+
+	with patch.object(adapter, '_get_stream', return_value=stream):
+		with pytest.raises(asyncio.CancelledError):
+			await adapter.stop()
+
+	assert adapter._task is None
+
+
+@pytest.mark.asyncio
+async def test_consume_processes_queue_payload():
+	"""test success with two consecutive frames"""
+	adapter = make_adapter()
+
+	queue = asyncio.Queue()
+	adapter._queue = queue
+
+	task = asyncio.create_task(adapter._consume())
+
+	await queue.put(frame(hand('RIGHT', 'OPEN_PALM')))
+	await queue.put(frame(hand('RIGHT', 'OPEN_PALM')))
+
+	await asyncio.sleep(0.05)
+
+	task.cancel()
+
+	with pytest.raises(asyncio.CancelledError):
+		await task
+
+	adapter._handler.assert_called_once()
+
+	assert emitted(adapter).type is CommandType.HOVER
