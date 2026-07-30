@@ -73,20 +73,21 @@ export function useGestureControl(enabled) {
       onMessage(event) {
         const data = JSON.parse(event.data)
 
-      if (!data.active) {
-        setStatus(DEFAULT_STATUS)
-        return
-      }
+        if (!data.active) {
+          setStatus(DEFAULT_STATUS)
+          return
+        }
 
-      setStatus({
-        active: data.active,
-        lastGesture: data.last_gesture,
-        lastConfidence: data.last_confidence,
-        idleTimeoutS: data.idle_timeout_s,
-        minConfidence: data.min_confidence,
-      })
-    },
-  })
+        setStatus({
+          active: data.active,
+          lastGesture: data.last_gesture,
+          lastConfidence: data.last_confidence,
+          idleTimeoutS: data.idle_timeout_s,
+          minConfidence: data.min_confidence,
+        })
+      },
+    }
+  )
 
   // runtime config to let UI tune the adapter parameters without reconnecting
 

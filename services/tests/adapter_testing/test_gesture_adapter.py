@@ -192,15 +192,9 @@ async def test_stop_unsubscribes():
 	stream.unsubscribe = AsyncMock()
 
 	with patch.object(adapter, '_get_stream', return_value=stream):
-<<<<<<< HEAD
-		await adapter.stop()
-
-	stream.unsubscribe.assert_awaited_once_with(queue)
-=======
 		with pytest.raises(asyncio.CancelledError):
 			await adapter.stop()
 
->>>>>>> 12aac2711985645746a3127956a1b702793ae92f
 	assert adapter._task is None
 
 
@@ -210,8 +204,6 @@ async def test_handle_message_drops():
 	adapter = GestureAdapter()
 
 	await adapter.handle_message({'Some bullshit': True})
-<<<<<<< HEAD
-=======
 
 
 @pytest.mark.asyncio
@@ -272,4 +264,3 @@ async def test_consume_processes_queue_payload():
 	adapter._handler.assert_called_once()
 
 	assert emitted(adapter).type is CommandType.HOVER
->>>>>>> 12aac2711985645746a3127956a1b702793ae92f
