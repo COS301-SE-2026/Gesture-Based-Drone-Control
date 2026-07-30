@@ -53,7 +53,7 @@ test.describe('Help Page', () => {
         test('sjould open manual when click on card', async ({ page, context }) => {
             const newP = context.waitForEvent('page')
 
-            await page.getByText(/set uo & sign in/i).click()
+            await page.getByText(/set up & sign in/i).click()
             const newPage = await newP
             await expect(newPage).toHaveURL(/.*MANUAL\/#2-set-up-sign-in.*/)
             await newPage.close()
@@ -65,7 +65,7 @@ test.describe('Help Page', () => {
                 { title: /fly with hand gestures/i, id: '3-fly-the-drone-with-your-hand-uc-1' },
                 { title: /telemetry & live status/i, id: '4-watch-what-the-drone-is-doing-uc-2' },
                 { title: /practice in airsim/i, id: '5-practise-with-the-airsim-simulator-uc-3' },
-                { title: /gesture vocabulary/i, id: '7-the gesture-vocabulary' },
+                { title: /gesture vocabulary/i, id: '7-the-gesture-vocabulary' },
                 { title: /troubleshooting/i, id: '10-troubleshooting' }
             ]
 
@@ -73,7 +73,7 @@ test.describe('Help Page', () => {
                 const newP = context.waitForEvent('page')
                 await page.getByText(title).click()
                 const newPage = await newP
-                await expect(newPage).toHaveURL(new RegExp(`MANUAL\/#${id}`))
+                await expect(newPage).toHaveURL(new RegExp(`MANUAL/#${id}`))
                 await newPage.close()
             }
         })
@@ -89,6 +89,56 @@ test.describe('Help Page', () => {
         test('should navigate to tutorial when clicking tut button', async ({ page }) => {
             await page.getByRole('button', { name: /tutorial/i }).click()
             await expect(page).toHaveURL(/.*tutorial.*/)
+        })
+    })
+
+    test.describe('FAQ section', () => {
+        test('first faq should be expanded by default', async ({ page }) => {
+            const firstans = page.getByText(/the dashboard must say active before takeoff works/i)
+            await expect(firstans).toBeVisible()
+        })
+        test('should expand faq', async ({ page }) => {
+            const faqquest = page.getByText(/why does the drone just hover on its own\?/i)
+            await faqquest.click()
+
+            const answer = page.getByText(/this is a built-in safety feature, not a bug/i)
+            await expect(answer).toBeVisible()
+        })
+
+        test('should collaspe FAQ when clicked again', async ({ page }) => {
+            const faqquest = page.getByText(/why does the drone just hover on its own\?/i)
+
+            //expand
+            await faqquest.click()
+            const ans = page.getByText(/this is a built-in safety feature, not a bug/i)
+            await expect(ans).toBeVisible()
+
+            //collaspe
+            await faqquest.click()
+            await expect(ans).not.toBeVisible()
+        })
+
+        test('toggle multiple faqs independently', async ({ page }) => {
+            const faq2 = page.getByText(/why does the drone just hover on its own\?/i)
+
+            const ans1 = page.getByText(/the dashboard must say active before takeoff works/i)
+            await expect(ans1).toBeVisible()
+
+            await faq2.click()
+            const ans2 = page.getByText(/this is a built-in safety feature, not a bug/i)
+            await expect(ans2).toBeVisible()
+            await expect(ans1).toBeVisible()
+        })
+    })
+
+    test.describe('Contact section', () => {
+        test('should open email when clicking contact email', async ({ page, context }) => {
+            const newP = context.waitForEvent('page')
+            await page.getByText(/codexmerchants@gmail.com/i).click()
+
+            const newPage = await newP
+            await expect(newPage).toHaveURL(/mailto:codexmerchants@gmail.com/)
+            await newPage.close()
         })
     })
 })
