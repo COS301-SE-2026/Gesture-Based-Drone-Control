@@ -5,7 +5,7 @@ test.describe('Tutorial Page' ,() =>{
         await page.goto ('/#/tutorial')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByText('Gesture Controls')).toBeVisible()
-        await expect(page.getByText(/open-palm -hover/i)).toBeVisible()
+        await expect(page.getByText(/open-palm - hover/i)).toBeVisible()
     })
 
     test('the tutorial videos section renders with the video card' , async ({page}) =>{
