@@ -121,7 +121,7 @@ test.describe('Help Page', () => {
     })
 
     test.describe('Contact section', () => {
-        test('should open email when clicking contact email', async ({ page, context }) => {
+        test('should open email when clicking contact email', async ({ page }) => {
             const emailLink = page.getByText(/codexmerchants@gmail.com/i)
             await expect(emailLink).toBeVisible()
             const openedUrlPromise = page.evaluate(() => new Promise ((resolve) =>{
