@@ -26,17 +26,11 @@ export default function FaqItem({ question, answer, defaultOpen }) {
         />
       </button>
 
-      <div
-        className={`grid transition-all duration-200 ease-in-out ${
-          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-        }`}
-      >
-        <div className="overflow-hidden">
-          <p className="px-6 pb-5 text-sm text-OffBlack dark:text-OffWhite leading-relaxed">
-            {answer}
-          </p>
-        </div>
-      </div>
+      {open && (
+        <p className="px-6 pb-5 text-sm text-OffBlack dark:text-OffWhite leading-relaxed">
+          {answer}
+        </p>
+      )}
     </Card>
   )
 }

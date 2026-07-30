@@ -18,7 +18,12 @@ export default function HelpResource({ onOpenManual, onOpenTut }) {
             </h3>
           </div>
         </div>
-        <Button variant="secondary" size="lg" onClick={onOpenManual}>
+        <Button
+          variant="secondary"
+          size="lg"
+          onClick={onOpenManual}
+          aria-label="User Manual"
+        >
           <ArrowRightCircle />
         </Button>
       </Card>
@@ -34,7 +39,12 @@ export default function HelpResource({ onOpenManual, onOpenTut }) {
             </h3>
           </div>
         </div>
-        <Button variant="secondary" size="lg" onClick={onOpenTut}>
+        <Button
+          variant="secondary"
+          size="lg"
+          onClick={onOpenTut}
+          aria-label="Get started tutorial"
+        >
           <ArrowRightCircle />
         </Button>
       </Card>

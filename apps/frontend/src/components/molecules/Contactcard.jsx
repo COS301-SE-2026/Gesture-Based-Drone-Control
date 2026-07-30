@@ -8,6 +8,7 @@ export default function Contactcard({
   title,
   description,
   actionLabel,
+  href,
   onAction,
 }) {
   return (
@@ -23,13 +24,23 @@ export default function Contactcard({
           {description}
         </p>
       </div>
-      <button
-        type="button"
-        onClick={onAction}
-        className="text-sm font-medium text-Red hover:text-LightRed transition-colors text-left"
-      >
-        {actionLabel} &rarr;
-      </button>
+      {href ? (
+        <a
+          href={href}
+          onClick={onAction}
+          className="text-sm font-medium text-Red hover:text-LightRed transition-colors text-left"
+        >
+          {actionLabel} &rarr;
+        </a>
+      ) : (
+        <button
+          type="button"
+          onClick={onAction}
+          className="text-sm font-medium text-Red hover:text-LightRed transition-colors text-left"
+        >
+          {actionLabel} &rarr;
+        </button>
+      )}
     </Card>
   )
 }
@@ -39,9 +50,11 @@ Contactcard.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
   actionLabel: PropTypes.string.isRequired,
+  href: PropTypes.string,
   onAction: PropTypes.func,
 }
 
 Contactcard.defaultProps = {
+  href: undefined,
   onAction: undefined,
 }
