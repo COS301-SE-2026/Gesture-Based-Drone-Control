@@ -289,6 +289,73 @@ recognised:
 
 > These requirements are delegated equally between the CV Pipeline and Adapter subsystems.
 
+### 3.1.2 User Stories / User Characteristics
+
+This sections enumerates every intented user of GBDC, descibes how each one use the system, and expresses their needs as user stories. 
+
+#### 3.1.2.1 User Classea
+
+| # | User class | Who they are | Technical expertise | Frequency of Use | Privilege level | Primary use cases |
+| --- | --- | --- | --- | --- | --- | --- |
+| **U1** | **Novice Operator** | A first-time user with no pilot training and no prior exposure to the geesture vocabulary. The archetypal end user; the accessibility case that motivates the product. | None assumed, can operate a browser. | Once or twice in a single sitting. | Authenticated user. full flight control, gated by calibration and Assist Mode. | UC-1, UC-2, UC-7, UC-8 |
+| **U2** | **Experienced Operator / Demonstrator** | A team member, mentor or evaluator presenting GBDC. Knows the gesture vocabulary, the dashboard layout, and the failure modes. | High. Undertands the pipeline and can intepret raw telemetry. | Frequent - every demo, integration test, and tuning session. | Authenticated user. Full flight control, may disable Assist Mode, may hot-swap adapters and input sources. | UC-1, UC-2, UC-3, UC-4, UC-5, UC-6, UC-8 |
+| **UC3** | **Assistive-Needs Operator** | An operaotr with limited fine-motor capability, a single usable hand, or an injury that makes a physical twin-stick controller impractical. Explicitly named as a beneficiary in sECTION 1.2. | Low to moderate. | Occasional. | Authenticated user. Full flight control via whichever input source suits them. | UC-1, UC-3, UC-4, UC-7, UC-8 |
+
+
+> **U1-U3 are the priamry actors** - they are the "Operator" actor in 
+> Figure 4.1, split here by capability and experience because those 2 
+> attributes drive genuinely different requirements (`R9` Tutorial and 
+> Assist Mode extists for U1; `R7` Alternative Input Control exist for U3;
+> `R2.2` runtime adapter swapping exists for U2).
+
+#### 3.1.2.2 U1 - Novice Operator
+
+**How the system is used.** The novice opens the dashboard, registers or logs in, and is offered the tutorial on first login with a pop-up. After completing the tutorial or skipping it, they must complete (or skip) the pre-flight gesture calibration, then can choose to fly a simulated drone sim or head on straight to flying their real drone. They have no reference of the gesture or vocabulary and learn based on the UI in front of them, the dahsboard will inform the user on what input they are making and what the drone will do.
+
+- **US-N-01** - As a novice operator, I want a guided tutorial to start 
+  automatically the first time I log in, so that i do not have to work out the system by trial and error on a live drone.
+  *Use case* UC-7
+- **US-N-02** - As a novice operator, I want the dashbaord to show me the 
+  gesture it currently recognises and the command that gestures maps to, so that I can learn the vocabulary by watching my own hand. 
+  *Use case* UC-1
+- **US-N-03** - As a novice operator, I want the system to check that my 
+  gestures are being read reliably before it lets me fly, so that I do not crash the drone because of bad lighting or a bad camera angle.
+  *Use case* UC-8
+- **US-N-04** - As a novice operator, I want to review the live telemetry of my 
+  drone after a short flight, seeing if my connection strength and battery levels are still fine so the drone doesnt crash.
+  *Use case* UC-2 UC-5
+- **US-N-05** - As a novice operator, I want to get a feel on the different c
+  controls in a virtual environment before I test it out with my real drone.
+  *Use case* UC-3 UC-4
+
+#### 3.1.2.3 U2 - Experienced Operator / Demonstrator
+
+**How the system is used.** The demonstrator runs GBDC in front of an audience (demo 2) or against a real drone (demo 3/4). They need the system to look and feel responsive, to expose enough telemetry to narrate what is happening, and to let them switch between sim and hardware, and between gesture, keyboard, and gamepad input, without resarting anything. When something breaks mid-demo they need the failure to be visible and contained.
+
+- **US-D-01** - As a demonstrator, I want gesture-to-command latency to be 
+  imperceptible, so that the audience sees the drone react to my hand rather than to a delay
+  *Use case* UC-1, UC-3, UC-4
+- **US-D-02** - As a demonstrator, I want link loss and low battery to be clearly
+  seen on the UI while flying the drone so while i am controlling it i can also see whether i need to stop flying or not because of connection or battery level.
+  *Use case* UC-2, UC-5
+- **US-D-03** - As a demonstrator, I want have a visualisation of the path im 
+  taking while flying and receive related analytics while operating with the drone sim.
+  *Use case* UC-6
+
+#### 3.1.2.4 U3 - Assistive-Needs Operator
+
+**How the system is used.** This operator flies using whichever input path matches their capability. If one hand is usable, the gesture pipeline works unchanged. If sustained fine-motor precision is the barrier, they select the keyboard or gamepad input and get an identical command vocabulary and identical safety behaviour, because every input source funnels through the same `Command` object and the same `DroneAdapter`.
+
+- **US-A-01** - As an operator with one usable hand, I want single-hand gestures
+  to be sufficient for full control, so that i am not excluded by the input method.
+  *Use case* UC-1
+- **US-A-02** - As an operator using an alternative input source, I want exactly 
+  the same commands and failsafes as a gesture operator, so that no capability is traded away for accessibility.
+  *Use case* UC-3, UC-4
+- **US-A-03** - As an operator who cannot hold a console controller, i want 
+  keyboard or gamepad control as a first-class alternative, so that I can fly using discrete key presses.
+  *Use case* UC-4, UC-3
+
 ### 3.2 Functional Requirements
 
 #### R3: Camera Capture & Detection
