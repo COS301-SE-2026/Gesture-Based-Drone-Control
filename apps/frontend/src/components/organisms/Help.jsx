@@ -171,9 +171,7 @@ export default function Help() {
             title="Email support"
             description="For all your detailed or technical issues."
             actionLabel="codexmerchants@gmail.com"
-            onAction={() =>
-              window.open("mailto:codexmerchants@gmail.com", "_blank")
-            }
+            onAction={() => { window.location.href = "mailto:codexmerchants@gmail.com"}}
           />
         </section>
       </div>

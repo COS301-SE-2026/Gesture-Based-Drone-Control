@@ -121,21 +121,13 @@ test.describe('Help Page', () => {
     })
 
     test.describe('Contact section', () => {
-        test('should open email when clicking contact email', async ({ page }) => {
-            const emailLink = page.getByText(/codexmerchants@gmail.com/i)
-            await expect(emailLink).toBeVisible()
-            const openedUrlPromise = page.evaluate(() => new Promise ((resolve) =>{
-                window.open =(url) => {
-                    resolve(url)
-                    return null
-                }
+        test('should open email when clicking contact email', async ({ page, context }) => {
+            const newP = context.waitForEvent('page')
+            await page.getByText(/codexmerchants@gmail.com/i).click()
 
-            }))
-
-            await emailLink.click()
-            const openedUrl = await openedUrlPromise
-            expect(openedUrl).toBe('mailto:codexmerchants@gmail.com')
-           
+            const newPage = await newP
+            await expect(newPage).toHaveURL(/mailto:codexmerchants@gmail.com/)
+            await newPage.close()
         })
     })
 })
