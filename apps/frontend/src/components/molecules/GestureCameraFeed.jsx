@@ -13,7 +13,11 @@ const SKELETON_COLOR = "#ef4444"
 const LABEL_BG = "rgba(11, 9, 10, 0.75)"
 const LABEL_TEXT = "#ffffff"
 
-const GestureCameraFeed = ({ className = "",onFrame=null, skeletonColor = SKELETON_COLOR, }) => {
+const GestureCameraFeed = ({
+  className = "",
+  onFrame = null,
+  skeletonColor = SKELETON_COLOR,
+}) => {
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
   const { frame, connected } = useGestureStream()
@@ -21,7 +25,7 @@ const GestureCameraFeed = ({ className = "",onFrame=null, skeletonColor = SKELET
   useWebPreview(videoRef)
   useEffect(() => {
     if (onFrame) onFrame(frame)
-  },[frame, onFrame])
+  }, [frame, onFrame])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -59,7 +63,7 @@ const GestureCameraFeed = ({ className = "",onFrame=null, skeletonColor = SKELET
         drawLabel(ctx, line2, wrist.x, wrist.y - 14, { clamp: true })
       }
     })
-  }, [frame,skeletonColor])
+  }, [frame, skeletonColor])
 
   return (
     <div
@@ -112,8 +116,8 @@ function drawLabel(ctx, text, x, y, { clamp = false } = {}) {
 
 GestureCameraFeed.propTypes = {
   className: PropTypes.string,
-  onFrame:PropTypes.func,
-  skeletonColor:PropTypes.string,
+  onFrame: PropTypes.func,
+  skeletonColor: PropTypes.string,
 }
 
 export default GestureCameraFeed
