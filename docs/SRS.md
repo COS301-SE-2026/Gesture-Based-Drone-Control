@@ -815,7 +815,7 @@ The analysis-level domain model captures the conceptual vocabulary of the
 problem and is the input to the design class diagram in
 [`SAS.md` Section 2.4](SAS.md#24-architectural-diagram).
 
-![Domain Model](diagrams/Domain%20Model%20v2.0.svg)
+![Domain Model](diagrams/Domain%20Model%20v2.1.drawio.png)
 
 *Figure 5.1 - Analysis-level domain model.*
 
