@@ -35,11 +35,19 @@ MIN_STABLE_FRAMES: int = 2
 # does not matter which hand is doing what
 # use a frozen set (just an immutable set) because mutable sets cannot be hashed
 TWO_HAND_MAP: dict[frozenset, CommandType] = {
+<<<<<<< HEAD
 	frozenset({'OPEN_PALM', 'OPEN_PALM'}): CommandType.EMERGENCY_STOP,
 	frozenset({'THREE_FINGERS', 'THREE_FINGERS'}): CommandType.TAKEOFF,
 	frozenset({'FIST', 'FIST'}): CommandType.LAND,
 	frozenset({'ONE_FINGER', 'ONE_FINGER'}): CommandType.MOVE_FORWARD,
 	frozenset({'TWO_FINGERS', 'TWO_FINGERS'}): CommandType.MOVE_BACKWARD,
+=======
+	frozenset({'OPEN_PALM', 'OPEN_PALM'}): CommandType.EMERGENCY_STOP,  # NOSONAR
+	frozenset({'THREE_FINGERS', 'THREE_FINGERS'}): CommandType.TAKEOFF,  # NOSONAR
+	frozenset({'FIST', 'FIST'}): CommandType.LAND,  # NOSONAR
+	frozenset({'ONE_FINGER', 'ONE_FINGER'}): CommandType.MOVE_FORWARD,  # NOSONAR
+	frozenset({'TWO_FINGERS', 'TWO_FINGERS'}): CommandType.MOVE_BACKWARD,  # NOSONAR
+>>>>>>> 12aac2711985645746a3127956a1b702793ae92f
 }
 
 # asymmetric, so [right, left] ordered
@@ -121,7 +129,9 @@ class GestureAdapter(InputAdapter):
 				self._task.cancel()
 				await self._task
 			except asyncio.CancelledError:
-				pass
+				# deal with it later
+				logger.debug('GestureAdapter: consumer task cancelled')
+				raise
 			finally:
 				self._task = None
 

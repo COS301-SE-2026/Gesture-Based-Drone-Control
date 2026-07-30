@@ -66,9 +66,18 @@ export function useGestureControl(enabled) {
   }, [enabled])
 
   // websocket polling
+<<<<<<< HEAD
   useWebSocket(getWsUrl("api/input/ws/gesture/status"), {
     onMessage(event) {
       const data = JSON.parse(event.data)
+=======
+  const { status: wsStatus } = useWebSocket(
+    // NOSONAR
+    getWsUrl("api/input/ws/gesture/status"),
+    {
+      onMessage(event) {
+        const data = JSON.parse(event.data)
+>>>>>>> 12aac2711985645746a3127956a1b702793ae92f
 
       if (!data.active) {
         setStatus(DEFAULT_STATUS)
@@ -97,5 +106,5 @@ export function useGestureControl(enabled) {
     )
   }, [])
 
-  return { connected, status, configure }
+  return { connected, status, configure, wsStatus }
 }
