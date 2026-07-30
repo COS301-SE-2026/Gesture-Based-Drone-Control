@@ -38,5 +38,57 @@ test.describe('Help Page', () => {
         await expect(page.getByText(/codexmerchants@gmail.com/i)).toBeVisible()
     })
 
-    
+    test.describe('Topic Cards', () => {
+        test('sjould open manual when click on card', async ({ page, context }) => {
+            const newP = context.waitForEvent('page')
+
+            await page.getByText(/set uo & sign in/i).click()
+            const newPage = await newP
+            await expect(newPage).toHaveURL(/.*MANUAL\/#2-set-up-sign-in.*/)
+            await newPage.close()
+        })
+    })
+
+    test.describe('Topic Cards', () => {
+        test('sjould open manual when click on card', async ({ page, context }) => {
+            const newP = context.waitForEvent('page')
+
+            await page.getByText(/set uo & sign in/i).click()
+            const newPage = await newP
+            await expect(newPage).toHaveURL(/.*MANUAL\/#2-set-up-sign-in.*/)
+            await newPage.close()
+        })
+
+        test('should open manual w correc section for each topic', async ({ page, context }) => {
+            const topics = [
+                { title: /set up & sign in/i, id: '2-set-up-sign-in' },
+                { title: /fly with hand gestures/i, id: '3-fly-the-drone-with-your-hand-uc-1' },
+                { title: /telemetry & live status/i, id: '4-watch-what-the-drone-is-doing-uc-2' },
+                { title: /practice in airsim/i, id: '5-practise-with-the-airsim-simulator-uc-3' },
+                { title: /gesture vocabulary/i, id: '7-the gesture-vocabulary' },
+                { title: /troubleshooting/i, id: '10-troubleshooting' }
+            ]
+
+            for (const { title, id } of topics) {
+                const newP = context.waitForEvent('page')
+                await page.getByText(title).click()
+                const newPage = await newP
+                await expect(newPage).toHaveURL(new RegExp(`MANUAL\/#${id}`))
+                await newPage.close()
+            }
+        })
+
+        test('should open manual click on user manual button', async ({ page, context }) => {
+            const newP = context.waitForEvent('page')
+            await page.getByRole('button', { name: /user manual/i }).click()
+            const newPage = await newP
+            await expect(newPage).toHaveURL(/.*MANUAL\/$/)
+            await newPage.close()
+        })
+
+        test('should navigate to tutorial when clicking tut button', async ({ page }) => {
+            await page.getByRole('button', { name: /tutorial/i }).click()
+            await expect(page).toHaveURL(/.*tutorial.*/)
+        })
+    })
 })
