@@ -127,7 +127,7 @@ const tutorialVideos= [
     {
         id:"gesture",
         title: "Flying with theh Gesture Adapter",
-        src: "/assets/gesture-demo.mp4",
+        src: "6yFvCRma6E4",
         description:"Same flight, controlled entirely by hand gestures.",
     },
 ]
