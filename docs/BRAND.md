@@ -290,15 +290,18 @@ in this mode.
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .md-root *, .md-root *::before, .md-root *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .md-reveal, .md-ltr {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
 }
 ```
 
-> `0.01ms` rather than `0ms` is intentional — it avoids a flash-of-unstyled-content on some browsers while still being imperceptibly fast.
 
 ### 5.6 Breakpoints
 
@@ -314,15 +317,13 @@ Tailwind defaults are in use (no custom breakpoints defined in `tailwind.config.
 
 ### 5.7 Backdrop blur
  
-Defined in `tailwind.config.js` under `theme.extend.backdropBlur`.
- 
 | Token | Value | Use |
-|---|---|---|
-| `xs` | 2 px | Subtle frosting. |
-| `sm` | 4 px | Light glass panels. |
-| `md` | 12 px | Modal backdrops. |
-| `lg` | 16 px | Dashboard overlays. |
-| `xl` | 24 px | Full-screen glass. |
+| --- | --- | --- |
+| `xs` | 10 px + saturate(140%) | Small controls — `.md-toggle`, `.md-btn.md-ghost`, `.md-sbtheme`, `.md-chips li`, `.md-cmd`, `.md-dlext`, `.md-modechip`. |
+| `sm` | 14 px + saturate(150%) | `.md-sbtab`. |
+| `md` | 18 px + saturate(150%) | `.md-panel`, `.md-card`, `.md-node`, `.md-mode`, `.md-dlcard`, `.md-screen`, `.md-faqlist`, `.md-telemetry`. |
+| `lg` | 20 px + saturate(150%) | `.md-nav`. |
+| `xl` | 26 px + saturate(150%) | `.md-sidebar`. |
 
 ---
 
@@ -334,50 +335,48 @@ system.
 
 | Variant | Background | Text | Use |
 | --- | --- | --- | --- |
-| Primary | `bg-Red` → `hover:bg-LightRed` | `text-OffWhite` | The main action on a screen. Exactly one per view. |
-| Secondary | `bg-transperant border border-Red` | `text-Red` | Auxiliary action next to a primary. |
-| Ghost | `bg-transperant` no border | `text-OffWhite` | Tertiary action; toolbars. |
-| Danger | `bg-Red`(same as primary) | `text-OffWhite` | Destructive action (emergency stop, delete session). |
+| Primary (`.md-btn.md-primary`) | `linear-gradient(145deg, var(--red), var(--red-deep))` | `#fff` | The main action on a screen. Exactly one per view. |
+| Ghost (`.md-btn.md-ghost`) | Glass gradient (`--glass`/`--glass-2`), 10 px blur | `var(--ink)` | Secondary / tertiary action next to a primary. |
+| Danger | Same as Primary | `#fff` | Destructive action (emergency stop, delete session). Distinguish via icon and label, not colour, since it re-uses the primary red. |
 
 **Sizes.** sm (32 px height), md (40 px, default), lg (48 px,
 landing-page CTAs).
 
 **States.**
 
-- Default — flat fill at the listed colours.
-- Hover — fill steps to `LightRed`; `shadow-md`.
-- Focus — `ring-2 ring-Red ring-opacity-40` (3 px equivalent).
-- Active — fill steps to `DarkRed`.
-- Disabled — `opacity-50`; `cursor-not-allowed`; no hover effect.
-- Loading — replace label with a 16 px spinner; button width
-  preserved; click events suppressed.
+- Default — as above.
+- Hover (ghost/glass buttons) — border shifts to `--red`.
+- Focus — solid `2px solid var(--red)` outline, `3px` offset (see §8.2).
+- Active — primary gradient darkens toward `--red-shadow`.
+- Disabled — `opacity: 0.5`; `cursor: not-allowed`; no hover effect.
+- Loading — replace label with a 16 px spinner (`animate-spin`); button width preserved; click events suppressed.
 
 ### 6.2 Input (text, email, password)
 
 | Property | Value |
 | --- | --- |
 | Height | 40 px |
-| Padding | `px-3` (0.75 rem) horizontal |
-| Border | `border border-DarkGrey` |
-| Background | `bg-OffWhite` (light) / `bg-white/4` (dark) |
-| Focus ring | `focus:ring-2 focus:ring-Red/40` (achieved via Tailwind, `outline: none' is set globally in `index.css` ) |
-| Error border | `border-Red`; helper text below in `text-Red` |
+| Padding | 0.75 rem horizontal |
+| Border | `1px solid var(--glass-brd)` |
+| Background | Glass gradient (`--glass`/`--glass-2`) |
+| Focus ring | `2px solid var(--red)`, 3px offset (matches §8.2/§6.1) |
+| Error border | `--red`; helper text below in `--red` |
 
 ### 6.3 Select / Dropdown
 
-Same shape as the Input. Caret is a Lucide `chevron-down` at 16 px.
-Open state shows a panel with `shadow-lg` and `rounded-md`.
+Same shape as the Input. Caret is a Lucide `chevron-down` at 16 px,
+`currentColor`. Open state shows a panel with a standard glass shadow
+and `16px` radius.
 
 ### 6.4 Modal
 
 | Property | Value |
 | --- | --- |
-| Width | up to 560 px (`max-w-lg`) |
-| Backdrop | `bg-OffBlack/60 backdrop-blur-md` |
-| Surface | `bg-OffWhite` (light) / ` bg-OffBlack` (dark) |
-| Radius | `rounded-xl` |
-| Shadow | `shadow-xl` |
-| Open duration | `animate` utilities / `transition` (respects `prefers-reduced-motion `) |
+| Width | up to 560 px |
+| Backdrop | `var(--bg)` at reduced opacity + blur |
+| Surface | Glass gradient at `18px` blur, `16px` radius |
+| Shadow | `var(--glass-shadow)` + inset top highlight |
+| Open duration | `.md-reveal` transition (respects `prefers-reduced-motion`) |
 | Escape key | Closes the modal; focus returns to the trigger. |
 
 ### 6.5 Toast
@@ -393,38 +392,61 @@ Toasts auto-dismiss after 5 s (warning) or 8 s (error). Critical
 alerts (link loss, battery < 15 %) **do not auto-dismiss** — they
 remain until acknowledged per `R1.2.2`.
 
-### 6.6 Card
-
-`rounded-lg shadow-sm` at rest, `shadow-md` on hover, padded
-with `p-sm` (1 rem). The telemetry panel, gesture-indicator panel, and
-session-list rows on the replay view are all Cards.
+### 6.6 Card (`.md-card`, `.md-node`, `.md-mode`, `.md-dlcard`, `.md-screen`)
+ 
+`16px` radius, glass gradient at `18px` blur, `var(--glass-shadow)` +
+inset top highlight at rest. On hover: border shifts to `--red` and
+the shadow gains a `24px` red glow. `.md-spot` variants additionally
+render a `260px` radial spotlight that follows the cursor
+(`--sx`/`--sy` set via `mousemove`), tinted `rgba(229,56,59,0.14)`
+dark / `rgba(186,24,27,0.1)` light.
 
 ### 6.7 Gesture Indicator (domain-specific)
 
 A 96 × 96 px circular badge in the top-right of the dashboard,
-filled with `bg-Red` when a gesture is locked. Pulses at
-`animate-pulse` when the gesture changes; static in
+filled with `--red` when a gesture is locked. Pulses via
+`md-pulse` when the gesture changes; static in
 `prefers-reduced-motion`. The current gesture name and its mapped
-command sit immediately below.
+command sit immediately below, in JetBrains Mono.
 
-### 6.8 Telemetry Pill
+### 6.8 Telemetry Pill / Panel (`.md-telemetry`)
+ 
+Glass surface, `14px` radius, `12px 16px` padding. Values render in
+JetBrains Mono; label in `--dim`, value colour matches the semantic
+state (`--Success`/`--Warning`/`--red`/`--ink`).
 
-A pill (`rounded-full`) carrying the link status, flight mode, or
-battery percentage. Background is the matching semantic colour at
-12 % opacity; foreground is the matching semantic colour at full
-opacity.
-
+### 6.9 Chips, commands, mode toggles
+ 
+| Class | Radius | Use |
+| --- | --- | --- |
+| `.md-chips li` | 999 px (pill) | Quick-action tags (e.g. "Take off", "Land"). |
+| `.md-cmd` | 8 px | Gesture → command mapping tags, mono type. |
+| `.md-dlext` | 8 px | File-extension badges on download cards. |
+| `.md-modechip` | 8 px | Flight-mode selector chips; active state border → `--red`. |
+ 
+### 6.10 Navigation & Sidebar
+ 
+`.md-nav` is a glass bar at `20px` blur. `.md-sidebar` is a glass
+panel at `26px` blur with rounded left corners (`20px`) and a
+left border; `.md-sbtab` is its collapsed-state tab, `12px`
+left-rounded, border colour shifting to `--red` on hover.
+ 
+### 6.11 FAQ list (`.md-faqlist`)
+ 
+Glass panel, top border in `--line`, `4px 24px` padding; each
+`.faq-item` gets its own bottom hairline except the last.
+ 
 ---
 
 ## 7. Layout & Spacing
 
 ### 7.1 Grid
 
-Tailwind's built-in 12-column grid (`grid grid-cols-12`) with a 'gap-md` (1.5 rem / 24 px) gutter on screens >= `md: `and `gap-sm` ( 1rem / 16 px) below.
+Tailwind's built-in 12-column grid with a `gap-md` (1.5 rem / 24 px) gutter on screens >= `md: `and `gap-sm` ( 1rem / 16 px) below.
 
 ### 7.2 Responsive behaviour
 
-| Surface | < `m:` (768 px) | ≥ `md:` | ≥ `g:` (1024 px) |
+| Surface | `< md:` (768 px) | `>= md:` | `>= lg:` (1024 px) |
 | --- | --- | --- | --- |
 | Landing page | single column, hero stacks vertically | two-column feature grid | three-column feature grid |
 | Dashboard | video feed stacks above telemetry; gesture indicator floats top-right | side-by-side video and telemetry | full layout: feed + overlay + telemetry + replay timeline |
@@ -437,13 +459,16 @@ Tailwind's built-in 12-column grid (`grid grid-cols-12`) with a 'gap-md` (1.5 re
 - Between cards in a grid: gap is `gap-md` (1.5 rem).
 - Page-level horizontal padding: `px-sm` on mobile, `px-lg`
   on tablet, `px-xl` on desktop.
+- Glass panels need slightly more breathing room than flat cards do
+- the blur reads as "heavier", so keep at least `gap-md` between
+adjacent glass surfaces to avoid the borders visually merging.
 
 ---
 
 ## 8. Accessibility
 
 GBDCS targets **WCAG 2.2 AA** as the minimum on every surface.
-AAA is achieved for body-text contrast on both themes.
+AAA is achieved for body-text contrast on both themes (§2.4).
 
 ### 8.1 Keyboard navigation
 
@@ -455,9 +480,11 @@ AAA is achieved for body-text contrast on both themes.
 
 ### 8.2 Focus indicator
 
-A 3 px `ring-2 ring-Red/40` ring on every focusable element. The
-ring is **never** suppressed by `outline: none` without an
-equivalent visual replacement.
+`.md-root a:focus-visible, .md-root button:focus-visible` receive a
+**solid `2px` outline in `--red`, offset `3px`**;
+chosen because a soft box-shadow ring can
+be hard to see against a translucent glass background. The outline
+is **never** suppressed without an equivalent visual replacement.
 
 ### 8.3 Screen readers
 
@@ -478,17 +505,8 @@ badge.
 
 No information is conveyed by colour alone. Alerts also carry an
 icon and a text label; telemetry pills carry a text value alongside
-the colour.
-
-### 8.6 Audit targets
-
-
-| Surface | Tool | Target | Status |
-| --- | --- | --- | --- |
-| Landing page | Lighthouse Accessibility | ≥ 90 | *Audit pending* |
-| Dashboard | axe DevTools | 0 violations | *Audit pending* |
-| Help menu | WAVE | 0 errors, 0 contrast errors | *Audit pending* |
-
+the colour. The `--dim` contrast caveat in §2.4 applies here too ->
+don't rely on muted text alone to carry meaning in light mode.
 
 ---
 
@@ -500,7 +518,7 @@ GBDCS speaks to pilots. The voice is **calm, direct, and specific**.
 | --- | --- | --- |
 | Button labels | Imperative verb, ≤ 3 words. | *"Take off"*, *"End session"*, *"Stop now"*. |
 | Empty states | Friendly, action-oriented. | *"No sessions yet — start a flight to see your history here."* |
-| Success messages | Quiet confirmation. | *"Drone connected."* (Avoid: *"🎉 Successfully connected to drone!"* — too loud for an operational surface.) |
+| Success messages | Quiet confirmation. | *"Drone connected."* (Avoid: *"Successfully connected to drone!"* — too loud for an operational surface.) |
 | Errors | Cause first, then suggestion. | *"Camera not detected. Connect a webcam or check your browser permissions."* (cause + suggestion, per `R11.3`.) |
 | Critical alerts | Telegraphic, urgent, never alarmist. | *"Link lost. Hovering until link returns."* |
 
@@ -508,22 +526,6 @@ Tone is **never jokey** in the operational paths. The Help menu and
 landing page may be warmer, but the dashboard itself stays
 professional — an operator in flight does not want a system that's
 trying to be funny.
-
----
-
-## 10. Changelog from Demo 1
-
-| Area | Demo 1 | Demo 2 | Rationale |
-| --- | --- | --- | --- |
-| Format | Brand section inside the (now-retired) `DESIGN.md` | Standalone document on the docs site; canonical reference for visual decisions | The retired `DESIGN.md` mixed brand and software-design content; splitting it gives each its own deliverable. A separately deployed live style-guide page alongside the app is *planned for Demo 2*. |
-| Palette | 7 colours (3 reds, off-black, 3 neutrals) | Same 7 + 4 semantic colours (success, warning, error, info) with full WCAG audit | The early UI lacked formal state colours; adding them gave the dashboard a vocabulary for telemetry and alerts. |
-| Typography | "Use a sans-serif" | Inter + Inter Display + JetBrains Mono with a 1.2 modular scale and named tokens | Implementation needed concrete sizes; the modular scale eliminated ad-hoc font sizes in code. |
-| Tokens | Implicit in code | Documented in §5 with the canonical names used by the CSS layer | Drift between docs and code was happening; making the document the canonical source makes drift visible. |
-| Components | Wireframes only | Full component spec (button, input, select, modal, toast, card, gesture indicator, telemetry pill) with all states | The system now exists, so the components have variants and states worth documenting. |
-| Accessibility | Not formally addressed | WCAG 2.2 AA conformance target with audit targets and per-PR automation planned | Mentor feedback after Demo 1 flagged a11y as a gap; targets and audit cadence are now explicit. |
-| Voice & tone | Absent | Added §9 with examples per surface | Several Demo 1 error messages were unclear; making the tone rules explicit fixed the inconsistency. |
-| Iconography | "Lucide" mentioned in passing | Stroke width, sizing rules, ARIA rules, custom-illustration alignment | The Demo 1 iconography varied by view; the rules in §4.2 enforce a single visual language. |
-| Motion | Not addressed | Three named durations + `prefers-reduced-motion` rule | The dashboard's gesture pulse made some Demo 1 reviewers motion-sick; the reduced-motion rule resolves that. |
 
 ---
 
