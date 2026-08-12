@@ -91,7 +91,7 @@ export default {
 
         keyframes:{
           'md-rise': {
-            to:{ opacity:1 transform:'translateY(0)', filter:'blur(0)'},
+            to:{ opacity:1, transform:'translateY(0)', filter:'blur(0)'},
           },
           'md-pulse':{
             '0%, 100%':{opacity:0.35},
