@@ -108,40 +108,51 @@ automated audit (§8.6) verifies them per build.
 | `#FFFFFF` label | `--red-deep` `#BA181B` (dark) | **~6.5 : 1** | AAA | Primary button labels, dark mode. |
 | `#FFFFFF` label | `--red-deep` `#A4161A` (light) | **~7.8 : 1** | AAA | Primary button labels, light mode. |
 
+> **Open item:** `--dim` on the light mode background sits just under
+> the AA threshold for normal body text (~4.3:1 against the 4.5:1
+> bar). Its fine for large text, captions set at 14px+/500 weight,
+> and UI chrome (3:1 bar), but should not be used for small
+> long-form body copy in light mode until bumped - same category of
+> issue as the muted-grey flag in the previous palette.
+
+
 
 ### 2.4 Usage rules
 
 - **Red is the action colour.** Reserve it for primary buttons,
   links, and active states. Don't use it for decoration.
-- **Off-black is the surface colour.** Pair with off-white text
-  (never pure white — `#FFFFFF` on `#161A1D` is harsh).
-- **Muted grey carries hierarchy.** Captions, placeholders, and
-  disabled states use `DarkGrey`; avoid using it for body text.
+- **`--bg` is the base surface; glass sits above it.**
+  Never place glass-on-glass without a visible gap.
+- **Muted (`--dim`) carries hierarchy.** Captions, placeholders, and
+  disabled states use it; avoid using it for primary body text in
+  light mode.
 - **Semantic colours are reserved for state.** A green pill always
   means "OK"; an amber pill always means "warning". Never use them
   for emphasis.
+- **The spotlight glow is a hover-only affordance**, not a static
+  decodation. It should only render while the cursor is over the element.
 
 ---
 
 ## 3. Typography
 
-The system uses a two-family stack — a humanist sans for UI and body
-text, and a geometric monospace for numbers, telemetry readouts, and
+The system uses a two-family stack for UI, a dedicated display for headings,
+and a monospace for numbers, telemetry readouts, and
 code blocks.
 
 ### 3.1 Families
 
 | Role | Family | Fallback stack | Source | Licence |
 | --- | --- | --- | --- | --- |
-| UI / body | **Inter** | `system-ui, "Segoe UI", Roboto, sans-serif` | `font-sans` | Google Fonts (self-hosting *planned for Demo 2*) | SIL Open Font Licence 1.1 |
-| Display | **Geist** | `Inter, sans-serif` | `font-display` | Google Fonts (self-hosting *planned for Demo 2*) | SIL OFL 1.1 |
-| Monospace | System mono | `ui-monospace, Consolas, monospace` | - | System stack | - |
+| Display / headings (`h1`–`h3`) | **Chakra Petch** (weights 400–700) | `"Space Grotesk", sans-serif` | Google Fonts (self-hosting *planned*) | SIL Open Font Licence 1.1 |
+| UI / body | **Space Grotesk** (weights 400–600) | `system-ui, sans-serif` | Google Fonts (self-hosting *planned*) | SIL OFL 1.1 |
+| Monospace | **JetBrains Mono** (weights 400–500) | `ui-monospace, Consolas, monospace` | Google Fonts (self-hosting *planned*) | Apache 2.0 |
 
 
-Self-hosting (rather than the Google Fonts CDN) is planned for the
-Demo 2 sprint and aligns with the SRS `R8.2` posture — no runtime
+Self-hosting (rather than the Google Fonts CDN) is planned 
+and aligns with the SRS `R8.2` posture — no runtime
 telemetry to external services. Until that lands, the fonts are
-loaded from the Google Fonts CDN at build time.
+loaded via @import at build time.
 
 ### 3.2 Typographic scale
 
@@ -149,17 +160,16 @@ A modular scale at ratio 1.2 anchored on 16 px body.
 
 | Token | Size | Line height | Weight | Letter spacing | Use |
 | --- | --- | --- | --- | --- | --- |
-| `h1` | 32 px / 2 rem | 1.2 | 700 | -0.02em | Page titles. |
-| `h2` | 24 px / 1.5 rem | 1.2 | 700 | -0.01 rem | Section Headings. |
-| `h3` | 20 px / 1.25 rem | 1.2 | 700 | normal | Card titles. |
-| `h4` | 18 px / 1.125 rem | 1.2 | 700 | normal | Group labels. |
-| `h5` | 16 px / 1 rem | 1.2 | 700 | normal | Minor headings. |
-| `h6` | 14 px / 0.875 rem | 1.2 | 700 | normal | Smallest heading level. |
-| Body (`p`) | -15 px / 0.95 rem | 1.6 | 400 | normal | Default paragraph text. |
-| small | -14 px / 0.85 rem | - | 400 | normal | secondary/ helper paragraph text. |
-| Code / mono | 14 px / 0.875 rem | - | - | normal | Telemetry numbers, code. |
+| `h1`/`h2` (section) | `clamp(1.9rem, 4.4vw, 3.4rem)` | 1.05 | 600 | normal | Page titles, section headings. |
+| `h3` | 20 px / 1.25 rem | 1.05 | 600 | normal | Card titles. |
+| Eyebrow | 11 px | 1.2 | 500 | 0.28em | Kicker label above a headline, mono, red. |
+| Body (`p`) | 15 px / 0.95 rem | 1.6 | 400 | normal | Default paragraph text. |
+| small | 14 px / 0.85 rem | – | 400 | normal | Secondary / helper paragraph text. |
+| Code / mono | 12–14 px | – | 400–500 | normal | Telemetry numbers, command tags, code. |
 
-> All `h1`–`h6` elements share weight 700 and line-height 1.2 as set in `index.css`. Individual components may override weight with Tailwind utilities (e.g. `font-semibold`) where a lighter heading better suits the context.
+> All `h1`–`h3` elements share the Chakra Petch family and a tight 1.05 line-height
+ as set in `index.css`. Meaning headings can run large, so the tighter leading keeps
+ multi-line headings from feeling loose.
 
 ### 3.3 Weights used
 
@@ -210,8 +220,8 @@ library (MIT-licensed).
 | Accessibility | Standalone icon buttons must carry an `aria-label`. Decorative icons must have `aria-hidden="true"`. |
 
 Custom illustrations (e.g. the hand-gesture vocabulary card) are
-drawn in the same 1.75 px stroke, off-black on off-white, to sit
-naturally next to Lucide icons.
+drawn in the same 1.75 px stroke, `--ink` on `--bg`, to sit
+naturally next to Lucide icons and glass surfaces.
 
 ---
 
@@ -221,21 +231,9 @@ Tokens are the single source of truth for visual properties. The implementation 
 
 ### 5.1 Colour tokens
 
-See §2 for values. Colours are defined in `tailwind.config.js` under `theme.extend.colors` and consumed via Tailwind utility classes.
-
-| Token (Tailwind key) | HEX | CSS class examples |
-|---|---|---|
-| `Red` | `#A4161A` | `bg-Red`, `text-Red`, `border-Red` |
-| `LightRed` | `#BA181B` | `bg-LightRed`, `hover:bg-LightRed` |
-| `DarkRed` | `#660708` | `bg-DarkRed`, `active:bg-DarkRed` |
-| `OffBlack` | `#161A1D` | `bg-OffBlack`, `text-OffBlack` |
-| `OffWhite` | `#F5F3F4` | `bg-OffWhite`, `text-OffWhite` |
-| `DarkGrey` | `#B1A7A6` | `text-DarkGrey`, `border-DarkGrey` |
-| `Grey` | `#D3D3D3` | `border-Grey`, `divide-Grey` |
+See §2 for values and dark/light pairs.
 
 ### 5.2 Spacing scale
-
-Defined in `tailwind.config.js` under `theme.extend.spacing`. Used via Tailwind's `p-`, `m-`, `gap-` utilities.
 
 | Token | Value | Use |
 | --- | --- | --- |
@@ -246,45 +244,44 @@ Defined in `tailwind.config.js` under `theme.extend.spacing`. Used via Tailwind'
 | `xl` | 3 rem (48 px) | Landing-page section padding, hero padding. |
 
 ### 5.3 Radius
-
-Defined in `tailwind.config.js` under `theme.extend.borderRadius`.
  
 | Token | Value | Use |
-|---|---|---|
-| `sm` | 0.375 rem (6 px) | Tags, pills. |
-| `md` | 0.5 rem (8 px) | Buttons, inputs. |
-| `lg` | 0.75 rem (12 px) | Cards. |
-| `xl` | 1 rem (16 px) | Modals, hero surfaces. |
-| `2xl` | 1.5 rem (24 px) | Large panels. |
-| `3xl` | 2 rem (32 px) | Full-bleed surfaces. |
+| --- | --- | --- |
+| `sm` | 8 px | `.md-cmd`, `.md-dlext`, `.md-modechip`, `.md-sbtheme`. |
+| `md` | 12 px | `.md-sbtab` (left corners only). |
+| `lg` | 14 px | `.md-telemetry`. |
+| `xl` | 16 px | `.md-panel`, `.md-card`, `.md-node`, `.md-mode`, `.md-dlcard`, `.md-screen`. |
+| `2xl` | 20 px | `.md-sidebar` (left corners only). |
+| `pill` | 999 px | `.md-chips li`. |
 
-### 5.4 Shadow
+Radius values are component-specific under the glass system rather
+than a flat numeric scale. see §6 for which toke applies where.
 
-Defined in `tailwind.config.js` under `theme.extend.boxShadow`. The glass variant requires `backdrop-filter: blur(12px)`.
+### 5.4 Shadow & glass
  
 | Token | Value | Use |
-|---|---|---|
-| `sm` | `0 1px 2px 0 rgb(0 0 0 / 0.05)` | Cards at rest. |
-| `md` | `0 4px 6px -1px rgb(0 0 0 / 0.1)` | Cards on hover. |
-| `lg` | `0 10px 15px -3px rgb(0 0 0 / 0.1)` | Modals, popovers. |
-| `xl` | `0 20px 25px -5px rgb(0 0 0 / 0.1)` | Elevated panels. |
-| `2xl` | `0 25px 50px -12px rgb(0 0 0 / 0.25)` | Hero cards. |
-| `glass` | `0 8px 32px rgba(31, 38, 135, 0.37)` | Glass surfaces (light). |
-| `glass-dark` | `0 8px 32px rgba(0, 0, 0, 0.5)` | Glass surfaces over `OffBlack`. |
+| --- | --- | --- |
+| `--glass-shadow` (dark) | `0 12px 40px rgba(0,0,0,0.45)` | Drop shadow under every glass surface. |
+| `--glass-shadow` (light) | `0 10px 30px rgba(11,9,10,0.1)` | Same, light mode. |
+| Inset highlight | `inset 0 1px 0 var(--glass-hi)` | Paired with the drop shadow on all glass surfaces — reads as a frosted top edge. |
+| Hover glow | `0 0 24px rgba(229,56,59,0.16)` | Added to the shadow stack on `.md-card`/`.md-node`/`.md-mode`/`.md-dlcard`/`.md-screen` hover, alongside a border colour shift to `--red`. |
+| Backdrop blur | `10px`–`26px` + `saturate(140–150%)` | Scales with surface size — see §6 component table. |
 
 ### 5.5 Motion
 
-Motion is functional, not decorative. Defined in `tailwind.config.js` under `theme.extend.animation` and implemented via Tailwind's built-in `transition-*` and `animate-*` utilities.
+Motion is functional, not decorative.
  
-| Utility | Duration | Use |
-|---|---|---|
-| `animate-spin` | 1 s linear | Loading spinner. |
-| `animate-ping` | 1 s | Live-status pulse. |
-| `animate-pulse` | 2 s | Gesture indicator heartbeat. |
-| `animate-bounce` | 1 s | Attention-draw on empty states. |
-| `transition` (default) | 150 ms | Hover state changes (Tailwind default). |
+| Name | Behaviour | Duration | Use |
+| --- | --- | --- | --- |
+| `.md-ltr` (`md-rise` keyframes) | Rises 0.55em, blur(8px) → 0, fades in | 0.8 s, `cubic-bezier(0.2,0.75,0.25,1)` | Hero eyebrow / headline entrance on load. |
+| `.md-reveal` / `.md-reveal.md-in` | Translate 28px → 0 + fade, staggerable via `--rd` | 0.8 s | Scroll-triggered section reveals. |
+| `md-pulse` (keyframes) | Opacity 0.35 ↔ 1 | 2 s (paired usage) | Live-status pulsing, gesture indicator heartbeat. |
+| `.md-magnet` | Transform shift toward cursor (values set via JS) | 0.22 s, cubic-bezier ease-out | "Magnetic" hover on buttons/icons. |
+| `animate-spin` | Loading spinner | 1 s linear | Loading state on primary buttons. |
  
-All motion respects `prefers-reduced-motion: reduce` — the global rule in `index.css` collapses all animation and transition durations to `0.01ms` when the user has requested reduced motion.
+All motion respects `prefers-reduced-motion: reduce` — animations and transitions are
+disabled outright (not just shortened), and `.md-reveal`/`.md-ltr` snap directly to 
+their resting, visible, untransformed state.
 
 All motion respects `prefers-reduced-motion: reduce` — animations
 collapse to a 0 ms duration when the user has requested reduced
