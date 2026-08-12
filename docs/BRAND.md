@@ -1,7 +1,7 @@
 # Brand & Design System
 
 <div class="tx-badges">
-  <span class="tx-status"><span class="tx-status__dot"></span>Demo 2 — v2.0</span>
+  <span class="tx-status"><span class="tx-status__dot"></span>Demo 2 — v2.1</span>
   <span class="tx-status">Accessibility · WCAG 2.2 AA target</span>
   <span class="tx-status">Tokens · canonical in this document</span>
 </div>
@@ -46,23 +46,40 @@ new operator wants to try**.
 ## 2. Colour Palette
 
 The palette is anchored on a red core (the action colour), an
-off-black surface, and a small set of neutrals. Accent semantic
+off-black surface in dark mode, off-white surface in light mode and a translucent "glass" layer used across cards, panels and navigation.. Accent semantic
 colours are added only for **success**, **warning**, **info** and **error**
 states.
 
 ### 2.1 Core palette
 
-| Role | Token | HEX | RGB | HSL | Usage |
-| --- | --- | --- | --- | --- | --- |
-| Primary | `Red` | `#A4161A` | 164, 22, 26 | 358°, 76%, 36% | Primary buttons, links, active states, brand surfaces. |
-| Primary (hover) | `LightRed` | `#BA181B` | 186, 24, 27 | 359°, 77%, 41% | Hover and pressed states on primary actions. |
-| Primary (pressed) | `DarkRed` | `#660708` | 102, 7, 8 | 359°, 87%, 21% | Pressed state on primary; never used as a fill colour for body areas. |
-| Surface (dark) | `OffBlack` | `#161A1D` | 22, 26, 29 | 206°, 14%, 10% | Light-mode page text, hero sections, dashboard chrome. |
-| Surface (light) | `OffWhite` | `#F5F3F4` | 245, 243, 244 | 330°, 14%, 96% | Dark-mode page text. |
-| Muted | `DarkGrey` | `#B1A7A6` | 177, 167, 166 | 5°, 6%, 67% | Placeholders, borders, disabled, captions. |
-| Hairline | `Grey` | `#D3D3D3` | 211, 211, 211 | 0°, 0%, 83% | Dividers, table rules in light mode. |
+| Role | Token | Dark (default) | Light (`data-theme="light"`) | Usage |
+| --- | --- | --- | --- | --- |
+| Background | `--bg` | `#0B090A` | `#F5F3F4` | Page background. |
+| Surface | `--surface` | `#161A1D` | `#FFFFFF` | Raised, non-glass surfaces. |
+| Ink (text) | `--ink` | `#F5F3F4` | `#0B090A` | Primary text. |
+| Muted | `--dim` | `#B1A7A6` | `rgba(11,9,10,0.55)` | Captions, placeholders, secondary text. |
+| Hairline | `--line` | `rgba(211,211,211,0.14)` | `rgba(11,9,10,0.14)` | Dividers, FAQ list rules. |
+| Primary | `--red` | `#E5383B` | `#BA181B` | Primary buttons, links, active states, brand accent. |
+| Primary (deep) | `--red-deep` | `#BA181B` | `#A4161A` | Gradient partner for `--red` on primary buttons/CTAs. |
+| Primary (shadow) | `--red-shadow` | `#660708` | `#E5383B` | Third stop in red-family gradients and pressed shadows. |
+| Glow | `--glow` | `rgba(229,56,59,0.8)` | `rgba(186,24,27,0.45)` | Ambient glow on status dots and CTA shadows. |
 
-> **How colours are referenced in code:** Colours live in `tailwind.config.js` under `theme.extend.colors` and are used via the Tailwind utility classes (e.g. `bg-Red`, `text-OffWhite`). Dark mode is toggled via the `dark` class on the root element (`darkMode: 'class'` in tailwind config).
+### 2.2 Glass tokens
+
+| Token | Dark (default) | Light | Usage |
+| --- | --- | --- | --- |
+| `--panel` | `rgba(22,26,29,0.55)` | `rgba(255,255,255,0.6)` | Solid-ish fallback panel colour. |
+| `--nav` | `rgba(11,9,10,0.72)` | `rgba(245,243,244,0.78)` | Nav / sidebar backing layer. |
+| `--glass` | `rgba(255,255,255,0.06)` | `rgba(255,255,255,0.55)` | Glass gradient stop 1. |
+| `--glass-2` | `rgba(255,255,255,0.015)` | `rgba(255,255,255,0.22)` | Glass gradient stop 2. |
+| `--glass-brd` | `rgba(255,255,255,0.13)` | `rgba(11,9,10,0.1)` | Glass border colour. |
+| `--glass-hi` | `rgba(255,255,255,0.1)` | `rgba(255,255,255,0.9)` | Inset top highlight on glass surfaces. |
+| `--glass-shadow` | `0 12px 40px rgba(0,0,0,0.45)` | `0 10px 30px rgba(11,9,10,0.1)` | Drop shadow under glass surfaces. |
+
+> **How colours are referenced in code:** Colours live as 
+CSS custom properties on `.md-root`, overridden under
+`.md-root[data-theme="light"]`. Dark is the default theme
+and light mode is opted into by setting `data-theme="light"` on the root element. there are no build-time Tailwind config for this layer, values are runtime CSS variables.
 
 ### 2.2 Semantic palette
 
@@ -82,15 +99,14 @@ automated audit (§8.6) verifies them per build.
 
 | Foreground | Background | Ratio | Level | Use |
 | --- | --- | --- | --- | --- |
-| `#F5F3F4` text | `#161A1D` surface | **15.8 : 1** | AAA | Body text, dark mode. |
-| `#161A1D` text | `#F5F3F4` surface | **15.8 : 1** | AAA | Body text, light mode. |
-| `#F5F3F4` text | `#A4161A` primary | **5.1 : 1** | AA | Button labels. |
-| `#F5F3F4` text | `#BA181B` primary-hover | **4.6 : 1** | AA | Button labels on hover. |
-| `#A4161A` link | `#F5F3F4` surface | **6.6 : 1** | AA | Inline links, light mode. |
-| `#BA181B` link | `#161A1D` surface | **4.7 : 1** | AA | Inline links, dark mode. |
-| `#B1A7A6` muted | `#161A1D` surface | **4.5 : 1** | AA | Captions, placeholders, dark mode. |
-| `#F5F3F4` text | `#1B7F3A` success | **4.8 : 1** | AA | Success pill. |
-| `#161A1D` text | `#C77700` warning | **6.4 : 1** | AA | Warning toast (text on amber). |
+| `--ink` `#F5F3F4` | `--bg` `#0B090A` | **~18.0 : 1** | AAA | Body text, dark mode. |
+| `--ink` `#0B090A` | `--bg` `#F5F3F4` | **~18.0 : 1** | AAA | Body text, light mode. |
+| `--red` `#E5383B` | `--bg` `#0B090A` | **~4.7 : 1** | AA | Links, active states, dark mode. |
+| `--red` `#BA181B` | `--bg` `#F5F3F4` | **~5.9 : 1** | AA | Links, active states, light mode. |
+| `--dim` `#B1A7A6` | `--bg` `#0B090A` | **~8.5 : 1** | AAA | Captions, placeholders, dark mode. |
+| `--dim` (blended) | `--bg` `#F5F3F4` | **~4.3 : 1** | AA — large text / UI only | Captions, placeholders, light mode. |
+| `#FFFFFF` label | `--red-deep` `#BA181B` (dark) | **~6.5 : 1** | AAA | Primary button labels, dark mode. |
+| `#FFFFFF` label | `--red-deep` `#A4161A` (light) | **~7.8 : 1** | AAA | Primary button labels, light mode. |
 
 
 ### 2.4 Usage rules
