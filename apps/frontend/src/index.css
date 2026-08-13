@@ -76,7 +76,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
-  transition:backgroud 0.4s ease, color 0.4s ease;
+  transition:background 0.4s ease, color 0.4s ease;
 }
 
 html,
@@ -93,13 +93,13 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Chakra Petch","Space Grotsek",sans-seriff;
+  font-family: "Chakra Petch","Space Grotesk",sans-serif;
   font-weight: 600;
   line-height: 1.05;
 }
 
 h1, h2{
-  font-size:clamp(1.9rem 4.4vw,3.4rem);
+  font-size:clamp(1.9rem ,4.4vw,3.4rem);
   letter-spacing:normal;
 }
 

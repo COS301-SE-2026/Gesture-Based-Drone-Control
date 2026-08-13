@@ -4,7 +4,7 @@
   border-radius: 8px;
   color: var(--red);
   background: linear-gradient(145deg, var(--glass), var(--glass-2));
-  -webkit-backdrop-filter: blur(10px) saturate (140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
   backdrop-filter:blur(10px) saturate(140%);
   border: 2px solid var(--glass-brd);
   transition: border-color 0.3s;
@@ -134,7 +134,7 @@
     transition: box-color 0.3s,box-shadow 0.3s;
 
     &:hover {
-      box-color: var(--red);
+      border-color: var(--red);
       box-shadow:0 0 24px rgba(229 ,56,59,0.16);
     }
     .button-icon {
