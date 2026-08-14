@@ -39,7 +39,7 @@ class GestureStream:
 		self._broadcast_task: Optional[asyncio.Task] = None
 		self._linger_task: Optional[asyncio.Task] = None
 		self._teardown_task: Optional[asyncio.Task] = None
-		self._clients: set[asyncio.Queue[GestureFramePayload]] = set()
+		self._clients: set[asyncio.Queue] = set()
 		self._lock = asyncio.Lock()
 		self._last_error: Optional[str] = None
 
@@ -50,6 +50,11 @@ class GestureStream:
 	@property
 	def is_running(self) -> bool:
 		return self._pipeline is not None
+
+	@property
+	def last_error(self) -> Optional[str]:
+		"""WHy the camera last failed, surfaced on the sattus endpoint"""
+		return self._last_error
 
 	async def subscribe(self) -> 'asyncio.Queue[GestureFramePayload]':
 		"""
@@ -80,7 +85,7 @@ class GestureStream:
 		"""
 		self._clients.clear()
 		self._cancel_linger()
-		await self._maybe_stop()
+		await self._stop_pipeline()
 
 	async def _ensure_started(self) -> None:
 		async with self._lock:
@@ -99,13 +104,13 @@ class GestureStream:
 			self._pipeline = pipeline
 			self._last_error = None
 			self._broadcast_task = asyncio.create_task(
-				self._broadcast_task(), name='gesture-stream-broadcast'
+				self._broadcast(), name='gesture-stream-broadcast'
 			)
 			logger.info('GestureStream started (camera opened)')
 
 	def _cancel_linger(self) -> None:
 		if self._linger_task is not None and not self._linger_task.done():
-			self._task.cancel()
+			self._linger_task.cancel()
 		self._linger_task = None
 
 	async def _schedule_stop_if_idle(self) -> None:

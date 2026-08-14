@@ -135,10 +135,10 @@ def encode_jpeg(bgr_frame, quality: int = JPEG_QUALITY) -> Optional[str]:
 	Base64 JPEG for one BGR frame, or None if encoding failed
 	Encoding 640x480 at q60 costs roughly 1-2ms, done once per frame for all clients
 	"""
-	ok, buffer = cv2.imencode(',jpg', bgr_frame, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
+	ok, buffer = cv2.imencode('.jpg', bgr_frame, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
 	if not ok:
 		return None
-	return base64.b64decode(buffer.tobytes()).decode('ascii')
+	return base64.b64encode(buffer.tobytes()).decode('ascii')
 
 
 def serialize_event(event: PipelineEvent, include_frame: bool = False) -> GestureFramePayload:
@@ -168,7 +168,7 @@ def serialize_event(event: PipelineEvent, include_frame: bool = False) -> Gestur
 		frame_index=event.frame_index,
 		timestamp=event.frame.timestamp,
 		fps=round(event.fps, 1),
-		freame_jpeg=jpeg,
+		frame_jpeg=jpeg,
 		frame_width=width,
 		frame_height=height,
 		hands=hands,

@@ -126,10 +126,10 @@ class CameraFeed:
 						self._config.target_fps,
 						attempt,
 					)
-				return
-			last_reason = 'device opened but returned no frames'
-		else:
-			last_reason = 'device is busy or doesnt exist'
+					return
+				last_reason = 'device opened but returned no frames'
+			else:
+				last_reason = 'device is busy or doesnt exist'
 
 		cap.release()
 		logger.warning(
