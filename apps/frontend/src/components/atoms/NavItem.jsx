@@ -11,7 +11,7 @@ const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
         "focus:outline-none focus:ring-2 focus:ring-red/40",
         "group",
         active
-          ? "bg-red text-OffWhite shadow-md"
+          ? "bg-red text-white shadow-md"
           : "text-ink hover:bg-ink/10",
         className,
       ]
@@ -20,7 +20,7 @@ const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
     >
       {Icon && (
         <Icon
-          size={35}
+          size={30}
           strokeWidth={active ? 2 : 1.8}
           className={active? "text-white": "text-ink transition-colors"}
         />

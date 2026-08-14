@@ -16,7 +16,7 @@ export default function SideBar({
 
   return (
     <aside
-      className={`bg-OffWhite dark:bg-OffBlack border-r border-Grey/30 dark:border-DarkGrey/20 w-80 h-full flex flex-col gap-3 p-4 min-h-screen ${className} `}
+      className={`bg-surface border-r border-line w-80 h-full flex flex-col gap-3 p-4 min-h-screen ${className} `}
     >
       {/*Logo goes here*/}
       <div className="flex justify-between items-center mb-4">

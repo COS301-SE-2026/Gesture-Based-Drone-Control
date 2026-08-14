@@ -29,11 +29,9 @@ export default function Button({
       `,
     secondary: `
       text-ink
-      bg-[linear-gradient(145deg,var(--glass),var(--glass-2))]
-      backdrop-blur-md
-      backdrop-saturate-150
+      bg-transparent
       border
-      border-glassBrd
+      border-line
       hover:border-red
       active:border-redDeep
       `,
@@ -66,7 +64,7 @@ export default function Button({
                 flex
                 items-center
                 justify-center
-                gap-5
+                gap-2
             `}
       {...props}
     >

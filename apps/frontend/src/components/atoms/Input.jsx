@@ -5,7 +5,7 @@ import PropTypes from "prop-types"
 
 export default function Input({
   type = "text",
-  placeHolder = "",
+  placeholder = "",
   icon: Icon = null,
   error = false,
   errorMessage = "",
@@ -32,7 +32,7 @@ export default function Input({
 
         <ShadcnInput
           type={inputType}
-          placeholder={placeHolder}
+          placeholder={placeholder}
           value={value}
           onChange={onChange}
           disabled={disabled}
@@ -78,7 +78,7 @@ export default function Input({
 
 Input.propTypes = {
   type: PropTypes.oneOf(["text", "email", "password", "number", "tel", "url"]),
-  placeHolder: PropTypes.string,
+  placeholder: PropTypes.string,
   icon: PropTypes.elementType,
   error: PropTypes.bool,
   errorMessage: PropTypes.string,
@@ -90,7 +90,7 @@ Input.propTypes = {
 
 Input.defaultProps = {
   type: "text",
-  placeHolder: "",
+  placeholder: "",
   icon: null,
   error: false,
   errorMessage: "",

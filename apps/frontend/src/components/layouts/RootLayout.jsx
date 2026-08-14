@@ -6,12 +6,12 @@ import {
   GpsSideContent,
 } from "../molecules"
 import { Home, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
-import bgLight from "../../assets/Lightbackground.png"
-import bgDark from "../../assets/darkbackground.png"
-import { useTheme } from "../../context/ThemeContext"
+// import bgLight from "../../assets/Lightbackground.png"
+// import bgDark from "../../assets/darkbackground.png"
+// import { useTheme } from "../../context/ThemeContext"
 
 const RootLayout = () => {
-  const { isDark } = useTheme()
+  // const { isDark } = useTheme()
   const location = useLocation()
   const menuItems = [
     { id: "gestures", label: "Gestures", icon: Home, path: "/gestures" },
@@ -38,15 +38,15 @@ const RootLayout = () => {
 
   return (
     <div
-      className="flex min-h-screen"
-      style={{
+      className="flex min-h-screen bg-bg bg-[radial-gradient(600px_circle_at_15%_0%,rgba(229,56,59,0.1),transparent_60%)]">
+      {/* style={{
         backgroundImage: `url(${isDark ? bgDark : bgLight})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         backgroundAttachment: "fixed",
       }}
-    >
+    > */}
       <div className="flex flex-col">
         <SideBar items={menuItems} topContent={getTopContent()} />
         <div className="w-80 px-4 pb-4"></div>
