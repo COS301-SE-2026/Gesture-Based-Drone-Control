@@ -11,25 +11,20 @@ export default function Card({
   const variantClasses = {
     //light mode glass
     glass: `
-        bg-OffWhite/10
-        dark:bg-OffWhite/5
+        bg-[linear-gradient(145deg,var(--glass),var(--glass-2))]
         backdrop-blur-md
+        backdrop-saturate-150
         border
-        border-OffWhite/20
-        dark:border-OffWhite/10
-        shadow-xl
-        dark:shadow-2xl
+        border-glassBrd
+        shadow-glass-combo
         `,
     //dark mode glass
     dark: `
-        bg-OffBlack
-        dark:bg-OffBlack
-        backdrop-blur-md
+        bg-surface
         border
-        border-Grey/30
-        dark:border-DarkGrey/20
+        border-line
         shadow-lg
-        dark:shadow-lg`,
+        `,
   }
 
   const interactiveClasses = clickable
@@ -37,11 +32,10 @@ export default function Card({
     cursor-pointer
     transition-all
     duration-200
-    hover:shadow-2xl
-    dark:hover:shadow-2xl
     hover:scale-105
-    hover:bg-OffWhite/20
-    dark:hover:bg-OffWhite/10
+    hover:border-red
+    hover:scale-105
+    hover:shadow-[var(--var-shadow),inset_0_1px_0_var(--glass-hi),0_0_24px_rgba(229,56,59,0.16)]
     `
     : ""
 
@@ -53,7 +47,7 @@ export default function Card({
             ${variantClasses[variant]}
             ${interactiveClasses}
             rounded-xl
-            p-6
+            p-md
             transition-colors
             duration-200
             w-full
@@ -73,7 +67,7 @@ export default function Card({
               ${variantClasses[variant]}
               ${interactiveClasses}
               rounded-xl
-              p-6
+              p-md
               transition-colors
               duration-200
               ${className}
