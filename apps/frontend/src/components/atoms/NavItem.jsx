@@ -6,13 +6,13 @@ const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
       onClick={onClick}
       className={[
         "flex items-center gap-3 w-full px-4 py-2.5 rounded-lg",
-        "font-Inter text-base font-medium",
+        "font-sans text-base font-medium",
         "transition-all duration-200",
-        "focus:outline-none focus:ring-2 focus:ring-Red/40",
+        "focus:outline-none focus:ring-2 focus:ring-red/40",
         "group",
         active
-          ? "bg-Red text-OffWhite shadow-md"
-          : "text-OffBlack dark:text-OffWhite hover:bg-OffWhite/10",
+          ? "bg-red text-OffWhite shadow-md"
+          : "text-ink hover:bg-ink/10",
         className,
       ]
         .filter(Boolean)
@@ -22,11 +22,7 @@ const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
         <Icon
           size={35}
           strokeWidth={active ? 2 : 1.8}
-          className={
-            active
-              ? "text-OffWhite"
-              : "text-OffBlack dark:text-OffWhite group-hover:text-OffBlack transition-colors"
-          }
+          className={active? "text-OffWhite": "text-ink transition-colors"}
         />
       )}
       <span>{label}</span>

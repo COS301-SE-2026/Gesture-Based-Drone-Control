@@ -22,15 +22,16 @@ export default {
           dim:'var(--dim)',
           line:'var(--line)',
           red:'var(--red)',
-          redDeep:'var(--redDeep)',
-          redShadow:'var(--redShadow)',
+
+          redDeep:'var(--red-deep)',
+          redShadow:'var(--red-shadow)',
           glow:'var(--glow)',
           panel:'var(--panel)',
           nav:'var(--nav)',
           glass:'var(--glass)',
-          glass2:'var(--glass2)',
-          glassBrd:'var(--glassBrd)',
-          glassHi:'var(--glassHi)',
+          glass2:'var(--glass-2)',
+          glassBrd:'var(--glass-brd)',
+          glassHi:'var(--glass-hi)',
 
           success: '#1B7F3A',
           warning: '#C77700',
@@ -59,7 +60,7 @@ export default {
         borderRadius: {
           'none': '0',
           'sm': '8px',
-          'md': '122px',
+          'md': '12px',
           'lg': '14px',
           'xl': '16px',
           '2xl': '20px',
@@ -85,7 +86,7 @@ export default {
           'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           'bounce': 'bounce 1s infinite',
 
-          'rise':'md-rise 0.8s cubic-bexier(0.1, 0.75 , 0.25, 1) forwards',
+          'rise':'md-rise 0.8s cubic-bezier(0.1, 0.75 , 0.25, 1) forwards',
           'glow-pulse': 'md-pulse 2s ease-in-out infinite',
         },
 
