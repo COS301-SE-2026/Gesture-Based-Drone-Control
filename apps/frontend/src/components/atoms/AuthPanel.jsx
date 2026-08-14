@@ -14,12 +14,12 @@ const AuthPanel = ({ title, subtitle }) => {
         backgroundImage: `url(${isDark ? darkbg : lightbg})`,
       }}
     >
-      <div className="absolute inset-0 bg-OffBlack/40" />
+      <div className="absolute inset-0 bg-[#0B090A]/40" />
       <div className="relative z-10 flex flex-col justify-center items-center w-full text-center px-6">
-        <h1 className="text-5xl font-bold text-OffWhite mb-4 drop-shadow-lg">
+        <h1 className="text-5xl font-display font-bold text-white mb-4 drop-shadow-lg">
           {title}
         </h1>
-        <p className=" text-xl text-OffWhite drop-shadow-md max-w-md">
+        <p className=" text-xl text-white drop-shadow-md max-w-md">
           {subtitle}
         </p>
       </div>

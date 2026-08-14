@@ -27,7 +27,7 @@ export default function Input({
     <div className="w-full">
       <div className={`relative flex items-center ${className}`}>
         {Icon && (
-          <Icon className="absolute left-3 w-5 h-5 text-OffBlack dark:text-OffWhite pointer-events-none" />
+          <Icon className="absolute left-3 w-5 h-5 text-ink pointer-events-none" />
         )}
 
         <ShadcnInput
@@ -42,10 +42,12 @@ export default function Input({
                             h-10
                             rounded-lg
                             border
-                            ${error ? "border-DarkRed focus:border-Red focus:ring-Red" : "border-OffBlack dark:border-DarkGrey focus:border-Red focus:ring-Red"}
-                            dark:bg-OffBlack
-                            dark:text-OffWhite
-                            dark:placeholder-DarkGrey
+                            bg-[linear-gradient(145deg,var(--glass),var(--glass-2))]
+                            backdrop-blur-md
+                            backdrop-saturate-150
+                            text-ink
+                            placeholder-dim
+                            ${error ? "border-red focus:border-red focus:ring-red" : "border-glassBrd focus:border-red focus:ring-red"}
                             transition-colors
                             duration-200
                         `}
@@ -56,7 +58,7 @@ export default function Input({
           <button
             type="button"
             onClick={togglePassVisibility}
-            className="absolute right-3 text-Grey hover:text-gray-600 dark:hover:text-gray-300"
+            className="absolute right-3 text-dim hover:text-red"
           >
             {showPass ? (
               <EyeOff className="w-5 h-5" />
@@ -68,7 +70,7 @@ export default function Input({
       </div>
 
       {error && errorMessage && (
-        <p className="text-sm text-Red mt-1">{errorMessage}</p>
+        <p className="text-sm text-red mt-1">{errorMessage}</p>
       )}
     </div>
   )
