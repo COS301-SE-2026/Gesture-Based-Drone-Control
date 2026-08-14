@@ -9,7 +9,7 @@ export function buildWsUrl(path) {
 const BASE_RECONNECT_MS = 500
 const MAX_RECONNECT_MS = 5000
 
-export function useFrameStream(path, {autoReconnect = true } = {}) {
+export function useFrameStream(path, { autoReconnect = true } = {}) {
   const [frame, setFrame] = useState(null)
   const [connected, setConnected] = useState(false)
   const [error, setError] = useState(null)
@@ -43,31 +43,31 @@ export function useFrameStream(path, {autoReconnect = true } = {}) {
         setError(null)
       }
 
-       ws.onmessage = (event) => {
-      if (cancelled) return
-      let message
-      try {
-        message = JSON.parse(event.data)
-      } catch {
-        return 
-      }
-      if (message?.type === "error") {
-        setError(message.message || "Camera unavailable")
-        return 
-      }
-      setFrame(message)
+      ws.onmessage = (event) => {
+        if (cancelled) return
+        let message
+        try {
+          message = JSON.parse(event.data)
+        } catch {
+          return
+        }
+        if (message?.type === "error") {
+          setError(message.message || "Camera unavailable")
+          return
+        }
+        setFrame(message)
       }
       ws.onerror = () => {
-      if (cancelled) return
-      setConnected(false)
-    }
+        if (cancelled) return
+        setConnected(false)
+      }
 
-    ws.onclose = () => {
-      if (wsRef.current === ws) wsRef.current = null
-      if (cancelled) return
-      setConnected(false)
-      scheduleReconnect()
-    }
+      ws.onclose = () => {
+        if (wsRef.current === ws) wsRef.current = null
+        if (cancelled) return
+        setConnected(false)
+        scheduleReconnect()
+      }
     }
 
     connect()
@@ -86,6 +86,6 @@ export function useFrameStream(path, {autoReconnect = true } = {}) {
       }
     }
   }, [path, autoReconnect])
- 
+
   return { frame, connected, error }
 }

@@ -29,8 +29,8 @@ const GestureCameraFeed = ({
     if (!canvas || !frame) return undefined
 
     let cancelled = false
-    
-    const render = async() => {
+
+    const render = async () => {
       let bitmap = null
       if (frame.frame_jpeg) {
         try {
@@ -41,7 +41,7 @@ const GestureCameraFeed = ({
       }
       if (cancelled) {
         bitmap?.close?.()
-        return 
+        return
       }
       drawFrame(canvas, bitmap, frame, skeletonColor)
       bitmap?.close?.()
@@ -91,23 +91,22 @@ function getStatusLabel(connected, error, frame) {
 function base64ToBlob(base64) {
   const binary = atob(base64)
   const bytes = new Uint8Array(binary.length)
-  for (let i=0; i<binary.length; i+=1)
-    {
-      bytes[i] = binary.charCodeAt(i)
-    }
-  return new Blob([bytes], {type: "image/jpeg"})
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return new Blob([bytes], { type: "image/jpeg" })
 }
 
 function drawFrame(canvas, bitmap, frame, skeletonColor) {
   const ctx = prepareCanvas(canvas)
- 
+
   const sourceWidth = frame.frame_width || bitmap?.width || canvas.width
   const sourceHeight = frame.frame_height || bitmap?.height || canvas.height
   const transform = coverTransform(canvas, {
     videoWidth: sourceWidth,
     videoHeight: sourceHeight,
   })
- 
+
   if (bitmap) {
     ctx.drawImage(
       bitmap,
@@ -117,18 +116,18 @@ function drawFrame(canvas, bitmap, frame, skeletonColor) {
       transform.drawH
     )
   }
- 
+
   // fps reading, bottom left
   if (typeof frame.fps === "number") {
     drawLabel(ctx, `${frame.fps.toFixed(1)} FPS`, 8, canvas.height - 8)
   }
- 
+
   if (!frame?.hands?.length) return
- 
+
   frame.hands.forEach((hand) => {
     const points = toCanvasPoints(hand.landmarks, transform)
     drawHand(ctx, points, skeletonColor)
- 
+
     // per-hand info label above wrist (landmark 0)
     const wrist = points[0]
     if (!wrist) return
