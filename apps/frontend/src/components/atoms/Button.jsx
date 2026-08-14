@@ -21,10 +21,23 @@ export default function Button({
 
   //variants of the button prop
   const variantClasses = {
-    default: "bg-Red text-OffWhite hover:bg-LightRed active:bg-DarkRed",
-    secondary:
-      "bg-DarkGrey text-OffBlack dark:text-OffBlack hover:bg-Grey active:bg-DarkGrey",
-    //can add more if we need them
+    default: `
+      text-white
+      bg-[linear-gradient(145deg,var(--red),var(--red-deep))]
+      hover:brightness-110
+      active:bg-[linear-gradient(145deg,var(--red-deep),var(--red-shadow))]
+      `,
+    secondary: `
+      text-ink
+      bg-[linear-gradient(145deg,var(--red),var(--glass-2))]
+      backdrop-blur-md
+      backdrop-saturate-150
+      border
+      border-glassBrd
+      hover:border-red
+      active:border-redDeep
+      `,
+      
   }
 
   const renderIcon = () => {
