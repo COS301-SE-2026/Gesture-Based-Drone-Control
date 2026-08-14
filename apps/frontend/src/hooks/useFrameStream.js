@@ -6,46 +6,86 @@ export function buildWsUrl(path) {
   return `${wsBase}${path}`
 }
 
-export function useFrameStream(path) {
+const BASE_RECONNECT_MS = 500
+const MAX_RECONNECT_MS = 5000
+
+export function useFrameStream(path, {autoReconnect = true } = {}) {
   const [frame, setFrame] = useState(null)
   const [connected, setConnected] = useState(false)
+  const [error, setError] = useState(null)
   const wsRef = useRef(null)
 
   useEffect(() => {
     let cancelled = false
-    const ws = new WebSocket(buildWsUrl(path))
-    wsRef.current = ws
+    let attempts = 0
+    let retryTimer = null
 
-    ws.onopen = () => {
-      if (!cancelled) setConnected(true)
-    }
-    ws.onclose = () => {
-      if (!cancelled) setConnected(false)
-    }
-    ws.onerror = () => {
-      if (!cancelled) setConnected(false)
+    const scheduleReconnect = () => {
+      if (cancelled || !autoReconnect) return
+      const delay = Math.min(
+        MAX_RECONNECT_MS,
+        BASE_RECONNECT_MS * 2 ** attempts
+      )
+      attempts += 1
+      retryTimer = setTimeout(connect, delay + Math.random() * 250)
     }
 
-    ws.onmessage = (event) => {
+    const connect = () => {
       if (cancelled) return
-      try {
-        setFrame(JSON.parse(event.data))
-      } catch {
-        //ignore wierd frames
+
+      const ws = new WebSocket(buildWsUrl(path))
+      wsRef.current = ws
+
+      ws.onopen = () => {
+        if (cancelled) return
+        attempts = 0
+        setConnected(true)
+        setError(null)
       }
+
+       ws.onmessage = (event) => {
+      if (cancelled) return
+      let message
+      try {
+        message = JSON.parse(event.data)
+      } catch {
+        return 
+      }
+      if (message?.type === "error") {
+        setError(message.message || "Camera unavailable")
+        return 
+      }
+      setFrame(message)
+      }
+      ws.onerror = () => {
+      if (cancelled) return
+      setConnected(false)
     }
+
+    ws.onclose = () => {
+      if (wsRef.current === ws) wsRef.current = null
+      if (cancelled) return
+      setConnected(false)
+      scheduleReconnect()
+    }
+    }
+
+    connect()
 
     return () => {
       cancelled = true
+      clearTimeout(retryTimer)
+      const ws = wsRef.current
       wsRef.current = null
-      //never close socket still handshaking
+      if (!ws) return
       if (ws.readyState === WebSocket.OPEN) {
         ws.close()
       } else if (ws.readyState === WebSocket.CONNECTING) {
+        // never close a socket mid-handshake, wait for it to open first
         ws.addEventListener("open", () => ws.close(), { once: true })
       }
     }
-  }, [path])
-
-  return { frame, connected }
+  }, [path, autoReconnect])
+ 
+  return { frame, connected, error }
 }
