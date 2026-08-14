@@ -39,7 +39,7 @@ export default function Toggle({
                     rounded-full
                     transition-colors
                     duration-200
-                    ${isChecked ? "bg-red" : "bg-line"}
+                    ${isChecked ? "bg-red" : "bg-dim/30"}
                     ${disabled ? "opacity-50 cursor-not-allowed" : ""}
                 `}
       >

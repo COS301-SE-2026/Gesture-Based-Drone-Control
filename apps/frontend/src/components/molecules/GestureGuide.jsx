@@ -326,13 +326,13 @@ const GestureGuide = memo(function GestureGuide({
       {controls[activeTab].map(({ icon: Icon, label, input }) => (
         <div
           key={label}
-          className="flex items-center gap-3 bg-OffBlack/10 dark:bg-OffWhite/5 rounded-lg px-3 py-2 border border-Grey/10"
+          className="flex items-center gap-3 bg-glass backdrop-blur-sm rounded-lg px-3 py-2 border border-glassBrd"
         >
-          <Icon className="w-4 h-4 text-Red shrink-0" />
-          <span className="text-xs text-OffBlack/70 dark:text-OffWhite/70 flex-1 text-left">
+          <Icon className="w-4 h-4 text-red shrink-0" />
+          <span className="text-xs text-ink/70 flex-1 text-left">
             {label}
           </span>
-          <span className="text-xs font-mono font-semibold text-OffBlack dark:text-OffWhite bg-Grey/20 dark:bd-DarkGrey/40 px-2 py-0.5 rounded">
+          <span className="text-xs font-mono font-semibold text-ink bg-dim/20 px-2 py-0.5 rounded">
             {input || "Not Mapped"}
           </span>
         </div>
@@ -364,10 +364,10 @@ const GestureGuide = memo(function GestureGuide({
           <div className="flex items-center gap-2 text-xs">
             <span
               className={`w-2 h-2 rounded-full ${
-                keyboardConnected ? "bg-green-500 animate-pulse" : "bg-Grey/40"
+                keyboardConnected ? "bg-success animate-pulse" : "bg-dim/40"
               }`}
             />
-            <span className="text-OffBlack/70 dark:text-OffWhite/70">
+            <span className="text-ink/70">
               {keyboardConnected
                 ? "Keyboard control active"
                 : "Connecting keyboard controls..."}
@@ -380,11 +380,11 @@ const GestureGuide = memo(function GestureGuide({
             <span
               className={`w-2 h-2 rounded-full ${
                 controllerConnected
-                  ? "bg-green-500 animate-pulse"
-                  : "bg-Grey/40"
+                  ? "bg-success animate-pulse"
+                  : "bg-dim/40"
               }`}
             />
-            <span className="text-OffBlack/70 dark:text-OffWhite/70">
+            <span className="text-ink/70">
               {controllerConnected
                 ? "Gamepad control active"
                 : "Connecting gamepad controls..."}
@@ -397,17 +397,17 @@ const GestureGuide = memo(function GestureGuide({
             <div className="flex items-center gap-2">
               <span
                 className={`w-2 h-2 rounded-full ${
-                  gestureConnected ? "bg-green-500 animate-pulse" : "bg-Grey/40"
+                  gestureConnected ? "bg-success animate-pulse" : "bg-dim/40"
                 }`}
               />
-              <span className="text-OffBlack/70 dark:text-OffWhite/70">
+              <span className="text-ink/70">
                 {gestureConnected
                   ? "Gesture control active"
                   : "Connecting gesture controls..."}
               </span>
             </div>
             {gestureConnected && gestureStatus.active && (
-              <span className="font-mono text-OffBlack/60 dark:text-OffWhite/60">
+              <span className="font-mono text-ink/60">
                 {gestureStatus.lastGesture === "none"
                   ? "no gesture"
                   : gestureStatus.lastGesture.toLowerCase().replace(/_/g, " ")}

@@ -35,7 +35,7 @@ export default function Card({
     hover:scale-105
     hover:border-red
     hover:scale-105
-    hover:shadow-[var(--var-shadow),inset_0_1px_0_var(--glass-hi),0_0_24px_rgba(229,56,59,0.16)]
+    hover:shadow-[var(--glass-shadow),inset_0_1px_0_var(--glass-hi),0_0_24px_rgba(229,56,59,0.16)]
     `
     : ""
 

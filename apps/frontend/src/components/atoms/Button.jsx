@@ -29,7 +29,7 @@ export default function Button({
       `,
     secondary: `
       text-ink
-      bg-[linear-gradient(145deg,var(--red),var(--glass-2))]
+      bg-[linear-gradient(145deg,var(--glass),var(--glass-2))]
       backdrop-blur-md
       backdrop-saturate-150
       border

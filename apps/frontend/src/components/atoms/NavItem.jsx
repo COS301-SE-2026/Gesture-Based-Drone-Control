@@ -22,7 +22,7 @@ const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
         <Icon
           size={35}
           strokeWidth={active ? 2 : 1.8}
-          className={active? "text-OffWhite": "text-ink transition-colors"}
+          className={active? "text-white": "text-ink transition-colors"}
         />
       )}
       <span>{label}</span>
