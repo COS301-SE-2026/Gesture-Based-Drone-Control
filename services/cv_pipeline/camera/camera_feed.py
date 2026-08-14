@@ -17,14 +17,17 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+
 class CameraError(RuntimeError):
 	"""Raised when the capture device cannot be opened or produces no frames."""
+
 
 # configs & enum
 class CameraSource(Enum):
 	WEBCAM = auto()
 	# point at recorded vid for offline use
 	FILE = auto()
+
 
 def default_api_preference() -> int:
 	"""Most reliable OpenCV capture backend for current os"""
@@ -33,6 +36,7 @@ def default_api_preference() -> int:
 	if sys.platform == 'win32':
 		return cv2.CAP_DSHOW
 	return cv2.CAP_V4L2
+
 
 @dataclass
 class CameraConfig:
@@ -48,10 +52,11 @@ class CameraConfig:
 	# mirror for hand tracking
 	flip_horizontal: bool = True
 	api_preference: Optional[int] = None
-	open_attempts: int =4
+	open_attempts: int = 4
 	open_retry_delay: float = 0.35
-	warmup_frames: int=5
+	warmup_frames: int = 5
 	max_read_failures: int = 150
+
 
 # frame wrapper
 @dataclass
@@ -77,7 +82,7 @@ class CameraFeed:
 		self._cap: Optional[cv2.VideoCapture] = None
 		self._frame_idx = 0
 		self._read_failures = 0
-	
+
 	@property
 	def read_failures(self) -> int:
 		return self._read_failures
@@ -125,7 +130,7 @@ class CameraFeed:
 			last_reason = 'device opened but returned no frames'
 		else:
 			last_reason = 'device is busy or doesnt exist'
-   
+
 		cap.release()
 		logger.warning(
 			'Camera open attempt %d/%d failef (%s), retrying in %.2fs',
@@ -135,20 +140,20 @@ class CameraFeed:
 			self._config.open_retry_delay,
 		)
 		time.sleep(self._config.open_retry_delay)
-  
+
 		raise CameraError(
 			f'Failed to open camera index {self._config.device_index} after '
 			f'{self._config.open_attempts} attempts: {last_reason}. '
 			'Another application (or browser holding getUserMedia) '
 			'is most likely still using the webcam.'
 		)
-  
+
 	def _apply_properties(self, cap: cv2.VideoCapture) -> None:
 		cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._config.frame_width)
 		cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._config.frame_height)
 		cap.set(cv2.CAP_PROP_FPS, self._config.target_fps)
 		cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-  
+
 	def _warmup(self, cap: cv2.VideoCapture) -> bool:
 		"""Discard the first few frames: rerturn True once a real one arrives"""
 		got_frame = False

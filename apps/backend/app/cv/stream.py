@@ -21,11 +21,12 @@ from services.cv_pipeline.processing.pipeline import CvPipeline, PipelineConfig
 
 logger = logging.getLogger(__name__)
 
-#how long camera stas open after last client disconnects
+# how long camera stas open after last client disconnects
 LINGER_SECONDS = 3.0
 
-#client queue carries payloads or none (none=stream done close socket)
+# client queue carries payloads or none (none=stream done close socket)
 ClientQueue = 'asyncio.Queue[Optional[GestureFramePayload]]'
+
 
 class GestureStream:
 	"""
@@ -58,7 +59,7 @@ class GestureStream:
 		queue: asyncio.Queue = asyncio.Queue(maxsize=1)
 		self._clients.add(queue)
 		self._cancel_linger()
-  
+
 		try:
 			await self._ensure_started()
 		except Exception:
@@ -101,12 +102,12 @@ class GestureStream:
 				self._broadcast_task(), name='gesture-stream-broadcast'
 			)
 			logger.info('GestureStream started (camera opened)')
-   
+
 	def _cancel_linger(self) -> None:
 		if self._linger_task is not None and not self._linger_task.done():
 			self._task.cancel()
 		self._linger_task = None
-  
+
 	async def _schedule_stop_if_idle(self) -> None:
 		if self._clients or self._pipeline is None:
 			return
@@ -115,7 +116,7 @@ class GestureStream:
 		self._linger_task = asyncio.create_task(
 			self._linger_then_stop(), name='gesture-stream-linger'
 		)
-  
+
 	async def _linger_then_stop(self) -> None:
 		try:
 			await asyncio.sleep(LINGER_SECONDS)
@@ -125,7 +126,7 @@ class GestureStream:
 			return
 		await self._stop_pipeline()
 		logger.info('Gesture stopped (idle for %.1fs)', LINGER_SECONDS)
-  
+
 	async def _stop_pipeline(self) -> None:
 		async with self._lock:
 			if self._pipeline is None:
@@ -137,11 +138,11 @@ class GestureStream:
 				task.cancel()
 				with contextlib.suppress(asyncio.CancelledError):
 					await task
-     
+
 			pipeline = self._pipeline
 			self._pipeline = None
 			await asyncio.shield(pipeline.stop())
-   
+
 	def _fan_out(self, payload: Optional[GestureFramePayload]) -> None:
 		for queue in list(self._clients):
 			if queue.full():
@@ -150,10 +151,10 @@ class GestureStream:
 			queue.put_nowait(payload)
 
 	async def _broadcast(self) -> None:
-		pipeline= self._pipeline
+		pipeline = self._pipeline
 		if pipeline is None:
 			return
-		try: 
+		try:
 			async for event in pipeline.events():
 				self._fan_out(serialize_event(event, include_frame=True))
 			self._fan_out(None)

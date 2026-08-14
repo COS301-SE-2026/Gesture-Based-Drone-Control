@@ -5,9 +5,15 @@ are JSON serializable over webscoket
 PipelineEvent -> GestureFramePayload -> sent to browser as ws.send_json
 """
 
+import base64
+from typing import Optional
+
+import cv2
 from pydantic import BaseModel, Field
 
 from services.cv_pipeline.processing.pipeline import PipelineEvent
+
+JPEG_QUALITY = 60
 
 
 class LandmarkOut(BaseModel):
@@ -65,6 +71,17 @@ class GestureFramePayload(BaseModel):
 	frame_index: int = Field(..., description='Monotonic frame counter since pipeline start')
 	timestamp: float = Field(..., description='Frame capture time(monotonic clock, seconds)')
 	fps: float = Field(..., ge=0.0, description='Smoothed fps of the pipeline')
+	frame_jpeg: Optional[str] = Field(
+		default=None,
+		description=(
+			'The processed frame as a base64 JPEG, already '
+			'mirrored and resized to match the landmark coordinate space. Render '
+			'this instead of opening the webcam again in the browser. Null when '
+			'the server is configured to send landmarks only.'
+		),
+	)
+	frame_width: Optional[int] = Field(default=None, description='Width of frame_jpeg in pixels')
+	frame_height: Optional[int] = Field(default=None, description='Height of frame_jpeg in pixels')
 	hands: list[HandOut] = Field(
 		default_factory=list, description='0-2 hands currently detected in frame'
 	)
@@ -77,6 +94,9 @@ class GestureFramePayload(BaseModel):
 					'frame_index': 142,
 					'timestamp': 1719831600.123,
 					'fps': 28.7,
+					'frame_jpeg': '/9j/4AAQSkZJRgABAQAA...',
+					'frame_width': 640,
+					'frame_height': 480,
 					'hands': [
 						{
 							'handedness': 'RIGHT',
@@ -110,7 +130,18 @@ def _build_hand_out(detected_hand, gesture_result, hand_metric) -> HandOut:
 	)
 
 
-def serialize_event(event: PipelineEvent) -> GestureFramePayload:
+def encode_jpeg(bgr_frame, quality: int = JPEG_QUALITY) -> Optional[str]:
+	"""
+	Base64 JPEG for one BGR frame, or None if encoding failed
+	Encoding 640x480 at q60 costs roughly 1-2ms, done once per frame for all clients
+	"""
+	ok, buffer = cv2.imencode(',jpg', bgr_frame, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
+	if not ok:
+		return None
+	return base64.b64decode(buffer.tobytes()).decode('ascii')
+
+
+def serialize_event(event: PipelineEvent, include_frame: bool = False) -> GestureFramePayload:
 	"""
 	Build a GestureFramePayload from a pipelineEvent
 	"""
@@ -126,9 +157,19 @@ def serialize_event(event: PipelineEvent) -> GestureFramePayload:
 			hand_metric = metrics[i] if i < len(metrics) else None
 			hands.append(_build_hand_out(detected_hand, gesture_result, hand_metric))
 
+	jpeg = None
+	width = None
+	height = None
+	if include_frame and event.frame.bgr_frame is not None:
+		jpeg = encode_jpeg(event.frame.bgr_frame)
+		height, width = event.frame.bgr_frame.shape[:2]
+
 	return GestureFramePayload(
 		frame_index=event.frame_index,
 		timestamp=event.frame.timestamp,
 		fps=round(event.fps, 1),
+		freame_jpeg=jpeg,
+		frame_width=width,
+		frame_height=height,
 		hands=hands,
 	)
