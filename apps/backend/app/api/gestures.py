@@ -30,6 +30,9 @@ router = APIRouter(prefix='/gestures', tags=['gestures'])
 # camera opens lazily on first WS connection and closes when the last one disconnects
 stream = GestureStream()
 
+WS_CAMERA_UNAVAILABLE = 1011
+WS_STREAM_ENDED = 1001
+
 
 class GestureStreamStatus(BaseModel):
 	"""
@@ -38,6 +41,13 @@ class GestureStreamStatus(BaseModel):
 
 	running: bool = Field(..., description='Whether the camera pipeline is currently active')
 	connected_clients: int = Field(..., ge=0, description='Number of open WebSocket connections')
+	last_error: str | None = Field(
+		default=None,
+		description=(
+			'Why the camera last failed to open or the pipeline last died, so the '
+			'UI can show something better than "Disconnected". Null when healthy'
+		),
+	)
 	last_frame: GestureFramePayload | None = Field(
 		default=None,
 		description=(
@@ -60,7 +70,11 @@ class GestureStreamStatus(BaseModel):
 	),
 )
 async def get_gesture_stream_status() -> GestureStreamStatus:
-	return GestureStreamStatus(running=stream.is_running, connected_clients=stream.client_count)
+	return GestureStreamStatus(
+		running=stream.is_running,
+		connected_clients=stream.client_count,
+		last_error=stream._last_error,
+	)
 
 
 @router.get('/health')
@@ -99,10 +113,27 @@ async def gesture_websocket(websocket: WebSocket) -> None:
 	await websocket.accept()
 	queue = None
 	try:
-		queue = await stream.subscribe()
-		logger.info('gesture client connected (total =%d)', stream.client_count)
+		try:
+			queue = await stream.subscribe()
+		except Exception as exc:
+			logger.warning('gesture client rejected, camera unavailable" %s', exc)
+			await websocket.send_json(
+				{
+					'type': 'error',
+					'code': 'camera_unavailable',
+					'message': str(exc),
+				}
+			)
+			await websocket.close(code=WS_CAMERA_UNAVAILABLE)
+			return
+
+		logger.info('gesture client connected (total = %d)', stream.client_count)
 		while True:
 			payload = await queue.get()
+			if payload is None:
+				logger.info('gesture stream ended, closing client socket')
+				await websocket.close(code=WS_STREAM_ENDED)
+				break
 			await websocket.send_json(payload.model_dump())
 	except WebSocketDisconnect:
 		logger.info('gesture client disconnected')
