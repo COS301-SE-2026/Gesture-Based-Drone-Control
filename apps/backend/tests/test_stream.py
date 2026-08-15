@@ -81,7 +81,7 @@ def patch_serialize(monkeypatch):
 	reaches subscribers, so stub to wrap fake event
 	"""
 
-	def fake_serialize(event: FakeEvent) -> GestureFramePayload:
+	def fake_serialize(event: FakeEvent, include_frame: bool = False) -> GestureFramePayload:
 		return GestureFramePayload(frame_index=event.frame_index, timestamp=0.0, fps=0.0, hands=[])
 
 	monkeypatch.setattr('app.cv.stream.serialize_event', fake_serialize)
@@ -90,6 +90,12 @@ def patch_serialize(monkeypatch):
 @pytest.fixture
 def stream(patch_pipeline, patch_serialize) -> GestureStream:
 	return GestureStream()
+
+
+@pytest.fixture(autouse=True)
+def fast_linger(monkeypatch):
+	"""collapse the camera linger so lifecycle tests ddont wait 3s"""
+	monkeypatch.setattr('app.cv.stream.LINGER_SECONDS', 0.01)
 
 
 # tests
@@ -122,12 +128,14 @@ class TestLazyStartStop:
 	async def test_last_unsubscribe_stops_pipeline(self, stream: GestureStream):
 		q1 = await stream.subscribe()
 		await stream.unsubscribe(q1)
+		await asyncio.sleep(0.05)
 		assert stream.is_running is False
 		assert FakeCvPipeline.instances[0].stopped is True
 
 	async def test_resubscribe_after_full_stop_starts_fresh_pipeline(self, stream: GestureStream):
 		q1 = await stream.subscribe()
 		await stream.unsubscribe(q1)
+		await asyncio.sleep(0.05)
 		assert stream.is_running is False
 
 		await stream.subscribe()
@@ -142,6 +150,14 @@ class TestLazyStartStop:
 		await stream.shutdown()
 		assert stream.is_running is False
 		assert stream.client_count == 0
+
+	async def test_resubscribe_within_linger_keeps_same_pipeline(self, stream: GestureStream):
+		q1 = await stream.subscribe()
+		await stream.unsubscribe(q1)
+		await stream.subscribe()
+		await asyncio.sleep(0.05)
+		assert stream.is_running is True
+		assert len(FakeCvPipeline.instances) == 1
 
 
 class TestBroadcastFanOut:
@@ -187,4 +203,5 @@ class TestUnsubscribeIsIdempotentAndSafe:
 		q = await stream.subscribe()
 		await stream.unsubscribe(q)
 		await stream.unsubscribe(q)  # second call should be a no-op, not an error
+		await asyncio.sleep(0.05)
 		assert stream.is_running is False
