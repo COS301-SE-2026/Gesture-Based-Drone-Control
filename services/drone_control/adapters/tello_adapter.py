@@ -93,6 +93,23 @@ class TelloAdapter(DroneAdapter):
 
         self._tello.send_rc_control(lr, fb, ud, yaw)
 
+    async def analog(self, input: AnalogInput) -> None:
+        self._assert_connected()
+        self._assert_flying()
+
+        fb = -input.left_y * self.MOVEMENTSPEED
+        lr = input.left_x * self.MOVEMENTSPEED
+
+        stickz = input.right_y
+        triggerz = input.ltrigger - input.rtrigger
+        vert = stickz if abs(stickz) >= abs(triggerz) else triggerz
+        ud = vert * self.MOVEMENTSPEED
+
+        yaw = input.right_x * self.MOVEMENTSPEED
+
+        self._tello.send_rc_control(lr, fb, ud, yaw)
+
+
     def _assert_connected(self) -> None:
         if self._connected == False:
             raise RuntimeError(
