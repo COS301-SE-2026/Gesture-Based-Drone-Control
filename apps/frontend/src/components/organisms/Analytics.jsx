@@ -14,45 +14,6 @@ import {
 import { useTelemetry } from "@/context/TelemetryContext"
 import { useEffect, useRef, useState } from "react"
 
-// const Analytics = () => {
-//   // Mock flight data for charts
-//   const flightTelemetryData = [
-//     { time: "0min", value: 10 },
-//     { time: "5min", value: 30 },
-//     { time: "10min", value: 50 },
-//     { time: "15min", value: 45 },
-//     { time: "20min", value: 35 },
-//     { time: "21min", value: 0 },
-//   ]
-
-//   const batteryHealthData = [
-//     { time: "0min", health: 100 },
-//     { time: "5min", health: 92 },
-//     { time: "10min", health: 85 },
-//     { time: "15min", health: 75 },
-//     { time: "20min", health: 65 },
-//     { time: "21min", health: 60 },
-//   ]
-
-//   const performanceData = [
-//     { flight: "Flight 1", duration: 21 },
-//     { flight: "Flight 2", duration: 18 },
-//     { flight: "Flight 3", duration: 25 },
-//     { flight: "Flight 4", duration: 19 },
-//     { flight: "Flight 5", duration: 22 },
-//     { flight: "Flight 6", duration: 20 },
-//     { flight: "Flight 7", duration: 23 },
-//     { flight: "Flight 8", duration: 21 },
-//   ]
-
-//   const metrics = {
-//     flightTime: 21,
-//     avgSpeed: 8.2,
-//     maxAltitude: 53,
-//     totalDistance: 3.5,
-//     avgFlightDuration: 7,
-//     totalFlights: 14,
-//   }
 
 const MAX_LIVE_POINTS = 10
 //might change this depending

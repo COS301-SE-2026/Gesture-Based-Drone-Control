@@ -32,7 +32,7 @@ export default function Button({
       bg-glass
       backdrop-blur-sm
       border
-      border-glass
+      border-glassBrd
       hover:border-red
       active:border-redDeep
       `,

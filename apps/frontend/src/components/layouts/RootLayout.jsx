@@ -37,7 +37,7 @@ const RootLayout = () => {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       <div className="md-ambience" aria-hidden="true">
         <i />
         <i />
@@ -53,7 +53,6 @@ const RootLayout = () => {
     > */}
 
       <SideBar items={menuItems} topContent={getTopContent()} />
-      <div className="w-80 px-4 pb-4"></div>
 
       <main className="flex-1 overflow-y-auto">
         <Outlet />
