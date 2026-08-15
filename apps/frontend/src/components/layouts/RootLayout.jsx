@@ -37,7 +37,12 @@ const RootLayout = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-bg bg-[radial-gradient(600px_circle_at_15%_0%,rgba(229,56,59,0.1),transparent_60%)]">
+    <div className="flex min-h-screen">
+      <div className="md-ambience" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </div>
       {/* style={{
         backgroundImage: `url(${isDark ? bgDark : bgLight})`,
         backgroundSize: "cover",
@@ -46,10 +51,10 @@ const RootLayout = () => {
         backgroundAttachment: "fixed",
       }}
     > */}
-      <div className="flex flex-col">
-        <SideBar items={menuItems} topContent={getTopContent()} />
-        <div className="w-80 px-4 pb-4"></div>
-      </div>
+
+      <SideBar items={menuItems} topContent={getTopContent()} />
+      <div className="w-80 px-4 pb-4"></div>
+
       <main className="flex-1 overflow-y-auto">
         <Outlet />
       </main>

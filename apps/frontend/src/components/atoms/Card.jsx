@@ -14,17 +14,15 @@ export default function Card({
         bg-[linear-gradient(145deg,var(--glass),var(--glass-2))]
         backdrop-blur-md
         backdrop-saturate-150
-        border
-        border-glassBrd
         shadow-glass-combo
         `,
     //dark mode glass
     dark: `
         bg-surface
-        border
         border-line
         shadow-lg
         `,
+    solid: "md-uccard",
   }
 
   const interactiveClasses = clickable
@@ -38,15 +36,16 @@ export default function Card({
     `
     : ""
 
+  const isSolid = variant === "solid"
+
   if (clickable) {
     return (
       <button
         onClick={onClick}
         className={`
             ${variantClasses[variant]}
-            ${interactiveClasses}
-            rounded-xl
-            p-md
+            ${isSolid ? "" : interactiveClasses}
+            ${isSolid ? "" : "rounded-xl p-md"}
             transition-colors
             duration-200
             w-full
@@ -64,9 +63,8 @@ export default function Card({
     <div
       className={`
               ${variantClasses[variant]}
-              ${interactiveClasses}
-              rounded-xl
-              p-md
+              ${isSolid ? "" : interactiveClasses}
+              ${isSolid ? "" : "rounded-xl p-md"}
               transition-colors
               duration-200
               ${className}
@@ -81,7 +79,7 @@ export default function Card({
 Card.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
-  variant: PropTypes.oneOf(["glass", "dark"]),
+  variant: PropTypes.oneOf(["glass", "dark", "solid"]),
   clickable: PropTypes.bool,
   onClick: PropTypes.func,
 }

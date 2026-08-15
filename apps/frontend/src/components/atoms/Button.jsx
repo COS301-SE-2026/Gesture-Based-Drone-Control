@@ -35,6 +35,7 @@ export default function Button({
       hover:border-red
       active:border-redDeep
       `,
+    solid: "md-uccard",
   }
 
   const renderIcon = () => {
