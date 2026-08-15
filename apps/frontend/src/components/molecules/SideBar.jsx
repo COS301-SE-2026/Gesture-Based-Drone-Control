@@ -1,10 +1,37 @@
+import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { NavItem, Card } from "../atoms"
 import DarkModeToggle from "./DarkModeToggle"
 import Logo from "../../assets/codex_merchants_logo.png"
+import SLogo from "../../assets/codex_merchants_logo_small.png"
 import PropTypes from "prop-types"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 //main nav sidebar that will be displayed on all pages
+
+const COLLAPSE_KEY = "sidebar:collapsed"
+
+function useCollapsedState() {
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(COLLAPSE_KEY) === "true"
+    }
+    catch {
+      return false
+    }
+  })
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(COLLAPSE_KEY, String(collapsed))
+    }
+    catch {
+      //localstorage unavilable, ignore
+    }
+  }, [collapsed])
+
+  return [collapsed, setCollapsed]
+}
 
 export default function SideBar({
   items = [],
@@ -13,25 +40,44 @@ export default function SideBar({
 }) {
   const navigate = useNavigate()
   const location = useLocation()
+  const [collapsed, setCollapsed] = useCollapsedState()
 
   return (
     <aside
-      className={`bg-surface border-r border-line w-80 h-full flex flex-col gap-3 p-4 min-h-screen ${className} `}
+      className={`bg-surface border-r border-line flex h-full flex-col gap-3 p-4 min-h-screen transition-all duration-300 ${collapsed ? "w-28" : "w-80"} ${className} `}
     >
-      {/*Logo goes here*/}
-      <div className="flex justify-between items-center mb-4">
-        <img
-          src={Logo}
-          alt="Codex Merchants Logo"
-          className="w-40 h-14 object-cover rounded-full"
-        />
+
+      <div className={`flex items-center mb-4 ${collapsed ? "flex-col gap-2" : "justify-between"}`}>
+        {collapsed ? (
+          <img
+            src={SLogo}
+            alt="codex merchants"
+            className="w-10 h-10 rounded-full object-cover"
+          />
+        ) : (
+          <img
+            src={Logo}
+            alt="codex merchants"
+            className="w-40 h-14 object-cover rounded-full"
+          />
+        )}
+
+    
+      {/* collapsable toggle */}
+      <button
+        onClick={() => setCollapsed((c) => !c)}
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        className="flex items-center justify-center h-7 w-7 rounded-full bg-surface border border-line text-ink hover:border-red transition-colors"
+      >
+        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+      </button>
       </div>
 
-      <div className="flex justify-between items-center mb-4">
-        <DarkModeToggle />
+      <div className={`flex items-center mb-4 ${collapsed ? "justify-center" : "justify-between"}`}>
+        <DarkModeToggle collapsed={collapsed} />
       </div>
 
-      {topContent && <Card variant="glass">{topContent}</Card>}
+      {!collapsed && topContent && <Card variant="glass">{topContent}</Card>}
 
       {/*Nav items*/}
       <nav className="flex-1 space-y-1">
@@ -45,6 +91,7 @@ export default function SideBar({
               Icon={item.icon}
               active={isActive}
               onClick={() => navigate(item.path)}
+              collapsed={collapsed}
             />
           )
         })}
