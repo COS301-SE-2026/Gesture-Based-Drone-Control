@@ -226,11 +226,11 @@ select:focus-visible {
   background: linear-gradient(145deg, var(--glass), var(--glass-2));
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   backdrop-filter: blur(18px) saturate(150%);
-  border: 1px solid var(--glass-brd);
+  border: 1px solid var(--red);
   box-shadow:
     var(--glass-shadow),
     inset 0 1px 0 var(--glass-hi);
-  border-radius: 16px;
+  border-radius: 1px;
 }
 
 .md-uccard {

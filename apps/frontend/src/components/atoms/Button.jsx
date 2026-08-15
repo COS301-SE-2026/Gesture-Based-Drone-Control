@@ -29,9 +29,10 @@ export default function Button({
       `,
     secondary: `
       text-ink
-      bg-transparent
+      bg-glass
+      backdrop-blur-sm
       border
-      border-line
+      border-glass
       hover:border-red
       active:border-redDeep
       `,
