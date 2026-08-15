@@ -329,9 +329,7 @@ const GestureGuide = memo(function GestureGuide({
           className="flex items-center gap-3 bg-glass backdrop-blur-sm rounded-lg px-3 py-2 border border-glassBrd"
         >
           <Icon className="w-4 h-4 text-red shrink-0" />
-          <span className="text-xs text-ink/70 flex-1 text-left">
-            {label}
-          </span>
+          <span className="text-xs text-ink/70 flex-1 text-left">{label}</span>
           <span className="text-xs font-mono font-semibold text-ink bg-dim/20 px-2 py-0.5 rounded">
             {input || "Not Mapped"}
           </span>
@@ -379,9 +377,7 @@ const GestureGuide = memo(function GestureGuide({
           <div className="flex items-center gap-2 text-xs">
             <span
               className={`w-2 h-2 rounded-full ${
-                controllerConnected
-                  ? "bg-success animate-pulse"
-                  : "bg-dim/40"
+                controllerConnected ? "bg-success animate-pulse" : "bg-dim/40"
               }`}
             />
             <span className="text-ink/70">

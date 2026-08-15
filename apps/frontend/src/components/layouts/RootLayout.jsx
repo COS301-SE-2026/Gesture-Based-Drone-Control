@@ -37,8 +37,7 @@ const RootLayout = () => {
   }
 
   return (
-    <div
-      className="flex min-h-screen bg-bg bg-[radial-gradient(600px_circle_at_15%_0%,rgba(229,56,59,0.1),transparent_60%)]">
+    <div className="flex min-h-screen bg-bg bg-[radial-gradient(600px_circle_at_15%_0%,rgba(229,56,59,0.1),transparent_60%)]">
       {/* style={{
         backgroundImage: `url(${isDark ? bgDark : bgLight})`,
         backgroundSize: "cover",

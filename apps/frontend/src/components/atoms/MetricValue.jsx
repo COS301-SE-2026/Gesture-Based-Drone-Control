@@ -30,10 +30,9 @@ const MetricValue = ({ value, unit, size = "md", className = "" }) => {
       </span>
       {unit && (
         <span
-          className={[
-            "font-sans font-medium text-ink",
-            unitSizes[size],
-          ].join(" ")}
+          className={["font-sans font-medium text-ink", unitSizes[size]].join(
+            " "
+          )}
         >
           {unit}
         </span>

@@ -35,7 +35,6 @@ export default function Button({
       hover:border-red
       active:border-redDeep
       `,
-      
   }
 
   const renderIcon = () => {

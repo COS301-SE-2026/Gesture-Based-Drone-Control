@@ -15,8 +15,7 @@ function useCollapsedState() {
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem(COLLAPSE_KEY) === "true"
-    }
-    catch {
+    } catch {
       return false
     }
   })
@@ -24,8 +23,7 @@ function useCollapsedState() {
   useEffect(() => {
     try {
       localStorage.setItem(COLLAPSE_KEY, String(collapsed))
-    }
-    catch {
+    } catch {
       //localstorage unavilable, ignore
     }
   }, [collapsed])
@@ -46,8 +44,9 @@ export default function SideBar({
     <aside
       className={`bg-surface border-r border-line flex h-full flex-col gap-3 p-4 min-h-screen transition-all duration-300 ${collapsed ? "w-28" : "w-80"} ${className} `}
     >
-
-      <div className={`flex items-center mb-4 ${collapsed ? "flex-col gap-2" : "justify-between"}`}>
+      <div
+        className={`flex items-center mb-4 ${collapsed ? "flex-col gap-2" : "justify-between"}`}
+      >
         {collapsed ? (
           <img
             src={SLogo}
@@ -62,18 +61,19 @@ export default function SideBar({
           />
         )}
 
-    
-      {/* collapsable toggle */}
-      <button
-        onClick={() => setCollapsed((c) => !c)}
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        className="flex items-center justify-center h-7 w-7 rounded-full bg-surface border border-line text-ink hover:border-red transition-colors"
-      >
-        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-      </button>
+        {/* collapsable toggle */}
+        <button
+          onClick={() => setCollapsed((c) => !c)}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="flex items-center justify-center h-7 w-7 rounded-full bg-surface border border-line text-ink hover:border-red transition-colors"
+        >
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
       </div>
 
-      <div className={`flex items-center mb-4 ${collapsed ? "justify-center" : "justify-between"}`}>
+      <div
+        className={`flex items-center mb-4 ${collapsed ? "justify-center" : "justify-between"}`}
+      >
         <DarkModeToggle collapsed={collapsed} />
       </div>
 
