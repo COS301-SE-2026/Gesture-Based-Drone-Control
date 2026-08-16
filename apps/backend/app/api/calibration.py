@@ -27,12 +27,14 @@ by the CalibrationFramePayload model (schemas -> swagger)
 through the always-null 'last_frame' field on the status endpoint
 """
 
+import asyncio
+import contextlib
 import logging
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
-from app.api.gestures import stream
+from app.api.gestures import _watch_for_disconnect, stream
 from app.cv.calibration import (
 	CALIBRATION_SEQUENCE,
 	CalibrationFramePayload,
@@ -49,6 +51,27 @@ router = APIRouter(prefix='/calibration', tags=['calibration'])
 # single shared manager for the whole app, same pattern as stream in
 # gestures.py, calibration is app-wide state (one camera, one user)
 manager = CalibrationManager()
+
+
+async def _send_calibration_frames(websocket: WebSocket, queue: asyncio.Queue) -> None:
+	while True:
+		frame = await queue.get()
+		if frame is None:
+			logger.info('gesture pipeline ended, closing calibration stream')
+			await websocket.close(code=1001)
+			return
+		try:
+			payload = manager.process_frame(frame)
+		except RuntimeError:
+			logger.info(
+				'calibration run ended externally, closing stream (status=%s)',
+				manager.status.value,
+			)
+			return
+		await websocket.send_json(payload.model_dump())
+		if payload.phase is CalibrationPhase.DONE:
+			logger.info('calibration run complete, closing stream')
+			return
 
 
 class CalibrationStatusOut(BaseModel):
@@ -206,20 +229,15 @@ async def calibration_websocket(websocket: WebSocket) -> None:
 			'calibration client connected, run started (target=%s)',
 			session.target_gesture,
 		)
-		while True:
-			frame = await queue.get()
-			try:
-				payload = manager.process_frame(frame)
-			except RuntimeError:
-				logger.info(
-					'calibration run ended externally, closing stream (status=%s)',
-					manager.status.value,
-				)
-				break
-			await websocket.send_json(payload.model_dump())
-			if payload.phase is CalibrationPhase.DONE:
-				logger.info('calibration run complete, closing stream')
-				break
+		sender = asyncio.create_task(
+			_send_calibration_frames(websocket, queue), name='calibration-send'
+		)
+		watcher = asyncio.create_task(_watch_for_disconnect(websocket), name='calibration-watch')
+		_, pending = await asyncio.wait({sender, watcher}, return_when=asyncio.FIRST_COMPLETED)
+		for task in pending:
+			task.cancel()
+			with contextlib.suppress(asyncio.CancelledError):
+				await task
 	except WebSocketDisconnect:
 		logger.info('calibration client disconnected (status=%s)', manager.status.value)
 	except Exception:

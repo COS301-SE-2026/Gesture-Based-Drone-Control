@@ -86,11 +86,21 @@ class GestureStream:
 		self._clients.clear()
 		self._cancel_linger()
 		await self._stop_pipeline()
+  
+	def _is_orphaned(self) -> bool:
+		task = self._broadcast_task
+		return task is not None and task.done()
 
 	async def _ensure_started(self) -> None:
 		async with self._lock:
-			if self._pipeline is not None:
+			if self._pipeline is not None and not self._is_orphaned():
 				return
+			if self._pipeline is not None:
+				logger.warning('GestureStream found an oprhaned pipeline, restarting it')
+				stale = self._pipeline
+				self._pipeline = None
+				with contextlib.suppress(Exception):
+					await stale.stop()
 			pipeline = CvPipeline(self._config)
 			try:
 				await pipeline.start()
@@ -170,7 +180,6 @@ class GestureStream:
 			logger.exception('GestureStream broadcast failed')
 			self._last_error = str(exc)
 			self._fan_out(None)
-			self._broadcast_task = None
 			self._teardown_task = asyncio.create_task(
 				self._stop_pipeline(), name='gesture-stream-teardown'
 			)

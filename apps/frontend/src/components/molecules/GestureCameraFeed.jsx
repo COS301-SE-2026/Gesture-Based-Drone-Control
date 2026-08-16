@@ -57,6 +57,7 @@ const GestureCameraFeed = ({
 
   return (
     <div
+      data-testid="gesture-camera-feed"
       className={`relative w-full h-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px] ${className}`}
     >
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />

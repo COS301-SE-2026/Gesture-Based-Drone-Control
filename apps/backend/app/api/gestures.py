@@ -14,6 +14,8 @@ WS /api/gestures/stream
  mirrored by the GestureFramePayload model (under Schemas on swagger)
 """
 
+import asyncio
+import contextlib
 import logging
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -32,6 +34,22 @@ stream = GestureStream()
 
 WS_CAMERA_UNAVAILABLE = 1011
 WS_STREAM_ENDED = 1001
+
+
+async def _send_frames(websocket: WebSocket, queue: asyncio.Queue) -> None:
+	while True:
+		payload = await queue.get()
+		if payload is None:
+			logger.info('gesture stream ended, closing client socket')
+			await websocket.close(code=WS_STREAM_ENDED)
+			return
+		await websocket.send_json(payload.model_dump())
+
+
+async def _watch_for_disconnect(websocket: WebSocket) -> None:
+	with contextlib.suppress(Exception):
+		while True:
+			await websocket.receive()
 
 
 class GestureStreamStatus(BaseModel):
@@ -73,7 +91,7 @@ async def get_gesture_stream_status() -> GestureStreamStatus:
 	return GestureStreamStatus(
 		running=stream.is_running,
 		connected_clients=stream.client_count,
-		last_error=stream._last_error,
+		last_error=stream.last_error,
 	)
 
 
@@ -128,13 +146,14 @@ async def gesture_websocket(websocket: WebSocket) -> None:
 			return
 
 		logger.info('gesture client connected (total = %d)', stream.client_count)
-		while True:
-			payload = await queue.get()
-			if payload is None:
-				logger.info('gesture stream ended, closing client socket')
-				await websocket.close(code=WS_STREAM_ENDED)
-				break
-			await websocket.send_json(payload.model_dump())
+		logger.info('gesture client connected (total = %d)', stream.client_count)
+		sender = asyncio.create_task(_send_frames(websocket, queue), name='gesture-send')
+		watcher = asyncio.create_task(_watch_for_disconnect(websocket), name='gesture-watch')
+		_, pending = await asyncio.wait({sender, watcher}, return_when=asyncio.FIRST_COMPLETED)
+		for task in pending:
+			task.cancel()
+			with contextlib.suppress(asyncio.CancelledError):
+				await task
 	except WebSocketDisconnect:
 		logger.info('gesture client disconnected')
 	except Exception:
