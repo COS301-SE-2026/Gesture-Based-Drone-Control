@@ -43,8 +43,8 @@ export default function SideBar({
   return (
     <aside
     className={
-      `bg-[linear-gradient(160deg,var(--glass),var(glass-2)),var(--nav)]
-      backdrop=blur-xl backdrop-saturate-150
+      `bg-[linear-gradient(160deg,var(--glass),var(--glass-2)),var(--nav)]
+      backdrop-blur-xl backdrop-saturate-150
       border-r border-glassBrd
       rounded-r-2xl
       shadow-glass-combo

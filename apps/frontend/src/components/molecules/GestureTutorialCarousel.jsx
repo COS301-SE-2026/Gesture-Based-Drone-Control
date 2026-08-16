@@ -46,11 +46,11 @@ export default function GestureTutorialCarousel({ gestures }) {
         <Label className="text-lg font-semibold">{current.name}</Label>
         <div className="flex items-center gap-3">
           <span
-            className={`text-xs font-semibold ${passed ? "text-green-500" : "text-DarkGrey"}`}
+            className={`text-xs font-semibold ${passed ? "text-success" : "text-dim"}`}
           >
             {passed ? "Matched!" : "Try the gesture..."}
           </span>
-          <span className="text-xs text-OffBlack/60 dark:text-OffWhite/60">
+          <span className="text-xs text-ink/60">
             {index + 1}/{gestures.length}
           </span>
         </div>
@@ -65,7 +65,7 @@ export default function GestureTutorialCarousel({ gestures }) {
 
         <div className="flex flex-col gap-3">
           <div
-            className="relative min-h-[400px] rounded-lg border border-Grey/20 overflow-hidden"
+            className="relative min-h-[400px] rounded-lg border border-line overflow-hidden"
             style={{ perspective: "1000px" }}
           >
             <div
@@ -76,7 +76,7 @@ export default function GestureTutorialCarousel({ gestures }) {
               }}
             >
               <div
-                className="absolute inset-0 flex items-center justify-center bg-OffBlack/5 dark:bg-OffWhite/5"
+                className="absolute inset-0 flex items-center justify-center bg-ink/5"
                 style={{ backfaceVisibility: "hidden" }}
               >
                 <GestureTargetSkeleton pose={current.pose} />
@@ -102,7 +102,7 @@ export default function GestureTutorialCarousel({ gestures }) {
           </div>
 
           {showHint && (
-            <p className="text-sm text-OffBlack dark:text-Grey">
+            <p className="text-sm text-dim">
               {current.instructions}
             </p>
           )}
