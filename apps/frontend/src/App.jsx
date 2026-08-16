@@ -15,12 +15,14 @@ import { ThemeProvider } from "./context/ThemeProvider.jsx"
 import { TelemetryProvider } from "./context/TelemetryProvider.jsx"
 import { CommandsProvider } from "./context/CommandsProvider.jsx"
 import TestPage from "@/components/testPageForAtoms/TestPage.jsx"
+import CursorGlow from "./components/atoms/CursorGlow.jsx"
 
 function App() {
   return (
     <ThemeProvider>
       <TelemetryProvider>
         <CommandsProvider>
+          <CursorGlow/>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />

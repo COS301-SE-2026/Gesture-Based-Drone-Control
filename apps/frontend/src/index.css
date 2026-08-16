@@ -373,6 +373,29 @@ select:focus-visible {
     transform: translate(-6vw, -9vh) scale(1.25);
   }
 }
+/* cursor glowwww */
+.cursor-glow{
+  position:fixed;
+  top:0;
+  left:0;
+  width:280px;
+  height:280px;
+  margin-left:-140px;
+  margin-top:-140px;
+  border-radius:50%;
+  background: radial-gradient(circle,var(--glow),transparent 70%);
+  filter:blur(60px);
+  opacity:0.55;
+  pointer-events:none;
+  z-index:-1;
+  will-change:transform;
+}
+
+@media(prefers-reduced-motion: reduce),(hover:none){
+  .cursor-glow{
+    display:none;
+  }
+}
 
 /* accessibility */
 
