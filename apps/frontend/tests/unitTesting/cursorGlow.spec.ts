@@ -22,7 +22,7 @@ test.describe('CursorGlow', () => {
         await page.mouse.move(300,200)
         await expect.poll(async () => {
             return glow.evaluate((el) => (el as HTMLElement).style.transform)
-        }).toContain('300px,200px')
+        }).toContain('300px, 200px, 0px')
     })
 
     test('the glow is hidden when reduced motion is preffered', async ({page}) => {
