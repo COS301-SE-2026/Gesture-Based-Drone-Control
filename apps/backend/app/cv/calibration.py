@@ -114,6 +114,16 @@ class CalibrationFramePayload(BaseModel):
 	frame_index: int = Field(..., description='Monotonic frame counter since pipeline start')
 	timestamp: float = Field(..., description='Frame capture time (monotonix clock, seconds)')
 	phase: CalibrationPhase = Field(..., description='Current phase of the session state machine')
+	frame_jpeg: str | None = Field(
+		default=None,
+		description=(
+			'The processed frame as base64 JPEG, already mirrored and resized to '
+			'match the landmark coordinate space. Render this instead of opening '
+			'the webcam again in the browser.'
+		),
+	)
+	frame_width: int | None = Field(default=None, description='width of frame_jpeg in pixels')
+	frame_height: int | None = Field(default=None, description='Height of frame_jpeg in pixles')
 	target_gesture: str | None = Field(
 		..., description='Gesture the user must perform now; null once session complete'
 	)
@@ -278,6 +288,9 @@ class CalibrationSession:
 		return CalibrationFramePayload(
 			frame_index=frame.frame_index,
 			timestamp=frame.timestamp,
+			frame_jpeg=frame.frame_jpeg,
+			frame_height=frame.frame_height,
+			frame_width=frame.frame_width,
 			phase=self._phase,
 			target_gesture=self.target_gesture,
 			detected_gesture=first_hand.gesture if first_hand else None,

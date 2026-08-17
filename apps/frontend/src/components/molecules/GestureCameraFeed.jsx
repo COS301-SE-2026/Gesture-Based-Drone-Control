@@ -6,6 +6,7 @@ import {
   coverTransform,
   toCanvasPoints,
   drawHand,
+  decodeFrameBitmap,
 } from "../../lib/handSkeleton"
 
 const SKELETON_COLOR = "#ef4444"
@@ -31,14 +32,7 @@ const GestureCameraFeed = ({
     let cancelled = false
 
     const render = async () => {
-      let bitmap = null
-      if (frame.frame_jpeg) {
-        try {
-          bitmap = await createImageBitmap(base64ToBlob(frame.frame_jpeg))
-        } catch {
-          bitmap = null
-        }
-      }
+      const bitmap = await decodeFrameBitmap(frame)
       if (cancelled) {
         bitmap?.close?.()
         return
@@ -87,15 +81,6 @@ function getStatusLabel(connected, error, frame) {
   if (!connected) return "Reconnecting..."
   if (!frame) return "Starting camera..."
   return "Active"
-}
-
-function base64ToBlob(base64) {
-  const binary = atob(base64)
-  const bytes = new Uint8Array(binary.length)
-  for (let i = 0; i < binary.length; i += 1) {
-    bytes[i] = binary.charCodeAt(i)
-  }
-  return new Blob([bytes], { type: "image/jpeg" })
 }
 
 function drawFrame(canvas, bitmap, frame, skeletonColor) {

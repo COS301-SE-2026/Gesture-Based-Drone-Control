@@ -7,12 +7,12 @@ import {
   skipCalibration,
   fetchCalibrationStatus,
 } from "../../hooks/useCalibrationStream"
-import { useWebPreview } from "../../hooks/useWebcamPreview"
 import {
   prepareCanvas,
   coverTransform,
   toCanvasPoints,
   drawHand,
+  decodeFrameBitmap,
 } from "../../lib/handSkeleton"
 
 //live gesture calibration UI with ws /api/calibration/stream
@@ -49,7 +49,6 @@ function chipClass(isDone, isCurrent) {
 }
 
 const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
-  const videoRef = useRef(null)
   const canvasRef = useRef(null)
   const { frame, connected, finished } = useCalibrationStream()
 
@@ -65,27 +64,51 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
       })
   }, [])
 
-  useWebPreview(videoRef)
-
   useEffect(() => {
     const canvas = canvasRef.current
-    const video = videoRef.current
-    if (!canvas || !video) {
-      return
-    }
-    const ctx = prepareCanvas(canvas)
-    if (!frame?.hands?.length) {
-      return
+    if (!canvas || !frame) {
+      return undefined
     }
 
-    const transform = coverTransform(canvas, video)
+    let cancelled = false
+
+    const render = async () => {
+      const bitmap = await decodeFrameBitmap(frame)
+      if (cancelled) {
+        bitmap?.close?.()
+        return 
+      }
+
+       const ctx = prepareCanvas(canvas)
+      const transform = coverTransform(canvas, {
+        videoWidth: frame.frame_width || bitmap?.width || canvas.width,
+        videoHeight: frame.frame_height || bitmap?.height || canvas.height,
+      })
+
+      if (bitmap) {
+        ctx.drawImage(
+          bitmap,
+          transform.offsetX,
+          transform.offsetY,
+          transform.drawW,
+          transform.drawH
+        )
+      }
+
     const passState = frame.phase === "success_display" || frame.matched
     const boneColor = passState ? MATCHED_COLOR : UNMATCHED_COLOR
 
     frame.hands.forEach((hand) => {
       drawHand(ctx, toCanvasPoints(hand.landmarks, transform), boneColor)
     })
-  }, [frame])
+    bitmap?.close?.()
+  }
+
+  render()
+  return () => {
+    cancelled = true
+  }
+}, [frame])
 
   const handleSkip = async () => {
     setSkipping(true)
@@ -203,13 +226,6 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
 
         {/* camera and skeleton overlay */}
         <div className="relative w-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px]">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="w-full h-full object-cover -scale-x-100"
-          />
           <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
         </div>
         {/* sequnce chips */}
