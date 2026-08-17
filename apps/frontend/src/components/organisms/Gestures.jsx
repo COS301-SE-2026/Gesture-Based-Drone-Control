@@ -5,6 +5,7 @@ import {
   DroneModeCard,
   GestureCameraFeed,
   GestureCalibration,
+  DroneFeedPanel
 } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
@@ -328,13 +329,19 @@ const GestureControl = () => {
             </div>
           </Card>
         )}
-
+  <div className="flex flex-col gap-6 h-full">
         <GestureGuide
-          className="h-full"
+          className="flex-1"
           sendCommand={handleControlAction}
           onKeyboardResp={handleKeyboardResp}
         />
+        <DroneFeedPanel
+          droneMode={droneMode}
+          connectionStatus={connectionStatus}
+        />
       </div>
+  </div>
+        
 
       <CommandHistory commands={commands} />
     </div>
