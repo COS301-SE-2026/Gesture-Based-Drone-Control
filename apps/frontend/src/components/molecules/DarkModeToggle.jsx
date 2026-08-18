@@ -1,15 +1,17 @@
-import { Toggle } from "../atoms"
+//import { Toggle } from "../atoms"
 import { useTheme } from "@/context/ThemeContext"
 import { Sun, Moon } from "lucide-react"
 
 const DarkModeToggle = () => {
   const { isDark, toggleTheme } = useTheme()
   return (
-    <div className="flex items-center gap-2">
-      <Sun className="w-6 h-6 text-OffBlack dark:text-OffWhite" />
-      <Toggle checked={isDark} onChange={toggleTheme} />
-      <Moon className="w-6 h-6 text-OffBlack dark:text-OffWhite" />
-    </div>
+    <button
+      onClick={toggleTheme}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      className="flex items-center justify-center h-9 w-9 rounded-full bg-surface border border-line text-ink hover:border-red transition-colors"
+    >
+      {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+    </button>
   )
 }
 

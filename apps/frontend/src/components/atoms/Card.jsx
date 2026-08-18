@@ -11,25 +11,18 @@ export default function Card({
   const variantClasses = {
     //light mode glass
     glass: `
-        bg-OffWhite/10
-        dark:bg-OffWhite/5
+        bg-[linear-gradient(145deg,var(--glass),var(--glass-2))]
         backdrop-blur-md
-        border
-        border-OffWhite/20
-        dark:border-OffWhite/10
-        shadow-xl
-        dark:shadow-2xl
+        backdrop-saturate-150
+        shadow-glass-combo
         `,
     //dark mode glass
     dark: `
-        bg-OffBlack
-        dark:bg-OffBlack
-        backdrop-blur-md
-        border
-        border-Grey/30
-        dark:border-DarkGrey/20
+        bg-surface
+        border-line
         shadow-lg
-        dark:shadow-lg`,
+        `,
+    solid: "md-uccard",
   }
 
   const interactiveClasses = clickable
@@ -37,13 +30,13 @@ export default function Card({
     cursor-pointer
     transition-all
     duration-200
-    hover:shadow-2xl
-    dark:hover:shadow-2xl
     hover:scale-105
-    hover:bg-OffWhite/20
-    dark:hover:bg-OffWhite/10
+    hover:border-red
+    hover:shadow-glass-hover
     `
     : ""
+
+  const isSolid = variant === "solid"
 
   if (clickable) {
     return (
@@ -51,9 +44,8 @@ export default function Card({
         onClick={onClick}
         className={`
             ${variantClasses[variant]}
-            ${interactiveClasses}
-            rounded-xl
-            p-6
+            ${isSolid ? "" : interactiveClasses}
+            ${isSolid ? "" : "rounded-xl p-md"}
             transition-colors
             duration-200
             w-full
@@ -71,9 +63,8 @@ export default function Card({
     <div
       className={`
               ${variantClasses[variant]}
-              ${interactiveClasses}
-              rounded-xl
-              p-6
+              ${isSolid ? "" : interactiveClasses}
+              ${isSolid ? "" : "rounded-xl p-md"}
               transition-colors
               duration-200
               ${className}
@@ -88,7 +79,7 @@ export default function Card({
 Card.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
-  variant: PropTypes.oneOf(["glass", "dark"]),
+  variant: PropTypes.oneOf(["glass", "dark", "solid"]),
   clickable: PropTypes.bool,
   onClick: PropTypes.func,
 }

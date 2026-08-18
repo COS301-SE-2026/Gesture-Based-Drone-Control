@@ -67,7 +67,7 @@ const GestureCameraFeed = ({
 
   return (
     <div
-      className={`relative w-full h-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px] ${className}`}
+      className={`relative w-full h-full bg-black/50 rounded border border-white/10 overflow-hidden min-h-[400px] ${className}`}
     >
       <video
         ref={videoRef}
@@ -77,9 +77,9 @@ const GestureCameraFeed = ({
         className="w-full h-full object-cover -scale-x-100"
       />
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <div className="absolute top-4 right-4 flex items-center gap-2 bg-OffBlack/60 px-3 py-1 rounded-full text-xs text-OffWhite">
+      <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/60 px-3 py-1 rounded-full text-xs text-white">
         <span
-          className={`w-2 h-2 rounded-full ${connected ? "bg-green-500 animate-pulse" : "bg-Grey"}`}
+          className={`w-2 h-2 rounded-full ${connected ? "bg-success animate-pulse" : "bg-white/30"}`}
         />
         <span>{connected ? "Active" : "Disconnected"}</span>
       </div>
