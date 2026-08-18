@@ -7,6 +7,7 @@ with patch.dict( 'sys.modules', {
     'djitellopy': MagicMock(),
 }):
     from services.drone_control.adapters.tello_adapter import TelloAdapter
+    from services.commands.command import CommandType
 
 @pytest.fixture
 def mock_tello():
@@ -79,3 +80,73 @@ async def test_disconnect_not_connected(adapter, mock_tello):
     with pytest.raises(RuntimeError, match = "Tello Drone is not connected."):
         await adapter.disconnect()
     mock_tello.land.assert_not_called()
+
+@pytest.mark.asyncio
+async def test_takeoff_not_connected(adapter, mock_tello):
+    adapter._connected = False
+    with pytest.raises(RuntimeError, match="Tello Drone is not connected."):
+        await adapter.takeoff()
+    mock_tello.takeoff.assert_not_called()
+
+@ pytest.mark.asyncio
+async def test_takeoff(adapter, mock_tello):
+    adapter._connected = True
+    await adapter.takeoff()
+    mock_tello.takeoff.assert_called_once()
+    assert adapter._is_flying is True
+
+@pytest.mark.asyncio
+async def test_land(adapter, mock_tello):
+    adapter._connected = True
+    adapter._is_flying = True
+    await adapter.land()    
+    mock_tello.land.assert_called_once()
+    assert adapter._is_flying is False
+
+@pytest.mark.asyncio
+async def test_land_not_flying(adapter, mock_tello):
+    adapter._connected = True
+    adapter._is_flying = False
+    with pytest.raises(RuntimeError, match = "Tello Drone is not flying."):
+        await adapter.land()
+    mock_tello.land.assert_not_called()
+
+async def test_move_valid_direction(adapter, mock_tello, caplog):
+    adapter._connected = True
+    adapter._is_flying = True
+    valid_directions = [
+        CommandType.MOVE_FORWARD, CommandType.MOVE_BACKWARD,
+        CommandType.MOVE_LEFT, CommandType.MOVE_RIGHT,
+        CommandType.MOVE_UP, CommandType.MOVE_DOWN,
+        CommandType.ROTATE_CW, CommandType.ROTATE_CCW
+    ]
+    with caplog.at_level("INFO"):
+        for direction in valid_directions:
+            await adapter.move(direction)
+            assert f"Tello: move {direction.name}" in caplog.text
+            mock_tello.send_rc_control.assert_called()
+            caplog.clear()
+
+@pytest.mark.asyncio
+async def test_move_invalid_direction(adapter, mock_tello, caplog):
+    adapter._connected = True
+    adapter._is_flying = True
+    dummy = MagicMock(name = "unknown")
+    dummy.name = "UNKNOWN"
+    with caplog.at_level("WARNING"):
+        await adapter.move(dummy)
+        assert "no vector for UNKNOWN - skipping" in caplog.text
+    mock_tello.send_rc_control.assert_not_called()
+
+@pytest.mark.asyncio
+async def test_move_not_connected(adapter):
+    adapter._connected = False
+    with pytest.raises(RuntimeError, match= "Tello Drone is not connected."):
+        await adapter.move(CommandType.MOVE_FORWARD)
+
+@pytest.mark.asyncio
+async def test_move_not_flying(adapter):
+    adapter._connected = True
+    adapter._is_flying = False
+    with pytest.raises(RuntimeError, match="Tello Drone is not flying."):
+        await adapter.move(CommandType.MOVE_FORWARD)

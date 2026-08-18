@@ -80,7 +80,7 @@ class TelloAdapter(DroneAdapter):
 
         vec = velocity_map.get(direction)
         if vec is None:
-            logger.warning('Tello.move: no vector for %s — skipping', direction.name)
+            logger.warning('Tello.move: no vector for %s - skipping', direction.name)
             return
 
         lr, fb, ud, yaw = vec
