@@ -233,11 +233,14 @@ async def calibration_websocket(websocket: WebSocket) -> None:
 			_send_calibration_frames(websocket, queue), name='calibration-send'
 		)
 		watcher = asyncio.create_task(_watch_for_disconnect(websocket), name='calibration-watch')
-		_, pending = await asyncio.wait({sender, watcher}, return_when=asyncio.FIRST_COMPLETED)
+		done, pending = await asyncio.wait({sender, watcher}, return_when=asyncio.FIRST_COMPLETED)
 		for task in pending:
 			task.cancel()
 			with contextlib.suppress(asyncio.CancelledError):
 				await task
+		for task in done:
+			with contextlib.suppress(Exception):
+				task.result()
 	except WebSocketDisconnect:
 		logger.info('calibration client disconnected (status=%s)', manager.status.value)
 	except Exception:

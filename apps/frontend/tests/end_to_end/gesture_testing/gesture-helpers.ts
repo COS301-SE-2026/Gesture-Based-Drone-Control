@@ -57,7 +57,9 @@ export async function waitForPipelineStopped(
         await new Promise((r) => setTimeout(r, 300))
         status = await getPipelineStatus(request)
     }
-    return status
+    throw new Error(
+        `pipeline did not stop in ${timeoutMs}ms: ${JSON.stringify(status)}`
+    )
 }
 
 export async function backendHasCamera(

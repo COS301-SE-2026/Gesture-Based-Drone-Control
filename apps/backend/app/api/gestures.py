@@ -146,14 +146,16 @@ async def gesture_websocket(websocket: WebSocket) -> None:
 			return
 
 		logger.info('gesture client connected (total = %d)', stream.client_count)
-		logger.info('gesture client connected (total = %d)', stream.client_count)
 		sender = asyncio.create_task(_send_frames(websocket, queue), name='gesture-send')
 		watcher = asyncio.create_task(_watch_for_disconnect(websocket), name='gesture-watch')
-		_, pending = await asyncio.wait({sender, watcher}, return_when=asyncio.FIRST_COMPLETED)
+		done, pending = await asyncio.wait({sender, watcher}, return_when=asyncio.FIRST_COMPLETED)
 		for task in pending:
 			task.cancel()
 			with contextlib.suppress(asyncio.CancelledError):
 				await task
+		for task in done:
+			with contextlib.suppress(Exception):
+				task.result()
 	except WebSocketDisconnect:
 		logger.info('gesture client disconnected')
 	except Exception:

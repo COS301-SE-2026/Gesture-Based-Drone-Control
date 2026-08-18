@@ -171,6 +171,8 @@ class GestureStream:
 			return
 		try:
 			async for event in pipeline.events():
+				if not self._clients:
+					continue
 				self._fan_out(serialize_event(event, include_frame=True))
 			self._fan_out(None)
 		except asyncio.CancelledError:
