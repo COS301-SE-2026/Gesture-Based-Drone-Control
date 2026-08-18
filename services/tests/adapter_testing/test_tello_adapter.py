@@ -7,7 +7,7 @@ with patch.dict( 'sys.modules', {
     'djitellopy': MagicMock(),
 }):
     from services.drone_control.adapters.tello_adapter import TelloAdapter
-    from services.commands.command import CommandType
+    from services.commands.command import CommandType, AnalogInput
 
 @pytest.fixture
 def mock_tello():
@@ -150,3 +150,49 @@ async def test_move_not_flying(adapter):
     adapter._is_flying = False
     with pytest.raises(RuntimeError, match="Tello Drone is not flying."):
         await adapter.move(CommandType.MOVE_FORWARD)
+
+@pytest.mark.asyncio
+async def test_analog (adapter, mock_tello):
+    adapter._connected = True
+    adapter._is_flying = True
+    analog_input = MagicMock(spec=AnalogInput)
+    analog_input.left_y = -0.5
+    analog_input.right_x = 0.3
+    analog_input.right_y = 0.2
+    analog_input.ltrigger = 0.0
+    analog_input.rtrigger = 0.0
+    analog_input.right_x = -0.1
+
+    adapter.MOVEMENTSPEED = 50
+    await adapter.analog(analog_input)
+
+    mock_tello.send_rc_control.assert_called_once_with(15,25,10,-5)
+
+@pytest.mark.asyncio
+async def test_analog_with_triggers(adapter, mock_tello):
+    adapter._connected = True
+    adapter._is_flying = True
+    analog_input = MagicMock(spec=AnalogInput)
+    analog_input.left_y = 0.0
+    analog_input.left_x = 0.0
+    analog_input.right_y = 0.1
+    analog_input.ltrigger = 0.8
+    analog_input.rtrigger = 0.2
+    analog_input.right_x = 0.0
+
+    adapter.MOVEMENTSPEED = 50
+    await adapter.analog(analog_input)
+    mock_tello.send_rc_control.assert_called_once_with(0,0,30,0)
+
+@pytest.mark.asyncio
+async def test_analog_not_connected(adapter):
+    adapter._connected =False
+    with pytest.raises(RuntimeError, match= "Tello Drone is not connected."):
+        await adapter.analog(MagicMock())
+
+@pytest.mark.asyncio
+async def test_analog_not_flying(adapter):
+    adapter._connected = True
+    adapter._is_flying = False
+    with pytest.raises(RuntimeError, match= "Tello Drone is not flying."):
+        await adapter.analog(MagicMock())
