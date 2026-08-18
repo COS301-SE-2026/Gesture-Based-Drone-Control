@@ -22,7 +22,7 @@ function App() {
     <ThemeProvider>
       <TelemetryProvider>
         <CommandsProvider>
-          <CursorGlow/>
+          <CursorGlow />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />

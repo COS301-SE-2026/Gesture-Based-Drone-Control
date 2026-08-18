@@ -14,7 +14,6 @@ import {
 import { useTelemetry } from "@/context/TelemetryContext"
 import { useEffect, useRef, useState } from "react"
 
-
 const MAX_LIVE_POINTS = 10
 //might change this depending
 const MS_TO_KMH = 3.6
@@ -167,9 +166,7 @@ const Analytics = () => {
         <Card variant="glass">
           <div className="flex flex-col gap-3">
             <Clock className="w-6 h-6 text-red" />
-            <p className="text-xs text-dim uppercase">
-              Total Flights
-            </p>
+            <p className="text-xs text-dim uppercase">Total Flights</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-ink">
                 {metrics.totalFlights}
@@ -182,9 +179,7 @@ const Analytics = () => {
         <Card variant="glass">
           <div className="flex flex-col gap-3">
             <Gauge className="w-6 h-6 text-red" />
-            <p className="text-xs text-dim uppercase">
-              Max Speed (session)
-            </p>
+            <p className="text-xs text-dim uppercase">Max Speed (session)</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-ink">
                 {metrics.maxSpeed}
@@ -198,9 +193,7 @@ const Analytics = () => {
         <Card variant="glass">
           <div className="flex flex-col gap-3">
             <Mountain className="w-6 h-6 text-red" />
-            <p className="text-xs text-dim uppercase">
-              Max Altitude (session)
-            </p>
+            <p className="text-xs text-dim uppercase">Max Altitude (session)</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-ink">
                 {metrics.maxAltitude}
@@ -318,7 +311,11 @@ const Analytics = () => {
                   }}
                   formatter={(value) => [`${value} min`, "Duration"]}
                 />
-                <Bar dataKey="duration" fill="var(--red)" radius={[8, 8, 0, 0]} />
+                <Bar
+                  dataKey="duration"
+                  fill="var(--red)"
+                  radius={[8, 8, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -330,9 +327,7 @@ const Analytics = () => {
         {/* Total distance */}
         <Card variant="glass">
           <div className="text-center">
-            <p className="text-xs text-dim uppercase">
-              Total Distance
-            </p>
+            <p className="text-xs text-dim uppercase">Total Distance</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-ink">
                 {metrics.totalDistance}
@@ -360,9 +355,7 @@ const Analytics = () => {
         {/* total flights */}
         <Card variant="glass">
           <div className="text-center">
-            <p className="text-xs text-dim uppercase">
-              Average speed
-            </p>
+            <p className="text-xs text-dim uppercase">Average speed</p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-ink">
                 {metrics.avgSpeed}
