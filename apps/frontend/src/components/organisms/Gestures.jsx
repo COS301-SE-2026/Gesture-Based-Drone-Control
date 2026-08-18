@@ -105,6 +105,12 @@ const GestureControl = () => {
           vehicle_name: "Drone-1",
         }
       }
+      else if (adapterType === "Tello"){
+        requestBody = {
+          ...requestBody,
+          vehicle_name: "Tello-1"
+        }
+      }
       //add xfly adapter later here
 
       const response = await fetch("http://localhost:3001/api/drone/connect", {
@@ -150,6 +156,9 @@ const GestureControl = () => {
       await connectToDrone("projectairsim")
     } else if (mode === "Manual" || mode === "Autonomous") {
       await connectToDrone("dummy")
+    }
+    else if (mode === "Tello"){
+      await connectToDrone("Tello")
     }
   }
   //add hardware mode when drone works

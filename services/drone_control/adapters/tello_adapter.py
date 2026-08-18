@@ -18,15 +18,11 @@ class TelloAdapter(DroneAdapter):
             _frameReader: BackgroundFrameRead,
             _connected: bool,
             _is_flying: bool,
-            pos_x: float,
-            pos_y: float,
             
     ) ->None:
         self._tello = Tello()
         _connected = False
         _is_flying = False
-        pos_x = 0.0
-        pos_y = 0.0
 
 
     async def connect(self) -> bool:
@@ -49,10 +45,6 @@ class TelloAdapter(DroneAdapter):
 
     async def takeoff(self) -> None:
         self._assert_connected()
-
-        self.pos_x = 0.0
-        self.pos_y = 0.0
-
         self._tello.takeoff()
         self._is_flying = True
         logger.info('Tello Drone: taking off')
@@ -163,7 +155,7 @@ class TelloAdapter(DroneAdapter):
                 is_flying=self._is_flying,
                 x_displacement= x,
                 y_displacement= y,
-                extra= ['signal', signal]
+                extra= ['signal', signal],
                 source= 'tello'
             )
 
