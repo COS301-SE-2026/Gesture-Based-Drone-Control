@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
 import { TelemetryContext } from "./TelemetryContext"
 import { useWebSocket } from "@/hooks/useWebSocket"
 import { getWsUrl } from "@/lib/api"
