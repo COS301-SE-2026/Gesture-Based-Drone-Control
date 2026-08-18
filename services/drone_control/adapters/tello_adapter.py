@@ -17,12 +17,17 @@ class TelloAdapter(DroneAdapter):
             _tello: Tello,
             _frameReader: BackgroundFrameRead,
             _connected: bool,
-            _is_flying: bool
+            _is_flying: bool,
+            pos_x: float,
+            pos_y: float,
             
     ) ->None:
         self._tello = Tello()
         _connected = False
         _is_flying = False
+        pos_x = 0.0
+        pos_y = 0.0
+
 
     async def connect(self) -> bool:
         try:
@@ -40,9 +45,13 @@ class TelloAdapter(DroneAdapter):
         self._tello.land()
         self._tello.streamoff()
         self._tello.end() 
+        self._connected = False
 
     async def takeoff(self) -> None:
         self._assert_connected()
+
+        self.pos_x = 0.0
+        self.pos_y = 0.0
 
         self._tello.takeoff()
         self._is_flying = True
@@ -53,6 +62,7 @@ class TelloAdapter(DroneAdapter):
         self._assert_flying()
 
         self._tello.land()
+        self._is_flying = False
         logger.info('Tello Drone: landing')
 
     async def move(self, direction: CommandType, **kwargs):
@@ -92,7 +102,6 @@ class TelloAdapter(DroneAdapter):
 			yaw,
 		)
 
-        self._tello.send_rc_control(lr, fb, ud, yaw)
 
     async def analog(self, input: AnalogInput) -> None:
         self._assert_connected()
@@ -142,6 +151,9 @@ class TelloAdapter(DroneAdapter):
 
             battery = state.get('bat')
 
+            signal = self._tello.send_command_with_return('wifi')
+
+            x, y = self._tello.get_position()
 
             return TelemetryData(
                 altitude_m= round(altitude, 3),
@@ -149,7 +161,10 @@ class TelloAdapter(DroneAdapter):
                 heading_deg= world_heading,
                 battery_pct= battery,
                 is_flying=self._is_flying,
-                
+                x_displacement= x,
+                y_displacement= y,
+                extra= ['signal', signal]
+                source= 'tello'
             )
 
         except Exception as ex:
