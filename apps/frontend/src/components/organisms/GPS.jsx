@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useMemo } from "react"
 import { Card, Label } from "../atoms"
 import { DisplacementStat, DroneMap } from "../molecules"
 import { useTelemetry } from "@/context/TelemetryContext"
+import { useDebug } from "@/context/DebugContext"
 
 const DIRECTION = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 
@@ -126,19 +127,23 @@ const GPS = () => {
     ]
   )
 
+  const { debugMode } = useDebug()
+
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center gap-4 text-sm">
-        <span className="text-DarkGrey">Telemetry:</span>
-        <span
-          className={`font-semibold ${
-            status === "open" ? "text-green-500" : "text-yellow-500"
-          }`}
-        >
-          {status}
-        </span>
-        <span className="text-DarkGrey">Path: {path.length} points</span>
-      </div>
+      {debugMode && (
+        <div className="flex items-center gap-4 text-sm">
+          <span className="text-DarkGrey">Telemetry:</span>
+          <span
+            className={`font-semibold ${
+              status === "open" ? "text-green-500" : "text-yellow-500"
+            }`}
+          >
+            {status}
+          </span>
+          <span className="text-DarkGrey">Path: {path.length} points</span>
+        </div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Card variant="glass" className="h-full flex flex-col">
