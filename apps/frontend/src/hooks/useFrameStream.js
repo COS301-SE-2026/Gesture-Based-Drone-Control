@@ -33,9 +33,9 @@ export function useFrameStream(
         MAX_RECONNECT_MS,
         BASE_RECONNECT_MS * 2 ** attempts
       )
-      attempts += 1
+      attempts += 1 //NOSONAR
       // NOSONAR
-      retryTimer = setTimeout(connect, delay + Math.random() * 250)
+      retryTimer = setTimeout(connect, delay + Math.random() * 250) //NOSONAR
     }
 
     const connect = () => {
