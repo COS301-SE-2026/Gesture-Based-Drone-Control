@@ -10,6 +10,7 @@ import {
   Terms,
   Help,
   Tutorial,
+  Games,
 } from "./components/organisms"
 import { ThemeProvider } from "./context/ThemeProvider.jsx"
 import { TelemetryProvider } from "./context/TelemetryProvider.jsx"
@@ -34,6 +35,7 @@ function App() {
               <Route path="help" element={<Help />} />
               <Route path="tutorial" element={<Tutorial />} />
               <Route path="test" element={<TestPage />} />
+              <Route path="games" element={<Games />} />
             </Route>
           </Routes>
         </CommandsProvider>
