@@ -16,8 +16,8 @@ const StatusDot = ({ variant = "connected", size = "sm", className = "" }) => {
   }[variant]
 
   const sizeClass = {
-    sm: "h-1 w-1",
-    md: "h-2.5 w-2.5",
+    sm: "h-2.5 w-2.5",
+    md: "h-4 w-4",
   }[size]
 
   return (
