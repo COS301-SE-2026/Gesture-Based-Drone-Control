@@ -5,12 +5,8 @@ from types import SimpleNamespace
 
 with patch.dict( 'sys.modules', {
     'djitellopy': MagicMock(),
-    'services.commands.command': MagicMock(),
-    'services.drone_control.adapters.drone_adapter': MagicMock(),
 }):
     from services.drone_control.adapters.tello_adapter import TelloAdapter
-    from services.commands.command import AnalogInput, CommandType
-    from services.drone_control.adapters.drone_adapter import TelemetryData
 
 @pytest.fixture
 def mock_tello():
@@ -50,3 +46,36 @@ def adapter(mock_tello):
         # Manually inject the mock for easier testing
         adapter._tello = mock_tello
         return adapter
+
+@pytest.mark.asyncio
+async def test_connect_success(adapter, mock_tello):
+    result = await adapter.connect()
+    assert result is True
+    mock_tello.connect.assert_called_once()
+    mock_tello.streamon.assert_called_once()
+    mock_tello.get_frame_read.assert_called_once()
+    assert adapter._connected is True
+
+@pytest.mark.asyncio
+async def test_connect_failure(adapter, mock_tello):
+    mock_tello.connect.side_effect = Exception("Connection failed")
+    result = await adapter.connect()
+    assert result is False
+    mock_tello.streamon.assert_not_called()
+    assert adapter._connected is False
+
+@pytest.mark.asyncio
+async def test_disconnect(adapter, mock_tello):
+    adapter._connected = True
+    await adapter.disconnect()
+    mock_tello.land.assert_called_once()
+    mock_tello.streamoff.assert_called_once()
+    mock_tello.end.assert_called_once()
+    assert adapter._connected is False
+
+@pytest.mark.asyncio
+async def test_disconnect_not_connected(adapter, mock_tello):
+    adapter._connected = False
+    with pytest.raises(RuntimeError, match = "Tello Drone is not connected."):
+        await adapter.disconnect()
+    mock_tello.land.assert_not_called()

@@ -2,7 +2,7 @@
 
 import logging
 import math
-from djitellopy import Tello
+from djitellopy import Tello, BackgroundFrameRead
 from services.commands.command import AnalogInput, CommandType
 from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
@@ -21,8 +21,8 @@ class TelloAdapter(DroneAdapter):
             
     ) ->None:
         self._tello = Tello()
-        _connected = False
-        _is_flying = False
+        self._connected = False
+        self._is_flying = False
 
 
     async def connect(self) -> bool:
@@ -62,8 +62,8 @@ class TelloAdapter(DroneAdapter):
         I am aware that the speed kwargs is being used here as a distance
         We are just moving with it considering its perfectly tuned without the kwargs input
         """
-        self._assert_connected
-        self._assert_flying
+        self._assert_connected()
+        self._assert_flying()
 
         speed = kwargs.get('speed_ms', self.MOVEMENTSPEED)
 
@@ -93,6 +93,7 @@ class TelloAdapter(DroneAdapter):
 			ud,
 			yaw,
 		)
+        self._tello.send_rc_control(lr, fb, ud, yaw)
 
 
     async def analog(self, input: AnalogInput) -> None:
@@ -121,7 +122,7 @@ class TelloAdapter(DroneAdapter):
         self._tello.emergency()
 
     async def get_telemetry(self):
-        if self._assert_connected():
+        if not self._connected:
             return TelemetryData(source='tello-disconnected')
             
 
