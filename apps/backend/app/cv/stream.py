@@ -135,8 +135,8 @@ class GestureStream:
 	async def _linger_then_stop(self) -> None:
 		try:
 			await asyncio.sleep(LINGER_SECONDS)
-		except asyncio.CancelledError:
-			raise
+		except asyncio.CancelledError: #NOSONAR
+			raise					#NOSONAR
 		if self._clients:
 			return
 		await self._stop_pipeline()

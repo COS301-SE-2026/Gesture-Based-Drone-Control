@@ -6,6 +6,7 @@ Pipeline is faked so tests run with no camera and fast/deterministic
 """
 
 import asyncio
+import contextlib
 from dataclasses import dataclass
 from typing import AsyncIterator, Optional
 
@@ -204,4 +205,135 @@ class TestUnsubscribeIsIdempotentAndSafe:
 		await stream.unsubscribe(q)
 		await stream.unsubscribe(q)  # second call should be a no-op, not an error
 		await asyncio.sleep(0.05)
+		assert stream.is_running is False
+class FailingCvPipeline(FakeCvPipeline):
+	"""Camera is busy: start() raises the way CameraFeed does when the device is held."""
+
+	async def start(self) -> None:
+		await asyncio.sleep(0)
+		raise RuntimeError('Failed to open camera index 0 after 4 attempts')
+
+
+class TestStartFailure:
+	async def test_failed_start_does_not_latch_a_dead_pipeline(
+		self, monkeypatch, patch_serialize
+	):
+		"""
+		Regression: _pipeline used to be assigned before start() succeeded, so a
+		busy camera left a dead object in place and every later subscribe()
+		short-circuited on `if self._pipeline is not None`. The stream stayed
+		broken until the backend restarted.
+		"""
+		monkeypatch.setattr('app.cv.stream.CvPipeline', FailingCvPipeline)
+		stream = GestureStream()
+
+		with pytest.raises(RuntimeError):
+			await stream.subscribe()
+
+		assert stream.is_running is False
+		assert stream.client_count == 0
+		assert 'camera' in stream.last_error
+
+	async def test_next_subscribe_retries_after_a_failed_start(
+		self, monkeypatch, patch_serialize
+	):
+		monkeypatch.setattr('app.cv.stream.CvPipeline', FailingCvPipeline)
+		stream = GestureStream()
+		with pytest.raises(RuntimeError):
+			await stream.subscribe()
+
+		# camera freed up
+		monkeypatch.setattr('app.cv.stream.CvPipeline', FakeCvPipeline)
+		await stream.subscribe()
+
+		assert stream.is_running is True
+		assert stream.last_error is None
+
+
+class TestBroadcastFailure:
+	async def test_clients_are_told_when_the_broadcast_dies(
+		self, monkeypatch, patch_pipeline
+	):
+		def boom(event, include_frame=False):
+			raise ValueError('jpeg encode failed')
+
+		monkeypatch.setattr('app.cv.stream.serialize_event', boom)
+		stream = GestureStream()
+		queue = await stream.subscribe()
+
+		# None is the end-of-stream sentinel the WS handler closes on
+		assert await asyncio.wait_for(queue.get(), timeout=2) is None
+
+		await asyncio.sleep(0.05)
+		assert stream.is_running is False
+		assert 'jpeg encode failed' in stream.last_error
+
+	async def test_clients_are_told_when_the_pipeline_stops_producing(self, stream):
+		queue = await stream.subscribe()
+		await asyncio.wait_for(queue.get(), timeout=2)
+
+		# camera death: events() ends without stop() being called
+		FakeCvPipeline.instances[0]._running = False
+
+		while True:
+			payload = await asyncio.wait_for(queue.get(), timeout=2)
+			if payload is None:
+				break
+
+
+class TestOrphanReap:
+	async def test_orphaned_pipeline_is_replaced_on_next_subscribe(self, stream):
+		"""
+		If a scheduled stop never runs (its task was cancelled, or under
+		TestClient its loop died), the pipeline stays assigned with nothing
+		driving it. The next subscriber must get a fresh one, not a dead queue.
+		"""
+		await stream.subscribe()
+		stale = FakeCvPipeline.instances[0]
+
+		task = stream._broadcast_task  # NOSONAR - simulating a dead broadcaster
+		task.cancel()
+		with contextlib.suppress(asyncio.CancelledError):
+			await task
+
+		await stream.subscribe()
+
+		assert len(FakeCvPipeline.instances) == 2
+		assert stale.stopped is True
+		assert stream.is_running is True
+
+
+class TestIdleBehaviour:
+	async def test_no_serialisation_while_no_clients(self, monkeypatch, patch_pipeline):
+		"""
+		During the linger window the camera is still capturing, but encoding a
+		JPEG per frame for nobody starved the event loop badly enough to delay
+		the 3s linger to ~16s.
+		"""
+		calls = 0
+
+		def counting(event, include_frame=False):
+			nonlocal calls
+			calls += 1
+			return GestureFramePayload(
+				frame_index=event.frame_index, timestamp=0.0, fps=0.0, hands=[]
+			)
+
+		monkeypatch.setattr('app.cv.stream.serialize_event', counting)
+		monkeypatch.setattr('app.cv.stream.LINGER_SECONDS', 5.0)
+
+		stream = GestureStream()
+		queue = await stream.subscribe()
+		await asyncio.wait_for(queue.get(), timeout=2)
+		await stream.unsubscribe(queue)
+
+		before = calls
+		await asyncio.sleep(0.1)
+		assert stream.is_running is True
+		assert calls == before
+
+		await stream.shutdown()
+
+	async def test_shutdown_without_a_pipeline_is_a_noop(self, stream):
+		await stream.shutdown()
 		assert stream.is_running is False
