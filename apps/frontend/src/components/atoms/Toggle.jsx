@@ -39,7 +39,7 @@ export default function Toggle({
                     rounded-full
                     transition-colors
                     duration-200
-                    ${isChecked ? "bg-Grey" : "bg-OffBlack"}
+                    ${isChecked ? "bg-red" : "bg-dim"}
                     ${disabled ? "opacity-50 cursor-not-allowed" : ""}
                 `}
       >
@@ -50,7 +50,7 @@ export default function Toggle({
                         w-4
                         transform
                         rounded-full
-                        bg-OffWhite
+                        bg-dim
                         transition-transform
                         duration-200
                         ${isChecked ? "translate-x-6" : "translate-x-1"}

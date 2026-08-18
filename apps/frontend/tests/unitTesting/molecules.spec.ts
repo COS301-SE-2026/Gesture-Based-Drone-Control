@@ -28,11 +28,6 @@ test.describe('Command History',()=>{
 })
 
 
-
-
-    
-
-
 test.describe('Sidebar',()=>{
     test('the logo comes through',async ({page})=>{
         await page.goto('/#/')
@@ -57,17 +52,29 @@ test.describe('DarkModeToggle',()=>{
     test('the toggle bar shows up',async ({page})=>{
         await page.goto('/#/')
         await page.waitForLoadState('domcontentloaded')
-        const toggle = page.locator('input[type="checkbox"]').first()
-        await expect(toggle).toBeAttached()
+        const toggle = page.getByRole('button' , {name: /switch to (light|dark) mode/i})
+        await expect(toggle).toBeVisible()
     })
 
-    test('the dark mode adds dark class o html element',async({page})=>{
+    test('clicking the button flips the data theme attribute on html?', async({page}) => {
         await page.goto('/#/')
         await page.waitForLoadState('domcontentloaded')
-        const toggle = page.locator('input[type="checkbox"]').first()
-        await toggle.click({force:true})
-        const htmlClass = await page.locator('html').getAttribute('class')
-        expect(htmlClass ==='dark' ||htmlClass ==='' || htmlClass ===null).toBeTruthy()
+        const html = page.locator('html')
+        const before=await html.getAttribute('data-theme')
+        const toggle = page.getByRole('button', {name:/switch to (light|dark) mode/i})
+        await toggle.click()
+        await expect(html).not.toHaveAttribute('data-theme', before ?? '')
+
+    })
+
+    test ('the aria-label updates after toggling', async ({page}) => {
+        await page.goto('/#/')
+        await page.waitForLoadState('domcontentloaded')
+        const toggle = page.getByRole('button', {name:/switch to (light|dark) mode/i})
+        const labelBefore = await toggle.getAttribute('aria-label')
+        await toggle.click()
+        const labelAfter = await toggle.getAttribute('aria-label')
+        expect(labelAfter).not.toBe(labelBefore)
     })
 })
 

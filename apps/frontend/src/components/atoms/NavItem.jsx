@@ -1,18 +1,25 @@
 import PropTypes from "prop-types"
 
-const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
+const NavItem = ({
+  label,
+  Icon,
+  active = false,
+  onClick,
+  collapsed = false,
+  className = "",
+}) => {
   return (
     <button
       onClick={onClick}
+      title={collapsed ? label : undefined}
       className={[
-        "flex items-center gap-3 w-full px-4 py-2.5 rounded-lg",
-        "font-Inter text-base font-medium",
+        "flex items-center w-full py-2.5 rounded-lg",
+        collapsed ? "justify-center px-2" : "gap-3 px-4",
+        "font-sans text-base font-medium",
         "transition-all duration-200",
-        "focus:outline-none focus:ring-2 focus:ring-Red/40",
+        "focus:outline-none focus:ring-2 focus:ring-red/40",
         "group",
-        active
-          ? "bg-Red text-OffWhite shadow-md"
-          : "text-OffBlack dark:text-OffWhite hover:bg-OffWhite/10",
+        active ? "bg-red text-white shadow-md" : "text-ink hover:bg-ink/10",
         className,
       ]
         .filter(Boolean)
@@ -20,16 +27,12 @@ const NavItem = ({ label, Icon, active = false, onClick, className = "" }) => {
     >
       {Icon && (
         <Icon
-          size={35}
+          size={30}
           strokeWidth={active ? 2 : 1.8}
-          className={
-            active
-              ? "text-OffWhite"
-              : "text-OffBlack dark:text-OffWhite group-hover:text-OffBlack transition-colors"
-          }
+          className={active ? "text-white" : "text-ink transition-colors"}
         />
       )}
-      <span>{label}</span>
+      {!collapsed && <span>{label}</span>}
     </button>
   )
 }
