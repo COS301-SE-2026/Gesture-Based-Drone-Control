@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import PropTypes from "prop-types"
-import Card from "../atoms/Card"
-import Label from "../atoms/Label"
+import { Card, Label, StatusDot } from "../atoms"
+
 import {
   useCalibrationStream,
   skipCalibration,
@@ -30,11 +30,6 @@ function prettyGesture(name) {
     .join(" ")
 }
 
-function connectionDotClass(connected, finished) {
-  if (connected) return "bg-green-500 animate-pulse"
-  if (finished) return "bg-green-500"
-  return "bg-Grey"
-}
 
 function connectionLabel(connected, finished) {
   if (finished) return "Complete"
@@ -43,9 +38,9 @@ function connectionLabel(connected, finished) {
 }
 
 function chipClass(isDone, isCurrent) {
-  if (isDone) return "bg-green-500/15 border-green-500/40 text-green-500"
-  if (isCurrent) return "bg-Red/15 border-Red/50 text-Red"
-  return "bg-Grey/10 border-Grey/20 text-DarkGrey"
+  if (isDone) return "bg-success/15 border-success/40 text-success"
+  if (isCurrent) return "bg-red/15 border-red/50 text-red"
+  return "bg-dim/10 border-dim/20 text-dim"
 }
 
 const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
@@ -115,15 +110,15 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
   if (finished) {
     statusArea = (
       <div className="flex flex-col gap-3">
-        <p className="text-sm font-medium text-green-500">
-          ✓ Calibration complete, all {total || completed.length} gestures
+        <p className="text-sm font-medium text-success">
+          Calibration complete, all {total || completed.length} gestures
           passed. Flight commands are now unlocked.
         </p>
         <div className="flex gap-3">
           <button
             type="button"
             onClick={() => onComplete?.("completed")}
-            className="px-4 py-2 rounded bg-Red text-OffWhite text-sm font-medium hover:opacity-90 transition-opacity"
+            className="px-4 py-2 rounded bg-red text-white text-sm font-medium hover:opacity-90 transition-opacity"
           >
             Continue
           </button>
@@ -131,7 +126,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
             <button
               type="button"
               onClick={onRestart}
-              className="px-4 py-2 rounded border border-Grey/30 text-sm text-OffBlack dark:text-OffWhite hover:bg-Grey/10 transition-colors"
+              className="px-4 py-2 rounded border border-line text-sm text-ink hover:bg-dim/10 transition-colors"
             >
               Recalibrate
             </button>
@@ -141,15 +136,15 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
     )
   } else if (phase === "success_display") {
     statusArea = (
-      <p className="text-sm font-medium text-green-500">
-        ✓ {prettyGesture(lastPassed)} passed!
+      <p className="text-sm font-medium text-success">
+        {prettyGesture(lastPassed)} passed!
       </p>
     )
   } else {
     statusArea = (
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-OffBlack/80 dark:text-OffWhite">
+          <p className="text-md text-ink/80">
             {target ? (
               <>
                 Show:{" "}
@@ -160,14 +155,14 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
             )}
           </p>
           {windowStats && (
-            <span className="text-xs text-DarkGrey">
+            <span className="text-xs text-dim">
               {windowStats.frames}/{windowStats.min_frames} frames
             </span>
           )}
         </div>
 
         {/* rolling window match ratio, threshold marker at required ratio */}
-        <div className="relative w-full bg-Grey/20 rounded-full h-2">
+        <div className="relative w-full bg-dim/20 rounded-full h-2">
           <div
             className="h-2 rounded-full transition-all duration-200"
             style={{
@@ -177,11 +172,11 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
             }}
           />
           <div
-            className="absolute -top-0.5 h-3 w-0.5 bg-OffBlack/60 dark:bg-OffWhite/60"
+            className="absolute -top-0.5 h-3 w-0.5 bg-ink/60"
             style={{ left: `${requiredRatio * 100}%` }}
           />
         </div>
-        <p className="text-xs text-DarkGrey">
+        <p className="text-sm text-dim">
           Hold the gesture steady, {Math.round(requiredRatio * 100)}% of recent
           frames must match to pass
         </p>
@@ -193,16 +188,14 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <Label size="md">Gesture Calibration</Label>
-          <div className="flex items-center gap-2 text-xs text-DarkGrey">
-            <span
-              className={`w-2 h-2 rounded-full ${connectionDotClass(connected, finished)}`}
-            />
+          <div className="flex items-center gap-2 text-xs text-ink/80">
+            <StatusDot variant={finished || connected ? "connected" : "idle"} />
             <span>{connectionLabel(connected, finished)}</span>
           </div>
         </div>
 
         {/* camera and skeleton overlay */}
-        <div className="relative w-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px]">
+        <div className="relative w-full bg-black/50 rounded border border-Grey/20 overflow-hidden min-h-[400px]">
           <video
             ref={videoRef}
             autoPlay
@@ -221,7 +214,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
               return (
                 <span
                   key={gesture}
-                  className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${chipClass(isDone, isCurrent)}`}
+                  className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${chipClass(isDone, isCurrent)}`}
                 >
                   {/* ✓ pasted */}
                   {isDone ? "✓ " : ""}
@@ -234,12 +227,12 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
         {statusArea}
         {/* skip */}
         {!finished && (
-          <div className="border-t border-Grey/20 pt-3 flex justify-end">
+          <div className="border-t border-line pt-3 flex justify-end">
             <button
               type="button"
               onClick={handleSkip}
               disabled={skipping}
-              className="text-xs text-DarkGrey hover:text-OffBlack dark:hover:text-OffWhite underline underline-offset-2 disabled:opacity-50 transition-colors"
+              className="text-xs text-dim hover:text-ink underline underline-offset-2 disabled:opacity-50 transition-colors"
             >
               {skipping ? "Skipping..." : "Skip calibration"}
             </button>
