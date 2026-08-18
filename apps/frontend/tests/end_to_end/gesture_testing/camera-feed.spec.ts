@@ -15,8 +15,11 @@ test.describe("gesture camera feed (any camera", () => {
         "shared backedn camera, one browser enough"
     )
 
-    test.beforeEach(async ({request}) => {
+    test.beforeEach(async ({page, request}) => {
        await request.post(`${API_BASE}/api/calibration/skip`)
+       await page.addInitScript(() => {
+        localStorage.setItem("camera-consent", "granted")
+       })
     })
 
     test.afterEach(async ({ page, request}) => {

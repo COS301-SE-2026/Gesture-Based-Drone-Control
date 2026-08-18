@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import { useGestureStream } from "../../hooks/useGestureStream"
-import { useCameraConsent } from "../../context/CameraConsentContext"
+import { useCameraConsent } from "../context/CameraConsentContext"
 import CameraDisabledNotice from "./CameraDisabledNotice"
 import {
   prepareCanvas,

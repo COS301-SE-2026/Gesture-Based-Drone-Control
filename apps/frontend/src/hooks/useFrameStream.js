@@ -20,9 +20,6 @@ export function useFrameStream(
 
   useEffect(() => {
     if (!enabled) {
-      setConnected(false)
-      setFrame(null)
-      setError(null)
       return undefined
     }
 
@@ -94,8 +91,15 @@ export function useFrameStream(
         // never close a socket mid-handshake, wait for it to open first
         ws.addEventListener("open", () => ws.close(), { once: true })
       }
+      setFrame(null)
+      setConnected(false)
+      setError(null)
     }
   }, [path, autoReconnect, enabled])
+
+  if (!enabled) {
+    return {frame:null, connected: false, error: null}
+  }
 
   return { frame, connected, error }
 }

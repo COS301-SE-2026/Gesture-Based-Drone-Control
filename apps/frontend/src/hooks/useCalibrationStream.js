@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../lib/api"
-import { useCameraConsent } from "../context/CameraConsentContext"
+import { useCameraConsent } from "../../context/CameraConsentContext"
 import { useFrameStream } from "./useFrameStream"
 
 /* 

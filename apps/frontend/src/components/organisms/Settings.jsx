@@ -1,4 +1,5 @@
 import { DroneInfoCard } from "../molecules"
+import CameraSettingsCard from "../molecules/CameraSettingsCard"
 
 const Settings = () => {
   return (
@@ -10,6 +11,9 @@ const Settings = () => {
           model="DJI PHANTOM 4 PRO"
           description="Professional drone with 4k camera"
         />
+      </div>
+      <div className="max-w-md m1-6">
+        <CameraSettingsCard />
       </div>
     </div>
   )

@@ -14,6 +14,8 @@ import {
   drawHand,
   decodeFrameBitmap,
 } from "../../lib/handSkeleton"
+import { useCameraConsent } from "../context/CameraConsentContext"
+import CameraDisabledNotice from "./CameraDisabledNotice"
 
 //live gesture calibration UI with ws /api/calibration/stream
 
@@ -51,6 +53,7 @@ function chipClass(isDone, isCurrent) {
 const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
   const canvasRef = useRef(null)
   const { frame, connected, finished } = useCalibrationStream()
+  const { enabled } = useCameraConsent()
 
   // full ordered gesture list, from GET /status (not part of the frame payload)
   const [sequence, setSequence] = useState([])
@@ -209,6 +212,16 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
           frames must match to pass
         </p>
       </div>
+    )
+  }
+
+  if (!enabled) {
+    return (
+      <Card variant="glass" className={className}>
+        <div className="min-h-[400px] flex items-center justify-center">
+          <CameraDisabledNotice message="Calibration needs the camera to check it can read your hand reliably." />
+        </div>
+      </Card>
     )
   }
   return (
