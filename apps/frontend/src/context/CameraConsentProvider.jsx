@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
 import PropTypes from "prop-types"
-import { CameraConsentContext } from "./CameraConsentContext"
+import { CameraConsentContext } from "../CameraConsentContext"
 
 const STORAGE_KEY = "camera-consent"
 
