@@ -1,4 +1,5 @@
 import { DroneInfoCard } from "../molecules"
+import FlappyDroneGame from "./FlappyDroneGame"
 
 const Games = () => {
   return (
@@ -11,6 +12,11 @@ const Games = () => {
           description="Professional drone with 4k camera"
         />
       </div>
+
+        <div className="max-w-4x1 ml-6">
+            <FlappyDroneGame />
+        </div>
+
     </div>
   )
 }
