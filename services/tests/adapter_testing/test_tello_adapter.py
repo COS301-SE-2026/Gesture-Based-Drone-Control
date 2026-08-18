@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+import math
 
 with patch.dict(
 	'sys.modules',
@@ -10,6 +11,7 @@ with patch.dict(
 ):
 	from services.commands.command import AnalogInput, CommandType
 	from services.drone_control.adapters.tello_adapter import TelloAdapter
+	from services.drone_control.adapters.drone_adapter import TelemetryData
 
 
 @pytest.fixture
@@ -46,7 +48,7 @@ def adapter(mock_tello):
 	with patch('services.drone_control.adapters.tello_adapter.Tello', return_value=mock_tello):
 		adapter = TelloAdapter(
 			_tello=None,  # will be ignored
-			_frameReader=None,
+			_frame_reader=None,
 			_connected=False,
 			_is_flying=False,
 		)
@@ -223,3 +225,61 @@ async def test_analog_not_flying(adapter):
 	adapter._is_flying = False
 	with pytest.raises(RuntimeError, match='Tello Drone is not flying.'):
 		await adapter.analog(MagicMock())
+
+@pytest.mark.asyncio
+async def test_hover(adapter, mock_tello):
+	adapter._connected = True
+	adapter._is_flying = True
+	await adapter.hover()
+	mock_tello.send_rc_control.assert_called_once_with(0,0,0,0)
+
+@pytest.mark.asyncio
+async def test_hover_not_connected(adapter):
+	adapter._connected = False
+	with pytest.raises(RuntimeError, match="Tello Drone is not connected."):
+		await adapter.hover()
+
+@pytest.mark.asyncio
+async def test_hover_not_flying(adapter):
+	adapter._connected = True
+	adapter._is_flying = False
+	with pytest.raises(RuntimeError, match="Tello Drone is not flying."):
+		await adapter.hover()
+
+@pytest.mark.asyncio
+async def test_emergency_stop(adapter, mock_tello):
+	await adapter.emergency_stop()
+	mock_tello.emergency.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_get_telemetry_success(adapter, mock_tello):
+	adapter._connected = True
+	adapter._is_flying = True
+	result = await adapter.get_telemetry()
+	
+	assert isinstance(result, TelemetryData)
+	assert result.source == 'tello'
+	assert result.altitude_m == 1.0
+	
+	expected_speed = round(math.sqrt(20**2 + 30**2 + 40**2) /100 ,3)
+	assert result.speed_ms == expected_speed
+	
+	body_heading = math.degrees(math.atan2(30,20))
+	expected_heading = (body_heading + 45) %360
+	assert result.heading_deg == expected_heading
+	
+	assert result.battery_pct == 85
+	assert result.is_flying is True
+	assert result.x_displacement == 1.2
+	assert result.y_displacement == 3.4
+	assert 'signal' in result.extra
+	assert result.extra[1] == '70'
+
+@pytest.mark.asyncio
+async def test_get_telemetry_exception(adapter, mock_tello):
+	adapter._connected = True
+	mock_tello.get_current_state.side_effect = Exception("State error")
+	result = await adapter.get_telemetry()
+	assert isinstance(result, TelemetryData)
+	assert result.source == 'tello-error'
+	mock_tello.get_position.assert_not_called()
