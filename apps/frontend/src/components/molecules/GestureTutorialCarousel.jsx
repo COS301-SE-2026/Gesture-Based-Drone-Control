@@ -102,9 +102,7 @@ export default function GestureTutorialCarousel({ gestures }) {
           </div>
 
           {showHint && (
-            <p className="text-sm text-dim">
-              {current.instructions}
-            </p>
+            <p className="text-sm text-dim">{current.instructions}</p>
           )}
 
           <div className="flex items-center justify-between mt-auto">

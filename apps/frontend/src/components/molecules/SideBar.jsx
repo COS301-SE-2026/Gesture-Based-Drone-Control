@@ -42,16 +42,14 @@ export default function SideBar({
 
   return (
     <aside
-    className={
-      `bg-[linear-gradient(160deg,var(--glass),var(--glass-2)),var(--nav)]
+      className={`bg-[linear-gradient(160deg,var(--glass),var(--glass-2)),var(--nav)]
       backdrop-blur-xl backdrop-saturate-150
       border-r border-glassBrd
       rounded-r-2xl
       shadow-glass-combo
       flex h-full flex-col gap-3 p-4 transition-all duration-300
-      ${collapsed? "w-28" : "w-80"} ${className}
-      `
-    }
+      ${collapsed ? "w-28" : "w-80"} ${className}
+      `}
     >
       <div
         className={`flex items-center mb-4 ${collapsed ? "flex-col gap-2" : "justify-between"}`}
