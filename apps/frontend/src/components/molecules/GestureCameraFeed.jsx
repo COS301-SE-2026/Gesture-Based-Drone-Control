@@ -78,18 +78,18 @@ const GestureCameraFeed = ({
       )}
       <div className="absolute top-4 right-4 flex items-center gap-2 bg-OffBlack/60 px-3 py-1 rounded-full text-xs text-OffWhite">
         <span
-          className={`w-2 h-2 rounded-full ${
-            error
-              ? "bg-red-500"
-              : connected
-                ? "bg-green-500 animate-pulse"
-                : "bg-Grey"
-          }`}
+          className={`w-2 h-2 rounded-full ${statusDotClass(connected, error)}`}
         />
         <span>{statusLabel}</span>
       </div>
     </div>
   )
+}
+
+function statusDotClass(connected, error) {
+  if (error) return "bg-red-500"
+  if (connected) return "bg-green-500 animate-pulse"
+  return "bg-Grey"
 }
 
 function getStatusLabel(connected, error, frame) {

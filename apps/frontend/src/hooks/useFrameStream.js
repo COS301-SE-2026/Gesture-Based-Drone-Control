@@ -34,6 +34,7 @@ export function useFrameStream(
         BASE_RECONNECT_MS * 2 ** attempts
       )
       attempts += 1
+      // NOSONAR
       retryTimer = setTimeout(connect, delay + Math.random() * 250)
     }
 

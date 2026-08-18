@@ -57,6 +57,9 @@ class FakeCvPipeline:
 			self._frame_index += 1
 			yield FakeEvent(frame_index=self._frame_index)
 			await asyncio.sleep(0.005)
+   
+	def simulate_camera_death(self) -> None:
+		self._running = False
 
 
 @pytest.fixture(autouse=True)
@@ -206,6 +209,8 @@ class TestUnsubscribeIsIdempotentAndSafe:
 		await stream.unsubscribe(q)  # second call should be a no-op, not an error
 		await asyncio.sleep(0.05)
 		assert stream.is_running is False
+  
+
 class FailingCvPipeline(FakeCvPipeline):
 	"""Camera is busy: start() raises the way CameraFeed does when the device is held."""
 
@@ -273,12 +278,13 @@ class TestBroadcastFailure:
 		await asyncio.wait_for(queue.get(), timeout=2)
 
 		# camera death: events() ends without stop() being called
-		FakeCvPipeline.instances[0]._running = False
+		FakeCvPipeline.instances[0].simulate_camera_death()
 
-		while True:
+		for _ in range(50):
 			payload = await asyncio.wait_for(queue.get(), timeout=2)
 			if payload is None:
-				break
+				return
+			pytest.fail('pipeline stopped producing but clients were never sent the sentinel')
 
 
 class TestOrphanReap:
