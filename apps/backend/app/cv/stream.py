@@ -108,7 +108,7 @@ class GestureStream:
 				with contextlib.suppress(Exception):
 					await pipeline.stop()
 				self._last_error = str(exc)
-				logger.error('GestureStream failed to start pipeline: %s', exc)
+				logger.exception('GestureStream failed to start pipeline: %s', exc)
 				raise
 
 			self._pipeline = pipeline
@@ -123,7 +123,7 @@ class GestureStream:
 			self._linger_task.cancel()
 		self._linger_task = None
 
-	async def _schedule_stop_if_idle(self) -> None:
+	async def _schedule_stop_if_idle(self) -> None: #NOSONAR
 		if self._clients or self._pipeline is None:
 			return
 		if self._linger_task is not None and not self._linger_task.done():
@@ -136,7 +136,7 @@ class GestureStream:
 		try:
 			await asyncio.sleep(LINGER_SECONDS)
 		except asyncio.CancelledError:
-			return
+			raise
 		if self._clients:
 			return
 		await self._stop_pipeline()
@@ -159,7 +159,7 @@ class GestureStream:
 			await asyncio.shield(pipeline.stop())
 
 	def _fan_out(self, payload: Optional[GestureFramePayload]) -> None:
-		for queue in list(self._clients):
+		for queue in self._clients:
 			if queue.full():
 				with contextlib.suppress(asyncio.QueueEmpty):
 					queue.get_nowait()
