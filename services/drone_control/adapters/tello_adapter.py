@@ -1,9 +1,10 @@
 # /services/cv-pipeline/drone-control/adapters/tello_adapter.py
 
 import logging
+import math
 from djitellopy import Tello
 from services.commands.command import AnalogInput, CommandType
-from services.drone_control.adapters.drone_adapter import DroneAdapter
+from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +109,55 @@ class TelloAdapter(DroneAdapter):
         yaw = input.right_x * self.MOVEMENTSPEED
 
         self._tello.send_rc_control(lr, fb, ud, yaw)
+
+    async def hover (self) -> None:
+        self._assert_connected()
+        self._assert_flying()
+
+        self._tello.send_rc_control(0,0,0,0)
+
+    async def emergency_stop(self) -> None:
+        self._tello.emergency()
+
+    async def get_telemetry(self):
+        if self._assert_connected():
+            return TelemetryData(source='tello-disconnected')
+            
+
+        try:
+            state = self._tello.get_current_state()
+
+            altitude = state.get('tof') / 100 # conversion to meters
+
+            vx = state.get('vgx')
+            vy = state.get('vgy')
+            vz = state.get('vgz')
+
+            vel = math.sqrt(vx**2 + vy**2 + vz**2)
+            vel = vel /100 # cm/s -> m/s
+
+            yaw = state.get('yaw')
+            body_heading = math.degrees(math.atan2(vy, vx))
+            world_heading = (body_heading + yaw) % 360
+
+            battery = state.get('bat')
+
+
+            return TelemetryData(
+                altitude_m= round(altitude, 3),
+                speed_ms=round(vel, 3),
+                heading_deg= world_heading,
+                battery_pct= battery,
+                is_flying=self._is_flying,
+                
+            )
+
+        except Exception as ex:
+            logging.exception('ProjectAirSimAdapter.get_telemetry: error - %s', ex)
+            logger.debug('Telemetry exception detail', exc_info=True)
+            return TelemetryData(source='tello-error')
+            
+
 
 
     def _assert_connected(self) -> None:
