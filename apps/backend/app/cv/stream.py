@@ -86,7 +86,7 @@ class GestureStream:
 		self._clients.clear()
 		self._cancel_linger()
 		await self._stop_pipeline()
-  
+
 	def _is_orphaned(self) -> bool:
 		task = self._broadcast_task
 		return task is not None and task.done()

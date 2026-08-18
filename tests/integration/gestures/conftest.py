@@ -53,4 +53,5 @@ def idle_pipeline(client, monkeypatch):
 	monkeypatch.setattr('app.cv.stream.LINGER_SECONDS', 0.2)
 	yield
 	from app.api.gestures import stream
+
 	client.portal.call(stream.shutdown)

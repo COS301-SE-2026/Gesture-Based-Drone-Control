@@ -1,7 +1,7 @@
 import PropTypes from "prop-types"
 import Card from "../atoms/Card"
 import Label from "../atoms/Label"
-import { useCameraConsent } from "../context/CameraConsentContext"
+import { useCameraConsent } from "../../context/CameraConsentContext"
 
 //camera on/off for whole app
 

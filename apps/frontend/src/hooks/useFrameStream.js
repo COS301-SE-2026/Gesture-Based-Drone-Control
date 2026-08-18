@@ -98,7 +98,7 @@ export function useFrameStream(
   }, [path, autoReconnect, enabled])
 
   if (!enabled) {
-    return {frame:null, connected: false, error: null}
+    return { frame: null, connected: false, error: null }
   }
 
   return { frame, connected, error }

@@ -14,7 +14,7 @@ import {
   drawHand,
   decodeFrameBitmap,
 } from "../../lib/handSkeleton"
-import { useCameraConsent } from "../context/CameraConsentContext"
+import { useCameraConsent } from "../../context/CameraConsentContext"
 import CameraDisabledNotice from "./CameraDisabledNotice"
 
 //live gesture calibration UI with ws /api/calibration/stream

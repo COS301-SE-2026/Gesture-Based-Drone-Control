@@ -1,4 +1,4 @@
-import { useCameraConsent } from "../../context/CameraConsentContext"
+import { useCameraConsent } from "../context/CameraConsentContext"
 import { useFrameStream } from "./useFrameStream"
 
 export function useGestureStream() {

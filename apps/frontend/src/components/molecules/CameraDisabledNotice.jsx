@@ -1,5 +1,5 @@
 import PropTypes from "prop-types"
-import { useCameraConsent } from "../context/CameraConsentContext"
+import { useCameraConsent } from "../../context/CameraConsentContext"
 
 const CameraDisabledNotice = ({
   message = "Gesture control needs your camera to read your hand",
