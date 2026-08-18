@@ -9,13 +9,23 @@ export function buildWsUrl(path) {
 const BASE_RECONNECT_MS = 500
 const MAX_RECONNECT_MS = 5000
 
-export function useFrameStream(path, { autoReconnect = true } = {}) {
+export function useFrameStream(
+  path,
+  { autoReconnect = true, enabled = true } = {}
+) {
   const [frame, setFrame] = useState(null)
   const [connected, setConnected] = useState(false)
   const [error, setError] = useState(null)
   const wsRef = useRef(null)
 
   useEffect(() => {
+    if (!enabled) {
+      setConnected(false)
+      setFrame(null)
+      setError(null)
+      return undefined
+    }
+
     let cancelled = false
     let attempts = 0
     let retryTimer = null
@@ -85,7 +95,7 @@ export function useFrameStream(path, { autoReconnect = true } = {}) {
         ws.addEventListener("open", () => ws.close(), { once: true })
       }
     }
-  }, [path, autoReconnect])
+  }, [path, autoReconnect, enabled])
 
   return { frame, connected, error }
 }

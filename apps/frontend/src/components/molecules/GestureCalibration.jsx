@@ -76,10 +76,10 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
       const bitmap = await decodeFrameBitmap(frame)
       if (cancelled) {
         bitmap?.close?.()
-        return 
+        return
       }
 
-       const ctx = prepareCanvas(canvas)
+      const ctx = prepareCanvas(canvas)
       const transform = coverTransform(canvas, {
         videoWidth: frame.frame_width || bitmap?.width || canvas.width,
         videoHeight: frame.frame_height || bitmap?.height || canvas.height,
@@ -95,20 +95,20 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
         )
       }
 
-    const passState = frame.phase === "success_display" || frame.matched
-    const boneColor = passState ? MATCHED_COLOR : UNMATCHED_COLOR
+      const passState = frame.phase === "success_display" || frame.matched
+      const boneColor = passState ? MATCHED_COLOR : UNMATCHED_COLOR
 
-    frame.hands.forEach((hand) => {
-      drawHand(ctx, toCanvasPoints(hand.landmarks, transform), boneColor)
-    })
-    bitmap?.close?.()
-  }
+      frame.hands.forEach((hand) => {
+        drawHand(ctx, toCanvasPoints(hand.landmarks, transform), boneColor)
+      })
+      bitmap?.close?.()
+    }
 
-  render()
-  return () => {
-    cancelled = true
-  }
-}, [frame])
+    render()
+    return () => {
+      cancelled = true
+    }
+  }, [frame])
 
   const handleSkip = async () => {
     setSkipping(true)

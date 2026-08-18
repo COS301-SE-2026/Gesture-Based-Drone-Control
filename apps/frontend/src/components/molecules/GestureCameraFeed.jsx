@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import { useGestureStream } from "../../hooks/useGestureStream"
+import { useCameraConsent } from "../../context/CameraConsentContext"
+import CameraDisabledNotice from "./CameraDisabledNotice"
 import {
   prepareCanvas,
   coverTransform,
@@ -13,12 +15,16 @@ const SKELETON_COLOR = "#ef4444"
 const LABEL_BG = "rgba(11, 9, 10, 0.75)"
 const LABEL_TEXT = "#ffffff"
 
+const CONTAINER_GLASS =
+  "relative w-full h-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px]"
+
 const GestureCameraFeed = ({
   className = "",
   onFrame = null,
   skeletonColor = SKELETON_COLOR,
 }) => {
   const canvasRef = useRef(null)
+  const { enabled } = useCameraConsent()
   const { frame, connected, error } = useGestureStream()
 
   useEffect(() => {
@@ -47,12 +53,22 @@ const GestureCameraFeed = ({
     }
   }, [frame, skeletonColor])
 
+  if (!enabled) {
+    return (
+      <div
+        data-testid="gesture-camera-feed"
+        className={`${CONTAINER_GLASS} flex items-center justify-center ${className}`}
+      >
+        <CameraDisabledNotice />
+      </div>
+    )
+  }
   const statusLabel = getStatusLabel(connected, error, frame)
 
   return (
     <div
       data-testid="gesture-camera-feed"
-      className={`relative w-full h-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px] ${className}`}
+      className={`${CONTAINER_GLASS} ${className}`}
     >
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
       {!frame && (
