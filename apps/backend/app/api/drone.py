@@ -88,7 +88,7 @@ def _build_adapter(body: ConnectRequest) -> DroneAdapter:
 		from services.drone_control.adapters.tello_adapter import TelloAdapter
 
 		return TelloAdapter()
-	
+
 	raise ValueError(f'Unknown adapter: {body.adapter}. Supported: dummy, airsim, projectairsim')
 
 
