@@ -40,6 +40,7 @@ class FakeCvPipeline:
 		self.stopped = False
 		self._running = False
 		self._frame_index = 0
+		self._recognizer_mode = 'ml' if (config is not None and config.use_ml) else 'rule'
 		FakeCvPipeline.instances.append(self)
 
 	async def start(self) -> None:
@@ -57,6 +58,10 @@ class FakeCvPipeline:
 			self._frame_index += 1
 			yield FakeEvent(frame_index=self._frame_index)
 			await asyncio.sleep(0.005)
+   
+	def set_recognizer_mode(self, mode:str) -> str:
+			self.recognizer_mode = mode
+			return mode
 
 	def simulate_camera_death(self) -> None:
 		self._running = False

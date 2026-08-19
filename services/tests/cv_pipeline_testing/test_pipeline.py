@@ -148,7 +148,15 @@ class _FakeEngine:
 
 	def __init__(self):
 		self.process_calls = 0
-
+		self.recognizer = None
+		self.stabilizer_resets = 0
+  
+	def set_recognizer(self, recognizer):
+		self.recognizer = recognizer
+  
+	def reset_stabilizer(self):
+		self.stabilizer_resets += 1
+  
 	def process(self, detection):
 		self.process_calls += 1
 		return make_engine_result(frame_idx=detection.frame_index)

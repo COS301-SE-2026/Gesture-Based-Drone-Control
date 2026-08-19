@@ -34,11 +34,16 @@ class FakeCvPipeline:
 		self.stopped = False
 		self._running = False
 		self._frame_index = 0
+		self.recognizer_mode = 'ml' if (config is not None and config.use_ml) else 'rule'
 
 	async def start(self) -> None:
 		await asyncio.sleep(0)
 		self.started = True
 		self._running = True
+  
+	def set_recognizer_mode(self, mode: str) -> str:
+		self.recognizer_mode = mode
+		return mode
 
 	async def stop(self) -> None:
 		await asyncio.sleep(0)
