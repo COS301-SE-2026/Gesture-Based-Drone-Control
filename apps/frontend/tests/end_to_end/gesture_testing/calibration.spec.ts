@@ -33,6 +33,10 @@ test.describe("gesture calibration (any camera", () => {
         page,
         request,
     }) => {
+        test.skip(
+            (!backendHasCamera()),
+            "backend has no camera, no frames to drive the UI"
+        )
         await page.goto(CALIBRATION_ROUTE)
 
         await expect(page.getByText("Live", {exact: true})).toBeVisible({
@@ -48,24 +52,15 @@ test.describe("gesture calibration (any camera", () => {
         for (const gesture of PRETTY_SEQUENCE) {
             await expect(page.getByText(gesture).first()).toBeVisible()
         }
-
-        test.skip(
-            !(await backendHasCamera(request)),
-            "backend has no camera, no frames to drive to UI"
-        )
         await expect(page.getByText("Show:")).toBeVisible({timeout: 20_000})
     })
 
-    test("progress UI updates while frames streeam in", async ({page, request,}) => {
+    test("progress UI updates while frames streeam in", async ({page}) => {
+        test.skip(!backendHasCamera(), "backend has no camera, no frame to count")
         await page.goto(CALIBRATION_ROUTE)
         await expect(page.getByText("Live", {exact: true})).toBeVisible({
             timeout: 20_000,
         })
-
-        test.skip(
-            !(await backendHasCamera(request)),
-            "backend has no camera, no frames to count"
-        )
 
         const counter = page.getByText(/\d+\/\d+ frames/)
         await expect(counter).toBeVisible({timeout: 30_000})
@@ -86,6 +81,7 @@ test.describe("gesture calibration (any camera", () => {
         page,
         request,
     }) => {
+        test.skip(!backendHasCamera(), "backend has no camera, stream never goes live")
         await page.goto(CALIBRATION_ROUTE)
         await expect(page.getByText("Live", {exact: true})).toBeVisible({
             timeout: 20_000,
@@ -103,15 +99,16 @@ test.describe("gesture calibration (any camera", () => {
         expect(status.is_calibrated).toBe(true)
     })
 
-    test("calibration canvas renders backend frames", async ({page, request}) => {
+    test("calibration canvas renders backend frames", async ({page}) => {
+        test.skip(
+            (!backendHasCamera()),
+            "backend has no camera, no frames to draw"
+        )
+
         await page.goto(CALIBRATION_ROUTE)
         await expect(page.getByText("Live", {exact:true})).toBeVisible({
             timeout: 20_000,
         })
-        test.skip(
-            !(await backendHasCamera(request)),
-            "backend has no camera, no frames to draw"
-        )
 
         const canvas = page.locator("canvas").first()
         await expect

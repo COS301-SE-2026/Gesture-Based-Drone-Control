@@ -32,6 +32,7 @@ export interface CalibrationStatus {
 export interface PipelineStatus {
     running: boolean 
     connected_clients: number
+    last_error: string | null
 }
 
 export async function getCalibrationStatus(
@@ -62,17 +63,7 @@ export async function waitForPipelineStopped(
     )
 }
 
-export async function backendHasCamera(
-    request: APIRequestContext,
-    timeoutMs = 15_000
-) {
-    if (process.env.GBDC_E2E_NO_CAMERA === "1") return false
+export function backendHasCamera(): boolean {
+    return process.env.GBDC_E2E_NO_CAMERA !== "1"
 
-    const deadline = Date.now() + timeoutMs
-    while (Date.now() < deadline) {
-        const status = await getPipelineStatus(request)
-        if (status.running) return true
-        await new Promise((r) => setTimeout(r, 500))
-    }
-    return false
 }

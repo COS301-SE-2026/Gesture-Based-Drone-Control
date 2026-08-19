@@ -31,6 +31,11 @@ test.describe("gesture camera feed (any camera", () => {
         page,
         request,
     }) => {
+        test.skip(
+            (!backendHasCamera()),
+            "backend has no camera, no frames to draw"
+        )
+        
         await page.goto(CAMERA_FEED_ROUTE)
 
         const feed = page.getByTestId("gesture-camera-feed")
@@ -44,10 +49,6 @@ test.describe("gesture camera feed (any camera", () => {
                 timeout: 15_000,
         })
         .toBeGreaterThanOrEqual(1)
-        test.skip(
-            !(await backendHasCamera(request)),
-            "backend has no camera, no frames to draw"
-        )
 
     const canvas = page.locator("canvas").first()
     await expect
@@ -81,6 +82,11 @@ test.describe("gesture camera feed (any camera", () => {
         page,
         request,
     }) => {
+        test.skip(
+            (!backendHasCamera()),
+            "backend has no camera, pipeline never starts"
+        )
+        
         await page.goto(CAMERA_FEED_ROUTE)
 
         const feed = page.getByTestId("gesture-camera-feed")
@@ -88,10 +94,6 @@ test.describe("gesture camera feed (any camera", () => {
         await expect(activeBadge).toBeVisible({
             timeout: 20_000,
         })
-        test.skip(
-            !(await backendHasCamera(request)),
-            "backend has no camera, pipeline never starts"
-        )
 
         await page.getByRole("button", {name: "Analytics"}).click()
         await expect(feed).toBeHidden({timeout: 10_000})
