@@ -13,6 +13,10 @@ const TourController = () => {
     const[stepIndex, setStepIndex]= useState(0)
     const[readyToShow, setReadyToShow] = useState(false)
 
+    useEffect(() =>{
+        setStepIndex(0)
+    },[tourKey])
+
     //so that the scroll lock can be avoided
     useEffect(() => {
         if ( !activeSteps || !readyToShow) {

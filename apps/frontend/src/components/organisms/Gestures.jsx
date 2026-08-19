@@ -11,8 +11,7 @@ import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
 import { useTelemetry } from "@/context/TelemetryContext"
 import { useCommands } from "@/context/CommandsContext"
 import { fetchCalibrationStatus } from "@/hooks/useCalibrationStream"
-import {useTour} from "@/context/TourContext"
-import {gesturesSteps} from "@/lib/tours/steps"
+
 
 const MS_TO_KMH = 3.6
 
@@ -31,7 +30,6 @@ const GestureControl = () => {
 
   const { telemetry, status } = useTelemetry()
   const { sendCommand, status: commandStatus, lastResp } = useCommands()
-  const {startPageTour} =useTour()
 
 
   const handleControlAction = useCallback(
@@ -323,7 +321,6 @@ const GestureControl = () => {
                   Gesture Detection
                 </Label>
                 {calibrated && (
-                  <div className ="flex items-center gap-3">
                   <button
                     type="button"
                     onClick={handleRecalibrate}
@@ -331,14 +328,7 @@ const GestureControl = () => {
                   >
                     Recalibrate
                   </button>
-                  <button
-                  type="button"
-                  onClick={() => startPageTour("gestures" , gesturesSteps)}
-                  className="text-xs text-DarkGrey hover:text-OffBlack dark:hover:text-OffWhite underline underline-offset-2 transition-colors"
-                  >
-                    Replay tour
-                  </button>
-                  </div>
+                  
                 )}
               </div>
 
