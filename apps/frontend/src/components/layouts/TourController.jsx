@@ -1,4 +1,4 @@
-import {useEffect, useState } from "react"
+import {useEffect, useState, useMemo } from "react"
 import {useNavigate, useLocation} from "react-router-dom"
 import Joyride,{STATUS,EVENTS} from "react-joyride"
 import {useTour} from "@/context/TourContext"
@@ -12,6 +12,18 @@ const TourController = () => {
     const[stepIndex, setStepIndex]= useState(0)
     const[readyToShow, setReadyToShow] = useState(false)
 
+    //so that the scroll lock can be avoided
+    useEffect(() => {
+        if ( !activeSteps || !readyToShow) {
+            const t = setTimeout(() => {
+            document.body.style.overflow = ""
+            document.documentElement.style.overflow=""
+            document.querySelector("main")?.style.removeProperty("overflow")
+        },100)
+        return () => clearTimeout(t)
+    }
+    },[activeSteps, readyToShow])
+
     useEffect(() => {
         if(!activeSteps)
         {
@@ -24,8 +36,14 @@ const TourController = () => {
             return
         }
 
+        if(location.pathname !== step.route) {
+            console.log("[tour] navigating", { from: location.pathname, to: step.route})
+            navigate(step.route)
+            return //re runs automaticaaly after the location.pathname updates
+        }
+
+        console.log("[tour] on correct route, polling for target", step.target)
         setReadyToShow(false)
-        if(location.pathname !== step.route) navigate(step.route)
 
         let cancelled = false
         const maxWaitMs = 5000
@@ -39,13 +57,25 @@ const TourController = () => {
             }
             const found = document.querySelector(step.target)
             waited += intervalMs
-            if(found || waited>=maxWaitMs){
+            if(found) {
                 clearInterval(check)
                 setReadyToShow(true)
-                if(!found)
-                {
-                    console.warn(`tour: gave up waiting for "${step.target}"`)
-                }
+                return
+            }
+            if(waited>=maxWaitMs){
+                clearInterval(check)
+                console.warn(`[tour]:gave up waiting for "${step.target}",skipping step`)
+
+                //errors be forming so...lets see if skipping ourselves work instead of mounting the Joyride over a target.
+                setStepIndex((i) => {
+                    const next = i+1
+                    if(next >= activeSteps.length) {
+                        const isSinglePage = new Set(activeSteps.map((s)=> s.route)).size ===1
+                        endTour(isSinglePage ? activeSteps[0].route.replace("/" ,"") : null)
+                    }
+                    return next
+                })
+            
             }
         },intervalMs)
 
@@ -53,7 +83,7 @@ const TourController = () => {
             cancelled = true
             clearInterval(check)
         }
-    },[activeSteps,stepIndex,location.pathname,navigate])
+    },[activeSteps,stepIndex,location.pathname,navigate, endTour])
 
     if(!activeSteps || !readyToShow) 
     {
@@ -61,6 +91,7 @@ const TourController = () => {
     }
 
     const handleCallback = ({ status, index, action, type }) => {
+        console.log("[tour] callback" , { status,index,action,type})
         if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
             const isSinglePage = new Set(activeSteps.map((s) => s.route )).size ===1
             endTour(isSinglePage? activeSteps[0].route.replace("/","") : null)
@@ -69,6 +100,7 @@ const TourController = () => {
         }
         if(type === "step:after" || type === EVENTS.TARGET_NOT_FOUND)
         {
+            setReadyToShow(false)
             setStepIndex(index + (action === "prev" ? -1 : 1))
         }
     }
@@ -86,6 +118,8 @@ const TourController = () => {
         run
         continuous
         showSkipButton
+        disableScrolling
+        disableScrollParentFix
         callback={handleCallback}
         tooltipComponent={TourTooltip}
         styles = {{overlay: {backdropFilter: "blur(4px)" } }}
