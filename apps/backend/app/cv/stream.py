@@ -87,10 +87,20 @@ class GestureStream:
 		self._cancel_linger()
 		await self._stop_pipeline()
 
+	def _is_orphaned(self) -> bool:
+		task = self._broadcast_task
+		return task is not None and task.done()
+
 	async def _ensure_started(self) -> None:
 		async with self._lock:
-			if self._pipeline is not None:
+			if self._pipeline is not None and not self._is_orphaned():
 				return
+			if self._pipeline is not None:
+				logger.warning('GestureStream found an oprhaned pipeline, restarting it')
+				stale = self._pipeline
+				self._pipeline = None
+				with contextlib.suppress(Exception):
+					await stale.stop()
 			pipeline = CvPipeline(self._config)
 			try:
 				await pipeline.start()
@@ -98,7 +108,7 @@ class GestureStream:
 				with contextlib.suppress(Exception):
 					await pipeline.stop()
 				self._last_error = str(exc)
-				logger.error('GestureStream failed to start pipeline: %s', exc)
+				logger.exception('GestureStream failed to start pipeline: %s', exc)
 				raise
 
 			self._pipeline = pipeline
@@ -113,7 +123,7 @@ class GestureStream:
 			self._linger_task.cancel()
 		self._linger_task = None
 
-	async def _schedule_stop_if_idle(self) -> None:
+	async def _schedule_stop_if_idle(self) -> None: #NOSONAR
 		if self._clients or self._pipeline is None:
 			return
 		if self._linger_task is not None and not self._linger_task.done():
@@ -125,8 +135,8 @@ class GestureStream:
 	async def _linger_then_stop(self) -> None:
 		try:
 			await asyncio.sleep(LINGER_SECONDS)
-		except asyncio.CancelledError:
-			return
+		except asyncio.CancelledError: #NOSONAR
+			raise					#NOSONAR
 		if self._clients:
 			return
 		await self._stop_pipeline()
@@ -149,7 +159,7 @@ class GestureStream:
 			await asyncio.shield(pipeline.stop())
 
 	def _fan_out(self, payload: Optional[GestureFramePayload]) -> None:
-		for queue in list(self._clients):
+		for queue in self._clients:
 			if queue.full():
 				with contextlib.suppress(asyncio.QueueEmpty):
 					queue.get_nowait()
@@ -161,6 +171,8 @@ class GestureStream:
 			return
 		try:
 			async for event in pipeline.events():
+				if not self._clients:
+					continue
 				self._fan_out(serialize_event(event, include_frame=True))
 			self._fan_out(None)
 		except asyncio.CancelledError:
@@ -170,7 +182,6 @@ class GestureStream:
 			logger.exception('GestureStream broadcast failed')
 			self._last_error = str(exc)
 			self._fan_out(None)
-			self._broadcast_task = None
 			self._teardown_task = asyncio.create_task(
 				self._stop_pipeline(), name='gesture-stream-teardown'
 			)

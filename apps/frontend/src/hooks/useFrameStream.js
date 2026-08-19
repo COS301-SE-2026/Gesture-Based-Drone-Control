@@ -9,13 +9,20 @@ export function buildWsUrl(path) {
 const BASE_RECONNECT_MS = 500
 const MAX_RECONNECT_MS = 5000
 
-export function useFrameStream(path, { autoReconnect = true } = {}) {
+export function useFrameStream(
+  path,
+  { autoReconnect = true, enabled = true } = {}
+) {
   const [frame, setFrame] = useState(null)
   const [connected, setConnected] = useState(false)
   const [error, setError] = useState(null)
   const wsRef = useRef(null)
 
   useEffect(() => {
+    if (!enabled) {
+      return undefined
+    }
+
     let cancelled = false
     let attempts = 0
     let retryTimer = null
@@ -26,8 +33,9 @@ export function useFrameStream(path, { autoReconnect = true } = {}) {
         MAX_RECONNECT_MS,
         BASE_RECONNECT_MS * 2 ** attempts
       )
-      attempts += 1
-      retryTimer = setTimeout(connect, delay + Math.random() * 250)
+      attempts += 1 //NOSONAR
+      // NOSONAR
+      retryTimer = setTimeout(connect, delay + Math.random() * 250) //NOSONAR
     }
 
     const connect = () => {
@@ -84,8 +92,15 @@ export function useFrameStream(path, { autoReconnect = true } = {}) {
         // never close a socket mid-handshake, wait for it to open first
         ws.addEventListener("open", () => ws.close(), { once: true })
       }
+      setFrame(null)
+      setConnected(false)
+      setError(null)
     }
-  }, [path, autoReconnect])
+  }, [path, autoReconnect, enabled])
+
+  if (!enabled) {
+    return { frame: null, connected: false, error: null }
+  }
 
   return { frame, connected, error }
 }

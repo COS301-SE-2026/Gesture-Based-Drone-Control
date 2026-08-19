@@ -7,13 +7,15 @@ import {
   skipCalibration,
   fetchCalibrationStatus,
 } from "../../hooks/useCalibrationStream"
-import { useWebPreview } from "../../hooks/useWebcamPreview"
 import {
   prepareCanvas,
   coverTransform,
   toCanvasPoints,
   drawHand,
+  decodeFrameBitmap,
 } from "../../lib/handSkeleton"
+import { useCameraConsent } from "../../context/CameraConsentContext"
+import CameraDisabledNotice from "./CameraDisabledNotice"
 
 //live gesture calibration UI with ws /api/calibration/stream
 
@@ -49,9 +51,9 @@ function chipClass(isDone, isCurrent) {
 }
 
 const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
-  const videoRef = useRef(null)
   const canvasRef = useRef(null)
   const { frame, connected, finished } = useCalibrationStream()
+  const { enabled } = useCameraConsent()
 
   // full ordered gesture list, from GET /status (not part of the frame payload)
   const [sequence, setSequence] = useState([])
@@ -65,26 +67,50 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
       })
   }, [])
 
-  useWebPreview(videoRef)
-
   useEffect(() => {
     const canvas = canvasRef.current
-    const video = videoRef.current
-    if (!canvas || !video) {
-      return
-    }
-    const ctx = prepareCanvas(canvas)
-    if (!frame?.hands?.length) {
-      return
+    if (!canvas || !frame) {
+      return undefined
     }
 
-    const transform = coverTransform(canvas, video)
-    const passState = frame.phase === "success_display" || frame.matched
-    const boneColor = passState ? MATCHED_COLOR : UNMATCHED_COLOR
+    let cancelled = false
 
-    frame.hands.forEach((hand) => {
-      drawHand(ctx, toCanvasPoints(hand.landmarks, transform), boneColor)
-    })
+    const render = async () => {
+      const bitmap = await decodeFrameBitmap(frame)
+      if (cancelled) {
+        bitmap?.close?.()
+        return
+      }
+
+      const ctx = prepareCanvas(canvas)
+      const transform = coverTransform(canvas, {
+        videoWidth: frame.frame_width || bitmap?.width || canvas.width,
+        videoHeight: frame.frame_height || bitmap?.height || canvas.height,
+      })
+
+      if (bitmap) {
+        ctx.drawImage(
+          bitmap,
+          transform.offsetX,
+          transform.offsetY,
+          transform.drawW,
+          transform.drawH
+        )
+      }
+
+      const passState = frame.phase === "success_display" || frame.matched
+      const boneColor = passState ? MATCHED_COLOR : UNMATCHED_COLOR
+
+      frame.hands.forEach((hand) => {
+        drawHand(ctx, toCanvasPoints(hand.landmarks, transform), boneColor)
+      })
+      bitmap?.close?.()
+    }
+
+    render()
+    return () => {
+      cancelled = true
+    }
   }, [frame])
 
   const handleSkip = async () => {
@@ -188,6 +214,16 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
       </div>
     )
   }
+
+  if (!enabled) {
+    return (
+      <Card variant="glass" className={className}>
+        <div className="min-h-[400px] flex items-center justify-center">
+          <CameraDisabledNotice message="Calibration needs the camera to check it can read your hand reliably." />
+        </div>
+      </Card>
+    )
+  }
   return (
     <Card variant="glass" className={className}>
       <div className="flex flex-col gap-4">
@@ -203,13 +239,6 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
 
         {/* camera and skeleton overlay */}
         <div className="relative w-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px]">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="w-full h-full object-cover -scale-x-100"
-          />
           <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
         </div>
         {/* sequnce chips */}

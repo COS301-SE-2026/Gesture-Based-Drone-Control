@@ -1,16 +1,22 @@
 import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import { useGestureStream } from "../../hooks/useGestureStream"
+import { useCameraConsent } from "../../context/CameraConsentContext"
+import CameraDisabledNotice from "./CameraDisabledNotice"
 import {
   prepareCanvas,
   coverTransform,
   toCanvasPoints,
   drawHand,
+  decodeFrameBitmap,
 } from "../../lib/handSkeleton"
 
 const SKELETON_COLOR = "#ef4444"
 const LABEL_BG = "rgba(11, 9, 10, 0.75)"
 const LABEL_TEXT = "#ffffff"
+
+const CONTAINER_GLASS =
+  "relative w-full h-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px]"
 
 const GestureCameraFeed = ({
   className = "",
@@ -18,6 +24,7 @@ const GestureCameraFeed = ({
   skeletonColor = SKELETON_COLOR,
 }) => {
   const canvasRef = useRef(null)
+  const { enabled } = useCameraConsent()
   const { frame, connected, error } = useGestureStream()
 
   useEffect(() => {
@@ -31,14 +38,7 @@ const GestureCameraFeed = ({
     let cancelled = false
 
     const render = async () => {
-      let bitmap = null
-      if (frame.frame_jpeg) {
-        try {
-          bitmap = await createImageBitmap(base64ToBlob(frame.frame_jpeg))
-        } catch {
-          bitmap = null
-        }
-      }
+      const bitmap = await decodeFrameBitmap(frame)
       if (cancelled) {
         bitmap?.close?.()
         return
@@ -53,11 +53,22 @@ const GestureCameraFeed = ({
     }
   }, [frame, skeletonColor])
 
+  if (!enabled) {
+    return (
+      <div
+        data-testid="gesture-camera-feed"
+        className={`${CONTAINER_GLASS} flex items-center justify-center ${className}`}
+      >
+        <CameraDisabledNotice />
+      </div>
+    )
+  }
   const statusLabel = getStatusLabel(connected, error, frame)
 
   return (
     <div
-      className={`relative w-full h-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px] ${className}`}
+      data-testid="gesture-camera-feed"
+      className={`${CONTAINER_GLASS} ${className}`}
     >
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
       {!frame && (
@@ -67,13 +78,7 @@ const GestureCameraFeed = ({
       )}
       <div className="absolute top-4 right-4 flex items-center gap-2 bg-OffBlack/60 px-3 py-1 rounded-full text-xs text-OffWhite">
         <span
-          className={`w-2 h-2 rounded-full ${
-            error
-              ? "bg-red-500"
-              : connected
-                ? "bg-green-500 animate-pulse"
-                : "bg-Grey"
-          }`}
+          className={`w-2 h-2 rounded-full ${statusDotClass(connected, error)}`}
         />
         <span>{statusLabel}</span>
       </div>
@@ -81,20 +86,17 @@ const GestureCameraFeed = ({
   )
 }
 
+function statusDotClass(connected, error) {
+  if (error) return "bg-red-500"
+  if (connected) return "bg-green-500 animate-pulse"
+  return "bg-Grey"
+}
+
 function getStatusLabel(connected, error, frame) {
   if (error) return "Camera unavailable"
   if (!connected) return "Reconnecting..."
   if (!frame) return "Starting camera..."
   return "Active"
-}
-
-function base64ToBlob(base64) {
-  const binary = atob(base64)
-  const bytes = new Uint8Array(binary.length)
-  for (let i = 0; i < binary.length; i += 1) {
-    bytes[i] = binary.charCodeAt(i)
-  }
-  return new Blob([bytes], { type: "image/jpeg" })
 }
 
 function drawFrame(canvas, bitmap, frame, skeletonColor) {

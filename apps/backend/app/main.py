@@ -20,6 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import router
 from app.api.auth import router as auth_router
+from app.api.gestures import stream as gesture_stream
 from app.state import AppState
 from services.database_manager.database import Base, engine
 from services.database_manager.models.drones import Drone
@@ -45,6 +46,7 @@ async def lifespan(app: FastAPI):
 
 	app.state.app = AppState()
 	yield
+	await gesture_stream.shutdown()
 	logger.info('Stopping API...')
 
 
