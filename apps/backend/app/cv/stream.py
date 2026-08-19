@@ -17,7 +17,7 @@ from typing import Optional
 
 from app.cv.serialization import GestureFramePayload, serialize_event
 
-from services.cv_pipeline.processing.pipeline import CvPipeline, PipelineConfig
+from services.cv_pipeline.processing.pipeline import RECOGNIZER_MODES, CvPipeline, PipelineConfig
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +42,7 @@ class GestureStream:
 		self._clients: set[asyncio.Queue] = set()
 		self._lock = asyncio.Lock()
 		self._last_error: Optional[str] = None
+		self._recognizer_mode = 'ml' if (config is not None and config.use_ml) else 'rule'
 
 	@property
 	def client_count(self) -> int:
@@ -55,6 +56,24 @@ class GestureStream:
 	def last_error(self) -> Optional[str]:
 		"""WHy the camera last failed, surfaced on the sattus endpoint"""
 		return self._last_error
+
+	@property
+	def recognizer_mode(self) -> str:
+		if self._pipeline is not None:
+			return self._pipeline.recognizer_mode
+		return self._recognizer_mode
+
+	async def set_recognizer_mode(self, mode: str) -> str:
+		if mode not in RECOGNIZER_MODES:
+			raise ValueError(
+				f'unknown recognizer mode {mode!r}, expected one of {RECOGNIZER_MODES}'
+			)
+		self._recognizer_mode = mode
+		if self._pipeline is not None:
+			applied = self._pipeline.set_recognizer_mode(mode)
+			self._recognizer_mode = applied
+			return applied
+		return mode
 
 	async def subscribe(self) -> 'asyncio.Queue[GestureFramePayload]':
 		"""
@@ -102,6 +121,7 @@ class GestureStream:
 				with contextlib.suppress(Exception):
 					await stale.stop()
 			pipeline = CvPipeline(self._config)
+			pipeline.set_recognizer_mode(self._recognizer_mode)
 			try:
 				await pipeline.start()
 			except Exception as exc:
@@ -123,7 +143,7 @@ class GestureStream:
 			self._linger_task.cancel()
 		self._linger_task = None
 
-	async def _schedule_stop_if_idle(self) -> None: #NOSONAR
+	async def _schedule_stop_if_idle(self) -> None:  # NOSONAR
 		if self._clients or self._pipeline is None:
 			return
 		if self._linger_task is not None and not self._linger_task.done():
@@ -135,8 +155,8 @@ class GestureStream:
 	async def _linger_then_stop(self) -> None:
 		try:
 			await asyncio.sleep(LINGER_SECONDS)
-		except asyncio.CancelledError: #NOSONAR
-			raise					#NOSONAR
+		except asyncio.CancelledError:  # NOSONAR
+			raise  # NOSONAR
 		if self._clients:
 			return
 		await self._stop_pipeline()
