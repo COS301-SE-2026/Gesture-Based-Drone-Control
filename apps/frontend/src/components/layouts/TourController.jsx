@@ -4,7 +4,7 @@ import Joyride,{STATUS,EVENTS} from "react-joyride"
 import {useTour} from "@/context/TourContext"
 import TourTooltip from "../molecules/TourTooltip"
 
-
+//WHAT A PROBLAMATIC FILE OMG
 const TourController = () => {
     const { activeSteps , tourKey, endTour} = useTour()
     const navigate = useNavigate()
