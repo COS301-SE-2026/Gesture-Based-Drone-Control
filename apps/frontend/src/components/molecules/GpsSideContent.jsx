@@ -27,35 +27,25 @@ export const GpsSideContent = () => {
   const mode = getMode()
 
   return (
-    <>
-      <h2 className="text-lg font-bold text-Red dark:text-Red mb-2">
-        Relative Path Tracking
-      </h2>
-
-      <Card variant="glass">
-        <div className="flex flex-col gap-3">
-          <div>
-            <p className="text-sm text-OffBlack dark:text-OffWhite">
-              Current Use Mode
-            </p>
-            <p className="text-lg text-OffBlack font-bold dark:text-OffWhite">
-              {mode}
-            </p>
-            <p className="text-xs text-DarkGrey">
-              {telemetry ? new Date().toLocaleTimeString() : "No data"}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <StatusDot variant={isFlying ? "connected" : "idle"} size="md" />
-            <p className="text-sm font-semibold text-OffBlack dark:text-OffWhite">
-              {isFlying ? "Airborne" : "Grounded"}
-            </p>
-          </div>
-
-          <AccountActions />
+    <Card variant="glass">
+      <div className="flex flex-col gap-3">
+        <div>
+          <p className="text-sm text-ink">Current Use Mode</p>
+          <p className="text-lg text-ink font-bold">{mode}</p>
+          <p className="text-xs text-DarkGrey">
+            {telemetry ? new Date().toLocaleTimeString() : "No data"}
+          </p>
         </div>
-      </Card>
-    </>
+        <div className="flex items-center gap-2">
+          <StatusDot variant={isFlying ? "connected" : "idle"} size="sm" />
+          <p className="text-sm font-semibold text-ink">
+            {isFlying ? "Airborne" : "Grounded"}
+          </p>
+        </div>
+
+        <AccountActions />
+      </div>
+    </Card>
   )
 }
 

@@ -24,23 +24,19 @@ export const AnalyticsSideContent = () => {
   const mode = getMode()
 
   return (
-    <>
-      <h2 className="text-lg font-bold text-red mb-2">Telemetry Analytics</h2>
-
-      <Card variant="glass">
-        <div className="flex flex-col gap-3">
-          <div>
-            <p className="text-sm text-ink">Current Use Mode</p>
-            <p className="text-lg text-ink font-bold">{mode}</p>
-            <p className="text-xs text-dim">
-              {telemetry ? new Date().toLocaleTimeString() : "No data"}
-            </p>
-          </div>
-
-          <AccountActions />
+    <Card variant="glass">
+      <div className="flex flex-col gap-3">
+        <div>
+          <p className="text-sm text-ink">Current Use Mode</p>
+          <p className="text-lg text-ink font-bold">{mode}</p>
+          <p className="text-xs text-dim">
+            {telemetry ? new Date().toLocaleTimeString() : "No data"}
+          </p>
         </div>
-      </Card>
-    </>
+
+        <AccountActions />
+      </div>
+    </Card>
   )
 }
 
