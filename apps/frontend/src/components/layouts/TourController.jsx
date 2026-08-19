@@ -3,6 +3,7 @@ import {useNavigate, useLocation} from "react-router-dom"
 import Joyride,{STATUS,EVENTS} from "react-joyride"
 import {useTour} from "@/context/TourContext"
 import TourTooltip from "../molecules/TourTooltip"
+import TourBlurOverlay from "./Tourbluroverlay"
 
 //WHAT A PROBLAMATIC FILE OMG
 const TourController = () => {
@@ -105,7 +106,10 @@ const TourController = () => {
         }
     }
 
+    const currentTarget=activeSteps[stepIndex]?.target
     return (
+        <>
+        <TourBlurOverlay target={currentTarget}/>
         <Joyride 
         key={tourKey}
         steps={activeSteps.map((s) => ({
@@ -120,10 +124,18 @@ const TourController = () => {
         showSkipButton
         disableScrolling
         disableScrollParentFix
+        disableOverlayClose
         callback={handleCallback}
         tooltipComponent={TourTooltip}
-        styles = {{overlay: {backdropFilter: "blur(4px)" } }}
+        styles = {{
+            options:{
+                zIndex:10500
+            },
+            overlay: {backgroundColor: "transparent" },
+            spotlight:{backgroundColor: "transparent"},
+         }}
         />
+        </>
 
     )
 }
