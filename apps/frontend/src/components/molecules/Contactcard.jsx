@@ -12,15 +12,15 @@ export default function Contactcard({
   onAction,
 }) {
   return (
-    <Card variant="glass" className="flex flex-col gap-4 h-full">
-      <div className="w-10 h-10 rounded-lg bg-OffWhite/10 flex items-center justify-center">
-        <Icon className="w-5 h-5 text-OffBlack dark:text-OffWhite" />
+    <Card variant="glass" className="flex flex-col gap-4 h-full transition-all duration-200 hover:-translate-y-1 hover:border-red hover:shadow-glass-hover group">
+      <div className="w-10 h-10 rounded-lg bg-ink/10 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+        <Icon className="w-5 h-5 text-ink" />
       </div>
       <div className="flex-1">
-        <h3 className="font-semibold text-OffBlack dark:text-OffWhite mb-1">
+        <h3 className="font-semibold text-ink mb-1">
           {title}
         </h3>
-        <p className="text-sm text-OffBlack dark:text-OffWhite leading-relaxed ">
+        <p className="text-sm text-dim leading-relaxed">
           {description}
         </p>
       </div>
@@ -28,17 +28,23 @@ export default function Contactcard({
         <a
           href={href}
           onClick={onAction}
-          className="text-sm font-medium text-Red hover:text-LightRed transition-colors text-left"
+          className="inline-flex text-sm font-medium text-red items-center gap-1 hover:text-redDeep transition-all duration-200 text-left group/link"
         >
-          {actionLabel} &rarr;
+          {actionLabel} 
+          <span className="transition-transform duration-200 group-hover/link:translate-x-1">
+            &rarr;
+          </span>
         </a>
       ) : (
         <button
           type="button"
           onClick={onAction}
-          className="text-sm font-medium text-Red hover:text-LightRed transition-colors text-left"
+          className="inline-flex items-center gap-1 text-sm font-medium text-red hover:text-redDeep transition-all duration-200 group/link text-left"
         >
-          {actionLabel} &rarr;
+          {actionLabel} 
+          <span className="transition-tranform duration-200 group-hover/link:translate-x-1">
+            &rarr;
+          </span>
         </button>
       )}
     </Card>
