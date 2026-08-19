@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../lib/api"
+import { useCameraConsent } from "../context/CameraConsentContext"
 import { useFrameStream } from "./useFrameStream"
 
 /* 
@@ -29,8 +30,12 @@ export async function fetchCalibrationStatus() {
 }
 
 export function useCalibrationStream() {
-  const { frame, connected } = useFrameStream("/api/calibration/stream")
+  const { enabled } = useCameraConsent()
+  const { frame, connected, error } = useFrameStream(
+    "/api/calibration/stream",
+    { autoReconnect: false, enabled }
+  )
   const finished = frame?.phase === "done"
 
-  return { frame, connected, finished }
+  return { frame, connected, finished, error }
 }
