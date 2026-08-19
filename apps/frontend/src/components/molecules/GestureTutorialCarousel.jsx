@@ -46,11 +46,11 @@ export default function GestureTutorialCarousel({ gestures }) {
         <Label className="text-lg font-semibold">{current.name}</Label>
         <div className="flex items-center gap-3">
           <span
-            className={`text-xs font-semibold ${passed ? "text-success" : "text-dim"}`}
+            className={`text-xs font-semibold ${passed ? "text-success scale-105" : "text-dim scale-105"}`}
           >
             {passed ? "Matched!" : "Try the gesture..."}
           </span>
-          <span className="text-xs text-ink/60">
+          <span className="text-xs text-ink/60 font mono tabular-nums">
             {index + 1}/{gestures.length}
           </span>
         </div>
@@ -65,7 +65,9 @@ export default function GestureTutorialCarousel({ gestures }) {
 
         <div className="flex flex-col gap-3">
           <div
-            className="relative min-h-[400px] rounded-lg border border-line overflow-hidden"
+            className={`relative min-h-[400px] rounded-lg border overflow-hidden transition-colors duration-300 ${
+              passed ? "border-success/60" : "border-line"
+            }`}
             style={{ perspective: "1000px" }}
           >
             <div
@@ -101,9 +103,17 @@ export default function GestureTutorialCarousel({ gestures }) {
             </div>
           </div>
 
-          {showHint && (
-            <p className="text-sm text-dim">{current.instructions}</p>
-          )}
+          <div
+            className={`grid transition-all duration-300 ease-in-out ${
+              showHint
+                ? "grid-rows-[1fr] opacity-100"
+                : "grid-rows-[0fr] opacity-0"
+            }`}
+          >
+            <div className="overflow-hidden">
+              <p className="text-sm text-dim">{current.instructions}</p>
+            </div>
+          </div>
 
           <div className="flex items-center justify-between mt-auto">
             <Button
