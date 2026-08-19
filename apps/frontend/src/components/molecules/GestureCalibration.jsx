@@ -30,7 +30,6 @@ function prettyGesture(name) {
     .join(" ")
 }
 
-
 function connectionLabel(connected, finished) {
   if (finished) return "Complete"
   if (connected) return "Live"
@@ -111,8 +110,8 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
     statusArea = (
       <div className="flex flex-col gap-3">
         <p className="text-sm font-medium text-success">
-          Calibration complete, all {total || completed.length} gestures
-          passed. Flight commands are now unlocked.
+          Calibration complete, all {total || completed.length} gestures passed.
+          Flight commands are now unlocked.
         </p>
         <div className="flex gap-3">
           <button
