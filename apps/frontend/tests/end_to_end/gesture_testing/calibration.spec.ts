@@ -25,8 +25,11 @@ test.describe("gesture calibration (any camera", () => {
     })
 
     test.afterEach(async ({page, request}) => {
-        await page.getByRole("button", {name: "Analytics"}).click()
-        await waitForPipelineStopped(request)
+        const analytics = page.getByRole("button", {name: "Analytics"})
+        if (await analytics.isVisible().catch(() => false)) {
+            await analytics.click()
+            await waitForPipelineStopped(request)
+        }
     })
 
     test("connects live and renders sequence UI", async ({
