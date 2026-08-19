@@ -14,6 +14,7 @@ import DemoSection from "./components/organisms/DemoSection"
 import DownloadSection from "./components/organisms/DownloadSection"
 import FaqSection from "./components/organisms/FaqSection"
 import DocsSection from "./components/organisms/DocsSection"
+import UseCasesSection from "./components/organisms/UseCasesSection"
 
 //App.css is the glassmorphism layer, imported after all components so
 // its rules override component backgrounds bycascade order
@@ -31,6 +32,7 @@ export default function App() {
       <Hero />
       <StatsStrip />
       <WhySection />
+      <UseCasesSection />
       <GestureShowcase />
       <PipelineSection />
       <FeaturesSection />

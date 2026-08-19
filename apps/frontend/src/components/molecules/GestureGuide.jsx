@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, memo } from "react"
 import PropTypes from "prop-types"
 import { Card, Label, Button } from "../atoms"
 import {
@@ -20,7 +20,10 @@ import {
   OctagonX,
 } from "lucide-react"
 import { useDroneControls } from "../../hooks/useDroneControls"
-import { useKeyboardControl } from "../../hooks/useKeyboardControl"
+import { useKeyboardControl } from "@/hooks/useKeyboardControl"
+import { useGamepadControl } from "@/hooks/useGamepadControl"
+import { useGestureControl } from "@/hooks/useGestureControl"
+import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tab
 
 const tabs = [
   { id: "onscreen", label: "On Screen", icon: Monitor },
@@ -135,7 +138,20 @@ const inputMapping = {
     "Circle",
     "Cross",
   ],
-  gestures: ["", "", "", "", "", "", "", "", "", "", "", ""],
+  gestures: [
+    "1 finger + 1 finger",
+    "2 fingers + 2 fingers",
+    "Palm + Right 2 fingers",
+    "Palm + Left 2 fingers",
+    "Any 1 finger",
+    "Any 2 fingers",
+    "Palm + Left 1 finger",
+    "Palm + Right 1 finger",
+    "3 fingers + 3 fingers",
+    "Open palm",
+    "Fist + Fist",
+    "Palm + Palm",
+  ],
 }
 
 const controls = {
@@ -157,16 +173,27 @@ const controls = {
   })),
 }
 
-const GestureGuide = ({ className = "", onControlAction }) => {
+const GestureGuide = memo(function GestureGuide({
+  className = "",
+  sendCommand,
+  onKeyboardResp,
+}) {
   const [activeTab, setActiveTab] = useState("onscreen")
-  const { handleControlPress, isControlActive } =
-    useDroneControls(onControlAction)
+  const { handleControlPress, isControlActive } = useDroneControls(sendCommand)
 
   /**will only be active when the keyboard tab is selected and handles connecting  the backend keyboard input adapter,
     opening the /input/ws/keyboard/socket, and listening for real key events **/
   const { connected: keyboardConnected } = useKeyboardControl(
-    activeTab === "keyboard"
+    activeTab === "keyboard",
+    onKeyboardResp
   )
+
+  const { connected: controllerConnected } = useGamepadControl(
+    activeTab === "controller"
+  )
+
+  const { connected: gestureConnected, status: gestureStatus } =
+    useGestureControl(activeTab === "gestures")
 
   const onScreenControls = () => (
     <div className="flex gap-6 py-4">
@@ -342,27 +369,76 @@ const GestureGuide = ({ className = "", onControlAction }) => {
             />
             <span className="text-OffBlack/70 dark:text-OffWhite/70">
               {keyboardConnected
-                ? "Kyeboard control active"
-                : "Connecting keyboard control..."}
+                ? "Keyboard control active"
+                : "Connecting keyboard controls..."}
             </span>
           </div>
         )}
 
+        {activeTab === "controller" && (
+          <div className="flex items-center gap-2 text-xs">
+            <span
+              className={`w-2 h-2 rounded-full ${
+                controllerConnected
+                  ? "bg-green-500 animate-pulse"
+                  : "bg-Grey/40"
+              }`}
+            />
+            <span className="text-OffBlack/70 dark:text-OffWhite/70">
+              {controllerConnected
+                ? "Gamepad control active"
+                : "Connecting gamepad controls..."}
+            </span>
+          </div>
+        )}
+
+        {activeTab === "gestures" && (
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  gestureConnected ? "bg-green-500 animate-pulse" : "bg-Grey/40"
+                }`}
+              />
+              <span className="text-OffBlack/70 dark:text-OffWhite/70">
+                {gestureConnected
+                  ? "Gesture control active"
+                  : "Connecting gesture controls..."}
+              </span>
+            </div>
+            {gestureConnected && gestureStatus.active && (
+              <span className="font-mono text-OffBlack/60 dark:text-OffWhite/60">
+                {gestureStatus.lastGesture === "none"
+                  ? "no gesture"
+                  : gestureStatus.lastGesture.toLowerCase().replace(/_/g, " ")}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* control the content being displayed */}
-        {activeTab === "onscreen" ? onScreenControls() : otherControls()}
+        {activeTab === "onscreen" ? (
+          onScreenControls()
+        ) : activeTab === "controller" ? (
+          <ControllerLayout />
+        ) : (
+          otherControls()
+        )}
       </div>
     </Card>
   )
-}
+})
 
 GestureGuide.propTypes = {
   className: PropTypes.string,
-  onControlAction: PropTypes.func,
+  sendCommand: PropTypes.func,
+  onKeyboardResp: PropTypes.func,
 }
 
 GestureGuide.defaultProps = {
   className: "",
-  onControlAction: null,
+  sendCommand: null,
+  onKeyboardResp: null,
 }
 
 export default GestureGuide

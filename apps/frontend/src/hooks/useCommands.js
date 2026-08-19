@@ -6,7 +6,7 @@ export function useCommands(wsUrl = getWsUrl("/api/drone/ws/commands")) {
   const [lastResp, setLastResp] = useState(null)
 
   const { socketRef, status } = useWebSocket(wsUrl, {
-    onmessage(event) {
+    onMessage(event) {
       try {
         setLastResp(JSON.parse(event.data))
       } catch (err) {

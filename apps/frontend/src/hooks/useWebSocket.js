@@ -34,6 +34,12 @@ export function useWebSocket(wsUrl, { onMessage } = {}) {
   // allows reconnect timers to call connect()
   const connectRef = useRef(null)
 
+  // use the latest onMessage and prevent rerendering
+  const onMessageRef = useRef(onMessage)
+  useEffect(() => {
+    onMessageRef.current = onMessage
+  })
+
   // open a WS connection or reconnect to an existing one
   const connect = useCallback(() => {
     // dont reconnect if component is removed
@@ -62,9 +68,7 @@ export function useWebSocket(wsUrl, { onMessage } = {}) {
     socket.onmessage = (event) => {
       if (isUnmountedRef.current) return
 
-      if (onMessage) {
-        onmessage(event)
-      }
+      onMessageRef.current?.(event)
     }
 
     // a socket level error. just log and chuck it.
@@ -99,7 +103,7 @@ export function useWebSocket(wsUrl, { onMessage } = {}) {
         }
       }, delay) //ugly ahh js
     }
-  }, [onMessage]) //ew
+  }, [])
 
   // other stuff extracted from implementations
 
@@ -116,13 +120,16 @@ export function useWebSocket(wsUrl, { onMessage } = {}) {
   useEffect(() => {
     isUnmountedRef.current = false
 
-    clearTimeout(reconnectTimeoutRef.current)
+    connect()
+    return () => {
+      isUnmountedRef.current = true
 
-    if (socketRef.current) {
-      socketRef.current.close()
+      clearTimeout(reconnectTimeoutRef.current)
+
+      socketRef.current?.close()
       socketRef.current = null
     }
-  }, [])
+  }, [connect])
 
   /**
    * return the socket reference

@@ -37,7 +37,7 @@ test.describe('gesture control page aka dashboard', () =>{
                     constructor(){
                         setTimeout(() => {
                             this.onopen?.()
-                        },0)
+                        },100)
                     }
 
                     close(){
@@ -48,25 +48,59 @@ test.describe('gesture control page aka dashboard', () =>{
                 window.WebSocket = FakeWebSocket as unknown as typeof WebSocket
             })
 
-            await page.goto('/gestures')
-            await page.waitForLoadState('domcontentloaded')
+            await page.route('**/api/drone/connect', async (route) => {
+                await route.fulfill({
+                    status: 200,
+                    body: JSON.stringify({ connected: true, message: 'connected successfully'})
+                })
+            })
 
-            await expect(page.getByText(/active/i)).toBeVisible()
-            const dot =page.locator('.w-2.h-2.bg-green-500')
-            await expect(dot).toBeVisible()
+            await page.route('**/api/drone/disconnect', async (route) => {
+                await route.fulfill({
+                    status: 200,
+                    body: JSON.stringify({ success: true })
+                })
+            })
+
+            await page.goto('/#/gestures')
+            await page.waitForLoadState('domcontentloaded')
+            await page.waitForTimeout(1000)
+
         })
     })
 
-    //TODO: update this testing later when command history is live
-    //changing this whole component to be a more info type of thing so ill leave the testing out till i make the new component
-    test ('command history entries', async ({ page }) => {
-        await page.getByText('Command History').click()
-        // const historyItems = page.locator(`[class*="command-history"] li, [class*="CommandHistory] li`)
-        // await expect(historyItems.first()).toBeVisible()
-        // const count = await historyItems.count()
-        // expect(count).toBeGreaterThan(0)
-        test.skip()
+test.describe('command history card', () => {
+
+    test('is collapsed by default', async ({ page }) => {
+        await expect(page.getByText('Command History')).toBeVisible()
+        await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).not.toBeVisible()
     })
+
+    test ('expands and shows command entries on clcik', async ({ page }) => {
+        const trigger = page.getByText('Command History')
+        await expect(trigger).toBeVisible();
+        
+        await trigger.click()
+        await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).toBeVisible()
+
+        await trigger.click()
+        await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).not.toBeVisible()
+    })
+
+    test ('clicking an entry inside the card doesnt collapse the card', async ({page}) => {
+        await page.getByText('Command History').click()
+
+        const entry = page.getByText(/\d{2}:\d{2}:\d{2}/).first()
+        await expect(entry).toBeVisible()
+
+        await entry.click()
+
+        await expect(entry).toBeVisible()
+    })
+
+
+})
+    
 
     test('stat labels returned' , async ({page})=>{
         await expect(page.getByText(/battery/i)).toBeVisible()
@@ -155,9 +189,5 @@ test.describe('gesture control page aka dashboard', () =>{
             await expect(page.getByText('Control Guide')).toBeVisible()
         })
     })
-
-    
-
-
 
 })

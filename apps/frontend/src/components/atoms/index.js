@@ -7,4 +7,4 @@ export { default as StatusDot } from "./StatusDot"
 export { default as Toggle } from "./Toggle"
 export { default as AuthPanel } from "./AuthPanel"
 export { default as FormSection } from "./FormSection"
-// export { default as Input } from './Input';
+export { default as Input } from "./Input"

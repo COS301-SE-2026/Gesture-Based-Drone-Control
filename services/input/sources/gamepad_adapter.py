@@ -79,8 +79,8 @@ BUTTON_MAP: dict[str, CommandType] = {
 	'b': CommandType.LAND,
 	'x': CommandType.HOVER,
 	'y': CommandType.EMERGENCY_STOP,
-	'lb': CommandType.ROTATE_CW,
-	'rb': CommandType.ROTATE_CCW,
+	'lb': CommandType.ROTATE_CCW,
+	'rb': CommandType.ROTATE_CW,
 	'up': CommandType.MOVE_FORWARD,
 	'down': CommandType.MOVE_BACKWARD,
 	'left': CommandType.MOVE_LEFT,
@@ -88,10 +88,10 @@ BUTTON_MAP: dict[str, CommandType] = {
 }
 
 # Because my controllers drift :(
-DEADZONE: float = 0.08
+DEADZONE: float = 0.2
 
 
-class GamepadAdpater(InputAdapter):
+class GamepadAdapter(InputAdapter):
 	"""
 	Maps gamepad state passed from browser into Commands.
 
@@ -141,8 +141,8 @@ class GamepadAdpater(InputAdapter):
 		analog = AnalogInput(
 			left_x=clean_inputs('left_x'),
 			left_y=clean_inputs('left_y'),
-			right_x=clean_inputs('right_x'),
 			right_y=clean_inputs('right_y'),
+			right_x=clean_inputs('right_x'),
 			ltrigger=clean_inputs('ltrigger'),
 			rtrigger=clean_inputs('rtrigger'),
 		)

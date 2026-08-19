@@ -31,7 +31,7 @@ export default function SideBar({
         <DarkModeToggle />
       </div>
 
-      {topContent && <Card variant="secondary">{topContent}</Card>}
+      {topContent && <Card variant="glass">{topContent}</Card>}
 
       {/*Nav items*/}
       <nav className="flex-1 space-y-1">

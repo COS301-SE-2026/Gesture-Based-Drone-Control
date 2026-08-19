@@ -28,7 +28,7 @@ export default function DownloadCard({
       <h3>{os}</h3>
       <p>{req}</p>
       {/* symbol pasted */}
-      <span className="md-dlbtn">Download v0.9.0 ↓</span>
+      <span className="md-dlbtn">Download v0.2.0 ↓</span>
     </Reveal>
   )
 }
