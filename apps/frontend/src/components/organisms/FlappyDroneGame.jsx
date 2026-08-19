@@ -1,6 +1,8 @@
 // apps/frontend/src/components/organisms/FlappyDroneGame.jsx
 
 import { useEffect, useRef } from "react"
+import droneSprite from "@/assets/games/flappy/drone.png"
+
 
 /**
  * this page houses everything for the kaplay minigame
@@ -27,13 +29,18 @@ export default function FlappyDroneGame() {
       // initialisation
       const k = kaplay({
         canvas: canvasRef.current,
+        // fix the game resolution
+        width: 800,
+        height: 400,
+        stretch: true,
+        letterbox: true,
         background: [255, 255, 255],
         global: false,
       })
 
-      k.loadSprite("drone", "../../assets/games/flappy/drone.png")
+      k.loadSprite("drone", droneSprite)
 
-      k.setGravity(0.0001)
+      k.setGravity(1)
 
       //main scene for gameplay
       k.scene("game", () => {
@@ -45,23 +52,30 @@ export default function FlappyDroneGame() {
 
         // game object comprising of a bunch of components and tags
         const player = k.add([
-          k.sprite("drone"),
+          k.sprite("drone", {
+            width: 64,
+            height: 64,
+          }),
           // position (x,y)
-          k.pos(k.width / 4, 0),
+          k.pos(k.width() / 4, 0),
           // enable collision checking
           k.area({ isSensor: true }),
           //it will respond to gravity
           k.body(),
+          "player",
         ])
 
+        // kill if player goes out of bounds
         player.onUpdate(() => {
-          //stuff that we need to check for on each frame. nothing for now
+          if (player.pos.y >= k.height() || player.pos.y <= CEILING) {
+            k.go("lose", score)
+          }
         })
 
         //controls here. will add handlers when integrated with backend stuffs
-        k.onKeyPress("ArrowUp", () => player.jump(JUMP_FORCE))
-        k.onKeyPress("ArrowRight", () => player.jump(0.00001))
-        k.onKeyPress("ArrowDown", () => player.jump(-JUMP_FORCE))
+        k.onKeyPress("w", () => player.jump(JUMP_FORCE))
+        k.onKeyPress("space", () => player.jump(0.00001))
+        k.onKeyPress("s", () => player.jump(-JUMP_FORCE))
         
         // we want to spawn pipes around the center
         // take prev pipe into consideration so its not impossible
@@ -128,14 +142,14 @@ export default function FlappyDroneGame() {
             k.color(200,200,200),
           ])
           k.add([
-            k.text("Up arrow to retry", {size: 24}),
+            k.text("w to retry", {size: 24}),
             k.anchor("center"),
             k.pos(k.width() / 2, k.height() / 2 + 40),
             k.color(180, 180, 180),
           ])
           // option to retry 
           k.wait(0.2, () => {
-            k.onKeyPress("ArrowUp", () => k.go("game"))
+            k.onKeyPress("w", () => k.go("game"))
             k.onMousePress(() => k.go("game"))
           })
          })
