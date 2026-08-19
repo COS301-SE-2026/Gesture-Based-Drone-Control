@@ -20,7 +20,7 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
         <div className="flex items-center justify-between">
           <Label size="md">{isSim ? "Sim Viewer" : "Live Feed"}</Label>
           <div className="flex items-center gap-2">
-            <StatusDot variant={isConnected ? "connected" : "disconnected"} />
+            <StatusDot variant={isConnected ? "connected" : "disconnected"} size="sm" />
             <span className="text-xs text-dim font-mono uppercase">
               {isConnected ? "live" : "offline"}
             </span>
@@ -56,7 +56,7 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
           )}
 
           {isConnected && !isSim && (
-            <img
+            <iframe
               src={hardwareFeedUrl}
               alt="drone live feed"
               onLoad={() => setLoaded(true)}
@@ -66,14 +66,6 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
             />
           )}
 
-          {isConnected && (
-            <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-red animate-glow-pulse" />
-              <span className="text-[10px] font-mono text-white uppercase tracking-wide">
-                live
-              </span>
-            </div>
-          )}
         </div>
       </div>
     </Card>

@@ -115,7 +115,7 @@ export default function DroneMap({ pathPoints, headingDeg, height }) {
   if (pathPoints.length === 0) {
     return (
       <div
-        className="flex items-center justify-center bg-OffBlack/20 rounded-lg text-DarkGrey"
+        className="flex items-center justify-center bg-dim/20 rounded-lg text-dim"
         style={{ height }}
       >
         Waiting for telemetry...
@@ -133,7 +133,7 @@ export default function DroneMap({ pathPoints, headingDeg, height }) {
   if (displacementPoints.length === 0) {
     return (
       <div
-        className="flex items-center justify-center bg-OffBlack/20 rounded-lg text-DarkGrey"
+        className="flex items-center justify-center bg-dim/20 rounded-lg text-dim"
         style={{ height }}
       >
         Waiting for telemetry...

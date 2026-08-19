@@ -50,7 +50,7 @@ export default function Toggle({
                         w-4
                         transform
                         rounded-full
-                        bg-dim
+                        bg-ink
                         transition-transform
                         duration-200
                         ${isChecked ? "translate-x-6" : "translate-x-1"}
