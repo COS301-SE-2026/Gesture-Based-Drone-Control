@@ -153,7 +153,7 @@ const GPS = () => {
               </div>
 
               <DroneMap
-                key={`map-${path.length}`} //force re render on path change
+                // key={`map-${path.length}`} //force re render on path change
                 pathPoints={path}
                 headingDeg={headingDeg ?? 0}
                 height="600px"
