@@ -1,4 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom"
+import { useEffect} from "react"
+
 import {
   SideBar,
   AnalyticsSideContent,
@@ -10,9 +12,14 @@ import { Home, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
 // import bgDark from "../../assets/darkbackground.png"
 // import { useTheme } from "../../context/ThemeContext"
 
+import {useTour} from "@/context/TourContext"
+import{fullTourSteps} from "@/lib/tours/steps"
+import TourController from "./TourController"
+
 const RootLayout = () => {
   // const { isDark } = useTheme()
   const location = useLocation()
+  const {startFullTour, hasSeenFullTour} = useTour()
   const menuItems = [
     { id: "gestures", label: "Gestures", icon: Home, path: "/gestures" },
     {
@@ -36,6 +43,10 @@ const RootLayout = () => {
     }
   }
 
+  useEffect(() => {
+    if (!hasSeenFullTour()) startFullTour(fullTourSteps)
+  }, [])
+
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="md-ambience" aria-hidden="true">
@@ -57,6 +68,7 @@ const RootLayout = () => {
       <main className="flex-1 overflow-y-auto">
         <Outlet />
       </main>
+      <TourController/>
     </div>
   )
 }

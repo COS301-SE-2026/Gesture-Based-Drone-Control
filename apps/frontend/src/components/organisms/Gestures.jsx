@@ -11,6 +11,8 @@ import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
 import { useTelemetry } from "@/context/TelemetryContext"
 import { useCommands } from "@/context/CommandsContext"
 import { fetchCalibrationStatus } from "@/hooks/useCalibrationStream"
+import {useTour} from "@/context/TourContext"
+import {gesturesSteps} from "@/lib/tours/steps"
 
 const MS_TO_KMH = 3.6
 
@@ -29,6 +31,8 @@ const GestureControl = () => {
 
   const { telemetry, status } = useTelemetry()
   const { sendCommand, status: commandStatus, lastResp } = useCommands()
+  const {startPageTour} =useTour()
+
 
   const handleControlAction = useCallback(
     (command) => {
@@ -226,7 +230,7 @@ const GestureControl = () => {
         </span>
       </div>
       <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">
-        <Card variant="glass">
+        <Card variant="glass" data-tour="stats-card">
           <div className="flex items-center justify-between">
             <Label size="md" className="shrink-0">
               {" "}
@@ -291,11 +295,15 @@ const GestureControl = () => {
           </div>
         </Card>
 
+        <div data-tour="drone-mode-card">
         <DroneModeCard
           currentMode={droneMode}
           onModeChange={handleModeChange}
           className="w-72"
         />
+        </div>
+
+      
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
@@ -307,13 +315,14 @@ const GestureControl = () => {
             onRestart={handleRecalibrate}
           />
         ) : (
-          <Card variant="glass" className="h-full flex flex-col">
+          <Card variant="glass" className="h-full flex flex-col" data-tour="gesture-camera">
             <div className="flex flex-col gap-4 flex-1">
               <div className="flex items-center justify-between">
                 <Label className="text-lg font-semibold">
                   Gesture Detection
                 </Label>
                 {calibrated && (
+                  <div className ="flex items-center gap-3">
                   <button
                     type="button"
                     onClick={handleRecalibrate}
@@ -321,6 +330,14 @@ const GestureControl = () => {
                   >
                     Recalibrate
                   </button>
+                  <button
+                  type="button"
+                  onClick={() => startPageTour("gestures" , gesturesSteps)}
+                  className="text-xs text-DarkGrey hover:text-OffBlack dark:hover:text-OffWhite underline underline-offset-2 transition-colors"
+                  >
+                    Replay tour
+                  </button>
+                  </div>
                 )}
               </div>
 
@@ -329,11 +346,13 @@ const GestureControl = () => {
           </Card>
         )}
 
+        <div className="h-full" data-tour="gesture-guide">
         <GestureGuide
           className="h-full"
           sendCommand={handleControlAction}
           onKeyboardResp={handleKeyboardResp}
         />
+        </div>
       </div>
 
       <CommandHistory commands={commands} />

@@ -1,6 +1,6 @@
 import {useEffect, useState } from "react"
 import {useNavigate, useLocation} from "react-router-dom"
-import Joyride,{STATUS} from "react-joyride"
+import Joyride,{STATUS,EVENTS} from "react-joyride"
 import {useTour} from "@/context/TourContext"
 import TourTooltip from "../molecules/TourTooltip"
 
@@ -27,8 +27,32 @@ const TourController = () => {
         setReadyToShow(false)
         if(location.pathname !== step.route) navigate(step.route)
 
-        const t = setTimeout(() => setReadyToShow(true) ,150)
-        return() => clearTimeout(t)
+        let cancelled = false
+        const maxWaitMs = 5000
+        const intervalMs = 100
+        let waited =0 
+
+        const check = setInterval(() => {
+            if(cancelled)
+            {
+                return
+            }
+            const found = document.querySelector(step.target)
+            waited += intervalMs
+            if(found || waited>=maxWaitMs){
+                clearInterval(check)
+                setReadyToShow(true)
+                if(!found)
+                {
+                    console.warn(`tour: gave up waiting for "${step.target}"`)
+                }
+            }
+        },intervalMs)
+
+        return () => {
+            cancelled = true
+            clearInterval(check)
+        }
     },[activeSteps,stepIndex,location.pathname,navigate])
 
     if(!activeSteps || !readyToShow) 
@@ -43,7 +67,7 @@ const TourController = () => {
             setStepIndex(0)
             return
         }
-        if(type === "step:after")
+        if(type === "step:after" || type === EVENTS.TARGET_NOT_FOUND)
         {
             setStepIndex(index + (action === "prev" ? -1 : 1))
         }
@@ -54,6 +78,7 @@ const TourController = () => {
         key={tourKey}
         steps={activeSteps.map((s) => ({
             target: s.target,
+            title:s.title,
             content: s.content,
             disableBeacon:true,
         }))}
@@ -62,10 +87,7 @@ const TourController = () => {
         continuous
         showSkipButton
         callback={handleCallback}
-        tooltipComponent={(props) => (
-            <TourTooltip {...props} step={activeSteps[stepIndex]}/>
-
-        )}
+        tooltipComponent={TourTooltip}
         styles = {{overlay: {backdropFilter: "blur(4px)" } }}
         />
 

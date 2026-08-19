@@ -140,8 +140,11 @@ const GPS = () => {
         <span className="text-DarkGrey">Path: {path.length} points</span>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <Card variant="glass" className="h-full flex flex-col">
+        <div className="lg:col-span-2" data-tour="flight-path-map">
+          <Card 
+           variant ="glass"
+           className="h-full flex flex-col"
+          >
             <div className="flex flex-col gap-4 flex-1">
               <div className="flex items-center justify-between">
                 <Label className="text-lg font-semibold">Flight Path</Label>
@@ -157,7 +160,7 @@ const GPS = () => {
           </Card>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4" data-tour="displacement-stats">
           <DisplacementStat label="Altitude" value={stats.altitude} unit=" m" />
           <DisplacementStat
             label="X Displacement"

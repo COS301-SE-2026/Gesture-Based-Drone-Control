@@ -14,6 +14,7 @@ import {
 import { ThemeProvider } from "./context/ThemeProvider.jsx"
 import { TelemetryProvider } from "./context/TelemetryProvider.jsx"
 import { CommandsProvider } from "./context/CommandsProvider.jsx"
+import { TourProvider} from "./context/TourContext.jsx"
 import TestPage from "@/components/testPageForAtoms/TestPage.jsx"
 import CursorGlow from "./components/atoms/CursorGlow.jsx"
 
@@ -22,6 +23,7 @@ function App() {
     <ThemeProvider>
       <TelemetryProvider>
         <CommandsProvider>
+          <TourProvider>
           <CursorGlow />
           <Routes>
             <Route path="/login" element={<Login />} />
@@ -38,6 +40,7 @@ function App() {
               <Route path="test" element={<TestPage />} />
             </Route>
           </Routes>
+          </TourProvider>
         </CommandsProvider>
       </TelemetryProvider>
     </ThemeProvider>
