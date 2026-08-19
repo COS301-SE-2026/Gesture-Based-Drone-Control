@@ -58,10 +58,10 @@ class FakeCvPipeline:
 			self._frame_index += 1
 			yield FakeEvent(frame_index=self._frame_index)
 			await asyncio.sleep(0.005)
-   
-	def set_recognizer_mode(self, mode:str) -> str:
-			self.recognizer_mode = mode
-			return mode
+
+	def set_recognizer_mode(self, mode: str) -> str:
+		self.recognizer_mode = mode
+		return mode
 
 	def simulate_camera_death(self) -> None:
 		self._running = False

@@ -21,8 +21,8 @@ export async function fetchRecognizerMode() {
 export async function updateRecognizerMode(mode) {
   const response = await fetch(`${API_BASE_URL}${RECOGNIZER_PATH}`, {
     method: "POST",
-      headers: {"Content-type": "application/json"},
-      body: JSON.stringify({mode}),
+    headers: { "Content-type": "application/json" },
+    body: JSON.stringify({ mode }),
   })
   if (!response.ok) {
     throw new Error(`recognizer switch failed (${response.status})`)

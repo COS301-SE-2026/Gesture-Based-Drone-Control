@@ -40,7 +40,7 @@ class FakeCvPipeline:
 		await asyncio.sleep(0)
 		self.started = True
 		self._running = True
-  
+
 	def set_recognizer_mode(self, mode: str) -> str:
 		self.recognizer_mode = mode
 		return mode
