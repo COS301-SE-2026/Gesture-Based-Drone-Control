@@ -30,11 +30,11 @@ export default function FlappyDroneGame() {
       const k = kaplay({
         canvas: canvasRef.current,
         // fix the game resolution
-        width: 800,
-        height: 400,
+        width: 400,
+        height: 500,
         stretch: true,
         letterbox: true,
-        background: [255, 255, 255],
+        background: [10, 10, 10],
         global: false,
       })
 
@@ -44,11 +44,11 @@ export default function FlappyDroneGame() {
 
       //main scene for gameplay
       k.scene("game", () => {
-        const PIPE_OPEN = 240
+        const PIPE_OPEN = 150
         const PIPE_MIN = 60
-        const JUMP_FORCE = 800
-        const SPEED = 320
-        const CEILING = -60
+        const JUMP_FORCE = 250
+        const SPEED = 250
+        const CEILING = -250
 
         // game object comprising of a bunch of components and tags
         const player = k.add([
@@ -57,7 +57,7 @@ export default function FlappyDroneGame() {
             height: 64,
           }),
           // position (x,y)
-          k.pos(k.width() / 4, 0),
+          k.pos(k.width() / 8, k.height()/2),
           // enable collision checking
           k.area({ isSensor: true }),
           //it will respond to gravity
@@ -102,7 +102,7 @@ export default function FlappyDroneGame() {
           ]
 
           //make a top pipe
-          k.add(makePipe(0, h1))
+          k.add(makePipe(0, h1), {passed: true})
 
           //make a bottom pipe
           k.add([...makePipe(h1 + PIPE_OPEN, h2), {passed: false}])
