@@ -12,17 +12,16 @@ export default function Contactcard({
   onAction,
 }) {
   return (
-    <Card variant="glass" className="flex flex-col gap-4 h-full transition-all duration-200 hover:-translate-y-1 hover:border-red hover:shadow-glass-hover group">
+    <Card
+      variant="glass"
+      className="flex flex-col gap-4 h-full transition-all duration-200 hover:-translate-y-1 hover:border-red hover:shadow-glass-hover group"
+    >
       <div className="w-10 h-10 rounded-lg bg-ink/10 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
         <Icon className="w-5 h-5 text-ink" />
       </div>
       <div className="flex-1">
-        <h3 className="font-semibold text-ink mb-1">
-          {title}
-        </h3>
-        <p className="text-sm text-dim leading-relaxed">
-          {description}
-        </p>
+        <h3 className="font-semibold text-ink mb-1">{title}</h3>
+        <p className="text-sm text-dim leading-relaxed">{description}</p>
       </div>
       {href ? (
         <a
@@ -30,7 +29,7 @@ export default function Contactcard({
           onClick={onAction}
           className="inline-flex text-sm font-medium text-red items-center gap-1 hover:text-redDeep transition-all duration-200 text-left group/link"
         >
-          {actionLabel} 
+          {actionLabel}
           <span className="transition-transform duration-200 group-hover/link:translate-x-1">
             &rarr;
           </span>
@@ -41,7 +40,7 @@ export default function Contactcard({
           onClick={onAction}
           className="inline-flex items-center gap-1 text-sm font-medium text-red hover:text-redDeep transition-all duration-200 group/link text-left"
         >
-          {actionLabel} 
+          {actionLabel}
           <span className="transition-tranform duration-200 group-hover/link:translate-x-1">
             &rarr;
           </span>

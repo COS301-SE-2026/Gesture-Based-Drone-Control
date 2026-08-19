@@ -20,7 +20,10 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
         <div className="flex items-center justify-between">
           <Label size="md">{isSim ? "Sim Viewer" : "Live Feed"}</Label>
           <div className="flex items-center gap-2">
-            <StatusDot variant={isConnected ? "connected" : "disconnected"} size="sm" />
+            <StatusDot
+              variant={isConnected ? "connected" : "disconnected"}
+              size="sm"
+            />
             <span className="text-xs text-dim font-mono uppercase">
               {isConnected ? "live" : "offline"}
             </span>
@@ -65,7 +68,6 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
               }`}
             />
           )}
-
         </div>
       </div>
     </Card>

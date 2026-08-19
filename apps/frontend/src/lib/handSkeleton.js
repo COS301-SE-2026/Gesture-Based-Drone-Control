@@ -78,3 +78,21 @@ export function drawHand(ctx, points, boneColor) {
     ctx.fill()
   })
 }
+
+export function base64ToBlob(base64) {
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.codePointAt(i)
+  }
+  return new Blob([bytes], { type: "image/jpeg" })
+}
+
+export async function decodeFrameBitmap(frame) {
+  if (!frame?.frame_jpeg) return null
+  try {
+    return await createImageBitmap(base64ToBlob(frame.frame_jpeg))
+  } catch {
+    return null
+  }
+}

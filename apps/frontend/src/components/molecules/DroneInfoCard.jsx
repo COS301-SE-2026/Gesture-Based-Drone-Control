@@ -15,33 +15,26 @@ const DroneInfoCard = ({
 
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-            </div>
+            <div className="flex items-center gap-2"></div>
           </div>
 
           {/* drone info grid */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-xs text-dim uppercase mb-1">Drone Name</p>
-              <p className="text-ink">
-                {droneName}
-              </p>
+              <p className="text-ink">{droneName}</p>
             </div>
 
             <div>
               <p className="text-xs text-dim uppercase mb-1">Model</p>
-              <p className="text-ink">
-                {model}
-              </p>
+              <p className="text-ink">{model}</p>
             </div>
           </div>
 
           {/* description */}
           <div>
             <p className="text-xs text-dim uppercase mb-1">Description</p>
-            <p className="text-sm text-ink/70 leading-relaxed">
-              {description}
-            </p>
+            <p className="text-sm text-ink/70 leading-relaxed">{description}</p>
           </div>
         </div>
       </div>
