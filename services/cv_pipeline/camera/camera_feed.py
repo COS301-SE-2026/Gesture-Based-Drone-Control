@@ -6,6 +6,7 @@
 # return captured frame (api call possibly)
 
 import logging
+import sys
 import time
 from dataclasses import dataclass
 from enum import Enum, auto
@@ -17,11 +18,24 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
+class CameraError(RuntimeError):
+	"""Raised when the capture device cannot be opened or produces no frames."""
+
+
 # configs & enum
 class CameraSource(Enum):
 	WEBCAM = auto()
 	# point at recorded vid for offline use
 	FILE = auto()
+
+
+def default_api_preference() -> int:
+	"""Most reliable OpenCV capture backend for current os"""
+	if sys.platform == 'darwin':
+		return cv2.CAP_AVFOUNDATION
+	if sys.platform == 'win32':
+		return cv2.CAP_DSHOW
+	return cv2.CAP_V4L2
 
 
 @dataclass
@@ -37,6 +51,11 @@ class CameraConfig:
 	target_fps: int = 30
 	# mirror for hand tracking
 	flip_horizontal: bool = True
+	api_preference: Optional[int] = None
+	open_attempts: int = 4
+	open_retry_delay: float = 0.35
+	warmup_frames: int = 5
+	max_read_failures: int = 150
 
 
 # frame wrapper
@@ -62,48 +81,98 @@ class CameraFeed:
 		self._config = config
 		self._cap: Optional[cv2.VideoCapture] = None
 		self._frame_idx = 0
+		self._read_failures = 0
+
+	@property
+	def read_failures(self) -> int:
+		return self._read_failures
 
 	# lifecycle
 	def open(self) -> None:
 		if self._config.source == CameraSource.FILE:
-			if not self._config.video_path:
-				raise ValueError('CameraConfig.video_path must be set when source=FILE.')
-			self._cap = cv2.VideoCapture(self._config.video_path)
-		else:
-			import sys
+			self._open_file()
+			return
+		self._open_device()
 
-			if sys.platform == 'win32':
-				# damn windows MSMF rubbish!!!
-				self._cap = cv2.VideoCapture(self._config.device_index, cv2.CAP_DSHOW)
-			else:
-				self._cap = cv2.VideoCapture(self._config.device_index)
+	def _open_file(self) -> None:
+		if not self._config.video_path:
+			raise ValueError('CameraConfig.video_path must be set when source=FILE')
+		cap = cv2.VideoCapture(self._config.video_path)
+		if not cap.isOpened():
+			raise CameraError(f'Failed to open video file: {self._config.video_path}')
+		self._cap = cap
+		logger.info('Camera opened, source=FILE, path=%s', self._config.video_path)
 
-		if not self._cap.isOpened():
-			raise RuntimeError('Failed to open camera')
-
-		# apply res and FPS
-		self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._config.frame_width)
-		self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._config.frame_height)
-		self._cap.set(cv2.CAP_PROP_FPS, self._config.target_fps)
-		self._cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-
-		logger.info(
-			'Camera opened — source=%s, device=%s, target=%dx%d @ %dfps',
-			self._config.source.name,
-			self._config.device_index
-			if self._config.source == CameraSource.WEBCAM
-			else self._config.video_path,
-			self._config.frame_width,
-			self._config.frame_height,
-			self._config.target_fps,
+	def _open_device(self) -> None:
+		api = (
+			self._config.api_preference
+			if self._config.api_preference is not None
+			else default_api_preference()
 		)
+		last_reason = 'unknown'
+
+		for attempt in range(1, self._config.open_attempts + 1):
+			cap = cv2.VideoCapture(self._config.device_index, api)
+			if cap.isOpened():
+				self._apply_properties(cap)
+				if self._warmup(cap):
+					self._cap = cap
+					logger.info(
+						'Camera opened, device=%s, api=%s, target=%d%d @ %dfps (attempt %d)',
+						self._config.device_index,
+						api,
+						self._config.frame_width,
+						self._config.frame_height,
+						self._config.target_fps,
+						attempt,
+					)
+					return
+				last_reason = 'device opened but returned no frames'
+			else:
+				last_reason = 'device is busy or doesnt exist'
+
+		cap.release()
+		logger.warning(
+			'Camera open attempt %d/%d failef (%s), retrying in %.2fs',
+			attempt,
+			self._config.open_attempts,
+			last_reason,
+			self._config.open_retry_delay,
+		)
+		time.sleep(self._config.open_retry_delay)
+
+		raise CameraError(
+			f'Failed to open camera index {self._config.device_index} after '
+			f'{self._config.open_attempts} attempts: {last_reason}. '
+			'Another application (or browser holding getUserMedia) '
+			'is most likely still using the webcam.'
+		)
+
+	def _apply_properties(self, cap: cv2.VideoCapture) -> None:
+		cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._config.frame_width)
+		cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._config.frame_height)
+		cap.set(cv2.CAP_PROP_FPS, self._config.target_fps)
+		cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
+	def _warmup(self, cap: cv2.VideoCapture) -> bool:
+		"""Discard the first few frames: rerturn True once a real one arrives"""
+		got_frame = False
+		for _ in range(max(self._config.warmup_frames, 1)):
+			ret, frame = cap.read()
+			if ret and frame is not None and frame.size:
+				got_frame = True
+			else:
+				time.sleep(0.05)
+		return got_frame
 
 	def close(self) -> None:
 		"""Release camera device"""
-		if self._cap and self._cap.isOpened():
-			self._cap.release()
+		if self._cap is not None:
+			if self._cap.isOpened():
+				self._cap.release()
 			self._cap = None
-			logger.info('Camera closed.')
+			self._read_failures = 0
+			logger.info('Camera closed')
 
 	def is_open(self) -> bool:
 		return self._cap is not None and self._cap.isOpened()
@@ -126,11 +195,17 @@ class CameraFeed:
 
 		ret, raw = self._cap.read()
 
-		if not ret:
+		if not ret or raw is None or not raw.size:
 			# rate limiting
-			self._read_failures = getattr(self, '_read_failures', 0) + 1
+			self._read_failures += 1
 			if self._read_failures == 1 or self._read_failures % 100 == 0:
 				logger.warning('Cam returned no frame (x%d)', self._read_failures)
+			if self._read_failures >= self._config.max_read_failures:
+				raise CameraError(
+					f'Camera stoped delivering frames after {self._read_failures} '
+					'consecutive failed reads (device unplugged or taken over by '
+					'another app) '
+				)
 			return None
 
 		self._read_failures = 0

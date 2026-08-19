@@ -16,7 +16,12 @@ import threading
 from dataclasses import dataclass, field
 from typing import AsyncIterator, Optional
 
-from services.cv_pipeline.camera.camera_feed import CameraConfig, CameraFeed, CapturedFrame
+from services.cv_pipeline.camera.camera_feed import (
+	CameraConfig,
+	CameraError,
+	CameraFeed,
+	CapturedFrame,
+)
 from services.cv_pipeline.gestures.gesture_engine import GestureEngine, GestureEngineResult
 from services.cv_pipeline.hand_detection.mediapipe_detector import (
 	DetectorConfig,
@@ -285,7 +290,13 @@ class CvPipeline:
 
 		consecutive_failures = 0
 		while not self._stop_event.is_set():
-			frame = self._camera.capture_image()
+			try:
+				frame = self._camera.capture_image()
+			except CameraError:
+				logger.exception('camera died, stopping capture loop')
+				self._running = False
+				break
+
 			if frame is None:
 				consecutive_failures += 1
 				# no frame available -> backoff
@@ -340,10 +351,6 @@ class CvPipeline:
 					fps=fps,
 					hand_metrics=metrics,
 				)
-				# 		await self._event_queue.put(event)
-				# except asyncio.CancelledError:
-				# 	logger.debug('Consumer task cancelled')
-				# 	raise
 				if self._event_queue.full():
 					try:
 						self._event_queue.get_nowait()
