@@ -1,10 +1,18 @@
 import { StatusDot, Card } from "../atoms"
+import { useState, useEffect } from "react"
 import AccountActions from "./AccountActions"
 import { useTelemetry } from "@/context/TelemetryContext"
 
 export const GpsSideContent = () => {
   const { telemetry } = useTelemetry()
   const isFlying = telemetry?.is_flying ?? false
+
+  const [now, setNow] = useState(() => new Date())
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
 
   const getMode = () => {
     if (!telemetry) return "No data"
@@ -32,9 +40,7 @@ export const GpsSideContent = () => {
         <div>
           <p className="text-sm text-ink">Current Use Mode</p>
           <p className="text-lg text-ink font-bold">{mode}</p>
-          <p className="text-xs text-DarkGrey">
-            {telemetry ? new Date().toLocaleTimeString() : "No data"}
-          </p>
+          <p className="text-xs text-dim">{now.toLocaleTimeString()}</p>
         </div>
         <div className="flex items-center gap-2">
           <StatusDot variant={isFlying ? "connected" : "idle"} size="sm" />
