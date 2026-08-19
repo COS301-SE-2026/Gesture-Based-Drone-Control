@@ -13,10 +13,9 @@ const Games = () => {
         />
       </div>
 
-        <div className="max-w-4x1 ml-6">
-            <FlappyDroneGame />
-        </div>
-
+      <div className="max-w-4x1 ml-6">
+        <FlappyDroneGame />
+      </div>
     </div>
   )
 }
