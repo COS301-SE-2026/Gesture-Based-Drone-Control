@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react"
 import droneSprite from "@/assets/games/flappy/drone.png"
 
-
 /**
  * this page houses everything for the kaplay minigame
  * it will be rendered inside a frame on the minigames page
@@ -57,7 +56,7 @@ export default function FlappyDroneGame() {
             height: 64,
           }),
           // position (x,y)
-          k.pos(k.width() / 8, k.height()/2),
+          k.pos(k.width() / 8, k.height() / 2),
           // enable collision checking
           k.area({ isSensor: true }),
           //it will respond to gravity
@@ -76,7 +75,7 @@ export default function FlappyDroneGame() {
         k.onKeyPress("w", () => player.jump(JUMP_FORCE))
         k.onKeyPress("space", () => player.jump(0.00001))
         k.onKeyPress("s", () => player.jump(-JUMP_FORCE))
-        
+
         // we want to spawn pipes around the center
         // take prev pipe into consideration so its not impossible
         let prevPipeH1 = k.center().y - PIPE_OPEN / 2
@@ -86,7 +85,7 @@ export default function FlappyDroneGame() {
           const PIPE_MAX = k.height() - PIPE_MIN - PIPE_OPEN
           const low = Math.max(PIPE_MIN, prevPipeH1 - PIPE_OPEN * 1.2)
           const high = Math.min(PIPE_MAX, prevPipeH1 + PIPE_OPEN * 1.2)
-          const h1 = prevPipeH1 = k.rand(low, high)
+          const h1 = (prevPipeH1 = k.rand(low, high))
           const h2 = k.height() - h1 - PIPE_OPEN
 
           // generic object template for pipes to follow
@@ -95,17 +94,17 @@ export default function FlappyDroneGame() {
             k.rect(64, h),
             k.color(10, 0, 33),
             k.outline(4), //black outline on pixels
-            k.area({ isSensor: true}), //collision
+            k.area({ isSensor: true }), //collision
             k.move(k.LEFT, SPEED), //illusion of scrolling level
-            k.offscreen({destroy: true}), //it dont exist if its behind us
+            k.offscreen({ destroy: true }), //it dont exist if its behind us
             "pipe", //easier to refer to later on with a tag
           ]
 
           //make a top pipe
-          k.add(makePipe(0, h1), {passed: true})
+          k.add(makePipe(0, h1), { passed: true })
 
           //make a bottom pipe
-          k.add([...makePipe(h1 + PIPE_OPEN, h2), {passed: false}])
+          k.add([...makePipe(h1 + PIPE_OPEN, h2), { passed: false }])
         }
 
         // lose condition
@@ -126,35 +125,35 @@ export default function FlappyDroneGame() {
 
         let score = 0
         const scoreLabel = k.add([
-          k.text("0", {size: 48}),
+          k.text("0", { size: 48 }),
           k.anchor("center"), // keep it in place
-          k.pos(k.width()/2, 80), //top centered
-          k.fixed(), //unaffected by camera 
+          k.pos(k.width() / 2, 80), //top centered
+          k.fixed(), //unaffected by camera
           k.z(1000), //big number because on top layer above all else
         ])
       })
-         // the scene that shows when one crashes
-         k.scene("lose", (score = 0) => {
-          k.add([
-            k.text(`Score: ${score}`, { size: 48 }),
-            k.anchor("center"),
-            k.pos(k.width() / 2, k.height() / 2 - 40),
-            k.color(200,200,200),
-          ])
-          k.add([
-            k.text("w to retry", {size: 24}),
-            k.anchor("center"),
-            k.pos(k.width() / 2, k.height() / 2 + 40),
-            k.color(180, 180, 180),
-          ])
-          // option to retry 
-          k.wait(0.2, () => {
-            k.onKeyPress("w", () => k.go("game"))
-            k.onMousePress(() => k.go("game"))
-          })
-         })
+      // the scene that shows when one crashes
+      k.scene("lose", (score = 0) => {
+        k.add([
+          k.text(`Score: ${score}`, { size: 48 }),
+          k.anchor("center"),
+          k.pos(k.width() / 2, k.height() / 2 - 40),
+          k.color(200, 200, 200),
+        ])
+        k.add([
+          k.text("w to retry", { size: 24 }),
+          k.anchor("center"),
+          k.pos(k.width() / 2, k.height() / 2 + 40),
+          k.color(180, 180, 180),
+        ])
+        // option to retry
+        k.wait(0.2, () => {
+          k.onKeyPress("w", () => k.go("game"))
+          k.onMousePress(() => k.go("game"))
+        })
+      })
 
-         k.go("game")
+      k.go("game")
     })
   }, [])
 
