@@ -49,7 +49,7 @@ export default function FlappyDroneGame() {
           // position (x,y)
           k.pos(k.width / 4, 0),
           // enable collision checking
-          k.area({isSensor: true}),
+          k.area({ isSensor: true }),
           //it will respond to gravity
           k.body(),
         ])
@@ -62,9 +62,6 @@ export default function FlappyDroneGame() {
         k.onKeyPress("up", () => player.jump(JUMP_FORCE))
         k.onKeyPress("right", () => player.jump(0.00001))
         k.onKeyPress("down", () => player.jump(-JUMP_FORCE))
-
-
-
       })
     })
   })
@@ -72,8 +69,8 @@ export default function FlappyDroneGame() {
   return (
     <canvas
       ref={canvasRef}
-      className=""
-      style={{aspectRatio: "9/16"}}
+      className="w-full rounded-xl"
+      style={{ aspectRatio: "9/16" }}
     />
   )
 }
