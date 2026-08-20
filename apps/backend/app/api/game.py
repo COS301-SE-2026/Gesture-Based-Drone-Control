@@ -2,10 +2,12 @@
 
 """
 Game endpoints, similar to the drone and input endpoints
-Some are kinda redundant, but thats mostly because of database shenanigans 
+Some are kinda redundant, but thats mostly because of database shenanigans
 that I dont understand and dont need for this one
 
 REST:
+    POST game/connect
+    POST game/disconnect
 
 WebSockets:
 
@@ -19,48 +21,65 @@ Client management is also done here similar to the other endpoints.
 from __future__ import annotations
 
 import logging
-
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
-from pydantic import BaseModel
 from typing import Annotated
 
-from services.drone_control.adapters.game_adapter import GameAdapter
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
 
-from app.dependencies import get_adapter, get_state
+from app.dependencies import get_state
 from app.state import AppState
+from services.drone_control.adapters.game_adapter import GameAdapter
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # REST endpoints
 
-class GameConnectResponse(BaseModel):
-    active: bool
-    message: str
-    
-@router.post("/connect", response_model=GameConnectResponse)
-async def game_connect(state: Annotated[AppState, Depends(get_state)]):
-    """
-    Activate this as the current drone adapter
-    
-    Basically just a wrapper for POST /drone/connect
-    Disconnect currently active drone adapter and replaces it
-    """
-    if state.adapter and state.is_connected:
-        logger.info('game/connect: replacing existing adapter')
-        await state.adapter.disconnect()
-        state.reset()
 
-    adapter = GameAdapter()
-    ok = await adapter.connect()
-    if not ok:
-        return GameConnectResponse(active=False, message='GameAdapter failed to connect')
-    
-    state.adapter = adapter
-    state.adapter_name = 'game'
-    
-    logger.info('game/connect: GameAdapter active')
-    return GameConnectResponse(active=True, message='Game adapter connected')
-    
+class GameConnectResponse(BaseModel):
+	active: bool
+	message: str
+
+
+@router.post('/connect', response_model=GameConnectResponse)
+async def game_connect(state: Annotated[AppState, Depends(get_state)]):
+	"""
+	Activate this as the current drone adapter
+
+	Basically just a wrapper for POST /drone/connect
+	Disconnect currently active drone adapter and replaces it
+	"""
+	if state.adapter and state.is_connected:
+		logger.info('game/connect: replacing existing adapter')
+		await state.adapter.disconnect()
+		state.reset()
+
+	adapter = GameAdapter()
+	ok = await adapter.connect()
+	if not ok:
+		return GameConnectResponse(active=False, message='GameAdapter failed to connect')
+
+	state.adapter = adapter
+	state.adapter_name = 'game'
+
+	logger.info('game/connect: GameAdapter active')
+	return GameConnectResponse(active=True, message='Game adapter connected')
+
+
+@router.post('/disconnect', response_model=GameConnectResponse)
+async def game_disconnect(state: Annotated[AppState, Depends(get_state)]):
+	"""
+	Deactivate the game adapter and close all connected clients
+	Do nothing if no game is active
+	"""
+	if state.adapter_name != 'game' or state.adapter is None:
+		return GameConnectResponse(active=False, message='No game adapter is connected')
+
+	await state.adapter.disconnect()
+	state.reset()
+
+	logger.info('game/disconnect: GameAdapter disconnected')
+	return GameConnectResponse(active=False, message='Game adapter disconnected')
+
 
 # WebSockets endpoints
