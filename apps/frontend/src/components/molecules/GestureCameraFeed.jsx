@@ -1,83 +1,144 @@
 import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import { useGestureStream } from "../../hooks/useGestureStream"
-import { useWebPreview } from "../../hooks/useWebcamPreview"
+import { useCameraConsent } from "../../context/CameraConsentContext"
+import CameraDisabledNotice from "./CameraDisabledNotice"
 import {
   prepareCanvas,
   coverTransform,
   toCanvasPoints,
   drawHand,
+  decodeFrameBitmap,
 } from "../../lib/handSkeleton"
 
 const SKELETON_COLOR = "#ef4444"
 const LABEL_BG = "rgba(11, 9, 10, 0.75)"
 const LABEL_TEXT = "#ffffff"
 
-const GestureCameraFeed = ({ className = "" }) => {
-  const videoRef = useRef(null)
-  const canvasRef = useRef(null)
-  const { frame, connected } = useGestureStream()
+const CONTAINER_GLASS =
+  "relative w-full h-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px]"
 
-  useWebPreview(videoRef)
+const GestureCameraFeed = ({
+  className = "",
+  onFrame = null,
+  skeletonColor = SKELETON_COLOR,
+}) => {
+  const canvasRef = useRef(null)
+  const { enabled } = useCameraConsent()
+  const { frame, connected, error } = useGestureStream()
+
+  useEffect(() => {
+    if (onFrame) onFrame(frame)
+  }, [frame, onFrame])
 
   useEffect(() => {
     const canvas = canvasRef.current
-    const video = videoRef.current
-    if (!canvas || !video) {
-      return
-    }
-    //faaah missing bracket
-    const ctx = prepareCanvas(canvas)
-    if (!frame) {
-      return
-    }
+    if (!canvas || !frame) return undefined
 
-    // fps reading, bottom left
-    if (typeof frame.fps === "number") {
-      drawLabel(ctx, `${frame.fps.toFixed(1)} FPS`, 8, canvas.height - 8)
-    }
+    let cancelled = false
 
-    if (!frame?.hands?.length) {
-      return
-    }
-
-    const transform = coverTransform(canvas, video)
-    frame.hands.forEach((hand) => {
-      const points = toCanvasPoints(hand.landmarks, transform)
-      drawHand(ctx, points, SKELETON_COLOR)
-
-      //per-hand info label above wrist (landmark 0)
-      const wrist = points[0]
-      if (wrist) {
-        const confidence = Math.round((hand.confidence ?? 0) * 100)
-        const line1 = `${hand.handedness}: ${hand.gesture} (${hand.fingers})`
-        const line2 = `${confidence}% spd ${(hand.speed ?? 0).toFixed(2)}`
-        drawLabel(ctx, line1, wrist.x, wrist.y - 34, { clamp: true })
-        drawLabel(ctx, line2, wrist.x, wrist.y - 14, { clamp: true })
+    const render = async () => {
+      const bitmap = await decodeFrameBitmap(frame)
+      if (cancelled) {
+        bitmap?.close?.()
+        return
       }
-    })
-  }, [frame])
+      drawFrame(canvas, bitmap, frame, skeletonColor)
+      bitmap?.close?.()
+    }
+
+    render()
+    return () => {
+      cancelled = true
+    }
+  }, [frame, skeletonColor])
+
+  if (!enabled) {
+    return (
+      <div
+        data-testid="gesture-camera-feed"
+        className={`${CONTAINER_GLASS} flex items-center justify-center ${className}`}
+      >
+        <CameraDisabledNotice />
+      </div>
+    )
+  }
+  const statusLabel = getStatusLabel(connected, error, frame)
 
   return (
     <div
-      className={`relative w-full h-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px] ${className}`}
+      data-testid="gesture-camera-feed"
+      className={`${CONTAINER_GLASS} ${className}`}
     >
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        className="w-full h-full object-cover -scale-x-100"
-      />
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+      {!frame && (
+        <div className="absolute inset-0 flex items-center justify-center text-sm text-Grey">
+          {error ?? "Waiting for camera..."}
+        </div>
+      )}
       <div className="absolute top-4 right-4 flex items-center gap-2 bg-OffBlack/60 px-3 py-1 rounded-full text-xs text-OffWhite">
         <span
-          className={`w-2 h-2 rounded-full ${connected ? "bg-green-500 animate-pulse" : "bg-Grey"}`}
+          className={`w-2 h-2 rounded-full ${statusDotClass(connected, error)}`}
         />
-        <span>{connected ? "Active" : "Disconnected"}</span>
+        <span>{statusLabel}</span>
       </div>
     </div>
   )
+}
+
+function statusDotClass(connected, error) {
+  if (error) return "bg-red-500"
+  if (connected) return "bg-green-500 animate-pulse"
+  return "bg-Grey"
+}
+
+function getStatusLabel(connected, error, frame) {
+  if (error) return "Camera unavailable"
+  if (!connected) return "Reconnecting..."
+  if (!frame) return "Starting camera..."
+  return "Active"
+}
+
+function drawFrame(canvas, bitmap, frame, skeletonColor) {
+  const ctx = prepareCanvas(canvas)
+
+  const sourceWidth = frame.frame_width || bitmap?.width || canvas.width
+  const sourceHeight = frame.frame_height || bitmap?.height || canvas.height
+  const transform = coverTransform(canvas, {
+    videoWidth: sourceWidth,
+    videoHeight: sourceHeight,
+  })
+
+  if (bitmap) {
+    ctx.drawImage(
+      bitmap,
+      transform.offsetX,
+      transform.offsetY,
+      transform.drawW,
+      transform.drawH
+    )
+  }
+
+  // fps reading, bottom left
+  if (typeof frame.fps === "number") {
+    drawLabel(ctx, `${frame.fps.toFixed(1)} FPS`, 8, canvas.height - 8)
+  }
+
+  if (!frame?.hands?.length) return
+
+  frame.hands.forEach((hand) => {
+    const points = toCanvasPoints(hand.landmarks, transform)
+    drawHand(ctx, points, skeletonColor)
+
+    // per-hand info label above wrist (landmark 0)
+    const wrist = points[0]
+    if (!wrist) return
+    const confidence = Math.round((hand.confidence ?? 0) * 100)
+    const line1 = `${hand.handedness}: ${hand.gesture} (${hand.fingers})`
+    const line2 = `${confidence}% spd ${(hand.speed ?? 0).toFixed(2)}`
+    drawLabel(ctx, line1, wrist.x, wrist.y - 34, { clamp: true })
+    drawLabel(ctx, line2, wrist.x, wrist.y - 14, { clamp: true })
+  })
 }
 
 //draws text with dark pill background
@@ -109,6 +170,8 @@ function drawLabel(ctx, text, x, y, { clamp = false } = {}) {
 
 GestureCameraFeed.propTypes = {
   className: PropTypes.string,
+  onFrame: PropTypes.func,
+  skeletonColor: PropTypes.string,
 }
 
 export default GestureCameraFeed

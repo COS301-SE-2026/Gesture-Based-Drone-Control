@@ -14,6 +14,8 @@ WS /api/gestures/stream
  mirrored by the GestureFramePayload model (under Schemas on swagger)
 """
 
+import asyncio
+import contextlib
 import logging
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -30,6 +32,25 @@ router = APIRouter(prefix='/gestures', tags=['gestures'])
 # camera opens lazily on first WS connection and closes when the last one disconnects
 stream = GestureStream()
 
+WS_CAMERA_UNAVAILABLE = 1011
+WS_STREAM_ENDED = 1001
+
+
+async def _send_frames(websocket: WebSocket, queue: asyncio.Queue) -> None:
+	while True:
+		payload = await queue.get()
+		if payload is None:
+			logger.info('gesture stream ended, closing client socket')
+			await websocket.close(code=WS_STREAM_ENDED)
+			return
+		await websocket.send_json(payload.model_dump())
+
+
+async def _watch_for_disconnect(websocket: WebSocket) -> None:
+	with contextlib.suppress(Exception):
+		while True:
+			await websocket.receive()
+
 
 class GestureStreamStatus(BaseModel):
 	"""
@@ -38,6 +59,13 @@ class GestureStreamStatus(BaseModel):
 
 	running: bool = Field(..., description='Whether the camera pipeline is currently active')
 	connected_clients: int = Field(..., ge=0, description='Number of open WebSocket connections')
+	last_error: str | None = Field(
+		default=None,
+		description=(
+			'Why the camera last failed to open or the pipeline last died, so the '
+			'UI can show something better than "Disconnected". Null when healthy'
+		),
+	)
 	last_frame: GestureFramePayload | None = Field(
 		default=None,
 		description=(
@@ -60,7 +88,11 @@ class GestureStreamStatus(BaseModel):
 	),
 )
 async def get_gesture_stream_status() -> GestureStreamStatus:
-	return GestureStreamStatus(running=stream.is_running, connected_clients=stream.client_count)
+	return GestureStreamStatus(
+		running=stream.is_running,
+		connected_clients=stream.client_count,
+		last_error=stream.last_error,
+	)
 
 
 @router.get('/health')
@@ -99,11 +131,31 @@ async def gesture_websocket(websocket: WebSocket) -> None:
 	await websocket.accept()
 	queue = None
 	try:
-		queue = await stream.subscribe()
-		logger.info('gesture client connected (total =%d)', stream.client_count)
-		while True:
-			payload = await queue.get()
-			await websocket.send_json(payload.model_dump())
+		try:
+			queue = await stream.subscribe()
+		except Exception as exc:
+			logger.warning('gesture client rejected, camera unavailable" %s', exc)
+			await websocket.send_json(
+				{
+					'type': 'error',
+					'code': 'camera_unavailable',
+					'message': str(exc),
+				}
+			)
+			await websocket.close(code=WS_CAMERA_UNAVAILABLE)
+			return
+
+		logger.info('gesture client connected (total = %d)', stream.client_count)
+		sender = asyncio.create_task(_send_frames(websocket, queue), name='gesture-send')
+		watcher = asyncio.create_task(_watch_for_disconnect(websocket), name='gesture-watch')
+		done, pending = await asyncio.wait({sender, watcher}, return_when=asyncio.FIRST_COMPLETED)
+		for task in pending:
+			task.cancel()
+			with contextlib.suppress(asyncio.CancelledError):
+				await task
+		for task in done:
+			with contextlib.suppress(Exception):
+				task.result()
 	except WebSocketDisconnect:
 		logger.info('gesture client disconnected')
 	except Exception:

@@ -17,20 +17,29 @@ test.describe("gesture calibration (any camera", () => {
         "shared backend camera, one browser is enough"
     )
 
-    test.beforeEach(async ({request}) => {
+    test.beforeEach(async ({page, request}) => {
         await request.post(`${API_BASE}/api/calibration/start`)
+        await page.addInitScript(() => {
+            localStorage.setItem("camera-consent", "granted")
+        })
     })
 
     test.afterEach(async ({page, request}) => {
-        await page.goto("/analytics")
-        await waitForPipelineStopped(request)
-        await new Promise((r) => setTimeout(r, 2000))
+        const analytics = page.getByRole("button", {name: "Analytics"})
+        if (await analytics.isVisible().catch(() => false)) {
+            await analytics.click()
+            await waitForPipelineStopped(request)
+        }
     })
 
     test("connects live and renders sequence UI", async ({
         page,
         request,
     }) => {
+        test.skip(
+            (!backendHasCamera()),
+            "backend has no camera, no frames to drive the UI"
+        )
         await page.goto(CALIBRATION_ROUTE)
 
         await expect(page.getByText("Live", {exact: true})).toBeVisible({
@@ -46,24 +55,15 @@ test.describe("gesture calibration (any camera", () => {
         for (const gesture of PRETTY_SEQUENCE) {
             await expect(page.getByText(gesture).first()).toBeVisible()
         }
-
-        test.skip(
-            !(await backendHasCamera(request)),
-            "backend has no camera, no frames to drive to UI"
-        )
         await expect(page.getByText("Show:")).toBeVisible({timeout: 20_000})
     })
 
-    test("progress UI updates while frames streeam in", async ({page, request,}) => {
+    test("progress UI updates while frames streeam in", async ({page}) => {
+        test.skip(!backendHasCamera(), "backend has no camera, no frame to count")
         await page.goto(CALIBRATION_ROUTE)
         await expect(page.getByText("Live", {exact: true})).toBeVisible({
             timeout: 20_000,
         })
-
-        test.skip(
-            !(await backendHasCamera(request)),
-            "backend has no camera, no frames to count"
-        )
 
         const counter = page.getByText(/\d+\/\d+ frames/)
         await expect(counter).toBeVisible({timeout: 30_000})
@@ -84,6 +84,7 @@ test.describe("gesture calibration (any camera", () => {
         page,
         request,
     }) => {
+        test.skip(!backendHasCamera(), "backend has no camera, stream never goes live")
         await page.goto(CALIBRATION_ROUTE)
         await expect(page.getByText("Live", {exact: true})).toBeVisible({
             timeout: 20_000,
@@ -101,20 +102,33 @@ test.describe("gesture calibration (any camera", () => {
         expect(status.is_calibrated).toBe(true)
     })
 
-    test("webcam preview element receives a media stream", async ({page}) => {
+    test("calibration canvas renders backend frames", async ({page}) => {
+        test.skip(
+            (!backendHasCamera()),
+            "backend has no camera, no frames to draw"
+        )
+
         await page.goto(CALIBRATION_ROUTE)
         await expect(page.getByText("Live", {exact:true})).toBeVisible({
             timeout: 20_000,
         })
 
-        const hasStream = await page
-            .locator("video")
-            .first()
-            .evaluate((el: HTMLVideoElement) => {
-                const s = el.srcObject as MediaStream | null
-                return !!s && s.getVideoTracks().length > 0
-            })
-        expect(hasStream).toBe(true)
+        const canvas = page.locator("canvas").first()
+        await expect
+            .poll(
+                async () => 
+                    canvas.evaluate((el: HTMLCanvasElement) => {
+                        const ctx = el.getContext("2d")
+                        if (!ctx || el.width === 0 || el.height === 0) return false
+                        const data = ctx.getImageData(0, 0, el.width, el.height).data
+                        for (let i=3; i<data.length; i+=4) {
+                            if (data[i] !== 0) return true
+                        }
+                        return false
+                    }),
+                {timeout: 30_000}
+            )
+            .toBe(true)
     })
 })
 
@@ -125,14 +139,16 @@ test.describe("gesture calibration (scripted camera)", () => {
         "gesture sequence on camera when the page connects"
     )
 
-    test.beforeEach(async({request}) => {
+    test.beforeEach(async({page, request}) => {
         await request.post(`${API_BASE}/api/calibration/start`)
+        await page.addInitScript(() => {
+            localStorage.setItem("camera-consent", "granted")
+        })
     })
 
     test.afterEach(async ({page, request}) => {
-        await page.goto("/analytics")
+        await page.getByRole("button", {name: "Analytics"}).click()
         await waitForPipelineStopped(request)
-         await new Promise((r) => setTimeout(r, 2000))
     })
 
     test("full run: every gesture passes and flight unlocks", async ({
@@ -177,7 +193,7 @@ test.describe("gesture calibration (scripted camera)", () => {
             page.getByText(`✓ ${PRETTY_SEQUENCE[0]}`).first()
         ).toBeVisible({timeout: 90_000})
 
-        await page.goto("/analytics")
+        await page.getByRole("button", {name: "Analytics"}).click()
         await waitForPipelineStopped(request)
         await page.goto(CALIBRATION_ROUTE)
 

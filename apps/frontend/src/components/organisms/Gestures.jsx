@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import {
   CommandHistory,
   GestureGuide,
@@ -25,42 +25,23 @@ function calibrationLabel(calibrated) {
 
 //TODO: this is still mocked for now
 const GestureControl = () => {
-  const [commands] = useState([
-    { action: "swipe up - move up", timestamp: "18:50:43" },
-    { action: "swipe right - move right", timestamp: "18:50:43" },
-    { action: "swipe down - move down", timestamp: "18:50:43" },
-    { action: "swipe left - move left", timestamp: "18:50:42" },
-  ])
-
-  //from gesture guide molecule to backend commandType name
-  const ACTION_TO_COMMAND = {
-    moveForward: "MOVE_FORWARD",
-    moveBackward: "MOVE_BACKWARD",
-    moveLeft: "MOVE_LEFT",
-    moveRight: "MOVE_RIGHT",
-    goUp: "MOVE_UP",
-    goDown: "MOVE_DOWN",
-    rotateLeft: "ROTATE_CCW",
-    rotateRight: "ROTATE_CW",
-    takeoff: "TAKEOFF",
-    land: "LAND",
-    hover: "HOVER",
-    emergencyStop: "EMERGENCY_STOP",
-  }
+  const [commands, setCommands] = useState([])
 
   const { telemetry, status } = useTelemetry()
   const { sendCommand, status: commandStatus, lastResp } = useCommands()
 
-  const handleControlAcion = (action) => {
-    const commandName = ACTION_TO_COMMAND[action]
-    if (!commandName) {
-      console.warn(
-        "GestureControl: no command mapping for this action: ",
-        action
-      )
-      return
-    }
-    sendCommand(commandName, { source: "onscreen" })
+  const handleControlAction = useCallback(
+    (command) => {
+      sendCommand(command, { source: "onscreen" })
+    },
+    [sendCommand]
+  )
+
+  const handleKeyboardResp = (resp) => {
+    const timestamp = new Date().toLocaleTimeString("en-ZA", { hour12: false })
+    setCommands((prev) =>
+      [{ action: resp.key, timestamp }, ...prev].slice(0, 50)
+    )
   }
 
   // //mock data for drone status
@@ -174,12 +155,27 @@ const GestureControl = () => {
   //add hardware mode when drone works
 
   const hasConnected = useRef(false)
+
   useEffect(() => {
     if (hasConnected.current) return
-    //initially connect to dummy for testing
     hasConnected.current = true
-    connectToDrone("dummy")
+    //connectToDrone("dummy")
   }, [])
+
+  //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
+  useEffect(() => {
+    if (lastResp?.ok && lastResp.command) {
+      const timestamp = new Date().toLocaleTimeString("en-ZA", {
+        hour12: false,
+      })
+      // setStae has to be called in use effect here because lastResp is not in this component
+      //its basically coming from useCommands in the websocket, so that whenever there is a new response its added to the local log.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCommands((prev) =>
+        [{ action: lastResp.command, timestamp }, ...prev].slice(0, 50)
+      )
+    }
+  }, [lastResp])
 
   return (
     <div className="p-6 space-y-6">
@@ -328,19 +324,16 @@ const GestureControl = () => {
                 )}
               </div>
 
-              {calibrated === null ? (
-                <div className="flex-1 flex items-center justify-center min-h-[400px] bg-OffBlack/50 rounded border border-Grey/20">
-                  <p className="text-sm text-DarkGrey">
-                    Checking calibration...
-                  </p>
-                </div>
-              ) : (
-                <GestureCameraFeed className="flex-1" />
-              )}
+              <GestureCameraFeed className="flex-1" />
             </div>
           </Card>
         )}
-        <GestureGuide className="h-full" onControlAction={handleControlAcion} />
+
+        <GestureGuide
+          className="h-full"
+          sendCommand={handleControlAction}
+          onKeyboardResp={handleKeyboardResp}
+        />
       </div>
 
       <CommandHistory commands={commands} />

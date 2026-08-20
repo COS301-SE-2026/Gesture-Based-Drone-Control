@@ -1,19 +1,20 @@
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
 import { TelemetryContext } from "./TelemetryContext"
+import { useWebSocket } from "@/hooks/useWebSocket"
+import { getWsUrl } from "@/lib/api"
 
 export function TelemetryProvider({ children }) {
   const [telemetry, setTelemetry] = useState(null)
-  const [status, setStatus] = useState("closed")
-  const wsRef = useRef(null)
 
-  useEffect(() => {
-    const ws = new WebSocket("ws://localhost:3001/api/drone/ws/telemetry")
-    wsRef.current = ws
-    ws.onopen = () => setStatus("open")
-    ws.onclose = () => setStatus("closed")
-    ws.onmessage = (e) => setTelemetry(JSON.parse(e.data))
-    return () => ws.close()
-  }, [])
+  const { status } = useWebSocket(getWsUrl("/api/drone/ws/telemetry"), {
+    onMessage(event) {
+      try {
+        setTelemetry(JSON.parse(event.data))
+      } catch (err) {
+        console.error("TelemetryProvider: failed to parse frame", err)
+      }
+    },
+  })
 
   return (
     <TelemetryContext.Provider value={{ telemetry, status }}>
