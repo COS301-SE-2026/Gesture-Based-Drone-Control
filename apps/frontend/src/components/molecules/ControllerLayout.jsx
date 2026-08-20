@@ -73,13 +73,10 @@ const ControllerLayout = ({ className = "" }) => {
     <div className={`flex flex-col items-center gap-3 ${className}`}>
       <div className="w-full flex items-center justify-between px-1">
         <span className="text-xs font-mono text-OffBlack/60 dark:text-OffWhite/60">
-          {connected ? "Controller Connected" : "No Controller Detected"}
+          {connected
+            ? "Controller Connected Successfully"
+            : "No Controller Detected"}
         </span>
-        <span
-          className={`w-2 h-2 rounded-full ${
-            connected ? "bg-Red" : "bg-Grey/40"
-          }`}
-        />
       </div>
 
       <svg viewBox="0 0 850 460" className="w-full max-w-[600px]">

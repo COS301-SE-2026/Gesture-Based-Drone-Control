@@ -17,9 +17,11 @@ export const ThemeProvider = ({ children }) => {
     const htmlElement = document.documentElement
     if (isDark) {
       htmlElement.classList.add("dark")
+      htmlElement.setAttribute("data-theme", "dark")
       localStorage.setItem("theme", "dark")
     } else {
       htmlElement.classList.remove("dark")
+      htmlElement.setAttribute("data-theme", "light")
       localStorage.setItem("theme", "light")
     }
   }, [isDark])

@@ -4,14 +4,15 @@ import {
   AnalyticsSideContent,
   DashboardSideCard,
   GpsSideContent,
+  HelpSideContent,
 } from "../molecules"
 import { Home, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
-import bgLight from "../../assets/Lightbackground.png"
-import bgDark from "../../assets/darkbackground.png"
-import { useTheme } from "../../context/ThemeContext"
+// import bgLight from "../../assets/Lightbackground.png"
+// import bgDark from "../../assets/darkbackground.png"
+// import { useTheme } from "../../context/ThemeContext"
 
 const RootLayout = () => {
-  const { isDark } = useTheme()
+  // const { isDark } = useTheme()
   const location = useLocation()
   const menuItems = [
     { id: "gestures", label: "Gestures", icon: Home, path: "/gestures" },
@@ -33,25 +34,30 @@ const RootLayout = () => {
       return <AnalyticsSideContent />
     } else if (location.pathname.includes("/gps")) {
       return <GpsSideContent />
+    } else if (location.pathname.includes("/help")) {
+      return <HelpSideContent />
     }
   }
 
   return (
-    <div
-      className="flex min-h-screen"
-      style={{
+    <div className="flex h-screen overflow-hidden">
+      <div className="md-ambience" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </div>
+      {/* style={{
         backgroundImage: `url(${isDark ? bgDark : bgLight})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         backgroundAttachment: "fixed",
       }}
-    >
-      <div className="flex flex-col">
-        <SideBar items={menuItems} topContent={getTopContent()} />
-        <div className="w-80 px-4 pb-4"></div>
-      </div>
-      <main className="flex-1 overflow-y-auto">
+    > */}
+
+      <SideBar items={menuItems} topContent={getTopContent()} />
+
+      <main className="flex-1 overflow-y-auto p-6">
         <Outlet />
       </main>
     </div>

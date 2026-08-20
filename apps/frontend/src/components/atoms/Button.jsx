@@ -21,10 +21,30 @@ export default function Button({
 
   //variants of the button prop
   const variantClasses = {
-    default: "bg-Red text-OffWhite hover:bg-LightRed active:bg-DarkRed",
-    secondary:
-      "bg-DarkGrey text-OffBlack dark:text-OffBlack hover:bg-Grey active:bg-DarkGrey",
-    //can add more if we need them
+    default: `
+      text-white
+      bg-[linear-gradient(145deg,var(--red),var(--red-deep))]
+      hover:brightness-110
+      hover:-translate-y-0.5
+      hover:shadow-glass-hover
+      active:translate-y-0
+      active:scale-95
+      active:bg-[linear-gradient(145deg,var(--red-deep),var(--red-shadow))]
+      `,
+    secondary: `
+      text-ink
+      bg-glass
+      backdrop-blur-sm
+      border
+      border-glassBrd
+      hover:border-red
+      hover:-translate-y-0.5
+      hover:shadow-glass-hover
+      active:translate-y-0
+      active:scale-95
+      active:border-redDeep
+      `,
+    solid: "md-uccard",
   }
 
   const renderIcon = () => {
@@ -53,7 +73,7 @@ export default function Button({
                 flex
                 items-center
                 justify-center
-                gap-5
+                gap-2
             `}
       {...props}
     >

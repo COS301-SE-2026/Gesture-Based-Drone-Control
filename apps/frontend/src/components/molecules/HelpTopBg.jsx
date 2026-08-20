@@ -1,13 +1,13 @@
 import PropTypes from "prop-types"
 import { Radar } from "lucide-react"
 // import SearchBar from "./SearchBar"
-import { Label } from "recharts"
+import { Label } from "../atoms"
 
 //molecule that composes the searchbar molecule with a radar/telem signiture
 
 export default function HelpTopBg() {
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-Grey dark:bg-OffBlack px-6 py-20 md:py-28">
+    <section className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-surface px-6 py-20 md:py-28">
       <div
         aria-hidden="true"
         className="block dark:hidden pointer-events-none absolute inset-0 opacity-[0.35]"
@@ -64,7 +64,7 @@ export default function HelpTopBg() {
       <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center gap-6">
         <span className="inline-flex items-center gap-2 rounded-full border border-OffBlack/15 dark:border-OffWhite/15 bg-OffBlack/5 dark:bg-OffWhite/5 px-3 py-1.5">
           <Radar className="w-5 h-5 text-Red motion-safe:animate-pulse" />
-          <Label size="xs" className="text-DarkGrey">
+          <Label size="xs" className="text-dim">
             Support Center
           </Label>
         </span>
@@ -73,7 +73,7 @@ export default function HelpTopBg() {
           How can we Help?
         </h1>
         <p className="text-OffBlack dark:text-OffWhite text-base md:text-lg max-w-xl">
-          Search articles, browse user manual, or reach the support team for any
+          Search by topic, browse user manual, or reach the support team for any
           questions to get you back in the air.
         </p>
 

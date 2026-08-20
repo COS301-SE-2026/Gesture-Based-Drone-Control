@@ -1,31 +1,51 @@
-import { useEffect, useRef, useContext } from "react"
+import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import { MapContainer, Marker, Polyline, useMap } from "react-leaflet"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { ThemeContext } from "../../context/ThemeContext"
 
 /**
  * maps an altitude val to colour on a dim to birght green scale depending on how high it is,
  * normalized again the min/max altitude seen in the current path
  *
  */
-const PATH_COLOUR = "#A4161A"
-function altitudeToColour(altitude, minAlt, maxAlt) {
+
+function getCssVar(name, fallback) {
+  if (typeof window === "undefined") return fallback
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+    .trim()
+  return value || fallback
+}
+
+function altitudeToColour(altitude, minAlt, maxAlt, pathColour) {
   const range = maxAlt - minAlt
   const t = range > 0.05 ? (altitude - minAlt) / range : 0.5
   const opacity = 0.35 + t * 0.65 //25% is dim/drone is low, 85% is bright/drone is higher
-  return { color: PATH_COLOUR, opacity }
+  return { color: pathColour, opacity }
 }
 
-function createDroneIcon(headingDeg = 0, isDark = false) {
-  const markerColour = isDark ? "#F5F3F4" : "#161A1D"
+function createDroneIcon(headingDeg = 0, markerColour = "#f5f3f4") {
   return L.divIcon({
     className: "drone-marker",
     html: `<div style="transform: rotate(${headingDeg}deg); font-size: 22px; line-height: 1; color: ${markerColour};">▲</div>`,
     iconSize: [24, 24],
     iconAnchor: [12, 12],
   })
+}
+
+//forces leaflet to recompute the maps pixel size after container has settled
+//fitbounds sometimes runs against stale/zero vals on first paint so to fix the "thick line"
+//i hope and pray this works
+function MapReady() {
+  const map = useMap()
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      map.invalidateSize()
+    })
+    return () => cancelAnimationFrame(id)
+  }, [map])
+  return null
 }
 
 /**
@@ -39,14 +59,19 @@ function FitBounds({ points }) {
   const fitted = useRef(false)
 
   useEffect(() => {
-    if (!fitted.current && points.length > 0) {
-      try {
+    if (fitted.current || points.length === 0) return
+
+    try {
+      if (points.length === 1) {
+        //1 point has no bounds to fit
+        map.setView(points[0], 0)
+      } else {
         const bounds = L.latLngBounds(points)
-        map.fitBounds(bounds, { padding: [60, 60] })
-        fitted.current = true
-      } catch {
-        //map not ready/valid yet
+        map.fitBounds(bounds, { padding: [60, 60], animate: false })
       }
+      fitted.current = true
+    } catch {
+      //map not ready/valid yet
     }
     return () => {
       try {
@@ -106,8 +131,12 @@ FollowDrone.defaultProps = {
  */
 
 export default function DroneMap({ pathPoints, headingDeg, height }) {
-  const { isDark } = useContext(ThemeContext)
+  // const { isDark } = useContext(ThemeContext)
   // const mapRef = useRef(null)
+
+  const pathColour = getCssVar("--red", "#e5383b")
+
+  const markerColour = getCssVar("--ink", "#f5f3f4")
 
   const altitudes = pathPoints
     .map((p) => p.altitude_m)
@@ -115,7 +144,7 @@ export default function DroneMap({ pathPoints, headingDeg, height }) {
   if (pathPoints.length === 0) {
     return (
       <div
-        className="flex items-center justify-center bg-OffBlack/20 rounded-lg text-DarkGrey"
+        className="flex items-center justify-center bg-dim/20 rounded-lg text-dim"
         style={{ height }}
       >
         Waiting for telemetry...
@@ -133,7 +162,7 @@ export default function DroneMap({ pathPoints, headingDeg, height }) {
   if (displacementPoints.length === 0) {
     return (
       <div
-        className="flex items-center justify-center bg-OffBlack/20 rounded-lg text-DarkGrey"
+        className="flex items-center justify-center bg-dim/20 rounded-lg text-dim"
         style={{ height }}
       >
         Waiting for telemetry...
@@ -149,25 +178,41 @@ export default function DroneMap({ pathPoints, headingDeg, height }) {
         center={[0, 0]}
         zoom={0}
         minZoom={-5}
-        className="h-full w-full bg-[#F5F3F4] dark:bg-[#161A1D]"
+        // zoomSnap={0.25}
+        // zoomDelta={0.25}
+        scrollWheelZoom={true}
+        className="h-full w-full bg-bg"
       >
         {pathPoints.slice(1).map((point, i) => {
           const { color, opacity } = altitudeToColour(
             point.altitude_m,
             minAltitude,
-            maxAltitude
+            maxAltitude,
+            pathColour
           )
+          const isNewest = i === pathPoints.length - 2
           return (
             <Polyline
               key={`polyline-${i}`}
               positions={[displacementPoints[i], displacementPoints[i + 1]]}
-              pathOptions={{ color, opacity, weight: 6 }}
+              pathOptions={{
+                color,
+                opacity,
+                weight: 6,
+                //only most recent segment plays the draw-in animation,
+                //so rerending older segments doesnt replay every frame
+                className: isNewest ? "md-path-segment" : undefined,
+              }}
             />
           )
         })}
-        <Marker position={currPos} icon={createDroneIcon(headingDeg, isDark)} />
+        <Marker
+          position={currPos}
+          icon={createDroneIcon(headingDeg, markerColour)}
+        />
         <FollowDrone position={currPos} />
         <FitBounds points={displacementPoints} />
+        <MapReady />
       </MapContainer>
     </div>
   )

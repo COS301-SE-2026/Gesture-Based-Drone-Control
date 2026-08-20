@@ -1,5 +1,4 @@
 import { Card } from "../atoms"
-import { UserCircle } from "lucide-react"
 import AccountActions from "./AccountActions"
 export const DashboardSideCard = ({ userName = "User" }) => {
   const currentDate = new Date()
@@ -10,33 +9,20 @@ export const DashboardSideCard = ({ userName = "User" }) => {
   })
 
   return (
-    <>
-      <h2 className="text-lg font-bold text-Red mb-2">Dashboard</h2>
-
-      {/* welcome card */}
-
-      <Card variant="glass">
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-between items-center">
-            <UserCircle size={30} className="text-OffBlack dark:text-Grey" />
-            <span className="text-xs text-OffBlack dark:text-Grey">
-              {formattedDate}
-            </span>
-          </div>
-
-          <div className="mt-2">
-            <p className="text-sm text-OffBlack dark:text-OffWhite">
-              Welcome back,
-            </p>
-            <p className="text-lg text-OffBlack font-bold dark:text-OffWhite">
-              {userName}
-            </p>
-          </div>
-
-          <AccountActions />
+    <Card variant="glass">
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between items-center">
+          <span className="text-xs text-ink">{formattedDate}</span>
         </div>
-      </Card>
-    </>
+
+        <div className="mt-2">
+          <p className="text-sm text-ink">Welcome back,</p>
+          <p className="text-lg text-ink font-bold">{userName}</p>
+        </div>
+
+        <AccountActions />
+      </div>
+    </Card>
   )
 }
 
