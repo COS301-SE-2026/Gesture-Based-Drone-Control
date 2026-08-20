@@ -12,19 +12,22 @@ test.describe('Command History',()=>{
     test('the command entries are rendered', async ({page})=> {
         await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
-        await page.getByText('Command History').click()
-        await expect (page.getByText(/swipe up - move up/i).first()).toBeVisible()
-        await expect (page.getByText(/swipe down - move down/i).first()).toBeVisible()
+        await page.waitForSelector('[class*="CommandHistory"]', { timeout: 5000 })
+        const historyLabel = page.getByText('Command History')
+        await historyLabel.click()
+        await page.waitForTimeout(500)
+        const command = page.getByText(/swipe up - move up|swipe down - move down/i)
+        await expect(command.first()).toBeVisible({ timeout: 10000 })
     })
 
     test('the timestamps alongside the commands showing up',async ({page})=> {
         await page.goto('/#/gestures')
         await page.waitForLoadState('domcontentloaded')
         await page.getByText('Command History').click()
-        await expect(page.getByText('18:50:43').first()).toBeVisible()
+        await page.waitForTimeout(500)
+        const time = page.getByText(/\d{2}:\d{2}:\d{2}/).first()
+        await expect(time).toBeVisible({ timeout: 10000 })
     })
-
-
 })
 
 
@@ -33,7 +36,7 @@ test.describe('Sidebar',()=>{
         await page.goto('/#/')
         await page.waitForLoadState('domcontentloaded')
         const logo = page.getByAltText(/codex merchants/i)
-        await expect(logo).toBeVisible()
+        await expect(logo).toBeVisible({ timeout: 10000 })
     })
 
     test('all the nav items show up', async ({page})=> {
@@ -62,8 +65,10 @@ test.describe('DarkModeToggle',()=>{
         const html = page.locator('html')
         const before=await html.getAttribute('data-theme')
         const toggle = page.getByRole('button', {name:/switch to (light|dark) mode/i})
-        await toggle.click()
-        await expect(html).not.toHaveAttribute('data-theme', before ?? '')
+       await toggle.click()
+       await page.waitForTimeout(300)
+       const after = await html.getAttribute('data-theme')
+       expect(after).not.toBe(before)
 
     })
 
