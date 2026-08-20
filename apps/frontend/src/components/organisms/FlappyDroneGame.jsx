@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react"
 import droneSprite from "@/assets/games/flappy/drone.png"
+import background from "@/assets/games/flappy/background.jpg"
+import pipe from "@/assets/games/flappy/pipe.png"
 
 /**
  * this page houses everything for the kaplay minigame
@@ -37,7 +39,11 @@ export default function FlappyDroneGame() {
         global: false,
       })
 
+      //load assets
       k.loadSprite("drone", droneSprite)
+      k.loadSprite("backSprite", background)
+      k.loadSprite("pipeSprite", pipe)
+
 
       k.setGravity(1)
 
@@ -48,7 +54,7 @@ export default function FlappyDroneGame() {
         const JUMP_FORCE = 250
         const SPEED = 250
         const CEILING = -250
-
+        
         // game object comprising of a bunch of components and tags
         const player = k.add([
           k.sprite("drone", {
@@ -62,6 +68,14 @@ export default function FlappyDroneGame() {
           //it will respond to gravity
           k.body(),
           "player",
+        ])
+
+        // static background image
+        k.add([
+          k.sprite("backSprite"),
+          k.pos(0,0),
+          k.scale(k.width() / 201, k.height() / 251),
+          k.z(-1) //should be behind everything else
         ])
 
         // kill if player goes out of bounds
@@ -90,9 +104,13 @@ export default function FlappyDroneGame() {
 
           // generic object template for pipes to follow
           const makePipe = (posY, h) => [
+            k.sprite("pipeSprite", {
+            width: 64,
+            height: h,
+            }),
             k.pos(k.width(), posY),
-            k.rect(64, h),
-            k.color(10, 0, 33),
+            //k.rect(64, h),
+            //k.color(10, 0, 33),
             k.outline(4), //black outline on pixels
             k.area({ isSensor: true }), //collision
             k.move(k.LEFT, SPEED), //illusion of scrolling level
@@ -134,11 +152,19 @@ export default function FlappyDroneGame() {
       })
       // the scene that shows when one crashes
       k.scene("lose", (score = 0) => {
+
+        k.add([
+          k.sprite("backSprite"),
+          k.pos(0,0),
+          k.scale(k.width() / 201, k.height() / 251),
+          k.z(-1) //should be behind everything else
+        ])
+
         k.add([
           k.text(`Score: ${score}`, { size: 48 }),
           k.anchor("center"),
           k.pos(k.width() / 2, k.height() / 2 - 40),
-          k.color(200, 200, 200),
+          k.color(20, 20, 20),
         ])
         k.add([
           k.text("w to retry", { size: 24 }),
