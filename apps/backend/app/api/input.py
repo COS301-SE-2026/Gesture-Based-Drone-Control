@@ -10,12 +10,16 @@ REST:
 
 WebSockets:
 	input/ws/keyboard - keyboard input listener
+	input/ws/gamepad - gamepad state listener
+	input/ws/gesture/status - adapter status snapshots (debug)
+	input/ws/gesture/events - one message per gesture CHANGE, for command history
 
 """
 
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 from typing import Annotated
 
@@ -24,6 +28,7 @@ from pydantic import BaseModel
 
 from apps.backend.app.dependencies import get_state
 from apps.backend.app.state import AppState
+from services.input.gesture_events import gesture_events
 from services.input.sources.input_adapter import InputAdapter
 
 logger = logging.getLogger(__name__)
@@ -157,6 +162,13 @@ async def input_status(state: Annotated[AppState, Depends(get_state)]):
 
 	return {'connected': True, 'adapter': state.input_name}
 
+@router.get('/gesture/events')
+async def gesture_event_history():
+	""" 
+	REST fallback for the gesutre history, oldest first
+	Same payloads the WebScoket below pushes
+	"""
+	return {'events': gesture_events.history()}
 
 # gonna need more of this in demo 3 I feel. testing it here
 class GestureConfigRequest(BaseModel):
