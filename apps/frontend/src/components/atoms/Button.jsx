@@ -25,6 +25,10 @@ export default function Button({
       text-white
       bg-[linear-gradient(145deg,var(--red),var(--red-deep))]
       hover:brightness-110
+      hover:-translate-y-0.5
+      hover:shadow-glass-hover
+      active:translate-y-0
+      active:scale-95
       active:bg-[linear-gradient(145deg,var(--red-deep),var(--red-shadow))]
       `,
     secondary: `
@@ -34,6 +38,10 @@ export default function Button({
       border
       border-glassBrd
       hover:border-red
+      hover:-translate-y-0.5
+      hover:shadow-glass-hover
+      active:translate-y-0
+      active:scale-95
       active:border-redDeep
       `,
     solid: "md-uccard",

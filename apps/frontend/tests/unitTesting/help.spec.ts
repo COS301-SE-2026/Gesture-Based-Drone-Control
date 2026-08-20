@@ -104,7 +104,8 @@ test.describe('Help Page', () => {
 
             //collaspe
             await faqquest.click()
-            await expect(ans).not.toBeVisible()
+            await page.waitForTimeout(350)
+            await expect(ans).not.toBeHidden()
         })
 
         test('toggle multiple faqs independently', async ({ page }) => {

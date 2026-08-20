@@ -114,7 +114,7 @@ const gestureTutorials = [
   },
 
   {
-    id: "TwO-fingers-one-palm",
+    id: "Two-fingers-one-palm",
     name: "Two Fingers One Palm - Move Right",
     instructions:
       "Raise two fingers up on one hand and open your palm on the other",

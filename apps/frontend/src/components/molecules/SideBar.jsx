@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
-import { NavItem, Card } from "../atoms"
+import { NavItem } from "../atoms"
 import DarkModeToggle from "./DarkModeToggle"
 import Logo from "../../assets/codex_merchants_logo.png"
 import SLogo from "../../assets/codex_merchants_logo_small.png"
@@ -84,7 +84,7 @@ export default function SideBar({
         <DarkModeToggle collapsed={collapsed} />
       </div>
 
-      {!collapsed && topContent && <Card variant="glass">{topContent}</Card>}
+      {!collapsed && <div className="min-h-[220px]">{topContent}</div>}
 
       {/*Nav items*/}
       <nav className="flex-1 space-y-1">
