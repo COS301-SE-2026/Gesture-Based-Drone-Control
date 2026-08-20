@@ -26,7 +26,7 @@ export default function FaqItem({ question, answer, defaultOpen }) {
 
       <div
         className={`grid transition-all duration-300 ease-in-out ${
-          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <div className="overflow-hidden">

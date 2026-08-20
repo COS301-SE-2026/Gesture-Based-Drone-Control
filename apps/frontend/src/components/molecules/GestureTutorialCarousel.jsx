@@ -41,7 +41,10 @@ export default function GestureTutorialCarousel({ gestures }) {
   if (!current || !gestures || gestures.length === 0) return null
 
   return (
-    <Card variant="glass" className="flex flex-col gap-4">
+    <Card
+      variant="glass"
+      className="GestureTutorialCarousel flex flex-col gap-4"
+    >
       <div className="flex items-center justify-between">
         <Label className="text-lg font-semibold">{current.name}</Label>
         <div className="flex items-center gap-3">
@@ -104,10 +107,8 @@ export default function GestureTutorialCarousel({ gestures }) {
           </div>
 
           <div
-            className={`GestureTutorialCarousel grid transition-all duration-300 ease-in-out ${
-              showHint
-                ? "grid-rows-[1fr] opacity-100"
-                : "grid-rows-[0fr] opacity-0"
+            className={`transition-all duration-300 ease-in-out ${
+              showHint ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
             }`}
           >
             <div className="overflow-hidden">
