@@ -44,7 +44,6 @@ export default function FlappyDroneGame() {
       k.loadSprite("backSprite", background)
       k.loadSprite("pipeSprite", pipe)
 
-
       k.setGravity(1)
 
       //main scene for gameplay
@@ -54,7 +53,7 @@ export default function FlappyDroneGame() {
         const JUMP_FORCE = 250
         const SPEED = 250
         const CEILING = -250
-        
+
         // game object comprising of a bunch of components and tags
         const player = k.add([
           k.sprite("drone", {
@@ -73,9 +72,9 @@ export default function FlappyDroneGame() {
         // static background image
         k.add([
           k.sprite("backSprite"),
-          k.pos(0,0),
+          k.pos(0, 0),
           k.scale(k.width() / 201, k.height() / 251),
-          k.z(-1) //should be behind everything else
+          k.z(-1), //should be behind everything else
         ])
 
         // kill if player goes out of bounds
@@ -105,8 +104,8 @@ export default function FlappyDroneGame() {
           // generic object template for pipes to follow
           const makePipe = (posY, h) => [
             k.sprite("pipeSprite", {
-            width: 64,
-            height: h,
+              width: 64,
+              height: h,
             }),
             k.pos(k.width(), posY),
             //k.rect(64, h),
@@ -152,12 +151,11 @@ export default function FlappyDroneGame() {
       })
       // the scene that shows when one crashes
       k.scene("lose", (score = 0) => {
-
         k.add([
           k.sprite("backSprite"),
-          k.pos(0,0),
+          k.pos(0, 0),
           k.scale(k.width() / 201, k.height() / 251),
-          k.z(-1) //should be behind everything else
+          k.z(-1), //should be behind everything else
         ])
 
         k.add([

@@ -123,7 +123,7 @@ class GestureStream:
 			self._linger_task.cancel()
 		self._linger_task = None
 
-	async def _schedule_stop_if_idle(self) -> None: #NOSONAR
+	async def _schedule_stop_if_idle(self) -> None:  # NOSONAR
 		if self._clients or self._pipeline is None:
 			return
 		if self._linger_task is not None and not self._linger_task.done():
@@ -135,8 +135,8 @@ class GestureStream:
 	async def _linger_then_stop(self) -> None:
 		try:
 			await asyncio.sleep(LINGER_SECONDS)
-		except asyncio.CancelledError: #NOSONAR
-			raise					#NOSONAR
+		except asyncio.CancelledError:  # NOSONAR
+			raise  # NOSONAR
 		if self._clients:
 			return
 		await self._stop_pipeline()
