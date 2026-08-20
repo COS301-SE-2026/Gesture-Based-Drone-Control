@@ -13,14 +13,14 @@ const SignupForm = ({
   return (
     <div className="w-full max-w-md max-h-screen overflow-y-auto">
       <div className="mb-8 text-center">
-        <h2 className=" text-3xl font-bold text-OffBlack dark:text-OffWhite mb-2">
+        <h2 className=" text-3xl font-bold text-ink mb-2">
           Codex Merchants
         </h2>
-        <p className="text-Grey dark:text-DarkGrey">create your account</p>
+        <p className="text-dim">create your account</p>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         {errors.general && (
-          <div className="text-sm text-Red bg-Red/10 border border-Red/30 rounded-lg px-3 py-2">
+          <div className="text-sm text-red bg-red/10 border border-red/30 rounded-lg px-3 py-2">
             {errors.general}
           </div>
         )}
@@ -101,33 +101,33 @@ const SignupForm = ({
               name="agreeToTerms"
               checked={formData.agreeToTerms}
               onChange={handleChange}
-              className="w-4 h-4 rounded border-Grey dark:border-DarkGrey accent-Red mt-0.5 flex-shrink-0"
+              className="w-4 h-4 rounded border-dim accent-red mt-0.5 flex-shrink-0"
             />
-            <span className="text-sm text-Grey dark:text-DarkGrey">
+            <span className="text-sm text-dim">
               I agree to the{" "}
-              <Link to="/terms" className="text-Red hover:text-DarkRed">
+              <Link to="/terms" className="text-red hover:text-redDeep">
                 Terms & Conditions
               </Link>
             </span>
           </label>
           {errors.agreeToTerms && (
-            <p className="text-sm text-Red mt-1">{errors.agreeToTerms}</p>
+            <p className="text-sm text-red mt-1">{errors.agreeToTerms}</p>
           )}
         </div>
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-Red hover:bg-DarkRed disabled:bg-Grey text-OffWhite font-semibold py-2.5 rounded-lg transition-colors duration-200"
+          className="w-full bg-red hover:bg-redDeep disabled:bg-dim text-OffWhite font-semibold py-2.5 rounded-lg transition-colors duration-200"
         >
           {isLoading ? "Creating account..." : "Sign Up"}
         </button>
       </form>
       <div className="mt-6 text-center">
-        <p className="text-sm text-Grey dark:text-DarkGrey">
+        <p className="text-sm text-dim">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-Red hover:text-DarkRed font-semibold transition-colors"
+            className="text-red hover:text-redDeep font-semibold transition-colors"
           >
             Sign in
           </Link>

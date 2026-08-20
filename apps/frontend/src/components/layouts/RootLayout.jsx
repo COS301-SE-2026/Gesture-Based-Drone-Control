@@ -4,6 +4,7 @@ import {
   AnalyticsSideContent,
   DashboardSideCard,
   GpsSideContent,
+  HelpSideContent,
 } from "../molecules"
 import { Home, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
 // import bgLight from "../../assets/Lightbackground.png"
@@ -33,6 +34,8 @@ const RootLayout = () => {
       return <AnalyticsSideContent />
     } else if (location.pathname.includes("/gps")) {
       return <GpsSideContent />
+    } else if (location.pathname.includes("/help")) {
+      return <HelpSideContent />
     }
   }
 
