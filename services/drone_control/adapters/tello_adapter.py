@@ -33,11 +33,20 @@ class TelloAdapter(DroneAdapter):
 
 	async def disconnect(self) -> None:
 		self._assert_connected()
-
-		self._tello.land()
-		#self._tello.streamoff()
-		self._tello.end()
 		self._connected = False
+
+		try:
+			if self._assert_flying():
+				self.land()
+			#self._tello.streamoff()
+		except Exception as ex:
+			logger.warning("Tello land failed with %s", ex , exc_info=True) 
+		finally:
+			try:
+				self._tello.end()
+			except Exception as ex:
+				logger.warning("Tello.end failed with %s", ex, exc_info=True) 
+
 
 	async def takeoff(self) -> None:
 		self._assert_connected()
@@ -89,7 +98,7 @@ class TelloAdapter(DroneAdapter):
 			ud,
 			yaw,
 		)
-		self._tello.send_rc_control(lr, fb, ud, yaw)
+		self._tello.send_rc_control(lr, fb, ud, yaw)		
 
 	async def analog(self, input: AnalogInput) -> None:
 		self._assert_connected()
