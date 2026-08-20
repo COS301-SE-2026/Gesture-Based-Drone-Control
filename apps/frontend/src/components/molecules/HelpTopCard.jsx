@@ -21,12 +21,8 @@ export default function HelpTopCard({
       </div>
 
       <div className="flex-1">
-        <h3 className="text-ink font-semibold text-base mb-1">
-          {title}
-        </h3>
-        <p className="text-sm text-dim leading-relaxed">
-          {description}
-        </p>
+        <h3 className="text-ink font-semibold text-base mb-1">{title}</h3>
+        <p className="text-sm text-dim leading-relaxed">{description}</p>
       </div>
 
       <div className="flex items-center justify-between pt-2">

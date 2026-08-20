@@ -13,9 +13,7 @@ const SignupForm = ({
   return (
     <div className="w-full max-w-md max-h-screen overflow-y-auto">
       <div className="mb-8 text-center">
-        <h2 className=" text-3xl font-bold text-ink mb-2">
-          Codex Merchants
-        </h2>
+        <h2 className=" text-3xl font-bold text-ink mb-2">Codex Merchants</h2>
         <p className="text-dim">create your account</p>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">

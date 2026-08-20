@@ -24,9 +24,7 @@ export default function StatCard({
         )}
 
         {/*label*/}
-        <p className="text-xs text-ink uppercase tracking-wider">
-          {label}
-        </p>
+        <p className="text-xs text-ink uppercase tracking-wider">{label}</p>
 
         {/* value and unit*/}
         <MetricValue value={value} unit={unit} size="md" />

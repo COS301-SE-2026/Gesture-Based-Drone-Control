@@ -130,7 +130,7 @@ export default function Help() {
         />
 
         <section>
-          <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-6">
+          <h2 className="text-xl font-semibold text-ink mb-6">
             Browse by topic
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -147,7 +147,7 @@ export default function Help() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-6">
+          <h2 className="text-xl font-semibold text-ink mb-6">
             Frequently asked questions
           </h2>
           <div className="flex flex-col gap-3">
@@ -163,7 +163,7 @@ export default function Help() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-6">
+          <h2 className="text-xl font-semibold text-ink mb-6">
             Still stuck? Talk to the team
           </h2>
           <Contactcard

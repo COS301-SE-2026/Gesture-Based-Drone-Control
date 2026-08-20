@@ -39,9 +39,7 @@ const LoginForm = ({
   return (
     <div className="w-full max-w-sm">
       <div className=" mb-8 text-center">
-        <h2 className="text-3xl font-bold text-ink mb-2">
-          Codex Merchants
-        </h2>
+        <h2 className="text-3xl font-bold text-ink mb-2">Codex Merchants</h2>
         <p className=" text-dim">Sign in to your account</p>
       </div>
       <form
@@ -88,9 +86,7 @@ const LoginForm = ({
               onChange={handleChange}
               className="w-4 h-4 rounded border-dim accent-red"
             />
-            <span className="text-sm text-dim">
-              Remember Me
-            </span>
+            <span className="text-sm text-dim">Remember Me</span>
           </label>
           <Link
             to="/forgot-password"
