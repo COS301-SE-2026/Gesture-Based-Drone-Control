@@ -2,22 +2,22 @@ import PropTypes from "prop-types"
 
 const StatusDot = ({ variant = "connected", size = "sm", className = "" }) => {
   const dotColor = {
-    connected: "bg-green-400",
-    disconnected: "bg-Red",
-    warning: "bg-yellow-400",
-    idle: "bg-DarkGrey opacity-30",
+    connected: "bg-success",
+    disconnected: "bg-red",
+    warning: "bg-warning",
+    idle: "bg-dim opacity-30",
   }[variant]
 
   const pingColour = {
-    connected: "bg-green-400",
-    disconnected: "bg-Red",
-    warning: "bg-yellow-400",
+    connected: "bg-success",
+    disconnected: "bg-red",
+    warning: "bg-warning",
     idle: "",
   }[variant]
 
   const sizeClass = {
-    sm: "h-1 w-1",
-    md: "h-2.5 w-2.5",
+    sm: "h-2.5 w-2.5",
+    md: "h-4 w-4",
   }[size]
 
   return (

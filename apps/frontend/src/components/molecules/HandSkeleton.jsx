@@ -1,9 +1,9 @@
 import PropTypes from "prop-types"
 import { FINGERS, WRIST, digitJoints } from "../../lib/hand"
 
-const RED = "#A4161A"
-const DIM = "#B1A7A6"
-const INK = "#161A1D"
+const RED = "var(--red)"
+const DIM = "var(--dim)"
+const INK = "var(--ink)"
 
 export default function HandSkeleton({ pose, sway = 0, bob = 0 }) {
   const fingers = FINGERS.map((f, i) => digitJoints(f, pose[i]))
@@ -87,7 +87,7 @@ export default function HandSkeleton({ pose, sway = 0, bob = 0 }) {
                   opacity={hot[fi] ? 1 : 0.35}
                   style={
                     hot[fi]
-                      ? { filter: "drop-shadow(0 0 6px #ef4444aa)" }
+                      ? { filter: "drop-shadow(0 0 6px var(--glow))" }
                       : undefined
                   }
                 />

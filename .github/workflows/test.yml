@@ -1,9 +1,8 @@
 name: Test
 
-on:  
+on:
   pull_request:
-    branches: [dev,main,'Use-Case**']
-
+    branches: [dev, main, "Use-Case**", "Base-Case**"]
 
 jobs:
   Backend-Unit-Tests:
@@ -14,23 +13,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with: 
+        with:
           submodules: true
 
-      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b        
-        with: 
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
           version: "0.11.13"
           enable-cache: true
 
       - uses: actions/setup-python@v5
-        with: 
+        with:
           python-version: 3.11
 
-      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 
+      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
         with:
           repo-token: ${{secrets.GITHUB_TOKEN}}
-
-
 
       - name: Install Dependencies
         run: task install
@@ -57,21 +54,21 @@ jobs:
   Frontend-Unit-Tests:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    defaults: 
-      run: 
+    defaults:
+      run:
         working-directory: apps/frontend
 
     env:
       BACKENDPORT: 3001
       YARN_ENABLE_SCRIPTS: false
 
-    steps: 
+    steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.22.0'
-          cache: 'yarn'
-          cache-dependency-path: 'apps/frontend/yarn.lock'
+          node-version: "22.22.0"
+          cache: "yarn"
+          cache-dependency-path: "apps/frontend/yarn.lock"
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -111,21 +108,20 @@ jobs:
       JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
 
     steps:
-
       - uses: actions/checkout@v4
         with:
           submodules: true
 
-      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b        
-        with: 
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
           version: "0.11.13"
           enable-cache: true
 
       - uses: actions/setup-python@v5
-        with: 
+        with:
           python-version: 3.11
 
-      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 
+      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
         with:
           repo-token: ${{secrets.GITHUB_TOKEN}}
 
@@ -148,33 +144,32 @@ jobs:
       GBDC_E2E_NO_CAMERA: "1"
 
     steps:
-
       - uses: actions/checkout@v4
         with:
           submodules: true
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.22.0'
-          cache: 'yarn'
-          cache-dependency-path: 'apps/frontend/yarn.lock'
+          node-version: "22.22.0"
+          cache: "yarn"
+          cache-dependency-path: "apps/frontend/yarn.lock"
 
-      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b        
-        with: 
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
           version: "0.11.13"
           enable-cache: true
 
       - uses: actions/setup-python@v5
-        with: 
+        with:
           python-version: 3.11
 
-      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 
+      - uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611
         with:
           repo-token: ${{secrets.GITHUB_TOKEN}}
-      
+
       - name: Install Dependencies
         run: task install
-      
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache

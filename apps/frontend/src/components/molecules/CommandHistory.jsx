@@ -2,24 +2,14 @@ import Card from "../atoms/Card"
 import Label from "../atoms/Label"
 import PropTypes from "prop-types"
 import { useState, useRef } from "react"
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronDown } from "lucide-react"
+
+const MAX_VISIBLE_COMMANDS = 8
 
 const CommandHistory = ({ commands = [], className = "" }) => {
   const [isOpen, setIsOpen] = useState(false)
   const listRef = useRef(null)
-  //made mock data here
-  const defaultCommands = [
-    { action: "swipe up - move up", timestamp: "18:50:43" },
-    { action: "swipe up - move up", timestamp: "18:50:43" },
-    { action: "swipe down - move down", timestamp: "18:50:43" },
-    { action: "swipe up - move up", timestamp: "18:50:42" },
-    { action: "swipe up - move up", timestamp: "18:50:43" },
-    { action: "swipe up - move up", timestamp: "18:50:43" },
-    { action: "swipe down - move down", timestamp: "18:50:43" },
-    { action: "swipe up - move up", timestamp: "18:50:42" },
-  ]
 
-  const displayCommands = commands.length > 0 ? commands : defaultCommands
   const handleCardClick = (e) => {
     if (listRef.current?.contains(e.target)) {
       return
@@ -27,10 +17,18 @@ const CommandHistory = ({ commands = [], className = "" }) => {
     setIsOpen(!isOpen)
   }
 
+  const mockCommands = [
+    { id: 1, action: "swipe up - move up", timestamp: "12:34:56" },
+    { id: 2, action: "swipe down - move down", timestamp: "12:35:20" },
+  ]
+
+  const displayCommands = commands.length > 0 ? commands : mockCommands
+  const visibleCommands = displayCommands.slice(0, MAX_VISIBLE_COMMANDS)
+
   return (
     <Card
       variant="glass"
-      className={`hover:!scale-100 dark:hover:!scale-100 hover:!bg-transperant dark:hover:!bg-transperant hover:!shadow-xl dark:!hover:!shadow-2xl ${className}`}
+      className={`CommandHistory hover:!scale-100 hover:!bg-transparant hover:!shadow-xl ${className}`}
       clickable={true}
       onClick={handleCardClick}
     >
@@ -38,27 +36,38 @@ const CommandHistory = ({ commands = [], className = "" }) => {
         <div className="flex items-center justify-between w-full">
           <Label size="md">Command History</Label>
 
-          {isOpen ? (
-            <ChevronUp className="w-5 h-5 text-OffBlack dark:text-OffWhite" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-OffBlack dark:text-OffWhite" />
-          )}
+          <ChevronDown
+            className={`w-5 h-5 text-ink transition-transform duration-300 ease-in-out ${
+              isOpen ? "rotate-180" : "rotate-0"
+            }`}
+          />
         </div>
-        {isOpen && (
+
+        <div
+          className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            isOpen ? "max-h-[28rem] opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
           <div ref={listRef} className="space-y-3 max-h-112 overflow-y-auto">
-            {displayCommands.map((cmd, index) => (
-              <Card
-                key={cmd.id || index}
-                className="flex justify-between items-center text-sm border rounded border-Grey/20 pb-12"
-              >
-                <span className="text-OffBlack/80 dark:text-OffWhite">
-                  {cmd.action}
-                </span>
-                <span className="text-xs text-DarkGrey">{cmd.timestamp}</span>
-              </Card>
-            ))}
+            {visibleCommands.length > 0 ? (
+              visibleCommands.map((cmd, index) => (
+                <Card
+                  key={cmd.id || index}
+                  variant="glass"
+                  className="flex justify-between items-center text-sm border border-line px-3 py-2 animate-rise transition-all duration-200 hover:border-red hover:shadow-glass-hover hover:-translate-y-0.5"
+                  style={{ animationDelay: `${index * 40}ms` }}
+                >
+                  <span className="text-ink/80">{cmd.action}</span>
+                  <span className="text-xs text-dim">{cmd.timestamp}</span>
+                </Card>
+              ))
+            ) : (
+              <p className="text-sm text-dim text-center py-4">
+                No commands given yet
+              </p>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </Card>
   )

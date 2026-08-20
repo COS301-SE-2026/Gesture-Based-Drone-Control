@@ -17,7 +17,7 @@ const FormSection = ({
     <div>
       <label
         htmlFor={htmlFor || name}
-        className="block text-sm font-medium text-OffBlack dark:text-OffWhite mb-2"
+        className="block text-sm font-medium text-ink mb-2"
       >
         {label}
       </label>

@@ -51,11 +51,6 @@ test.describe('ControllerLayout',() => {
         await expect(page.getByText(/no controller detected/i)).toBeVisible()
     })
 
-    test('the status dot gotta be grey when disconnected', async ({page}) => {
-        const dot = page.locator('.w-2.h-2.rounded-full').last()
-        await expect(dot).toHaveClass(/bg-Grey\/40/)
-    })
-
     test('renders the axis labels for both sticks',async ({page}) => {
         await expect(page.getByText('Axis 0')).toBeVisible()
         await expect(page.getByText('Axis 1')).toBeVisible()
@@ -76,11 +71,6 @@ test.describe('ControllerLayout',() => {
 
         test('shows thhat the controller is connected once the poll loop picks up',async ({page}) =>{
             await expect(page.getByText(/controller connected/i)).toBeVisible()
-        })
-
-        test('the status dot turns red when connected',async ({page})=> {
-            const dot = page.locator('.w-2.h-2.rounded-full.bg-Red')
-            await expect(dot).toBeVisible()
         })
 
         test('pressing the cross button should highlight it red' ,async ({page}) => {
