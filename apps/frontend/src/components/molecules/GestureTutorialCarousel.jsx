@@ -107,8 +107,8 @@ export default function GestureTutorialCarousel({ gestures }) {
           </div>
 
           <div
-            className={`transition-all duration-300 ease-in-out ${
-              showHint ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+            className={`transition-all duration-300 ease-in-out overflow-hidden ${
+              showHint ? "max-h-40 opacity-100 visible" : "max-h-0 opacity-0 invisible"
             }`}
           >
             <p className="text-sm text-dim">{current.instructions}</p>

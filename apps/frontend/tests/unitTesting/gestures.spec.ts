@@ -74,7 +74,7 @@ test.describe('command history card', () => {
     test('is collapsed by default', async ({ page }) => {
         await expect(page.getByText('Command History')).toBeVisible()
         
-        const cont = page.locator('.transition-al.duration-300.ease-in-out.overflow-hidden')
+        const cont = page.locator('.transition-all.duration-300.ease-in-out.overflow-hidden')
         await expect(cont).toHaveClass(/max-h-0 opacity-0/)
     })
 
