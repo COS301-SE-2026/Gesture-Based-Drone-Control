@@ -111,6 +111,7 @@ test.describe('GestureTutorialCarousel' , () =>{
     test('the hint button toggles the instructions text', async ({page})=>{
         await page.goto('/#/tutorial')
         await page.waitForLoadState('domcontentloaded')
+        await page.waitForSelector('[class*="GestureTutorialCarousel"]', { timeout: 1000 })
         const hintButton = page.getByRole('button',{name:'Hint'})
         await expect(page.getByText(/show an open palm to hold the drone's current position/i)).not.toBeVisible()
         await hintButton.click()

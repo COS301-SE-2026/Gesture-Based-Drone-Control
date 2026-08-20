@@ -17,12 +17,19 @@ const CommandHistory = ({ commands = [], className = "" }) => {
     setIsOpen(!isOpen)
   }
 
-  const visibleCommands = commands.slice(0, MAX_VISIBLE_COMMANDS)
+  const mockCommands = [
+    { id: 1, action: "swipe up - move up", timestamp: "12:34:56" },
+    { id: 2, action: "swipe down - move down", timestamp: "12:35:20" },
+    { id: 3, action: "swipe left - rotate left", timestamp: "12:36:10" },
+  ]
+
+  const displayCommands = commands.length > 0 ? commands : mockCommands
+  const visibleCommands = displayCommands.slice(0, MAX_VISIBLE_COMMANDS)
 
   return (
     <Card
       variant="glass"
-      className={`hover:!scale-100 hover:!bg-transparant hover:!shadow-xl ${className}`}
+      className={`CommandHistory hover:!scale-100 hover:!bg-transparant hover:!shadow-xl ${className}`}
       clickable={true}
       onClick={handleCardClick}
     >
@@ -49,7 +56,7 @@ const CommandHistory = ({ commands = [], className = "" }) => {
                   key={cmd.id || index}
                   variant="glass"
                   className="flex justify-between items-center text-sm border border-line px-3 py-2 animate-rise transition-all duration-200 hover:border-red hover:shadow-glass-hover hover:-translate-y-0.5"
-                  style={{ animation: `${index * 40}ms` }}
+                  style={{ animationDelay: `${index * 40}ms` }}
                 >
                   <span className="text-ink/80">{cmd.action}</span>
                   <span className="text-xs text-dim">{cmd.timestamp}</span>

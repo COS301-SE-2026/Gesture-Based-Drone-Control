@@ -38,7 +38,7 @@ export default function GestureTutorialCarousel({ gestures }) {
     setIndex((i) => Math.min(i + 1, gestures.length - 1))
   }
 
-  if (!current) return null
+  if (!current || !gestures || gestures.length === 0) return null
 
   return (
     <Card variant="glass" className="flex flex-col gap-4">
@@ -104,7 +104,7 @@ export default function GestureTutorialCarousel({ gestures }) {
           </div>
 
           <div
-            className={`grid transition-all duration-300 ease-in-out ${
+            className={`GestureTutorialCarousel grid transition-all duration-300 ease-in-out ${
               showHint
                 ? "grid-rows-[1fr] opacity-100"
                 : "grid-rows-[0fr] opacity-0"
