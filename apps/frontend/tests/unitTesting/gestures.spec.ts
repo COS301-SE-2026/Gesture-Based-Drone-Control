@@ -73,8 +73,9 @@ test.describe('command history card', () => {
 
     test('is collapsed by default', async ({ page }) => {
         await expect(page.getByText('Command History')).toBeVisible()
-        await page.waitForTimeout(200)
-        await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).not.toBeVisible()
+        
+        const cont = page.locator('.transition-al.duration-300.ease-in-out.overflow-hidden')
+        await expect(cont).toHaveClass(/max-h-0 opacity-0/)
     })
 
     test ('expands on clcik', async ({ page }) => {
