@@ -53,7 +53,7 @@ export default function GestureTutorialCarousel({ gestures }) {
           >
             {passed ? "Matched!" : "Try the gesture..."}
           </span>
-          <span className="text-xs text-ink/60 font mono tabular-nums">
+          <span className="text-xs text-ink/60 font-mono tabular-nums">
             {index + 1}/{gestures.length}
           </span>
         </div>
@@ -111,9 +111,7 @@ export default function GestureTutorialCarousel({ gestures }) {
               showHint ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
             }`}
           >
-            <div className="overflow-hidden">
-              <p className="text-sm text-dim">{current.instructions}</p>
-            </div>
+            <p className="text-sm text-dim">{current.instructions}</p>
           </div>
 
           <div className="flex items-center justify-between mt-auto">

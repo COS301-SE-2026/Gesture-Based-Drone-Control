@@ -25,13 +25,11 @@ export default function FaqItem({ question, answer, defaultOpen }) {
       </button>
 
       <div
-        className={`grid transition-all duration-300 ease-in-out ${
+        className={`grid transition-all duration-300 ease-in-out overflow-hidden ${
           open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="overflow-hidden">
-          <p className="px-6 pb-5 text-sm text-dim leading-relaxed">{answer}</p>
-        </div>
+        <p className="px-6 pb-5 text-sm text-dim leading-relaxed">{answer}</p>
       </div>
     </Card>
   )

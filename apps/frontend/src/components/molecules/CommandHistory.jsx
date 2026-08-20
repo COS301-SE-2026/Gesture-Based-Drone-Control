@@ -44,8 +44,8 @@ const CommandHistory = ({ commands = [], className = "" }) => {
         </div>
 
         <div
-          className={`transition-all duration-300 ease-in-out ${
-            isOpen ? "max-h[28rem] opacity-100" : "max-h-0 opacity-0"
+          className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            isOpen ? "max-h-[28rem] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
           <div ref={listRef} className="space-y-3 max-h-112 overflow-y-auto">
