@@ -2,6 +2,7 @@
 
 import logging
 import math
+import asyncio
 
 from djitellopy import BackgroundFrameRead, Tello
 
@@ -20,6 +21,8 @@ class TelloAdapter(DroneAdapter):
 		self._tello = Tello()
 		self._connected = False
 		self._is_flying = False
+		self._hover_task : asyncio.Task | None = None
+		self._hover_delay: float = 0.5
 
 	async def connect(self) -> bool:
 		try:
@@ -57,6 +60,9 @@ class TelloAdapter(DroneAdapter):
 	async def land(self) -> None:
 		self._assert_connected()
 		self._assert_flying()
+
+		if self._hover_task is not None and not self._hover_task.done():
+			self._hover_task.cancel()
 
 		self._tello.land()
 		self._is_flying = False
@@ -98,7 +104,8 @@ class TelloAdapter(DroneAdapter):
 			ud,
 			yaw,
 		)
-		self._tello.send_rc_control(lr, fb, ud, yaw)		
+		self._tello.send_rc_control(lr, fb, ud, yaw)	
+		self._reset_hover_watchdog(self._hover_delay)	
 
 	async def analog(self, input: AnalogInput) -> None:
 		self._assert_connected()
@@ -179,3 +186,29 @@ class TelloAdapter(DroneAdapter):
 			raise RuntimeError(
 				'Tello Drone is not flying. Await takeoff() before issuing flight commands'
 			)
+
+	def _reset_hover_watchdog(self, delay: float) -> None:
+		"""
+		Cancel any pending auto hovers and schedule a new one 
+		allows for continuous motion while still hovering after a period of time
+		"""
+		if self._hover_task is not None and not self._hover_task.done():
+			self._hover_task.cancel()
+
+		self._hover_task = asyncio.create_task(self._hover_after(delay))
+
+	async def _hover_after(self, delay:float) -> None:
+		try: 
+			await asyncio.sleep(delay)
+			await self.hover()
+		except asyncio.CancelledError:
+			pass
+			# this happens when a new command comes in
+
+	async def stop(self):
+		"""
+		explicit immediate hover
+		"""
+		if self._hover_task is not None and not self._hover_task.done():
+			self.hover_task.cancel()
+		await self.hover()
