@@ -40,6 +40,7 @@ class FakeCvPipeline:
 		self.stopped = False
 		self._running = False
 		self._frame_index = 0
+		self._recognizer_mode = 'ml' if (config is not None and config.use_ml) else 'rule'
 		FakeCvPipeline.instances.append(self)
 
 	async def start(self) -> None:
@@ -57,7 +58,11 @@ class FakeCvPipeline:
 			self._frame_index += 1
 			yield FakeEvent(frame_index=self._frame_index)
 			await asyncio.sleep(0.005)
-   
+
+	def set_recognizer_mode(self, mode: str) -> str:
+		self.recognizer_mode = mode
+		return mode
+
 	def simulate_camera_death(self) -> None:
 		self._running = False
 
@@ -209,7 +214,7 @@ class TestUnsubscribeIsIdempotentAndSafe:
 		await stream.unsubscribe(q)  # second call should be a no-op, not an error
 		await asyncio.sleep(0.05)
 		assert stream.is_running is False
-  
+
 
 class FailingCvPipeline(FakeCvPipeline):
 	"""Camera is busy: start() raises the way CameraFeed does when the device is held."""
@@ -220,9 +225,7 @@ class FailingCvPipeline(FakeCvPipeline):
 
 
 class TestStartFailure:
-	async def test_failed_start_does_not_latch_a_dead_pipeline(
-		self, monkeypatch, patch_serialize
-	):
+	async def test_failed_start_does_not_latch_a_dead_pipeline(self, monkeypatch, patch_serialize):
 		"""
 		Regression: _pipeline used to be assigned before start() succeeded, so a
 		busy camera left a dead object in place and every later subscribe()
@@ -239,9 +242,7 @@ class TestStartFailure:
 		assert stream.client_count == 0
 		assert 'camera' in stream.last_error
 
-	async def test_next_subscribe_retries_after_a_failed_start(
-		self, monkeypatch, patch_serialize
-	):
+	async def test_next_subscribe_retries_after_a_failed_start(self, monkeypatch, patch_serialize):
 		monkeypatch.setattr('app.cv.stream.CvPipeline', FailingCvPipeline)
 		stream = GestureStream()
 		with pytest.raises(RuntimeError):
@@ -256,9 +257,7 @@ class TestStartFailure:
 
 
 class TestBroadcastFailure:
-	async def test_clients_are_told_when_the_broadcast_dies(
-		self, monkeypatch, patch_pipeline
-	):
+	async def test_clients_are_told_when_the_broadcast_dies(self, monkeypatch, patch_pipeline):
 		def boom(event, include_frame=False):
 			raise ValueError('jpeg encode failed')
 

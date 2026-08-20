@@ -5,6 +5,7 @@ import {
   DroneModeCard,
   GestureCameraFeed,
   GestureCalibration,
+  RecognizerToggle,
 } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
@@ -222,7 +223,7 @@ const GestureControl = () => {
             calibrated ? "text-green-500" : "text-yellow-500"
           }`}
         >
-          {calibrationLabel}
+          {calibrationLabel(calibrated)}
         </span>
       </div>
       <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">
@@ -313,15 +314,18 @@ const GestureControl = () => {
                 <Label className="text-lg font-semibold">
                   Gesture Detection
                 </Label>
-                {calibrated && (
-                  <button
-                    type="button"
-                    onClick={handleRecalibrate}
-                    className="text-xs text-DarkGrey hover:text-OffBlack dark:hover:text-OffWhite underline underline-offset-2 transition-colors"
-                  >
-                    Recalibrate
-                  </button>
-                )}
+                <div className="flex items-center gap-4">
+                  <RecognizerToggle />
+                  {calibrated && (
+                    <button
+                      type="button"
+                      onClick={handleRecalibrate}
+                      className="text-xs text-DarkGrey hover:text-OffBlack dark:hover:text-OffWhite underline underline-offset-2 transition-colors"
+                    >
+                      Recalibrate
+                    </button>
+                  )}
+                </div>
               </div>
 
               <GestureCameraFeed className="flex-1" />

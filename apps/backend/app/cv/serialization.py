@@ -49,6 +49,16 @@ class HandOut(BaseModel):
 	confidence: float = Field(
 		..., ge=0.0, le=1.0, description='MediaPipe handedness confidence, 0.0-1.0'
 	)
+	gesture_confidence: float = Field(
+		default=0.0,
+		ge=0.0,
+		le=1.0,
+		description=(
+			'Recognizer confidence in the gesture label, Model class probability '
+			'under ml, mediapipe score under rule. Distinct from `confidence`, '
+			'which is always mediapipe handedness'
+		),
+	)
 	speed: float = Field(
 		..., ge=0.0, description='Wrist speed in normalised units/sec (resolution-independent)'
 	)
@@ -123,6 +133,7 @@ def _build_hand_out(detected_hand, gesture_result, hand_metric) -> HandOut:
 		fingers=gesture_result.finger_state.count if gesture_result else 0,
 		confidence=round(detected_hand.confidence, 3),
 		speed=round(hand_metric.speed, 4) if hand_metric else 0.0,
+		gesture_confidence=round(gesture_result.confidence, 3) if gesture_result else 0.0,
 		landmarks=[
 			LandmarkOut(x=round(lm.x, 4), y=round(lm.y, 4), z=round(lm.z, 4))
 			for lm in detected_hand.landmarks
