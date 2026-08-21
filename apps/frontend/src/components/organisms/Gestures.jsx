@@ -13,7 +13,7 @@ import { useTelemetry } from "@/context/TelemetryContext"
 import { useCommands } from "@/context/CommandsContext"
 import { useDebug } from "@/context/DebugContext"
 import { fetchCalibrationStatus } from "@/hooks/useCalibrationStream"
-import { useGestureCommandLog } from "@/hooks/useGestureCommandlog"
+import { useGestureCommandLog } from "@/hooks/useGestureCommandLog"
 
 const MS_TO_KMH = 3.6
 const MAX_HISTORY = 50
