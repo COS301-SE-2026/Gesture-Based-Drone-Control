@@ -22,7 +22,7 @@ const MetricValue = ({ value, unit, size = "md", className = "" }) => {
     >
       <span
         className={[
-          "font-display font-bold text-OffBlack dark:text-OffWhite tracking-tight",
+          "font-display font-bold text-ink tracking-tight",
           valueSizes[size],
         ].join(" ")}
       >
@@ -30,10 +30,9 @@ const MetricValue = ({ value, unit, size = "md", className = "" }) => {
       </span>
       {unit && (
         <span
-          className={[
-            "font-Inter font-medium dark:text-OffWhite text-OffBlack",
-            unitSizes[size],
-          ].join(" ")}
+          className={["font-sans font-medium text-ink", unitSizes[size]].join(
+            " "
+          )}
         >
           {unit}
         </span>

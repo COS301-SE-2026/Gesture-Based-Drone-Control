@@ -14,8 +14,8 @@ export default function RecognizerToggle({ className = "" }) {
     <div className={`flex flex-col gap-1 ${className}`}>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm text-OffBlack dark:text-OffWhite">Recognizer</p>
-          <p className="text-xs text-DarkGrey">
+          <p className="text-sm text-ink">Recognizer</p>
+          <p className="text-xs text-dim">
             {loading ? "checking..." : isMl ? "Machine learning" : "Rule-based"}
           </p>
         </div>
@@ -28,7 +28,7 @@ export default function RecognizerToggle({ className = "" }) {
           aria-label="Use machine learning gesture recognizer"
         />
       </div>
-      {notice && <p className="text-xs text-Red">{notice}</p>}
+      {notice && <p className="text-xs text-error">{notice}</p>}
     </div>
   )
 }

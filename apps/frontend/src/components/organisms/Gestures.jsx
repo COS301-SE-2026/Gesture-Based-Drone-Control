@@ -6,11 +6,13 @@ import {
   GestureCameraFeed,
   GestureCalibration,
   RecognizerToggle,
+  DroneFeedPanel,
 } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
 import { useTelemetry } from "@/context/TelemetryContext"
 import { useCommands } from "@/context/CommandsContext"
+import { useDebug } from "@/context/DebugContext"
 import { fetchCalibrationStatus } from "@/hooks/useCalibrationStream"
 
 const MS_TO_KMH = 3.6
@@ -178,54 +180,58 @@ const GestureControl = () => {
     }
   }, [lastResp])
 
+  const { debugMode } = useDebug()
+
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center gap-4 text-sm">
-        <span className="text-DarkGrey">Drone status:</span>
-        <span
-          className={`font-semibold ${
-            connectionStatus === "connected"
-              ? "text-green-500"
-              : connectionStatus === "failed"
-                ? "text-red-500"
-                : "text-yellow-500"
-          }`}
-        >
-          {isConnecting ? "connecting..." : connectionStatus}
-        </span>
-        {connectionError && (
-          <span className="text-red-500 text-xs">{connectionError}</span>
-        )}
-        <span className="text-DarkGrey">Telemetry:</span>
-        <span
-          className={`font-semibold ${
-            status === "open" ? "text-green-500" : "text-yellow-500"
-          }`}
-        >
-          {status}
-        </span>
-        <span className="text-DarkGrey">Commands:</span>
-        <span
-          className={`font-semibold ${
-            commandStatus === "open" ? "text-green-500" : "text-yellow-500"
-          }`}
-        >
-          {commandStatus}
-        </span>
-        <span className="text-DarkGrey">Mode:</span>
-        <span className="font-semibold text-blue-500">{droneMode}</span>
-        {lastResp?.error && (
-          <span className="text-semibold text-blue-500">{lastResp.error}</span>
-        )}
-        <span className="text-DarkGrey">Calibration:</span>
-        <span
-          className={`font-semibold ${
-            calibrated ? "text-green-500" : "text-yellow-500"
-          }`}
-        >
-          {calibrationLabel(calibrated)}
-        </span>
-      </div>
+      {debugMode && (
+        <div className="flex items-center gap-4 text-sm">
+          <span className="text-dim">Drone status:</span>
+          <span
+            className={`font-semibold ${
+              connectionStatus === "connected"
+                ? "text-success"
+                : connectionStatus === "failed"
+                  ? "text-error"
+                  : "text-warning"
+            }`}
+          >
+            {isConnecting ? "connecting..." : connectionStatus}
+          </span>
+          {connectionError && (
+            <span className="text-error text-xs">{connectionError}</span>
+          )}
+          <span className="text-dim">Telemetry:</span>
+          <span
+            className={`font-semibold ${
+              status === "open" ? "text-success" : "text-warning"
+            }`}
+          >
+            {status}
+          </span>
+          <span className="text-dim">Commands:</span>
+          <span
+            className={`font-semibold ${
+              commandStatus === "open" ? "text-success" : "text-warning"
+            }`}
+          >
+            {commandStatus}
+          </span>
+          <span className="text-dim">Mode:</span>
+          <span className="font-semibold text-info">{droneMode}</span>
+          {lastResp?.error && (
+            <span className="text-semibold text-info">{lastResp.error}</span>
+          )}
+          <span className="text-dim">Calibration:</span>
+          <span
+            className={`font-semibold ${
+              calibrated ? "text-success" : "text-warning"
+            }`}
+          >
+            {calibrationLabel(calibrated)}
+          </span>
+        </div>
+      )}
       <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">
         <Card variant="glass">
           <div className="flex items-center justify-between">
@@ -236,24 +242,20 @@ const GestureControl = () => {
           </div>
           <div className="flex items-center justify-between gap-4 flex-wrap h-full">
             <div className="flex items-center gap-3">
-              <Battery className="w-6 h-6 text-Red" />
+              <Battery className="w-6 h-6 text-red" />
               <div>
-                <p className=" text-xs text-OffBlack dark:text-Grey uppercase">
-                  Battery
-                </p>
-                <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
+                <p className=" text-xs text-ink uppercase">Battery</p>
+                <p className="text-lg font-bold text-ink">
                   {fmt(displayTelem?.battery_pct)}%
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <Wifi className="w-6 h-6 text-Red" />
+              <Wifi className="w-6 h-6 text-red" />
               <div>
-                <p className=" text-xs text-OffBlack dark:text-Grey uppercase">
-                  Signal
-                </p>
-                <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
+                <p className=" text-xs text-ink uppercase">Signal</p>
+                <p className="text-lg font-bold text-ink">
                   {/* TODO: this is still mocked for now - theres no signl_pct field on the telem return yet */}
                   100%
                 </p>
@@ -261,12 +263,10 @@ const GestureControl = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <Gauge className="w-6 h-6 text-Red" />
+              <Gauge className="w-6 h-6 text-red" />
               <div>
-                <p className=" text-xs text-OffBlack dark:text-Grey uppercase">
-                  Speed
-                </p>
-                <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
+                <p className=" text-xs text-ink uppercase">Speed</p>
+                <p className="text-lg font-bold text-ink">
                   {fmt(
                     typeof displayTelem?.speed_ms === "number"
                       ? displayTelem.speed_ms * MS_TO_KMH
@@ -279,12 +279,10 @@ const GestureControl = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <Mountain className="w-6 h-6 text-Red" />
+              <Mountain className="w-6 h-6 text-red" />
               <div>
-                <p className=" text-xs text-OffBlack dark:text-Grey uppercase">
-                  Altitude
-                </p>
-                <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
+                <p className=" text-xs text-ink uppercase">Altitude</p>
+                <p className="text-lg font-bold text-ink">
                   {fmt(displayTelem?.altitude_m, 1)}m
                 </p>
               </div>
@@ -332,12 +330,17 @@ const GestureControl = () => {
             </div>
           </Card>
         )}
-
-        <GestureGuide
-          className="h-full"
-          sendCommand={handleControlAction}
-          onKeyboardResp={handleKeyboardResp}
-        />
+        <div className="flex flex-col gap-6 h-full">
+          <GestureGuide
+            className="flex-1"
+            sendCommand={handleControlAction}
+            onKeyboardResp={handleKeyboardResp}
+          />
+          <DroneFeedPanel
+            droneMode={droneMode}
+            connectionStatus={connectionStatus}
+          />
+        </div>
       </div>
 
       <CommandHistory commands={commands} />

@@ -40,7 +40,7 @@ class FakeCvPipeline:
 		self.stopped = False
 		self._running = False
 		self._frame_index = 0
-		self._recognizer_mode = 'ml' if (config is not None and config.use_ml) else 'rule'
+		self.recognizer_mode = 'ml' if (config is not None and config.use_ml) else 'rule'
 		FakeCvPipeline.instances.append(self)
 
 	async def start(self) -> None:
