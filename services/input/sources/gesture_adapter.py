@@ -18,6 +18,7 @@ in the frontend
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import time
 from typing import Any, Optional
@@ -143,7 +144,9 @@ class GestureAdapter(InputAdapter):
 		if self._task is not None:
 			try:
 				self._task.cancel()
-				await self._task
+				with contextlib.suppress(asyncio.CancelledError):
+					await self._task
+				self._task = None
 			except asyncio.CancelledError:
 				# deal with it later
 				logger.debug('GestureAdapter: consumer task cancelled')

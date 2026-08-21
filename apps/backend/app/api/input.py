@@ -108,7 +108,11 @@ async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, De
 	"""
 	if state.input is not None:
 		logger.info(f'input/connect: replacing existing input adapter {state.input_name}')
+		previous = state.input
 		state.input_reset()
+
+		if hasattr(previous, 'stop'):
+			await previous.stop()
 
 	try:
 		adapter = _build_input_adapter(body)
