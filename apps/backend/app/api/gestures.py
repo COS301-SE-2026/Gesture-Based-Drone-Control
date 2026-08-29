@@ -18,11 +18,12 @@ import asyncio
 import contextlib
 import logging
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
 from app.cv.serialization import GestureFramePayload
 from app.cv.stream import GestureStream
+from services.cv_pipeline.processing.pipeline import RECOGNIZER_MODES
 
 logger = logging.getLogger(__name__)
 
@@ -163,3 +164,28 @@ async def gesture_websocket(websocket: WebSocket) -> None:
 	finally:
 		if queue is not None:
 			await stream.unsubscribe(queue)
+
+
+class RecognizerModeBody(BaseModel):
+	mode: str = Field(..., description="Recognizer to use: 'rule' or 'ml'")
+
+
+class RecognizerModeOut(BaseModel):
+	mode: str = Field(..., description='Mode actaully in effect')
+	requested: str = Field(..., description='Mode the caller asked for')
+	available: list[str] = Field(..., description='Valid modes')
+
+
+@router.get('/recognizer', summary='Get active gesture recognizer')
+async def get_recognizer_mode() -> RecognizerModeOut:
+	current = stream.recognizer_mode
+	return RecognizerModeOut(mode=current, requested=current, available=list(RECOGNIZER_MODES))
+
+
+@router.post('/recognizer', summary='Switch gesture recognizer')
+async def set_recognizer_mode(body: RecognizerModeBody) -> RecognizerModeOut:
+	try:
+		applied = await stream.set_recognizer_mode(body.mode)
+	except ValueError as exc:
+		raise HTTPException(status_code=400, detail=str(exc)) from exc
+	return RecognizerModeOut(mode=applied, requested=body.mode, available=list(RECOGNIZER_MODES))

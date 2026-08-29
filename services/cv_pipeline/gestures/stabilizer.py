@@ -57,3 +57,11 @@ class GestureStabilizer:
 			self._stable.pop(hand, None)
 
 		return out
+
+	def reset(self) -> None:
+		"""
+		clear history so a recognizer swap doesnt keep voting with gestures
+		the old recognizer is produced
+		"""
+		self._history.clear()
+		self._stable.clear()

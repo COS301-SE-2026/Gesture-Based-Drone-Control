@@ -5,6 +5,7 @@ import {
   DroneModeCard,
   GestureCameraFeed,
   GestureCalibration,
+  RecognizerToggle,
   DroneFeedPanel,
 } from "../molecules"
 import { Card, Label } from "../atoms"
@@ -330,15 +331,18 @@ const GestureControl = () => {
                 <Label className="text-lg font-semibold">
                   Gesture Detection
                 </Label>
-                {calibrated && (
-                  <button
-                    type="button"
-                    onClick={handleRecalibrate}
-                    className="text-xs text-dim hover:text-ink underline underline-offset-2 transition-colors"
-                  >
-                    Recalibrate
-                  </button>
-                )}
+                <div className="flex items-center gap-4">
+                  <RecognizerToggle />
+                  {calibrated && (
+                    <button
+                      type="button"
+                      onClick={handleRecalibrate}
+                      className="text-xs text-DarkGrey hover:text-OffBlack dark:hover:text-OffWhite underline underline-offset-2 transition-colors"
+                    >
+                      Recalibrate
+                    </button>
+                  )}
+                </div>
               </div>
 
               <GestureCameraFeed className="flex-1" />
