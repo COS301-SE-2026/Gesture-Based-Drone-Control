@@ -3,6 +3,7 @@
 import logging
 import math
 import asyncio
+import time 
 
 from djitellopy import BackgroundFrameRead, Tello
 
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class TelloAdapter(DroneAdapter):
 	MOVEMENTSPEED = 50
+	MAX_DT_S = 1.0
 
 	def __init__(
 		self,
@@ -23,6 +25,9 @@ class TelloAdapter(DroneAdapter):
 		self._is_flying = False
 		self._hover_task : asyncio.Task | None = None
 		self._hover_delay: float = 0.5
+		self._x_displacement: float = 0.0
+		self._y_displacement: float = 0.0
+		self._last_telemetry_time: float | None = None
 
 	async def connect(self) -> bool:
 		try:
@@ -56,6 +61,9 @@ class TelloAdapter(DroneAdapter):
 		self._assert_connected()
 		self._tello.takeoff()
 		self._is_flying = True
+		self._x_displacement = 0.0
+		self.y_displacement = 0.0
+		self._last_telemetry_time = None
 		logger.info('Tello Drone: taking off')
 
 	async def land(self) -> None:
@@ -157,7 +165,18 @@ class TelloAdapter(DroneAdapter):
 
 			#signal = self._tello.send_command_with_return('wifi')
 
-			#x, y = self._tello.get_position()
+			now = time.monotonic()
+			dt = min (now - self._last_telemetry_time, self.MAX_DT_S)
+
+			vx_ms = vx / 100
+			vy_ms = vy / 100 # this the cm/s -> m/s
+			yaw_rad = math.radians(yaw)
+			world_vx = vx_ms * math.cos(yaw_rad) - vy_ms * math.sin(yaw_rad)
+			world_vy = vx_ms * math.sin(yaw_rad) + vy_ms * math.cos(yaw_rad) # rotational matrix to convert drone local coords to world coords
+
+			if self._is_flying:
+				self.x_displacement += world_vx
+				self.y_displacement += world_vy
 
 			return TelemetryData(
 				altitude_m=round(altitude, 3),
@@ -165,8 +184,8 @@ class TelloAdapter(DroneAdapter):
 				heading_deg=world_heading,
 				battery_pct=battery,
 				is_flying=self._is_flying,
-				x_displacement=0,
-				y_displacement=0,
+				x_displacement=round(self.x_displacement, 3),
+				y_displacement=round(self.y displacement, 3),
 				extra={'signal': 0},
 				source='tello',
 			)
