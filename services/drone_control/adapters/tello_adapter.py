@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 class TelloAdapter(DroneAdapter):
 	MOVEMENTSPEED = 50
 	MAX_DT_S = 1.0
+	WIFI_QUERY_INTERVAL_S = 3.0
 
 	def __init__(
 		self,
@@ -28,6 +29,10 @@ class TelloAdapter(DroneAdapter):
 		self._x_displacement: float = 0.0
 		self._y_displacement: float = 0.0
 		self._last_telemetry_time: float | None = None
+		self._wifi_signal: int | None = None
+		self._last_wifi_query_time: float | None = None
+		self._wifi_query_task: asyncio.Task | None = None
+		
 
 	async def connect(self) -> bool:
 		try:
@@ -62,7 +67,7 @@ class TelloAdapter(DroneAdapter):
 		self._tello.takeoff()
 		self._is_flying = True
 		self._x_displacement = 0.0
-		self.y_displacement = 0.0
+		self._y_displacement = 0.0
 		self._last_telemetry_time = None
 		logger.info('Tello Drone: taking off')
 
@@ -163,10 +168,13 @@ class TelloAdapter(DroneAdapter):
 
 			battery = state.get('bat')
 
-			#signal = self._tello.send_command_with_return('wifi')
-
 			now = time.monotonic()
-			dt = min (now - self._last_telemetry_time, self.MAX_DT_S)
+			self._last_telemetry_time = now
+
+			if self._last_telemetry_time is None:
+				dt = 0.0
+			else:
+				dt = min (now - self._last_telemetry_time, self.MAX_DT_S)
 
 			vx_ms = vx / 100
 			vy_ms = vy / 100 # this the cm/s -> m/s
@@ -175,8 +183,10 @@ class TelloAdapter(DroneAdapter):
 			world_vy = vx_ms * math.sin(yaw_rad) + vy_ms * math.cos(yaw_rad) # rotational matrix to convert drone local coords to world coords
 
 			if self._is_flying:
-				self.x_displacement += world_vx
-				self.y_displacement += world_vy
+				self._x_displacement += world_vx * dt
+				self._y_displacement += world_vy * dt # integral step
+
+			self._schedule_wifi_query_sometimes(now)
 
 			return TelemetryData(
 				altitude_m=round(altitude, 3),
@@ -184,9 +194,9 @@ class TelloAdapter(DroneAdapter):
 				heading_deg=world_heading,
 				battery_pct=battery,
 				is_flying=self._is_flying,
-				x_displacement=round(self.x_displacement, 3),
-				y_displacement=round(self.y displacement, 3),
-				extra={'signal': 0},
+				x_displacement=round(self._x_displacement, 3),
+				y_displacement=round(self._y_displacement, 3),
+				extra={'signal': self._wifi_signal},
 				source='tello',
 			)
 
@@ -207,6 +217,24 @@ class TelloAdapter(DroneAdapter):
 			raise RuntimeError(
 				'Tello Drone is not flying. Await takeoff() before issuing flight commands'
 			)
+
+	def _schedule_wifi_query_sometimes(self,  now: float) -> None:
+		if self._wifi_query_task is not None and not self._wifi_query_task.done():
+			return
+
+		if self._last_wifi_query_time is not None and now - self._last_wifi_query_time < self.WIFI_QUERY_INTERVAL_S:
+			return
+
+		self._last_wifi_query_time = now
+		self._wifi_query_task = asyncio.create_task(self._refresh_wifi_signal())
+
+	async def _refresh_wifi_signal(self) -> None:
+		try:
+			response = await asyncio.to_thread(self._tello.query_wifi_signal_noise_ratio)
+			self._wifi_signal = int(response)
+		except Exception as e:
+			logger.debug('Tello wifi signal query failed %s' , e)
+
 
 	def _reset_hover_watchdog(self, delay: float) -> None:
 		"""
