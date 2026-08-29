@@ -123,6 +123,7 @@ async def test_connect_replaces():
 	"""
 	state = connected_input_state('dummy')
 
+	previous = state.input
 	new_input = make_mock_input_adapter()
 	client = TestClient(make_app(state))
 
@@ -133,6 +134,7 @@ async def test_connect_replaces():
 	assert response.json()['connected'] is True
 	assert state.input is new_input
 	assert state.input_name == 'keyboard'
+	previous.stopassert_awaited_once()
 
 
 @pytest.mark.asyncio

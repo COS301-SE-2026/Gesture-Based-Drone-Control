@@ -39,17 +39,15 @@ const LoginForm = ({
   return (
     <div className="w-full max-w-sm">
       <div className=" mb-8 text-center">
-        <h2 className="text-3xl font-bold text-OffBlack dark:text-OffWhite mb-2">
-          Codex Merchants
-        </h2>
-        <p className=" text-Grey dark:text-DarkGrey">Sign in to your account</p>
+        <h2 className="text-3xl font-bold text-ink mb-2">Codex Merchants</h2>
+        <p className=" text-dim">Sign in to your account</p>
       </div>
       <form
         onSubmit={(e) => handleSubmit(e, validateForm)}
         className="space-y-5"
       >
         {errors.general && (
-          <div className="text-sm text-Red bg-Red/10 border border-Red/30 rounded-lg px-3 py-2">
+          <div className="text-sm text-red bg-red/10 border border-red/30 rounded-lg px-3 py-2">
             {errors.general}
           </div>
         )}
@@ -86,15 +84,13 @@ const LoginForm = ({
               name="rememberMe"
               checked={formData.rememberMe}
               onChange={handleChange}
-              className="w-4 h-4 rounded border-Grey dark:border-DarkGrey accent-Red"
+              className="w-4 h-4 rounded border-dim accent-red"
             />
-            <span className="text-sm text-Grey dark:text-DarkGrey">
-              Remember Me
-            </span>
+            <span className="text-sm text-dim">Remember Me</span>
           </label>
           <Link
             to="/forgot-password"
-            className="text-sm text-Red hover:text-DarkRed transition-colors"
+            className="text-sm text-red hover:text-redDeep transition-colors"
           >
             Forgot password?
           </Link>
@@ -102,26 +98,26 @@ const LoginForm = ({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-Red hover:bg-DarkRed disabled:bg-Grey text-OffWhite font-semibold py-2.5 rounded-lg transition-colors duration-200"
+          className="w-full bg-red hover:bg-redDeep disabled:bg-dim text-ink font-semibold py-2.5 rounded-lg transition-colors duration-200"
         >
           {isLoading ? "Signing in ..." : "Sign In"}
         </button>
       </form>
       <div className="mt-6 text-center">
-        <p className="text-sm text-Grey dark:text-DarkGrey">
+        <p className="text-sm text-dim">
           Don't have an account?{" "}
           <Link
             to="/signup"
-            className=" text-Red hover:text-DarkRed font-semibold transition-colors"
+            className=" text-red hover:text-redDeep font-semibold transition-colors"
           >
             Sign Up
           </Link>
         </p>
       </div>
-      <div className=" mt-8 pt-6 border-t border-Grey/20 dark:border-DarkGrey/20">
-        <p className="text-sm text-Grey dark:text-DarkGrey text-center">
+      <div className=" mt-8 pt-6 border-t border-dim/20">
+        <p className="text-sm text-dim text-center">
           By signing in, you agree to our{" "}
-          <Link to="/terms" className="text-Red hover:text-DarkRed">
+          <Link to="/terms" className="text-red hover:text-redDeep">
             Terms & Conditions
           </Link>
         </p>

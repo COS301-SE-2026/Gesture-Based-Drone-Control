@@ -28,6 +28,8 @@ dependencies = [
     "pyjwt>=2.13.0",
     "pyinstaller>=6.21.0",
     "djitellopy>=2.5.0",
+    "joblib>=1.5.3",
+    "scikit-learn>=1.9.0",
 ]
 
 [dependency-groups]

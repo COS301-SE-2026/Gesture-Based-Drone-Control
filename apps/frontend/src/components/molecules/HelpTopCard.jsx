@@ -16,21 +16,17 @@ export default function HelpTopCard({
       onClick={onClick}
       className="group h-full flex flex-col gap-4"
     >
-      <div className="w-11 h-11 rounded-lg bg-Red/10 flex items-center justify-center group-hover:bg-Red/20 transition-colors">
-        <Icon className="w-5 h-5 text-Red" />
+      <div className="w-11 h-11 rounded-lg bg-red/10 flex items-center justify-center group-hover:bg-red/20 transition-colors">
+        <Icon className="w-5 h-5 text-red" />
       </div>
 
       <div className="flex-1">
-        <h3 className="text-OffBlack dark:text-OffWhite font-semibold text-base mb-1">
-          {title}
-        </h3>
-        <p className="text-sm text-Red dark:text-DarkGrey leading-relaxed">
-          {description}
-        </p>
+        <h3 className="text-ink font-semibold text-base mb-1">{title}</h3>
+        <p className="text-sm text-dim leading-relaxed">{description}</p>
       </div>
 
       <div className="flex items-center justify-between pt-2">
-        <ArrowRight className="w-4 h-4 text-Red group-hover:text-Red group-hover:translate-x-1 transition-all" />
+        <ArrowRight className="w-4 h-4 text-red group-hover:text-red group-hover:translate-x-1 transition-all" />
       </div>
     </Card>
   )

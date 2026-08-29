@@ -10,16 +10,21 @@ Making this interpret the broadcasted gesture data used by the frontend would me
 backend->frontend->back->front; which is not good.
 
 Will rely on GestureStream.subscribe() and interpret the shared queue
+
+Altering this file for event logging to be able to include gesture command history
+in the frontend
 """
 
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import time
-from typing import Any
+from typing import Any, Optional
 
 from services.commands.command import Command, CommandType
+from services.input.gesture_events import GestureEventLog, gesture_events
 from services.input.sources.input_adapter import InputAdapter
 
 logger = logging.getLogger(__name__)
@@ -29,6 +34,11 @@ logger = logging.getLogger(__name__)
 IDLE_TIMEOUT_S: float = 3.0
 MIN_CONFIDENCE: float = 0.85
 MIN_STABLE_FRAMES: int = 2
+
+# how many consecutive unresolved frames before we consider curr gesture released
+# without this a single dropedd frame mid-hold would log a duplicate row
+# the moment the hand is picked bacl up
+RELEASE_FRAMES: int = 5
 
 # Define maps for each type of mapping; two-hand, asymmetrical, and single hand
 
@@ -79,11 +89,17 @@ class GestureAdapter(InputAdapter):
 		idle_timeout_s: float = IDLE_TIMEOUT_S,
 		min_confidence: float = MIN_CONFIDENCE,
 		min_stable_frames: float = MIN_STABLE_FRAMES,
+		release_frames: int = RELEASE_FRAMES,
+		event_log: Optional[GestureEventLog] = None,
 	) -> None:
 		super().__init__()
 		self._idle_timeout = idle_timeout_s
 		self._min_confidence = min_confidence
 		self._min_stable_frames = min_stable_frames
+		self._release_frames = release_frames
+
+		# injectable so unit tests can assert on the log without the singleton
+		self._events = event_log if event_log is not None else gesture_events
 
 		# for the GestureStream queue
 		self._task: asyncio.Task | None = None
@@ -95,6 +111,13 @@ class GestureAdapter(InputAdapter):
 		self._stable_count: int = 0
 		self._last_command: CommandType | None = None
 
+		# transition tracking for history log
+		# _active_key identifies the hold currently in progress
+		# new hold only gets logged when curr gesture command changes (done like this or
+		# or its just gonna spam in the command history)
+		self._active_key: str | None = None
+		self._unresolved_count: int = 0
+
 		# used by status endpoint
 		self.last_resolution: str = 'none'
 		self.last_confidence: float = 0.0
@@ -105,6 +128,8 @@ class GestureAdapter(InputAdapter):
 		"""
 		stream = self._get_stream()
 		self._last_gesture_ts = time.monotonic()
+		self._active_key = None
+		self._unresolved_count = 0
 		self._queue = await stream.subscribe()
 		# continuously deq and process... 226 returns
 		self._task = asyncio.create_task(self._consume(), name='gesture-adapter-consumer')
@@ -119,7 +144,9 @@ class GestureAdapter(InputAdapter):
 		if self._task is not None:
 			try:
 				self._task.cancel()
-				await self._task
+				with contextlib.suppress(asyncio.CancelledError):
+					await self._task
+				self._task = None
 			except asyncio.CancelledError:
 				# deal with it later
 				logger.debug('GestureAdapter: consumer task cancelled')
@@ -131,6 +158,7 @@ class GestureAdapter(InputAdapter):
 			stream = self._get_stream()
 			await stream.unsubscribe(self._queue)
 
+		self._active_key = None
 		logger.info('GestureAdapter: stopped()')
 
 	async def handle_message(self, message: dict[str, Any]) -> None:
@@ -218,6 +246,9 @@ class GestureAdapter(InputAdapter):
 		if self._stable_count < self._min_stable_frames:
 			return
 
+		# a resolved frame cancels any in-prgoress release
+		self._unresolved_count = 0
+
 		# update for logging purposes (can also use for more gatekeeping...maybe)
 		self._last_command = cmd_type
 		self._last_gesture_ts = time.monotonic()
@@ -226,11 +257,33 @@ class GestureAdapter(InputAdapter):
 		# holy shit i forgot this line
 		self._emit(Command(type=cmd_type, source='gesture'))
 
-		logger.info(
+		# history logging: only on transition, not on every held frame
+		event_key = self._make_event_key(cmd_type, by_side)
+		if event_key != self._active_key:
+			self._active_key = event_key
+			self._events.record(
+				command=cmd_type.name,
+				hands=by_side,
+				confidence=self.last_confidence,
+				source='gesture',
+			)
+
+		logger.debug(
 			'GestureAdapter: executing: %s -> %s',
 			by_side,
 			cmd_type.name,
 		)
+
+	@staticmethod
+	def _make_event_key(cmd_type: CommandType, by_side: dict[str, str]) -> str:
+		"""
+		Identify one continous hold
+		Keyed on the the command and the hand snapshot, so swapping which hand does what always
+		registers as a new event, and two different gestures that happen to map to the same command
+		still show up seperately in the history
+		"""
+		snapshot = '*'.join(f'{side}={gesture}' for side, gesture in sorted(by_side.items()))
+		return f'{cmd_type.name}|{snapshot}'
 
 	def _resolve(self, by_side: dict[str, str]) -> CommandType | None:
 		"""
@@ -271,9 +324,29 @@ class GestureAdapter(InputAdapter):
 			self.last_resolution = 'idle-hover'
 			self._emit(Command(type=CommandType.HOVER, source='gesture-idling'))
 
+			if self._active_key != 'HOVER|idle':
+				self._active_key = 'HOVER|idle'
+				self._events.record(
+					command=CommandType.HOVER.name,
+					hands={},
+					confidence=self.last_confidence,
+					source='gesture-idling',
+				)
+
 	def _reset_stability(self) -> None:
 		self._stable_key = None
 		self._stable_count = 0
+
+		# treat a run of unresolved frames as the gesture being released, so
+		# re-showing the same gesture later counts as a new event. A one or two
+		# frame dropout mid-hold is tolerated and does not duplicate the row
+		if self._active_key is None:
+			return
+
+		self._unresolved_count += 1
+		if self._unresolved_count >= self._release_frames:
+			self._active_key = None
+			self._unresolved_count = 0
 
 	@staticmethod
 	def _get_stream():
