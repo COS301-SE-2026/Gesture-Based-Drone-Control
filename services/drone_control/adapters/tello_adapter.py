@@ -18,7 +18,7 @@ class TelloAdapter(DroneAdapter):
 	def __init__(
 		self,
 	) -> None:
-		self._tello = Tello()
+		self._tello = Tello(retry_count=1)
 		self._connected = False
 		self._is_flying = False
 		self._hover_task : asyncio.Task | None = None
@@ -26,12 +26,13 @@ class TelloAdapter(DroneAdapter):
 
 	async def connect(self) -> bool:
 		try:
-			self._tello.connect()
+			await asyncio.wait_for(asyncio.to_thread(self._tello.connect()), timeout=5.0) 
 			#self._tello.streamon() for camera integration
 			#self._frame_reader = self._tello.get_frame_read()
 			self._connected = True
 			return True
 		except Exception:
+			self._tello.end()
 			return False
 
 	async def disconnect(self) -> None:
@@ -174,6 +175,7 @@ class TelloAdapter(DroneAdapter):
 			logging.exception('ProjectAirSimAdapter.get_telemetry: error - %s', ex)
 			logger.debug('Telemetry exception detail', exc_info=True)
 			return TelemetryData(source='tello-error')
+
 
 	def _assert_connected(self) -> None:
 		if not self._connected:
