@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import {
   CommandHistory,
   GestureGuide,
@@ -13,8 +13,10 @@ import { useTelemetry } from "@/context/TelemetryContext"
 import { useCommands } from "@/context/CommandsContext"
 import { useDebug } from "@/context/DebugContext"
 import { fetchCalibrationStatus } from "@/hooks/useCalibrationStream"
+import { useGestureCommandLog } from "@/hooks/useGestureCommandLog"
 
 const MS_TO_KMH = 3.6
+const MAX_HISTORY = 50
 
 function fmt(value, digits = 0) {
   return typeof value === "number" ? value.toFixed(digits) : "--"
@@ -28,9 +30,26 @@ function calibrationLabel(calibrated) {
 //TODO: this is still mocked for now
 const GestureControl = () => {
   const [commands, setCommands] = useState([])
+  const manualIdRef = useRef(0)
 
   const { telemetry, status } = useTelemetry()
   const { sendCommand, status: commandStatus, lastResp } = useCommands()
+
+  // one entry per gesture change, straight from gesture adapter
+  const { entries: gestureCommands } = useGestureCommandLog()
+
+  const pushManualCommand = useCallback((action, source) => {
+    manualIdRef.current += 1
+    const at = Date.now()
+    const entry = {
+      id: `manual-${manualIdRef.current}`,
+      action,
+      timestamp: new Date(at).toLocaleTimeString("en-ZA", { hour12: false }),
+      at,
+      source,
+    }
+    setCommands((prev) => [entry, ...prev].slice(0, MAX_HISTORY))
+  }, [])
 
   const handleControlAction = useCallback(
     (command) => {
@@ -40,11 +59,16 @@ const GestureControl = () => {
   )
 
   const handleKeyboardResp = (resp) => {
-    const timestamp = new Date().toLocaleTimeString("en-ZA", { hour12: false })
-    setCommands((prev) =>
-      [{ action: resp.key, timestamp }, ...prev].slice(0, 50)
-    )
+    pushManualCommand(resp.key, "keyboard")
   }
+
+  const commandHistory = useMemo(
+    () =>
+      [...gestureCommands, ...commands]
+        .sort((a, b) => (b.at ?? 0) - (a.at ?? 0))
+        .slice(0, MAX_HISTORY),
+    [gestureCommands, commands]
+  )
 
   // //mock data for drone status
   // const droneMetrics = {
@@ -167,17 +191,12 @@ const GestureControl = () => {
   //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
   useEffect(() => {
     if (lastResp?.ok && lastResp.command) {
-      const timestamp = new Date().toLocaleTimeString("en-ZA", {
-        hour12: false,
-      })
       // setStae has to be called in use effect here because lastResp is not in this component
       //its basically coming from useCommands in the websocket, so that whenever there is a new response its added to the local log.
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setCommands((prev) =>
-        [{ action: lastResp.command, timestamp }, ...prev].slice(0, 50)
-      )
+      pushManualCommand(lastResp.command, lastResp.source ?? "onscreen")
     }
-  }, [lastResp])
+  }, [lastResp, pushManualCommand])
 
   const { debugMode } = useDebug()
 
@@ -227,7 +246,7 @@ const GestureControl = () => {
               calibrated ? "text-success" : "text-warning"
             }`}
           >
-            {calibrationLabel}
+            {calibrationLabel(calibrated)}
           </span>
         </div>
       )}
@@ -339,7 +358,7 @@ const GestureControl = () => {
         </div>
       </div>
 
-      <CommandHistory commands={commands} />
+      <CommandHistory commands={commandHistory} />
     </div>
   )
 }
