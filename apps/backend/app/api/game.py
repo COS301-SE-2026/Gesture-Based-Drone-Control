@@ -128,8 +128,8 @@ def _register_callback(state: AppState) -> None:
         # is defined for GameAdapter type so it can chill out
         state.adapter.set_command_callback(_broadcast)
 
-@router.websocket('/ws/connect')
-async def game_connect(websocket : WebSocket, state: Annotated[AppState, Depends(get_state)]):
+@router.websocket('/ws/commands')
+async def game_commands(websocket : WebSocket, state: Annotated[AppState, Depends(get_state)]):
     """
     register the client and adds the broadcast callback to the GameAdapter
     """
