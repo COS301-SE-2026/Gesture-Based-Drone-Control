@@ -83,10 +83,10 @@ def _build_adapter(body: ConnectRequest) -> DroneAdapter:
 			port=body.port,
 			vehicle_name=body.vehicle_name,
 		)
-  
+
 	if body.adapter == 'game':
 		from services.drone_control.adapters.game_adapter import GameAdapter
-  
+
 		return GameAdapter()
 	raise ValueError(f'Unknown adapter: {body.adapter}. Supported: dummy, airsim, projectairsim')
 
