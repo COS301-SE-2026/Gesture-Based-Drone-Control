@@ -32,7 +32,7 @@ from app.state import AppState
 from services.drone_control.adapters.game_adapter import GameAdapter
 
 logger = logging.getLogger(__name__)
-router = APIRouter()
+router = APIRouter(prefix='/game', tags=['game'])
 
 # Clients functionality
 """
