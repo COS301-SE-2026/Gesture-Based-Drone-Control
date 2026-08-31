@@ -71,7 +71,7 @@ async def game_connect(state: Annotated[AppState, Depends(get_state)]):
 
 	state.adapter = adapter
 	state.adapter_name = 'game'
-	state.adapter.
+	adapter.set_command_callback(_broadcast)
 
 	logger.info('game/connect: GameAdapter active')
 	return GameConnectResponse(active=True, message='Game adapter connected')
