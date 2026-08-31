@@ -6,9 +6,9 @@ This just acts as a receiver for these commands, the actual handling
 is more game-specific so it should be easier to handle on the frontend.
 
 Commmand payload:
-    {"command": "MOVE_FORWARD"}
-    {"command": "HOVER"}
-    ...
+	{"command": "MOVE_FORWARD"}
+	{"command": "HOVER"}
+	...
 
 Each game will have to implement listeners for these payloads and interpret them
 accordingly.
@@ -45,16 +45,17 @@ class GameAdapter(DroneAdapter):
 		self._callback = fn
 		logger.debug('GameAdapter: command callback registered')
 
-	def clear_command_callback(self, fn: CommandCallback):
+	def clear_command_callback(self):
 		"""remove the callback, which will be triggered on disconnect"""
 		self._callback = None
 
 	async def _forward(self, payload: dict) -> None:
 		"""send a payload to the registered callback if it exists"""
+		logger.info("GameAdapter forwarding: %s", payload)
 		if self._callback is not None:
 			await self._callback(payload)
 		else:
-			logger.debug('GameAdapter: no callback registered, dropping %s', payload)
+			logger.info('GameAdapter: no callback registered, dropping %s', payload)
 
 	# Connection lifecycle, more or less stubbed
 	async def connect(self) -> bool:

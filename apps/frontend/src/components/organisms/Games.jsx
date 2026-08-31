@@ -38,13 +38,11 @@ const Games = () => {
 
     try {
       // connect to the game adapter with the existing drone endpoint
-      const drone = await fetch(`${API_BASE_URL}/api/drone/connect`, {
+      const drone = await fetch(`${API_BASE_URL}/api/game/connect`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adapter: "game" }),
       })
       const data = await drone.json()
-      if (!data.connected) {
+      if (!data.active) {
         setStatus("failed")
         setError(data.message || "connection failed")
         return
@@ -61,7 +59,7 @@ const Games = () => {
   const stop = useCallback(async () => {
     setGameActive(false)
     setStatus("disconnected")
-    await fetch(`${API_BASE_URL}/api/drone/disconnect`, {
+    await fetch(`${API_BASE_URL}/api/game/disconnect`, {
       method: "POST",
     }).catch(() => {})
   }, [])
