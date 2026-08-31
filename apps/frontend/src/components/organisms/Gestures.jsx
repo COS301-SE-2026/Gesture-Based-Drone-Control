@@ -182,7 +182,7 @@ const GestureControl = () => {
       await connectToDrone("projectairsim")
     } else if (mode === "Manual" || mode === "Autonomous") {
       await connectToDrone("dummy")
-    } else if (mode === "Tello" || mode === 'Hardware') {
+    } else if (mode === "Tello" || mode === "Hardware") {
       await connectToDrone("tello")
     }
   }

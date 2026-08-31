@@ -89,7 +89,9 @@ def _build_adapter(body: ConnectRequest) -> DroneAdapter:
 
 		return TelloAdapter()
 
-	raise ValueError(f'Unknown adapter: {body.adapter}. Supported: dummy, airsim, projectairsim, tello')
+	raise ValueError(
+		f'Unknown adapter: {body.adapter}. Supported: dummy, airsim, projectairsim, tello'
+	)
 
 
 # REST endpoints\

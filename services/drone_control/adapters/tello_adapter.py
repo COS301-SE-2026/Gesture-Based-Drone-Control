@@ -1,11 +1,11 @@
 # /services/cv-pipeline/drone-control/adapters/tello_adapter.py
 
+import asyncio
 import logging
 import math
-import asyncio
-import time 
+import time
 
-from djitellopy import BackgroundFrameRead, Tello
+from djitellopy import Tello
 
 from services.commands.command import AnalogInput, CommandType
 from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
@@ -24,7 +24,7 @@ class TelloAdapter(DroneAdapter):
 		self._tello = Tello(retry_count=1)
 		self._connected = False
 		self._is_flying = False
-		self._hover_task : asyncio.Task | None = None
+		self._hover_task: asyncio.Task | None = None
 		self._hover_delay: float = 0.5
 		self._x_displacement: float = 0.0
 		self._y_displacement: float = 0.0
@@ -32,13 +32,13 @@ class TelloAdapter(DroneAdapter):
 		self._wifi_signal: int | None = None
 		self._last_wifi_query_time: float | None = None
 		self._wifi_query_task: asyncio.Task | None = None
-		
 
 	async def connect(self) -> bool:
 		try:
-			await asyncio.wait_for(asyncio.to_thread(self._tello.connect()), timeout=5.0) 
-			#self._tello.streamon() for camera integration
-			#self._frame_reader = self._tello.get_frame_read()
+			# await asyncio.wait_for(asyncio.to_thread(self._tello.connect()), timeout=5.0)
+			self._tello.connect()
+			# self._tello.streamon() for camera integration
+			# self._frame_reader = self._tello.get_frame_read()
 			self._connected = True
 			return True
 		except Exception:
@@ -47,20 +47,19 @@ class TelloAdapter(DroneAdapter):
 
 	async def disconnect(self) -> None:
 		self._assert_connected()
-		self._connected = False
 
 		try:
-			if self._assert_flying():
-				self.land()
-			#self._tello.streamoff()
+			if self._is_flying:
+				await self.land()
+			# self._tello.streamoff()
 		except Exception as ex:
-			logger.warning("Tello land failed with %s", ex , exc_info=True) 
+			logger.warning('Tello land failed with %s', ex, exc_info=True)
 		finally:
 			try:
+				self._connected = False
 				self._tello.end()
 			except Exception as ex:
-				logger.warning("Tello.end failed with %s", ex, exc_info=True) 
-
+				logger.warning('Tello.end failed with %s', ex, exc_info=True)
 
 	async def takeoff(self) -> None:
 		self._assert_connected()
@@ -118,8 +117,8 @@ class TelloAdapter(DroneAdapter):
 			ud,
 			yaw,
 		)
-		self._tello.send_rc_control(lr, fb, ud, yaw)	
-		self._reset_hover_watchdog(self._hover_delay)	
+		self._tello.send_rc_control(lr, fb, ud, yaw)
+		self._reset_hover_watchdog(self._hover_delay)
 
 	async def analog(self, input: AnalogInput) -> None:
 		self._assert_connected()
@@ -169,22 +168,25 @@ class TelloAdapter(DroneAdapter):
 			battery = state.get('bat')
 
 			now = time.monotonic()
-			self._last_telemetry_time = now
 
 			if self._last_telemetry_time is None:
 				dt = 0.0
 			else:
-				dt = min (now - self._last_telemetry_time, self.MAX_DT_S)
+				dt = min(now - self._last_telemetry_time, self.MAX_DT_S)
+
+			self._last_telemetry_time = now
 
 			vx_ms = vx / 100
-			vy_ms = vy / 100 # this the cm/s -> m/s
+			vy_ms = vy / 100  # this the cm/s -> m/s
 			yaw_rad = math.radians(yaw)
 			world_vx = vx_ms * math.cos(yaw_rad) - vy_ms * math.sin(yaw_rad)
-			world_vy = vx_ms * math.sin(yaw_rad) + vy_ms * math.cos(yaw_rad) # rotational matrix to convert drone local coords to world coords
+			world_vy = vx_ms * math.sin(yaw_rad) + vy_ms * math.cos(
+				yaw_rad
+			)  # rotational matrix to convert drone local coords to world coords
 
 			if self._is_flying:
 				self._x_displacement += world_vx * dt
-				self._y_displacement += world_vy * dt # integral step
+				self._y_displacement += world_vy * dt  # integral step
 
 			self._schedule_wifi_query_sometimes(now)
 
@@ -201,10 +203,9 @@ class TelloAdapter(DroneAdapter):
 			)
 
 		except Exception as ex:
-			logging.exception('ProjectAirSimAdapter.get_telemetry: error - %s', ex)
+			logging.exception('TelloAdapter.get_telemetry: error - %s', ex)
 			logger.debug('Telemetry exception detail', exc_info=True)
 			return TelemetryData(source='tello-error')
-
 
 	def _assert_connected(self) -> None:
 		if not self._connected:
@@ -218,11 +219,14 @@ class TelloAdapter(DroneAdapter):
 				'Tello Drone is not flying. Await takeoff() before issuing flight commands'
 			)
 
-	def _schedule_wifi_query_sometimes(self,  now: float) -> None:
+	def _schedule_wifi_query_sometimes(self, now: float) -> None:
 		if self._wifi_query_task is not None and not self._wifi_query_task.done():
 			return
 
-		if self._last_wifi_query_time is not None and now - self._last_wifi_query_time < self.WIFI_QUERY_INTERVAL_S:
+		if (
+			self._last_wifi_query_time is not None
+			and now - self._last_wifi_query_time < self.WIFI_QUERY_INTERVAL_S
+		):
 			return
 
 		self._last_wifi_query_time = now
@@ -233,12 +237,11 @@ class TelloAdapter(DroneAdapter):
 			response = await asyncio.to_thread(self._tello.query_wifi_signal_noise_ratio)
 			self._wifi_signal = int(response)
 		except Exception as e:
-			logger.debug('Tello wifi signal query failed %s' , e)
-
+			logger.debug('Tello wifi signal query failed %s', e)
 
 	def _reset_hover_watchdog(self, delay: float) -> None:
 		"""
-		Cancel any pending auto hovers and schedule a new one 
+		Cancel any pending auto hovers and schedule a new one
 		allows for continuous motion while still hovering after a period of time
 		"""
 		if self._hover_task is not None and not self._hover_task.done():
@@ -246,8 +249,8 @@ class TelloAdapter(DroneAdapter):
 
 		self._hover_task = asyncio.create_task(self._hover_after(delay))
 
-	async def _hover_after(self, delay:float) -> None:
-		try: 
+	async def _hover_after(self, delay: float) -> None:
+		try:
 			await asyncio.sleep(delay)
 			await self.hover()
 		except asyncio.CancelledError:
