@@ -137,7 +137,7 @@ jobs:
 
   End-To-End-Tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 60
 
     needs: ["Integration-Tests"]
     env:

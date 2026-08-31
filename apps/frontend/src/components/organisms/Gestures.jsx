@@ -161,7 +161,7 @@ const GestureControl = () => {
   useEffect(() => {
     if (hasConnected.current) return
     hasConnected.current = true
-    connectToDrone("dummy")
+    //connectToDrone("dummy")
   }, [])
 
   //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
