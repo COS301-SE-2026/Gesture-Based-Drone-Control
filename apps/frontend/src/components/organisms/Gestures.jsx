@@ -78,7 +78,7 @@ const GestureControl = () => {
   //   signal: 71,
   // }
 
-  const [droneMode, setDroneMode] = useState("DroneSim")
+  const [droneMode, setDroneMode] = useState("None")
   const [isConnecting, setIsConnecting] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState("disconnected")
   const [connectionError, setConnectionError] = useState("")
@@ -105,7 +105,7 @@ const GestureControl = () => {
   }
 
   //hardware isnt wired for now so we dont want to show the stale sim data
-  const displayTelem = droneMode === "Hardware" ? null : telemetry
+  const displayTelem = droneMode === "Hardware" || droneMode === "None" ? null : telemetry
 
   //auto connect to airsim when the component is mounted
 
