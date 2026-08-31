@@ -1,6 +1,6 @@
 export { default as CommandHistory } from "./CommandHistory"
 export { default as DashboardSideCard } from "./DashboardSideCard"
-export { default as DroneInfoCard } from "./DroneInfoCard"
+export { default as SettingsSideContent } from "./SettingsSideContent"
 export { default as DroneModeCard } from "./DroneModeCard"
 export { default as GestureCalibration } from "./GestureCalibration"
 export { default as GestureGuide } from "./GestureGuide"

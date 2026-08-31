@@ -193,7 +193,6 @@ const GestureControl = () => {
     if (lastResp?.ok && lastResp.command) {
       // setStae has to be called in use effect here because lastResp is not in this component
       //its basically coming from useCommands in the websocket, so that whenever there is a new response its added to the local log.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       pushManualCommand(lastResp.command, lastResp.source ?? "onscreen")
     }
   }, [lastResp, pushManualCommand])
@@ -330,17 +329,16 @@ const GestureControl = () => {
                 <Label className="text-lg font-semibold">
                   Gesture Detection
                 </Label>
-                
-                  
-                  {calibrated && (
-                    <button
-                      type="button"
-                      onClick={handleRecalibrate}
-                      className="text-xs text-dim hover:text-red underline underline-offset-2 transition-colors"
-                    >
-                      Recalibrate
-                    </button>
-                  )}
+
+                {calibrated && (
+                  <button
+                    type="button"
+                    onClick={handleRecalibrate}
+                    className="text-xs text-dim hover:text-red underline underline-offset-2 transition-colors"
+                  >
+                    Recalibrate
+                  </button>
+                )}
               </div>
 
               <GestureCameraFeed className="flex-1" />
