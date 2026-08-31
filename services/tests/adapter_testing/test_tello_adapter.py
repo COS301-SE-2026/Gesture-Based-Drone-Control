@@ -1,3 +1,4 @@
+import math
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -48,6 +49,7 @@ def adapter(mock_tello):
 		adapter = TelloAdapter()
 		# Manually inject the mock for easier testing
 		adapter._tello = mock_tello
+		adapter._schedule_wifi_query_sometimes = MagicMock()
 		return adapter
 
 
@@ -197,6 +199,7 @@ async def test_analog_with_triggers(adapter, mock_tello):
 	analog_input = MagicMock(spec=AnalogInput)
 	analog_input.left_y = 0.0
 	analog_input.left_x = 0.0
+
 	analog_input.right_y = 0.1
 	analog_input.ltrigger = 0.8
 	analog_input.rtrigger = 0.2
@@ -258,6 +261,118 @@ async def test_get_telemetry_not_connected(adapter, mock_tello):
 	assert isinstance(result, TelemetryData)
 	assert result.source == 'tello-disconnected'
 	mock_tello.get_current_state.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_get_telemetry_success_first_call(adapter, mock_tello):
+	adapter._connected = True
+	adapter._is_flying = True
+	adapter._x_displacement = 0.0
+	adapter._y_displacement = 0.0
+	adapter._last_telemetry_time = None
+	adapter._wifi_signal = 70
+
+	with patch('services.drone_control.adapters.tello_adapter.time.monotonic', return_value=1000.0):
+		result = await adapter.get_telemetry()
+
+	assert isinstance(result, TelemetryData)
+	assert result.source == 'tello'
+	assert result.altitude_m == 1.0
+
+	expected_speed = round(math.sqrt(20**2 + 30**2 + 40**2) / 100, 3)
+	assert result.speed_ms == expected_speed
+
+	body_heading = math.degrees(math.atan2(30, 20))
+	expected_heading = (body_heading + 45) % 360
+	assert result.heading_deg == expected_heading
+
+	assert result.battery_pct == 85
+	assert result.is_flying is True
+	assert result.x_displacement == 0.0
+	assert result.y_displacement == 0.0
+	assert result.extra == {'signal': 70}
+
+	assert adapter._last_telemetry_time == 1000.0
+	adapter._schedule_wifi_query_sometimes.assert_called_once_with(1000.0)
+
+
+@pytest.mark.asyncio
+async def test_get_telemetry_integrates_displacement_across_calls(adapter, mock_tello):
+	adapter._connected = True
+	adapter._is_flying = True
+	adapter._x_displacement = 0.0
+	adapter._y_displacement = 0.0
+	adapter._last_telemetry_time = None
+
+	with patch('services.drone_control.adapters.tello_adapter.time.monotonic', return_value=1000.0):
+		first = await adapter.get_telemetry()
+
+	assert first.x_displacement == 0.0
+	assert first.y_displacement == 0.0
+
+	with patch('services.drone_control.adapters.tello_adapter.time.monotonic', return_value=1000.5):
+		second = await adapter.get_telemetry()
+
+	yaw_rad = math.radians(45)
+	vx_ms, vy_ms = 20 / 100, 30 / 100
+	world_vx = vx_ms * math.cos(yaw_rad) - vy_ms * math.sin(yaw_rad)
+	world_vy = vx_ms * math.sin(yaw_rad) + vy_ms * math.cos(yaw_rad)
+	expected_x = round(world_vx * 0.5, 3)
+	expected_y = round(world_vy * 0.5, 3)
+
+	assert second.x_displacement == expected_x
+	assert second.y_displacement == expected_y
+	assert adapter._last_telemetry_time == 1000.5
+
+
+@pytest.mark.asyncio
+async def test_get_telemetry_dt_clamped_to_max(adapter, mock_tello):
+	adapter._connected = True
+	adapter._is_flying = True
+	adapter._x_displacement = 0.0
+	adapter._y_displacement = 0.0
+	adapter._last_telemetry_time = 0.0
+	adapter.MAX_DT_S = 0.5
+
+	with patch('services.drone_control.adapters.tello_adapter.time.monotonic', return_value=1000.0):
+		result = await adapter.get_telemetry()
+
+	yaw_rad = math.radians(45)
+	vx_ms, vy_ms = 20 / 100, 30 / 100
+	world_vx = vx_ms * math.cos(yaw_rad) - vy_ms * math.sin(yaw_rad)
+	world_vy = vx_ms * math.sin(yaw_rad) + vy_ms * math.cos(yaw_rad)
+	expected_x = round(world_vx * 0.5, 3)
+	expected_y = round(world_vy * 0.5, 3)
+
+	assert result.x_displacement == expected_x
+	assert result.y_displacement == expected_y
+
+
+async def test_get_telemetry_not_flying_does_not_move(adapter, mock_tello):
+	adapter._connected = True
+	adapter._is_flying = False
+	adapter._x_displacement = 0.0
+	adapter._y_displacement = 0.0
+	adapter._last_telemetry_time = 1000.0
+
+	with patch('services.drone_control.adapters.tello_adapter.time.monotonic', return_value=1001.0):
+		result = await adapter.get_telemetry()
+
+	assert not result.is_flying
+	assert result.x_displacement == 0.0
+	assert result.y_displacement == 0.0
+
+
+@pytest.mark.asyncio
+async def test_get_telemetry_exception(adapter, mock_tello):
+	adapter._connected = True
+	mock_tello.get_current_state.side_effect = Exception('State error')
+
+	result = await adapter.get_telemetry()
+
+	assert isinstance(result, TelemetryData)
+	assert result.source == 'tello-error'
+	mock_tello.get_position.assert_not_called()
 
 
 def test_assert_connected(adapter):
