@@ -199,6 +199,43 @@ class DroneAdapter(ABC):
 		"""
 		...
 
+
+	@property
+	def has_camera(self) -> bool:
+		"""
+		says whether the adapter has a camera or not 
+		reimplement to return true in adapter with camera 
+		"""
+		return False
+
+	async def start_video(self) -> bool:
+		"""
+		used to start the camera stream on adapters with one
+		should be implemented idempotent so start on started stream just returns true
+		should be called from connect()
+		"""
+		return False
+
+	async def stop_video(self) -> None:
+		"""
+		Stops producing frames
+		must be safe to call when video wasnt started 
+		should be called in disconnect
+		"""
+		return None
+
+	def latest_frame(self) -> CameraFrame:
+		"""
+		fetches the latest frame to send to the api route for encoding 
+
+		deliberately synchronous as the implementation should be reading an already decoded 
+		buffer filled by a background thread
+		Returns a camera frame with frame = none when nothing is available
+		dont raise exceptions for an empty stream
+		"""
+
+		return CameraFrame(source=getattr(self, 'kind', 'unknown'))
+
 	# concrete method for command dispatch
 	async def execute(self, command: Command) -> None:
 		"""
