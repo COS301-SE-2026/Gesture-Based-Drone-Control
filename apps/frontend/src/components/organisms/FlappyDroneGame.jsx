@@ -42,7 +42,7 @@ export default function FlappyDroneGame() {
   // commands are recieved from the game WS and are mapped to kaplay actions
   // check if input maps to an in game action and execute it
   useGameCommands((msg) => {
-    const { command, left_y, right_y, rtrigger } = msg
+    const { command, left_y, right_y, rtrigger, ltrigger } = msg
 
     if (UP_COMMANDS.has(command)) {
       upRef.current?.()
