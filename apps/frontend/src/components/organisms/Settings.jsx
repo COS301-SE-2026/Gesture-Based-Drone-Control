@@ -1,7 +1,6 @@
-import { DroneInfoCard } from "../molecules"
+import { DroneInfoCard, RecognizerToggle, CameraSettingsCard } from "../molecules"
 import { useDebug } from "@/context/DebugContext"
 import { Toggle, Label } from "../atoms"
-import CameraSettingsCard from "../molecules/CameraSettingsCard"
 
 const Settings = () => {
   const { debugMode, toggle } = useDebug()
@@ -25,6 +24,7 @@ const Settings = () => {
           </p>
         </div>
         <Toggle checked={debugMode} onChange={toggle} />
+        <RecognizerToggle/>
       </div>
 
       <div className="max-w-md ml-6">
