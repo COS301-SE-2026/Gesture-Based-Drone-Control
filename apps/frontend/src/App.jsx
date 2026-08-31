@@ -24,6 +24,7 @@ function App() {
       <TelemetryProvider>
         <CommandsProvider>
           <CameraConsentProvider>
+            <TourProvider>
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
@@ -39,6 +40,7 @@ function App() {
                 <Route path="test" element={<TestPage />} />
               </Route>
             </Routes>
+            </TourProvider>
           </CameraConsentProvider>
         </CommandsProvider>
       </TelemetryProvider>
