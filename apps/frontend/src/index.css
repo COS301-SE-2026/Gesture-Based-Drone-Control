@@ -408,3 +408,12 @@ select:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+.md-path-segment {
+  animation: md-path-draw 0.5s ease-out forwards;
+}
+@keyframes md-path-draw {
+  from {
+    opacity: 0;
+  }
+}

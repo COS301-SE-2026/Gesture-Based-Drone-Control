@@ -65,36 +65,42 @@ const FAQS = [
     question: "The drone won't take off when I gesture - why?",
     answer:
       "The dashboard must say ACTIVE before takeoff works. The system also refuses to take off below the battery safety threshold, so check your telemetry panel first.",
+    defaultOpen: true,
   },
   {
     id: 2,
     question: "Why does the drone just hover on its own?",
     answer:
       "This is a built-in safety feature, not a bug. If you stop gesturing for 3 seconds, or the drone loses connection for some time, it automatically freezes in place until you take over again.",
+    defaultOpen: false,
   },
   {
     id: 3,
     question: "My hand isn't being tracked properly on screen",
     answer:
       "Check your camera permissions, improve your lighting, and move your hand to about one to two arm-lengths from the camera. Rings, watches, or sleeves near your finger joints can also confuse the tracker. Alternatively recalibrate your camera using the built in feature.",
+    defaultOpen: false,
   },
   {
     id: 4,
     question: "What happens if the battery gets low mid-flight?",
     answer:
       "Once the battery level drops below 20%, the drone lands itself automatically and gently on the spot.",
+    defaultOpen: false,
   },
   {
     id: 5,
     question: "Can I try this without an actual drone?",
     answer:
       "Yes - switch the Adapter to DroneSim before starting a session. It's the dashboard, same gestures, same safety features, just with a simulated drone instead of a real one.",
+    defaultOpen: false,
   },
   {
     id: 6,
     question: "How do I stop the drone immediately?",
     answer:
       "Click the red Emergency Stop on the dashboard, or press ESCAPE when connected to the keyboard adapter. The drone lands right away - all motors are stopped.",
+    defaultOpen: false,
   },
 ]
 
@@ -140,7 +146,7 @@ export default function Help() {
         />
 
         <section>
-          <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-6">
+          <h2 className="text-xl font-semibold text-ink mb-6">
             Browse by topic
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -157,23 +163,23 @@ export default function Help() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-6">
+          <h2 className="text-xl font-semibold text-ink mb-6">
             Frequently asked questions
           </h2>
           <div className="flex flex-col gap-3">
-            {FAQS.map((f, i) => (
+            {FAQS.map((f) => (
               <FaqItem
                 key={f.id}
                 question={f.question}
                 answer={f.answer}
-                defaultOpen={i === 0}
+                defaultOpen={f.defaultOpen}
               />
             ))}
           </div>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-6">
+          <h2 className="text-xl font-semibold text-ink mb-6">
             Still stuck? Talk to the team
           </h2>
           <Contactcard

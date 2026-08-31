@@ -16,10 +16,12 @@ const NavItem = ({
         "flex items-center w-full py-2.5 rounded-lg",
         collapsed ? "justify-center px-2" : "gap-3 px-4",
         "font-sans text-base font-medium",
-        "transition-all duration-200",
+        "transition-all duration-200 ease-out",
         "focus:outline-none focus:ring-2 focus:ring-red/40",
         "group",
-        active ? "bg-red text-white shadow-md" : "text-ink hover:bg-ink/10",
+        active
+          ? "bg-red text-white shadow-md scale-[1.02]"
+          : "text-ink hover:bg-ink/10 hover:translate-x-0.5",
         className,
       ]
         .filter(Boolean)
@@ -29,7 +31,7 @@ const NavItem = ({
         <Icon
           size={30}
           strokeWidth={active ? 2 : 1.8}
-          className={active ? "text-white" : "text-ink transition-colors"}
+          className={active ? "text-white" : "text-ink group-hover:scale-100"}
         />
       )}
       {!collapsed && <span>{label}</span>}

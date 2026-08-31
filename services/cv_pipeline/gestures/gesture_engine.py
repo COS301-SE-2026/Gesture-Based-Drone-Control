@@ -104,6 +104,10 @@ class GestureEngine:
 			frame_index=detection_result.frame_index,
 		)
 
+	def reset_stabilizer(self) -> None:
+		"""Drop smoothing history, used when the recognizer is swapped"""
+		self._stabilizer.reset()
+
 
 # smoke test, going for that second smoke now
 if __name__ == '__main__':
