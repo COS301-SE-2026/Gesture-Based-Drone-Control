@@ -207,6 +207,10 @@ class TelloAdapter(DroneAdapter):
 			logger.debug('Telemetry exception detail', exc_info=True)
 			return TelemetryData(source='tello-error')
 
+
+	
+	
+
 	def _assert_connected(self) -> None:
 		if not self._connected:
 			raise RuntimeError(

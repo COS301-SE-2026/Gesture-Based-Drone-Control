@@ -23,12 +23,42 @@ from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from services.commands.command import AnalogInput, Command, CommandType
 
+if TYPE_CHECKING:
+	import numpy as np
+
 logger = logging.getLogger(__name__)
 
+@dataclass
+class CameraFrame:
+	"""
+	A single video frame with metadata
+
+	frame: np.ndarray | None
+		BGR image as opencv expects. 
+		None when no frame available (stream warming up or lijnk dropped)
+
+	seq: int
+		monotonically increasing sequence number
+		increments on a genuine new frame
+		use it to compare against seq of another frame to avoid re-encoding duplicate frames
+
+	width / height: int
+		Native dimensions of source before any downscaling by consumer
+	"""
+
+	frame: 'np.ndarray | None' = None
+	seq: int = 0
+	width: int = 0
+	height: int = 0
+	source: str = 'unknown'
+	extra: dict = field(default_factory=dict)
+
+class CameraUnavailableError(RuntimeError):
+	"""raised when camera operation is attempted on an adapter without one"""
 
 @dataclass
 class TelemetryData:
