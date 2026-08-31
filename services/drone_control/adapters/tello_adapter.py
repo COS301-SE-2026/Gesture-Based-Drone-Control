@@ -254,7 +254,7 @@ class TelloAdapter(DroneAdapter):
 			await asyncio.sleep(delay)
 			await self.hover()
 		except asyncio.CancelledError:
-			pass
+			raise
 			# this happens when a new command comes in
 
 	async def stop(self):

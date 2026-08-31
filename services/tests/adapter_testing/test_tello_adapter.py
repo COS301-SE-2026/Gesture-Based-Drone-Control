@@ -213,16 +213,20 @@ async def test_analog_with_triggers(adapter, mock_tello):
 @pytest.mark.asyncio
 async def test_analog_not_connected(adapter):
 	adapter._connected = False
+	analog_input = MagicMock()
+
 	with pytest.raises(RuntimeError, match='Tello Drone is not connected.'):
-		await adapter.analog(MagicMock())
+		await adapter.analog(analog_input)
 
 
 @pytest.mark.asyncio
 async def test_analog_not_flying(adapter):
 	adapter._connected = True
 	adapter._is_flying = False
+	analog_input = MagicMock()
+
 	with pytest.raises(RuntimeError, match='Tello Drone is not flying.'):
-		await adapter.analog(MagicMock())
+		await adapter.analog(analog_input)
 
 
 @pytest.mark.asyncio
