@@ -68,7 +68,6 @@ const Games = () => {
 
   return (
     <div className="p-6 space-y-6">
-
       {/* controls row */}
       <div className="flex items-center gap-4 flex-wrap">
         <select
@@ -77,38 +76,44 @@ const Games = () => {
           disabled={gameActive}
         >
           {INPUT_ADAPTERS.map((a) => (
-            <option key={a} value={a}>{a}</option>
+            <option key={a} value={a}>
+              {a}
+            </option>
           ))}
         </select>
 
-        <button
-          onClick={gameActive ? stop : start}
-        >
+        <button onClick={gameActive ? stop : start}>
           {gameActive ? "Stop" : "Start"}
         </button>
 
         {/* status indicators */}
         <div className="flex items-center gap-2">
-          <span className={`w-2 h-2 ${
-            status === "connected" ? "bg-green-500" :
-            status === "connecting" ? "bg-yellow-500" :
-            status === "failed" ? "bg-red-500" : "bg-Grey/40"
-          }`} />
+          <span
+            className={`w-2 h-2 ${
+              status === "connected"
+                ? "bg-green-500"
+                : status === "connecting"
+                  ? "bg-yellow-500"
+                  : status === "failed"
+                    ? "bg-red-500"
+                    : "bg-Grey/40"
+            }`}
+          />
           <span>game: {status}</span>
         </div>
 
         {gameActive && (
           <div className="flex items-center gap-2">
-            <span className={`w-2 h-2  ${
-              inputConnected ? "bg-green-500" : "bg-Grey/40"
-            }`} />
+            <span
+              className={`w-2 h-2  ${
+                inputConnected ? "bg-green-500" : "bg-Grey/40"
+              }`}
+            />
             <span>input: {inputConnected ? "active" : "connecting..."}</span>
           </div>
         )}
 
-        {error && (
-          <span className="text-xs text-red-500">{error}</span>
-        )}
+        {error && <span className="text-xs text-red-500">{error}</span>}
       </div>
 
       {/* game and camera are in the same row*/}
@@ -120,12 +125,13 @@ const Games = () => {
         {/* camera feed thats only shown when the gestures adapter is selected */}
         {input === "gesture" && (
           <Card variant="glass" className="flex-1">
-            <Label size="sm" className="mb-3">Gesture Feed</Label>
+            <Label size="sm" className="mb-3">
+              Gesture Feed
+            </Label>
             <GestureCameraFeed className="flex-1" />
           </Card>
         )}
       </div>
-
     </div>
   )
 }

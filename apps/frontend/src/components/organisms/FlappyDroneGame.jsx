@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react"
 import droneSprite from "@/assets/games/flappy/drone.png"
 import background from "@/assets/games/flappy/background.jpg"
 import pipe from "@/assets/games/flappy/pipe.png"
+import { useGameCommands } from "@/hooks/useGameCommands"
 
 /**
  * this page houses everything for the kaplay minigame
@@ -17,9 +18,53 @@ import pipe from "@/assets/games/flappy/pipe.png"
  * fuckass and overdocumented
  */
 
+// commands will map to actual actions in the game
+const UP_COMMANDS = new Set(["MOVE_UP", "TAKEOFF", "MOVE_FORWARD", "ROTATE_CW"])
+const DOWN_COMMANDS = new Set([
+  "MOVE_DOWN",
+  "LAND",
+  "MOVE_BACKWARD",
+  "ROTATE_CCW",
+])
+const HOVER_COMMANDS = new Set(["MOVE_RIGHT", "MOVE_LEFT", "HOVER"])
+
 export default function FlappyDroneGame() {
   const canvasRef = useRef(null)
   const initialisedRef = useRef(false)
+
+  // these refs are exposed to the WS handler
+  // they are set inside the kaplay scene so that they are always current
+  const upRef = useRef(null)
+  const downRef = useRef(null)
+  const hoverRef = useRef(null)
+  const goLoseRef = useRef(null)
+
+  // commands are recieved from the game WS and are mapped to kaplay actions
+  // check if input maps to an in game action and execute it
+  useGameCommands((msg) => {
+    const { command, left_y, right_y, rtrigger } = msg
+
+    if (UP_COMMANDS.has(command)) {
+      upRef.current?.()
+      return
+    }
+    if (DOWN_COMMANDS.has(command)) {
+      downRef.current?.()
+      return
+    }
+    if (HOVER_COMMANDS.has(command)) {
+      hoverRef.current?.()
+      return
+    }
+    // analog is basically vibes rn, only consider y components
+    if (command === "ANALOG") {
+      if (left_y < -0.3 || right_y < -0.3 || rtrigger > 0.3) {
+        upRef.current?.()
+      } else if (left_y > 0.3 || right_y > 0.3 || ltrigger > 0.3) {
+        downRef.current?.()
+      }
+    }
+  })
 
   useEffect(() => {
     if (!canvasRef.current || initialisedRef.current) return
@@ -30,7 +75,7 @@ export default function FlappyDroneGame() {
       // initialisation
       const k = kaplay({
         canvas: canvasRef.current,
-        // fix the game resolution
+        // fix the game resolution. Change based on how we want the frontend to look
         width: 400,
         height: 500,
         stretch: true,
@@ -76,6 +121,14 @@ export default function FlappyDroneGame() {
           k.scale(k.width() / 201, k.height() / 251),
           k.z(-1), //should be behind everything else
         ])
+
+        // wire up the refs so that the WS handler can call them
+        upRef.current = () => 
+          {player.jump(JUMP_FORCE)
+          console.log("player jumpy")}
+        downRef.current = () => player.jump(-JUMP_FORCE)
+        hoverRef.current = () => player.jump(0.00001)
+        goLoseRef.current = () => k.go("lose", score)
 
         // kill if player goes out of bounds
         player.onUpdate(() => {
@@ -151,34 +204,50 @@ export default function FlappyDroneGame() {
       })
       // the scene that shows when one crashes
       k.scene("lose", (score = 0) => {
+
+        // clear all refs so laggy commands dont fire here
+        upRef.current = null
+        downRef.current = null
+        hoverRef.current = null
+        goLoseRef.current = null
+        
+        
         k.add([
           k.sprite("backSprite"),
           k.pos(0, 0),
           k.scale(k.width() / 201, k.height() / 251),
           k.z(-1), //should be behind everything else
-        ])
-
-        k.add([
-          k.text(`Score: ${score}`, { size: 48 }),
-          k.anchor("center"),
-          k.pos(k.width() / 2, k.height() / 2 - 40),
-          k.color(20, 20, 20),
-        ])
-        k.add([
-          k.text("w to retry", { size: 24 }),
-          k.anchor("center"),
-          k.pos(k.width() / 2, k.height() / 2 + 40),
-          k.color(180, 180, 180),
-        ])
-        // option to retry
-        k.wait(0.2, () => {
-          k.onKeyPress("w", () => k.go("game"))
-          k.onMousePress(() => k.go("game"))
+          ])
+          
+          k.add([
+            k.text(`Score: ${score}`, { size: 48 }),
+            k.anchor("center"),
+            k.pos(k.width() / 2, k.height() / 2 - 40),
+            k.color(20, 20, 20),
+          ])
+          k.add([
+            k.text("w or FLY UP to retry", { size: 24 }),
+            k.anchor("center"),
+            k.pos(k.width() / 2, k.height() / 2 + 40),
+            k.color(180, 180, 180),
+          ])
+          // option to retry
+          k.wait(0.2, () => {
+            upRef.current = () => k.go("game")
+            k.onKeyPress("w", () => k.go("game"))
+            k.onMousePress(() => k.go("game"))
+          })
         })
+        
+        k.go("game")
       })
-
-      k.go("game")
-    })
+      
+      return () => {
+        upRef.current = null
+        downRef.current = null
+        hoverRef.current = null
+        goLoseRef.current = null
+      }
   }, [])
 
   return (
