@@ -43,7 +43,11 @@ const LABEL_TOP =10
 const LABEL_BOTTOM = 450
 
 function layoutLabels(labels) {
-  const bySide = (side) => labels.filter((l) => l.side === side)
+  const bySide = (side) =>
+    labels
+  .filter((l) => l.side === side)
+  .sort((a,b) => a.target[1] - b.target[1])
+
   const space = (arr) => 
     arr.map((l, i) => ({
       ...l,
@@ -435,35 +439,54 @@ const ControllerLayout = ({ className = "" }) => {
         </text>
 
         {showLabels &&
-        LABEL_POSITIONS.map((l) => (
+        LABEL_POSITIONS.map((l) => {
+          const charWidth = 6.6
+          const textWidth = l.text.length * charWidth
+          const rectX = 
+          l.side === "left" ? l.labelX - 4 : l.labelX - textWidth - 4
+          return(
           <g key ={l.text}>
+
             <line
             x1={l.labelX}
             y1={l.labelY}
             x2={l.target[0]}
             y2={l.target[1]}
-            strokeWidth="1"
-            strokeDasharray="2,2"
-            className="stroke-OffBlack/30 dark:stroke-OffWhite/30"
+
+            strokeWidth="1.25"
+            className="stroke-OffBlack/80 dark:stroke-OffWhite/80"
             />
+
             <circle
             cx={l.target[0]}
             cy={l.target[1]}
-            r="3"
+            r="3.5"
             className="fill-Red"
             />
+
+            <rect
+            x={rectX}
+            y={l.labelY - 8}
+            width={textWidth + 8}
+            height="16"
+            rx="3"
+            className="fill-black/70"
+            />
+
             <text
             x={l.labelX}
             y={l.labelY}
+
             textAnchor={l.side === "left" ? "start" : "end"}
             dominantBaseline="middle"
-            className="text-[10px] fontn-mono fill-OffBlack/80 dark:fill-OffWhite/80"
+            className="text-[11px] font-mono font-semibold fill-white "
             >
               {l.text}
             </text>
           </g>
-        ))}
-        
+          )
+})}
+
       </svg>
     </div>
   )
