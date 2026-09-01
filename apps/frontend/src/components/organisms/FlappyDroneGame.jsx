@@ -76,8 +76,8 @@ export default function FlappyDroneGame() {
       const k = kaplay({
         canvas: canvasRef.current,
         // fix the game resolution. Change based on how we want the frontend to look
-        width: 400,
-        height: 500,
+        width: 1064,
+        height: 600,
         stretch: true,
         letterbox: true,
         background: [10, 10, 10],
@@ -93,10 +93,10 @@ export default function FlappyDroneGame() {
 
       //main scene for gameplay
       k.scene("game", () => {
-        const PIPE_OPEN = 150
+        const PIPE_OPEN = 180
         const PIPE_MIN = 60
-        const JUMP_FORCE = 250
-        const SPEED = 250
+        const JUMP_FORCE = 150
+        const SPEED = 200
         const CEILING = -250
 
         // game object comprising of a bunch of components and tags
@@ -191,7 +191,7 @@ export default function FlappyDroneGame() {
         })
 
         // spawn pipe every second
-        k.loop(1, spawnPipe)
+        k.loop(1.5, spawnPipe)
 
         let score = 0
         const scoreLabel = k.add([
@@ -254,7 +254,7 @@ export default function FlappyDroneGame() {
     <canvas
       ref={canvasRef}
       className="w-full rounded-xl"
-      style={{ aspectRatio: "9/16" }}
+      style={{ aspectRatio: "16/9" }}
     />
   )
 }

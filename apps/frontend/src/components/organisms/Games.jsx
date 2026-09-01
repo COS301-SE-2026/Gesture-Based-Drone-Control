@@ -116,7 +116,7 @@ const Games = () => {
 
       {/* game and camera are in the same row*/}
       <div className="flex gap-6 items-start">
-        <div className="w-[300px] shrink-0">
+        <div className="w-[1064px] shrink-0">
           <FlappyDroneGame />
         </div>
 
