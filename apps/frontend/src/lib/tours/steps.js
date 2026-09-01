@@ -42,13 +42,14 @@ export const gesturesSteps =[
 
     {
         route:"/gestures",
-        route:'[data-tour="command-history"]',
+        target:'[data-tour="command-history"]',
         title:"Command History",
         content:"Every command executed this session , whether triggered by a gesture, keyboard input or an onscreen button will show up here "
 
     },
 
-
+// ayt so if we decide to do the carea card switching thing then that has to be chnages accordingly here too
+//dont forget to make the chnages on the organism pages as well to ass the tags pper name
 ]
 
 
@@ -75,7 +76,43 @@ export const gpsSteps =[
 ]
 
 
-//ALL THE OTHER PAGES NEED TO BE ADDED BUT LETS TEST THESE OUT FOR NOW.
+export const analyticsSteps=[
+    {
+        route: "/analytics",
+        target: '[data-tour="analytics-summary"]',
+        title:"Session Summary",
+        content:"Total flights, your fastest speed and altitude reached this sesssion."
+
+    },
+
+    {
+        route: "/analytics",
+        target: '[data-tour="analytics-live-charts"]',
+        title:"Live Charts",
+        content:"Speed and battery health,updating in real time as telemetry comes in."
+    },
+
+    {
+        route: "/analytics",
+        target: '[data-tour="analytics-performance"]',
+        title:"Flight History",
+        content:"Duration of your most recent completed flights pulled from the database"
+    },
+
+    {
+        route: "/analytics",
+        target: '[data-tour="analytics-totals"]',
+        title:"Overall Totals",
+        content:"Distance flown, average flight duration and avergae speed across your sessions."
+    },
 
 
-export const fullTourSteps =[...gesturesSteps, ...gpsSteps]
+
+
+]
+
+
+
+
+
+export const fullTourSteps =[...gesturesSteps, ...gpsSteps, ...analyticsSteps]
