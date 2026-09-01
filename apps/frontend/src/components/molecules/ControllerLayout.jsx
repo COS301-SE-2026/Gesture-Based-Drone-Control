@@ -13,10 +13,55 @@ const STICK_RANGE = 22 //its like how far it can move when pressed
 const DEADZONE = 0.08 //da deadzone like an ignore zone basically
 
 const cleanAxis = (axis = 0) => (Math.abs(axis) < DEADZONE ? 0 : axis)
+
+//labels stuff for the controller so that the user knows whats what(cause peopel like me dont know controller ball)
+const CONTROL_LABELS=[
+  {target: [260,205] , text: "Move Forward", side:"left" },
+  {target: [260,295], text: "Move Backward", side: "left"},
+  {target: [215,250], text: "Move Left", side: "left"},
+  {target: [305,250], text: "Move Right", side: "left"},
+
+  {target: [590,205], text: "Increase Altitude", side: "right"},
+  {target: [590,295], text: "Decrease Altitude", side: "right"},
+
+  {target: [545,250], text: "Rotate Left", side: "right"},
+  {target: [635,250], text: "Rotate Right", side: "right"},
+
+  {target: [720,115], text: "Takeoff", side: "right"},
+
+  {target: [680,155], text: "Hover", side: "right"},
+
+  {target: [760,155], text: "Land", side: "right"},
+
+  {target: [720,195], text: "Emergency Stop", side: "right"},
+
+]
+
+const LEFT_MARGIN_X = -140
+const RIGHT_MARGIN_X =990
+const LABEL_TOP =10
+const LABEL_BOTTOM = 450
+
+function layoutLabels(labels) {
+  const bySide = (side) => labels.filter((l) => l.side === side)
+  const space = (arr) => 
+    arr.map((l, i) => ({
+      ...l,
+      labelX: l.side === "left"? LEFT_MARGIN_X : RIGHT_MARGIN_X,
+      labelY:
+      LABEL_TOP +
+      (i* (LABEL_BOTTOM - LABEL_TOP)) /(arr.length - 1 || 1),
+    }))
+    return [...space(bySide("left")), ...space(bySide("right"))]
+}
+const LABEL_POSITIONS = layoutLabels(CONTROL_LABELS)
+
+
 const ControllerLayout = ({ className = "" }) => {
   const [connected, setConnected] = useState(false) //detedted by the brosweser or nah?
   const [buttons, setButtons] = useState(Array(17).fill(false))
   const [axes, setAxes] = useState([0, 0, 0, 0]) //left x then y then right x then y
+  const [showLabels, setShowLabels] = useState(true) // so that it starts on and the user can collapse it if they dont like da labels
   const rafRef = useRef(0)
 
   useEffect(() => {
@@ -77,9 +122,16 @@ const ControllerLayout = ({ className = "" }) => {
             ? "Controller Connected Successfully"
             : "No Controller Detected"}
         </span>
+        <button
+        type="button"
+        onClick = {()=> setShowLabels((v) => !v)}
+        className="text-xs font-mono text-OffBlack/60 dark:text-OffWhite/60 underline underline-offset-2 hover:text-OffBlack dark:hover:text-OffWhite transition-colors"
+        >
+          {showLabels ? "HideLabels" : "Show Labels"}
+        </button>
       </div>
 
-      <svg viewBox="0 0 850 460" className="w-full max-w-[600px]">
+      <svg viewBox="-160 -20 1170 500" className="w-full max-w-[600px]">
         {/* the background circle and rectangle main ones */}
         <circle
           cx="150"
@@ -381,6 +433,37 @@ const ControllerLayout = ({ className = "" }) => {
         >
           Axis 1
         </text>
+
+        {showLabels &&
+        LABEL_POSITIONS.map((l) => (
+          <g key ={l.text}>
+            <line
+            x1={l.labelX}
+            y1={l.labelY}
+            x2={l.target[0]}
+            y2={l.target[1]}
+            strokeWidth="1"
+            strokeDasharray="2,2"
+            className="stroke-OffBlack/30 dark:stroke-OffWhite/30"
+            />
+            <circle
+            cx={l.target[0]}
+            cy={l.target[1]}
+            r="3"
+            className="fill-Red"
+            />
+            <text
+            x={l.labelX}
+            y={l.labelY}
+            textAnchor={l.side === "left" ? "start" : "end"}
+            dominantBaseline="middle"
+            className="text-[10px] fontn-mono fill-OffBlack/80 dark:fill-OffWhite/80"
+            >
+              {l.text}
+            </text>
+          </g>
+        ))}
+        
       </svg>
     </div>
   )
