@@ -102,6 +102,11 @@ tasks:
     cmds:
       - uv run pytest tests --cov --cov-report=term-missing
 
+  contracts:
+    desc: Validates API service contracts
+    cmd: 
+      - uv run python packages/api-contracts/validate_contracts.py
+
   e2e-test:
     desc: Runs End to End Tests
     dir: "{{.FRONTEND_DIR}}"
@@ -113,6 +118,7 @@ tasks:
     deps:
       - backend-lint
       - frontend-lint
+      - contracts
 
   backend-lint:
     cmds:
