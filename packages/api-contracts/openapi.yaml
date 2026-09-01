@@ -1,0 +1,1299 @@
+
+# REST service contract for the backend
+
+# This is the AUTHORED contract. FastAPI also generates a document at runtime from
+# the Pydantic models (GET /openapi.json). The two are expected to agree; see
+# validate.py for the check
+
+# Every route below is mounted under the /api prefix by
+# apps/backend/app/api/__init__.py
+
+openapi: 3.0.3
+
+info:
+  title: Gesture-Based Drone Control API
+  version: '1.0.0'
+  description: |
+    Service contract for the GBDC backend.
+
+    Defines the boundary between the React dashboard, the FastAPI service layer,
+    and the drone / input adapter subsystems. Request-response operations are
+    specified here; the continuous streams (camera frames, telemetry, calibration
+    progress, live commands) are specified in `asyncapi.yaml` alongside this file.
+
+    Authentication is cookie-based. `POST /api/auth/login` and `POST /api/auth/signup`
+    set HTTP-only access and refresh cookies on the response. Tokens are never
+    returned in a response body.
+  contact:
+    name: Codex Merchants
+    email: codexmerchants@gmail.com
+    url: https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control
+  license:
+    name: See repository
+    url: https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control
+
+servers:
+  - url: http://127.0.0.1:3001
+    description: Local development server (BACKENDPORT, default 3001)
+
+tags:
+  - name: health
+    description: Liveness probes.
+  - name: auth
+    description: Operator registration, login and session rotation.
+  - name: drone
+    description: Drone adapter lifecycle and state.
+  - name: gestures
+    description: Camera pipeline status.
+  - name: calibration
+    description: Pre-flight gesture calibration.
+  - name: input
+    description: Input adapter lifecycle and gesture command history.
+  - name: analytics
+    description: Read-only flight history and aggregates.
+
+paths:
+  # health
+  /api/health:
+    get:
+      summary: Backend liveness probe
+      operationId: health
+      tags: [health]
+      responses:
+        '200':
+          description: Backend is up.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/auth/health:
+    get:
+      summary: Auth router liveness probe
+      operationId: authHealth
+      tags: [health]
+      responses:
+        '200':
+          description: Auth router is mounted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/drone/health:
+    get:
+      summary: Drone router liveness probe
+      operationId: droneHealth
+      tags: [health]
+      responses:
+        '200':
+          description: Drone router is mounted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/gestures/health:
+    get:
+      summary: Gesture router liveness probe
+      operationId: gestureHealth
+      tags: [health]
+      responses:
+        '200':
+          description: Gesture router is mounted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  # auth
+  /api/auth/signup:
+    post:
+      summary: Register a new operator
+      operationId: signup
+      tags: [auth]
+      description: |
+        Creates the account and logs the caller in immediately by setting the access
+        and refresh cookies on the response. The password is validated against
+        `validate_password_strength` before the account is created, so a weak
+        password fails with 422 rather than being stored.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '201':
+          description: Account created. Session cookies set.
+          headers:
+            Set-Cookie:
+              description: Access token cookie, then refresh token cookie.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                message: Signup Successful
+        '409':
+          description: An account already exists for this email address.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                detail: A user with this email already exists
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/auth/login:
+    post:
+      summary: Authenticate an operator and open a session
+      operationId: login
+      tags: [auth]
+      description: |
+        On success the access and refresh tokens are set as HTTP-only cookies. They
+        are deliberately NOT included in the response body, so a client must rely on
+        cookie storage rather than reading a token out of JSON.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Credentials accepted. Session cookies set.
+          headers:
+            Set-Cookie:
+              description: Access token cookie, then refresh token cookie.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                message: Login is succesful
+        '401':
+          description: Unknown email address, or the password does not match.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                detail: Invalid email or password
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/auth/refresh:
+    post:
+      summary: Rotate the session using the refresh cookie
+      operationId: refreshSession
+      tags: [auth]
+      description: |
+        Takes no request body. The refresh token is read from the HTTP-only cookie
+        named by `AuthSettings.refresh_cookie_name`. A successful call issues a new
+        pair of cookies and invalidates the presented refresh token.
+      security:
+        - refreshCookie: []
+      responses:
+        '201':
+          description: New session cookies issued.
+          headers:
+            Set-Cookie:
+              description: Replacement access and refresh cookies.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                message: Token Refresh Successful
+        '401':
+          description: Refresh cookie absent, expired, revoked or unrecognised.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                detail: No refresh token provided
+
+  /api/auth/logout:
+    post:
+      summary: End the session and clear cookies
+      operationId: logout
+      tags: [auth]
+      description: |
+        Revokes the refresh token server-side and clears both cookies. Calling this
+        with no refresh cookie present still clears the cookies and returns 200, so
+        logout is safe to call unconditionally.
+      security:
+        - refreshCookie: []
+      responses:
+        '200':
+          description: Session ended. Cookies cleared.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                message: Logout Successful
+        '401':
+          description: A refresh cookie was presented but is not valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # drone
+  /api/drone/connect:
+    post:
+      summary: Bind the backend to a drone adapter
+      operationId: connectDrone
+      tags: [drone]
+      description: |
+        Instantiates the requested adapter through the adapter factory and installs it
+        as the single active adapter in `AppState`. If an adapter is already connected
+        it is disconnected first, so switching backends is one call rather than two.
+
+        A drone row is created or fetched at this point, which is what gives the
+        analytics endpoints something to attribute flights to.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectDroneRequest'
+            examples:
+              dummy:
+                summary: In-memory drone, no simulator required
+                value:
+                  adapter: dummy
+              projectAirSim:
+                summary: Project AirSim on the local machine
+                value:
+                  adapter: projectairsim
+                  vehicle_name: Drone-1
+                  host: 127.0.0.1
+                  topics_port: 8989
+                  services_port: 8990
+              legacyAirSim:
+                summary: Legacy AirSim over msgpack-rpc
+                value:
+                  adapter: airsim
+                  host: 127.0.0.1
+                  port: 41451
+      responses:
+        '200':
+          description: |
+            Returned for every outcome, including a refused connection and an unknown
+            adapter name. Clients MUST branch on the `connected` boolean rather than
+            on the HTTP status code.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectDroneResponse'
+              examples:
+                connected:
+                  summary: Adapter connected
+                  value:
+                    connected: true
+                    adapter: projectairsim
+                    message: Connected to projectairsim at 127.0.0.1
+                refused:
+                  summary: Simulator not reachable
+                  value:
+                    connected: false
+                    adapter: projectairsim
+                    message: Cannot connect to projectairsim at 127.0.0.1.
+                unknownAdapter:
+                  summary: Adapter name not in the factory
+                  value:
+                    connected: false
+                    adapter: hoverboard
+                    message: 'Unknown adapter: hoverboard. Supported: dummy, airsim, projectairsim, tello'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/drone/disconnect:
+    post:
+      summary: Release the active drone adapter
+      operationId: disconnectDrone
+      tags: [drone]
+      description: |
+        Ends any in-progress flight record, disconnects the adapter and resets
+        `AppState`. Calling this with nothing connected is not an error; it returns
+        `success: false` with an explanatory message.
+      responses:
+        '200':
+          description: Disconnect attempted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisconnectResponse'
+              examples:
+                disconnected:
+                  value:
+                    success: true
+                    message: projectairsim adapter successfully disconnected
+                nothingConnected:
+                  value:
+                    success: false
+                    message: There is no drone connected.
+
+  /api/drone/status:
+    get:
+      summary: Connection state and a telemetry snapshot
+      operationId: droneStatus
+      tags: [drone]
+      description: |
+        When no adapter is connected the response omits `telemetry` entirely, so
+        consumers must treat that field as optional rather than assuming a
+        zero-filled object.
+      responses:
+        '200':
+          description: Current adapter state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DroneStatus'
+              examples:
+                connected:
+                  value:
+                    connected: true
+                    adapter: dummy
+                    telemetry:
+                      altitude_m: 3.42
+                      speed_ms: 1.15
+                      battery_pct: 87.0
+                      heading_deg: 271.4
+                      is_flying: true
+                      x_displacement: 2.1
+                      y_displacement: -0.6
+                      source: dummy
+                      extra: {}
+                disconnected:
+                  value:
+                    connected: false
+                    adapter: null
+
+  # -------------------------------------------------------------- gestures
+  /api/gestures/status:
+    get:
+      summary: Camera pipeline status
+      operationId: gestureStreamStatus
+      tags: [gestures]
+      description: |
+        The pipeline starts automatically when the first client subscribes to
+        `WS /api/gestures/stream` and stops when the last one disconnects, so
+        `running` reflects subscriber demand rather than a manual switch.
+      responses:
+        '200':
+          description: Pipeline state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GestureStreamStatus'
+
+  # ------------------------------------------------------------ calibration
+  /api/calibration/status:
+    get:
+      summary: Current calibration state
+      operationId: calibrationStatus
+      tags: [calibration]
+      description: |
+        State is held in memory by a single application-wide `CalibrationManager`,
+        so a backend restart returns it to `not_started`.
+      responses:
+        '200':
+          description: Calibration state and sequence progress.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalibrationStatus'
+
+  /api/calibration/start:
+    post:
+      summary: Start or restart a calibration run
+      operationId: startCalibration
+      tags: [calibration]
+      description: |
+        Begins a fresh session covering every gesture in the sequence. Any previous
+        result is discarded. Connecting to `WS /api/calibration/stream` also starts a
+        run, so calling this first is optional.
+      responses:
+        '200':
+          description: A new session is in progress.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalibrationStatus'
+
+  /api/calibration/skip:
+    post:
+      summary: Skip calibration
+      operationId: skipCalibration
+      tags: [calibration]
+      description: |
+        Marks the operator as calibrated without running the sequence, for someone who
+        has calibrated before and wants to fly right away. Reports status `skipped`,
+        which satisfies `is_calibrated` exactly as `completed` does.
+      responses:
+        '200':
+          description: Calibration marked as skipped.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalibrationStatus'
+
+  # input
+  /api/input/connect:
+    post:
+      summary: Connect an input adapter and wire it to the active drone
+      operationId: connectInput
+      tags: [input]
+      description: |
+        Replaces any adapter already registered. The drone does not have to be
+        connected first, but commands emitted before a drone is connected are dropped
+        with a warning rather than queued.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectInputRequest'
+      responses:
+        '200':
+          description: |
+            Returned for every outcome, including an unknown adapter name. Branch on
+            `connected`, not on the status code.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectInputResponse'
+              examples:
+                connected:
+                  value:
+                    connected: true
+                    adapter: gesture
+                    message: gesture input adapter connected
+                unknownAdapter:
+                  value:
+                    connected: false
+                    adapter: mindreader
+                    message: "invalid input adapter: 'mindreader'"
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/input/disconnect:
+    post:
+      summary: Release the active input adapter
+      operationId: disconnectInput
+      tags: [input]
+      responses:
+        '200':
+          description: Disconnect attempted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisconnectResponse'
+
+  /api/input/status:
+    get:
+      summary: Active input adapter snapshot
+      operationId: inputStatus
+      tags: [input]
+      responses:
+        '200':
+          description: |
+            When nothing is connected, `adapter` carries the literal string
+            'None connected' rather than null.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputStatus'
+              examples:
+                connected:
+                  value:
+                    connected: true
+                    adapter: keyboard
+                disconnected:
+                  value:
+                    connected: false
+                    adapter: None connected
+
+  /api/input/gesture/events:
+    get:
+      summary: Gesture command history
+      operationId: gestureEventHistory
+      tags: [input]
+      description: |
+        REST fallback for `WS /api/input/ws/gesture/events`, carrying the same event
+        payloads. One event per gesture transition, not per frame: a gesture held for
+        five seconds produces exactly one event. Oldest first; the dashboard reverses
+        the list for newest-first display. The log is bounded at 50 events.
+      responses:
+        '200':
+          description: Recent gesture transitions.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [events]
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GestureEvent'
+
+  /api/input/gesture/config:
+    post:
+      summary: Retune the gesture adapter at runtime
+      operationId: configureGestureAdapter
+      tags: [input]
+      description: |
+        Proof of concept for live tuning. Applies only when the gesture adapter is the
+        active input source; otherwise it reports `ok: false` and changes nothing.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GestureConfigRequest'
+      responses:
+        '200':
+          description: Configuration applied, or rejected because the adapter is inactive.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GestureConfigResponse'
+              examples:
+                applied:
+                  value:
+                    ok: true
+                    applied:
+                      idle_timeout_s: 3.0
+                      min_confidence: 0.85
+                      min_stable_frames: 2
+                inactive:
+                  value:
+                    ok: false
+                    message: GestureAdapter is not the active input source
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  # analytics
+  /api/analytics/flights:
+    get:
+      summary: Recent flights, newest first
+      operationId: recentFlights
+      tags: [analytics]
+      description: |
+        Shaped for the dashboard's performance chart. `duration_min` is derived from
+        the timestamps rather than stored, and is null while a flight is still in
+        progress.
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of flights to return.
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+      responses:
+        '200':
+          description: Flight records.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FlightRecord'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/analytics/summary:
+    get:
+      summary: Aggregate statistics across completed flights
+      operationId: flightSummary
+      tags: [analytics]
+      description: |
+        In-progress flights are excluded so an active session cannot skew the averages
+        before it lands. With no completed flights on record, `total_flights` is 0,
+        `avg_flight_duration_min` is 0.0, and the other aggregates are null.
+      responses:
+        '200':
+          description: Aggregates.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightSummaryStats'
+
+components:
+  securitySchemes:
+    refreshCookie:
+      type: apiKey
+      in: cookie
+      name: refresh_token
+      description: |
+        HTTP-only refresh cookie. The exact cookie name comes from
+        `AuthSettings.refresh_cookie_name`; the value here is the default.
+
+  responses:
+    ValidationError:
+      description: Request body or query parameters failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HTTPValidationError'
+
+  schemas:
+    # ------------------------------------------------------------- envelopes
+    HealthResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          example: ok
+
+    Error:
+      type: object
+      description: FastAPI's default error envelope, used unchanged across the API.
+      required: [detail]
+      properties:
+        detail:
+          type: string
+          example: Invalid email or password
+
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationErrorItem'
+
+    ValidationErrorItem:
+      type: object
+      required: [loc, msg, type]
+      properties:
+        loc:
+          type: array
+          description: Path to the offending field.
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+          example: [body, password]
+        msg:
+          type: string
+          example: Value error, password must contain an uppercase letter
+        type:
+          type: string
+          example: value_error
+
+    # auth
+    AuthResponse:
+      type: object
+      description: |
+        Every auth endpoint returns this shape. Tokens live in cookies, never here.
+      required: [message]
+      properties:
+        message:
+          type: string
+          example: Login is succesful
+
+    SignupRequest:
+      type: object
+      required: [email, password, first_name, last_name]
+      properties:
+        email:
+          type: string
+          format: email
+          example: operator@up.ac.za
+        password:
+          type: string
+          format: password
+          description: Must satisfy the server-side strength policy.
+        first_name:
+          type: string
+          example: Ayush
+        last_name:
+          type: string
+          example: Beekum
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: operator@up.ac.za
+        password:
+          type: string
+          format: password
+          description: |
+            Also run through the strength validator before the credential check, so a
+            malformed password yields 422 rather than 401.
+
+    # ----------------------------------------------------------------- drone
+    ConnectDroneRequest:
+      type: object
+      description: |
+        Every field has a default that works for a local session, so an empty object
+        connects the in-memory dummy drone.
+      properties:
+        adapter:
+          type: string
+          enum: [dummy, airsim, projectairsim, tello]
+          default: dummy
+        vehicle_name:
+          type: string
+          default: Drone-1
+        host:
+          type: string
+          default: 127.0.0.1
+        port:
+          type: integer
+          default: 41451
+          description: Legacy AirSim msgpack-rpc port. Ignored by the other adapters.
+        topics_port:
+          type: integer
+          default: 8989
+          description: Project AirSim publish/subscribe port.
+        services_port:
+          type: integer
+          default: 8990
+          description: Project AirSim request/response port.
+
+    ConnectDroneResponse:
+      type: object
+      required: [connected, adapter, message]
+      properties:
+        connected:
+          type: boolean
+        adapter:
+          type: string
+        message:
+          type: string
+
+    DisconnectResponse:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+
+    DroneStatus:
+      type: object
+      required: [connected]
+      properties:
+        connected:
+          type: boolean
+        adapter:
+          type: string
+          nullable: true
+        telemetry:
+          $ref: '#/components/schemas/TelemetryData'
+
+    TelemetryData:
+      type: object
+      description: |
+        The single shape every DroneAdapter must return from `get_telemetry()`.
+        Adapters that cannot supply a value return a sentinel rather than omitting the
+        field, so consumers never have to null-check a standard field.
+      required:
+        - altitude_m
+        - speed_ms
+        - battery_pct
+        - heading_deg
+        - is_flying
+        - x_displacement
+        - y_displacement
+        - source
+      properties:
+        altitude_m:
+          type: number
+          format: float
+          example: 3.42
+        speed_ms:
+          type: number
+          format: float
+          example: 1.15
+        battery_pct:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          example: 87.0
+          description: Legacy AirSim reports a fixed 100.0; it has no battery model.
+        heading_deg:
+          type: number
+          format: float
+          example: 271.4
+        is_flying:
+          type: boolean
+        x_displacement:
+          type: number
+          format: float
+          description: Metres from the takeoff origin along the forward/north axis.
+        y_displacement:
+          type: number
+          format: float
+          description: Metres from the takeoff origin along the right/east axis.
+        source:
+          type: string
+          example: projectairsim
+        extra:
+          type: object
+          additionalProperties: true
+          description: |
+            Adapter-specific escape hatch. Consumers MUST NOT depend on any key inside
+            this object being present.
+
+    # -------------------------------------------------------------- gestures
+    GestureStreamStatus:
+      type: object
+      required: [running, connected_clients]
+      properties:
+        running:
+          type: boolean
+          description: Whether the camera pipeline is currently active.
+        connected_clients:
+          type: integer
+          minimum: 0
+        last_error:
+          type: string
+          nullable: true
+          description: |
+            Why the camera last failed to open, or why the pipeline last died, so the
+            UI can show something better than "Disconnected". Null when healthy.
+        last_frame:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/GestureFramePayload'
+          description: |
+            Always null on this endpoint. Present only so GestureFramePayload appears
+            in the generated schema, since FastAPI does not document WebSocket message
+            types. The real stream is WS /api/gestures/stream.
+
+    Landmark:
+      type: object
+      required: [x, y, z]
+      properties:
+        x:
+          type: number
+          format: float
+          description: Horizontal position. 0 is the left edge, 1 the right.
+        y:
+          type: number
+          format: float
+          description: Vertical position. 0 is the top edge, 1 the bottom.
+        z:
+          type: number
+          format: float
+          description: Depth relative to the wrist; negative is closer to the camera.
+
+    Hand:
+      type: object
+      required: [handedness, gesture, fingers, confidence, speed, landmarks]
+      properties:
+        handedness:
+          type: string
+          enum: [LEFT, RIGHT]
+        gesture:
+          type: string
+          enum:
+            - OPEN_PALM
+            - FIST
+            - ONE_FINGER
+            - TWO_FINGERS
+            - THREE_FINGERS
+            - FOUR_FINGERS
+            - UNKNOWN
+        fingers:
+          type: integer
+          minimum: 0
+          maximum: 5
+        confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          description: MediaPipe handedness confidence.
+        gesture_confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          default: 0.0
+          description: |
+            Recognizer confidence in the gesture label: class probability under the ML
+            recognizer, MediaPipe score under the rule-based one. Distinct from
+            `confidence`, which is always handedness.
+        speed:
+          type: number
+          format: float
+          minimum: 0.0
+          description: Wrist speed in normalised units per second, resolution-independent.
+        landmarks:
+          type: array
+          minItems: 21
+          maxItems: 21
+          items:
+            $ref: '#/components/schemas/Landmark'
+
+    GestureFramePayload:
+      type: object
+      description: One processed camera frame. Streamed over WS /api/gestures/stream.
+      required: [type, frame_index, timestamp, fps]
+      properties:
+        type:
+          type: string
+          default: gesture_frame
+          description: Discriminator. Switch on this so new message kinds do not break clients.
+        frame_index:
+          type: integer
+          description: Monotonic frame counter since pipeline start.
+        timestamp:
+          type: number
+          format: double
+          description: Frame capture time, monotonic clock, seconds.
+        fps:
+          type: number
+          format: float
+          minimum: 0.0
+        frame_jpeg:
+          type: string
+          nullable: true
+          description: |
+            Base64 JPEG of the processed frame, already mirrored and resized into the
+            same coordinate space as the landmarks. Render this rather than opening the
+            webcam again in the browser. Null when the server is landmarks-only.
+        frame_width:
+          type: integer
+          nullable: true
+        frame_height:
+          type: integer
+          nullable: true
+        hands:
+          type: array
+          maxItems: 2
+          items:
+            $ref: '#/components/schemas/Hand'
+
+    # ----------------------------------------------------------- calibration
+    CalibrationWindow:
+      type: object
+      required: [frames, matches, ratio, required_ratio, min_frames]
+      properties:
+        frames:
+          type: integer
+          minimum: 0
+          description: Frames currently inside the rolling window.
+        matches:
+          type: integer
+          minimum: 0
+          description: Frames in the window that matched the target gesture.
+        ratio:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          description: matches / frames. 0.0 when the window is empty.
+        required_ratio:
+          type: number
+          format: float
+          example: 0.8
+        min_frames:
+          type: integer
+          example: 45
+          description: |
+            Minimum frames in the window before a pass can be awarded, so a handful of
+            lucky frames cannot clear a gesture.
+
+    CalibrationProgress:
+      type: object
+      required: [index, total, completed]
+      properties:
+        index:
+          type: integer
+          minimum: 0
+          description: Zero-based index of the current target gesture.
+        total:
+          type: integer
+          example: 6
+        completed:
+          type: array
+          items:
+            type: string
+          example: [OPEN_PALM]
+
+    CalibrationFramePayload:
+      type: object
+      description: |
+        One calibration frame. Streamed over WS /api/calibration/stream.
+      required: [type, frame_index, timestamp, phase, matched, window, progress]
+      properties:
+        type:
+          type: string
+          default: calibration_frame
+        frame_index:
+          type: integer
+        timestamp:
+          type: number
+          format: double
+        phase:
+          type: string
+          enum: [awaiting_gesture, success_display, done]
+        frame_jpeg:
+          type: string
+          nullable: true
+        frame_width:
+          type: integer
+          nullable: true
+        frame_height:
+          type: integer
+          nullable: true
+        target_gesture:
+          type: string
+          nullable: true
+          description: The gesture the operator is being asked to hold.
+        detected_gesture:
+          type: string
+          nullable: true
+          description: What the recognizer actually saw this frame. Null when no hand is visible.
+        matched:
+          type: boolean
+          description: |
+            Whether this frame counted towards the target. Drives the green/red
+            skeleton colour in the UI.
+        window:
+          $ref: '#/components/schemas/CalibrationWindow'
+        progress:
+          $ref: '#/components/schemas/CalibrationProgress'
+        hands:
+          type: array
+          maxItems: 2
+          items:
+            $ref: '#/components/schemas/Hand'
+
+    CalibrationStatus:
+      type: object
+      required: [status, is_calibrated, sequence]
+      properties:
+        status:
+          type: string
+          enum: [not_started, in_progress, completed, skipped]
+        is_calibrated:
+          type: boolean
+          description: True when status is `completed` or `skipped`.
+        target_gesture:
+          type: string
+          nullable: true
+          description: Null unless a session is in progress.
+        progress:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/CalibrationProgress'
+        sequence:
+          type: array
+          items:
+            type: string
+          example:
+            - OPEN_PALM
+            - FIST
+            - ONE_FINGER
+            - TWO_FINGERS
+            - THREE_FINGERS
+            - FOUR_FINGERS
+        last_frame:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/CalibrationFramePayload'
+          description: |
+            Always null on this endpoint. Present only so CalibrationFramePayload
+            appears in the generated schema.
+
+    # ----------------------------------------------------------------- input
+    ConnectInputRequest:
+      type: object
+      properties:
+        adapter:
+          type: string
+          enum: [dummy, keyboard, gamepad, gesture]
+          default: dummy
+
+    ConnectInputResponse:
+      type: object
+      required: [connected, message, adapter]
+      properties:
+        connected:
+          type: boolean
+        message:
+          type: string
+        adapter:
+          type: string
+
+    InputStatus:
+      type: object
+      required: [connected, adapter]
+      properties:
+        connected:
+          type: boolean
+        adapter:
+          type: string
+          description: |
+            The adapter name when connected; the literal string 'None connected'
+            otherwise.
+
+    GestureEvent:
+      type: object
+      description: |
+        One gesture transition, not one frame. Emitted when the resolved command
+        changes, so a gesture held for five seconds produces a single event.
+      required: [type, id, command, confidence, source, timestamp]
+      properties:
+        type:
+          type: string
+          default: gesture_event
+        id:
+          type: integer
+          description: Monotonic sequence number within the log.
+        command:
+          $ref: '#/components/schemas/CommandType'
+        hands:
+          type: object
+          additionalProperties: true
+          description: Snapshot of the hand state that resolved the command.
+        confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          description: Lowest per-hand confidence in the frame that resolved the command.
+        source:
+          type: string
+          enum: [gesture, gesture_idling]
+          description: |
+            `gesture_idling` marks the safety hover that fires after idle_timeout_s
+            with no recognised gesture.
+        timestamp:
+          type: number
+          format: double
+          description: Wall-clock seconds since the epoch.
+
+    GestureConfigRequest:
+      type: object
+      properties:
+        idle_timeout_s:
+          type: number
+          format: float
+          default: 3.0
+          description: Seconds without a recognised gesture before the safety hover fires.
+        min_confidence:
+          type: number
+          format: float
+          default: 0.85
+          minimum: 0.0
+          maximum: 1.0
+        min_stable_frames:
+          type: integer
+          default: 2
+          minimum: 1
+
+    GestureConfigResponse:
+      type: object
+      required: [ok]
+      properties:
+        ok:
+          type: boolean
+        applied:
+          $ref: '#/components/schemas/GestureConfigRequest'
+        message:
+          type: string
+          description: Present only when `ok` is false.
+
+    # ------------------------------------------------------------- analytics
+    FlightRecord:
+      type: object
+      required: [id, started_at, ended_at, max_altitude, avg_speed, duration_min]
+      properties:
+        id:
+          type: string
+          format: uuid
+        started_at:
+          type: string
+          format: date-time
+        ended_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Null while the flight is still in progress.
+        max_altitude:
+          type: number
+          format: float
+          nullable: true
+        avg_speed:
+          type: number
+          format: float
+          nullable: true
+        duration_min:
+          type: number
+          format: float
+          nullable: true
+          description: |
+            Derived from started_at and ended_at rather than stored. Null while the
+            flight is in progress.
+
+    FlightSummaryStats:
+      type: object
+      required: [total_flights, avg_speed, max_altitude, avg_flight_duration_min]
+      properties:
+        total_flights:
+          type: integer
+          minimum: 0
+        avg_speed:
+          type: number
+          format: float
+          nullable: true
+          description: Null when no flight has completed yet.
+        max_altitude:
+          type: number
+          format: float
+          nullable: true
+          description: Null when no flight has completed yet.
+        avg_flight_duration_min:
+          type: number
+          format: float
+          description: Rounded to one decimal. 0.0 when no flight has completed yet.
+
+    # shared
+    CommandType:
+      type: string
+      description: |
+        The command vocabulary shared by every InputAdapter and every DroneAdapter.
+        Each member maps to exactly one method on DroneAdapter.
+      enum:
+        - TAKEOFF
+        - LAND
+        - MOVE_UP
+        - MOVE_DOWN
+        - MOVE_LEFT
+        - MOVE_RIGHT
+        - MOVE_FORWARD
+        - MOVE_BACKWARD
+        - ROTATE_CW
+        - ROTATE_CCW
+        - HOVER
+        - EMERGENCY_STOP
+        - ANALOG
