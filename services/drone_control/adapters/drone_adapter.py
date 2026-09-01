@@ -32,13 +32,14 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class CameraFrame:
 	"""
 	A single video frame with metadata
 
 	frame: np.ndarray | None
-		BGR image as opencv expects. 
+		BGR image as opencv expects.
 		None when no frame available (stream warming up or lijnk dropped)
 
 	seq: int
@@ -57,8 +58,10 @@ class CameraFrame:
 	source: str = 'unknown'
 	extra: dict = field(default_factory=dict)
 
+
 class CameraUnavailableError(RuntimeError):
 	"""raised when camera operation is attempted on an adapter without one"""
+
 
 @dataclass
 class TelemetryData:
@@ -199,12 +202,11 @@ class DroneAdapter(ABC):
 		"""
 		...
 
-
 	@property
 	def has_camera(self) -> bool:
 		"""
-		says whether the adapter has a camera or not 
-		reimplement to return true in adapter with camera 
+		says whether the adapter has a camera or not
+		reimplement to return true in adapter with camera
 		"""
 		return False
 
@@ -219,16 +221,16 @@ class DroneAdapter(ABC):
 	async def stop_video(self) -> None:
 		"""
 		Stops producing frames
-		must be safe to call when video wasnt started 
+		must be safe to call when video wasnt started
 		should be called in disconnect
 		"""
 		return None
 
 	def latest_frame(self) -> CameraFrame:
 		"""
-		fetches the latest frame to send to the api route for encoding 
+		fetches the latest frame to send to the api route for encoding
 
-		deliberately synchronous as the implementation should be reading an already decoded 
+		deliberately synchronous as the implementation should be reading an already decoded
 		buffer filled by a background thread
 		Returns a camera frame with frame = none when nothing is available
 		dont raise exceptions for an empty stream

@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from "electron"
-import { spawn } from "child_process"
+import { spawn, execFileSync } from "child_process"
 import path from "path"
 import fs from "fs"
 import crypto from "crypto"
@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename)
 
 let backendProcess
 let mainWindow
+let backendKilled = false
 
 function getOrCreateSecret() {
   const secretPath = path.join(app.getPath("userData"), ".secret")
@@ -26,7 +27,8 @@ function startBackend() {
     : path.join(__dirname, "../../../dist", backendName)
 
   backendProcess = spawn(backendPath, [], {
-    stdio: "inherit",
+    detached: process.platform !== "win32",
+    stdio: ["pipe", "inherit", "inherit"],
     env: { ...process.env, JWT_SECRET_KEY: getOrCreateSecret() },
   })
 }
@@ -59,16 +61,58 @@ async function waitForBackend() {
   }
 }
 
+function killBackend() {
+  if (backendKilled || !backendProcess) {
+    return
+  }
+  backendKilled = true
+
+  const pid = backendProcess.pid
+
+  if (process.platform === "win32") {
+    try {
+      execFileSync("taskkill", ["/pid", String(pid), "/T", "/F"], {
+        stdio: "ignore",
+      })
+    } catch {
+      /*if this throws an exception the kill was already confirmed*/
+    }
+  } else {
+    try {
+      process.kill(-pid, "SIGTERM")
+
+      setTimeout(() => {
+        try {
+          process.kill(-pid, "SIGKILL")
+        } catch {
+          /*if this throws an exception the kill was already confirmed*/
+        }
+      }, 3000).unref()
+    } catch {
+      /*if this throws an exception the kill was already confirmed*/
+    }
+  }
+}
+
 app.whenReady().then(async () => {
   startBackend()
   await waitForBackend()
   createWindow()
 })
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit()
+app.on("before-quit", killBackend)
+app.on("will-quit", killBackend)
+process.on("exit", killBackend)
+process.on("SIGINT", () => {
+  killBackend()
+  process.exit(0)
 })
-
-app.on("before-quit", () => {
-  if (backendProcess) backendProcess.kill()
+process.on("SIGTERM", () => {
+  killBackend()
+  process.exit(0)
+})
+process.on("uncaughtException", (err) => {
+  console.error(err)
+  killBackend()
+  process.exit(1)
 })

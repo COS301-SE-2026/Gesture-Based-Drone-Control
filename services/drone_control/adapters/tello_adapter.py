@@ -3,13 +3,13 @@
 import asyncio
 import logging
 import math
-import time
 import threading
+import time
 
 from djitellopy import Tello
 
 from services.commands.command import AnalogInput, CommandType
-from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData, CameraFrame
+from services.drone_control.adapters.drone_adapter import CameraFrame, DroneAdapter, TelemetryData
 
 logger = logging.getLogger(__name__)
 
@@ -182,8 +182,8 @@ class TelloAdapter(DroneAdapter):
 
 			self._last_telemetry_time = now
 
-			vx_ms = vx/100
-			vy_ms = vy/100  # this the cm/s -> m/s
+			vx_ms = vx / 100
+			vy_ms = vy / 100  # this the cm/s -> m/s
 			yaw_rad = math.radians(yaw)
 			world_vx = vx_ms * math.cos(yaw_rad) - vy_ms * math.sin(yaw_rad)
 			world_vy = vx_ms * math.sin(yaw_rad) + vy_ms * math.cos(
@@ -213,16 +213,15 @@ class TelloAdapter(DroneAdapter):
 			logger.debug('Telemetry exception detail', exc_info=True)
 			return TelemetryData(source='tello-error')
 
-
 	@property
 	def has_camera(self) -> bool:
-		return True 
+		return True
 
 	async def start_video(self) -> bool:
 		self._assert_connected()
 
 		if self._video_on and self._frame_read is not None:
-			return True # already on do nothing
+			return True  # already on do nothing
 
 		try:
 			await asyncio.to_thread(self._tello.streamon)
@@ -240,7 +239,7 @@ class TelloAdapter(DroneAdapter):
 
 		if not self._video_on:
 			self._frame_read = None
-			return 
+			return
 
 		try:
 			if self._frame_read is not None:
@@ -275,14 +274,7 @@ class TelloAdapter(DroneAdapter):
 			seq = self._frame_seq
 
 		h, w = frame.shape[:2]
-		return CameraFrame(
-			frame = frame,
-			seq= seq,
-			width=w,
-			height=h,
-			source='tello'
-		)
-	
+		return CameraFrame(frame=frame, seq=seq, width=w, height=h, source='tello')
 
 	def _assert_connected(self) -> None:
 		if not self._connected:
