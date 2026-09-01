@@ -105,7 +105,8 @@ const GestureControl = () => {
   }
 
   //hardware isnt wired for now so we dont want to show the stale sim data
-  const displayTelem = droneMode === "Hardware" || droneMode === "None" ? null : telemetry
+  const displayTelem =
+    droneMode === "Hardware" || droneMode === "None" ? null : telemetry
 
   //auto connect to airsim when the component is mounted
 
