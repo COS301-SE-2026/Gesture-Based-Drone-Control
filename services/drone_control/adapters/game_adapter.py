@@ -51,7 +51,7 @@ class GameAdapter(DroneAdapter):
 
 	async def _forward(self, payload: dict) -> None:
 		"""send a payload to the registered callback if it exists"""
-		logger.info("GameAdapter forwarding: %s", payload)
+		logger.info('GameAdapter forwarding: %s', payload)
 		if self._callback is not None:
 			await self._callback(payload)
 		else:

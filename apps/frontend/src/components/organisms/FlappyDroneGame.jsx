@@ -123,9 +123,10 @@ export default function FlappyDroneGame() {
         ])
 
         // wire up the refs so that the WS handler can call them
-        upRef.current = () => 
-          {player.jump(JUMP_FORCE)
-          console.log("player jumpy")}
+        upRef.current = () => {
+          player.jump(JUMP_FORCE)
+          console.log("player jumpy")
+        }
         downRef.current = () => player.jump(-JUMP_FORCE)
         hoverRef.current = () => player.jump(0.00001)
         goLoseRef.current = () => k.go("lose", score)
@@ -204,50 +205,48 @@ export default function FlappyDroneGame() {
       })
       // the scene that shows when one crashes
       k.scene("lose", (score = 0) => {
-
         // clear all refs so laggy commands dont fire here
         upRef.current = null
         downRef.current = null
         hoverRef.current = null
         goLoseRef.current = null
-        
-        
+
         k.add([
           k.sprite("backSprite"),
           k.pos(0, 0),
           k.scale(k.width() / 201, k.height() / 251),
           k.z(-1), //should be behind everything else
-          ])
-          
-          k.add([
-            k.text(`Score: ${score}`, { size: 48 }),
-            k.anchor("center"),
-            k.pos(k.width() / 2, k.height() / 2 - 40),
-            k.color(20, 20, 20),
-          ])
-          k.add([
-            k.text("w or FLY UP to retry", { size: 24 }),
-            k.anchor("center"),
-            k.pos(k.width() / 2, k.height() / 2 + 40),
-            k.color(180, 180, 180),
-          ])
-          // option to retry
-          k.wait(0.2, () => {
-            upRef.current = () => k.go("game")
-            k.onKeyPress("w", () => k.go("game"))
-            k.onMousePress(() => k.go("game"))
-          })
+        ])
+
+        k.add([
+          k.text(`Score: ${score}`, { size: 48 }),
+          k.anchor("center"),
+          k.pos(k.width() / 2, k.height() / 2 - 40),
+          k.color(20, 20, 20),
+        ])
+        k.add([
+          k.text("w or FLY UP to retry", { size: 24 }),
+          k.anchor("center"),
+          k.pos(k.width() / 2, k.height() / 2 + 40),
+          k.color(180, 180, 180),
+        ])
+        // option to retry
+        k.wait(0.2, () => {
+          upRef.current = () => k.go("game")
+          k.onKeyPress("w", () => k.go("game"))
+          k.onMousePress(() => k.go("game"))
         })
-        
-        k.go("game")
       })
-      
-      return () => {
-        upRef.current = null
-        downRef.current = null
-        hoverRef.current = null
-        goLoseRef.current = null
-      }
+
+      k.go("game")
+    })
+
+    return () => {
+      upRef.current = null
+      downRef.current = null
+      hoverRef.current = null
+      goLoseRef.current = null
+    }
   }, [])
 
   return (

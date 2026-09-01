@@ -10,8 +10,8 @@ import FlappyDroneGame from "./FlappyDroneGame"
 import DebugGame from "./DebugGame"
 
 const GAMES = [
-  {id: "flappy", label: "Flappy Drone", component: FlappyDroneGame},
-  {id: "debug", label: "Debug", component: DebugGame},
+  { id: "flappy", label: "Flappy Drone", component: FlappyDroneGame },
+  { id: "debug", label: "Debug", component: DebugGame },
 ]
 
 const INPUT_ADAPTERS = ["keyboard", "gamepad", "gesture"]
@@ -72,7 +72,7 @@ const Games = () => {
     }).catch(() => {})
   }, [])
 
-  const ActiveGame = GAMES.find((g) => g.id === selectedGame)?.component ?? null 
+  const ActiveGame = GAMES.find((g) => g.id === selectedGame)?.component ?? null
 
   return (
     <div className="p-6 space-y-6">
@@ -85,10 +85,12 @@ const Games = () => {
           disabled={gameActive}
         >
           {GAMES.map((g) => (
-            <option key={g.id} value={g.id}>{g.label}</option>
+            <option key={g.id} value={g.id}>
+              {g.label}
+            </option>
           ))}
         </select>
-        
+
         {/* input selector */}
         <select
           value={input}
@@ -139,7 +141,7 @@ const Games = () => {
       {/* game and camera are in the same row*/}
       <div className="flex gap-6 items-start">
         <div className="w-[1064px] shrink-0">
-          <FlappyDroneGame />
+          {ActiveGame && <ActiveGame />}
         </div>
 
         {/* camera feed thats only shown when the gestures adapter is selected */}
