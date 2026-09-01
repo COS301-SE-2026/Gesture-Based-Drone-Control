@@ -355,20 +355,26 @@ const GestureControl = () => {
           </Card>
         )}
         </div>
-        <div className="flex flex-col gap-6 h-full" data-tour="gesture-guide">
+        <div className="flex flex-col gap-6 h-full" >
+          <div className = "flex-1" data-tour="gesture-guide">
           <GestureGuide
-            className="flex-1"
+            className="h-full"
             sendCommand={handleControlAction}
             onKeyboardResp={handleKeyboardResp}
           />
+          </div>
+          <div data-tour="sim-viewer">
           <DroneFeedPanel
             droneMode={droneMode}
             connectionStatus={connectionStatus}
           />
+          </div>
         </div>
       </div>
-
+      
+      <div data-tour="command-history">
       <CommandHistory commands={commandHistory} />
+    </div>
     </div>
   )
 }

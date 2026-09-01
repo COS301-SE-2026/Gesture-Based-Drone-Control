@@ -6,7 +6,7 @@ import { Card ,Button} from "../atoms"
 
 export default function HelpResource({ onOpenManual, onOpenTut,onStartTour }) {
   return (
-    <section className="grid gap-4 sm:grid-cols-2">
+    <section className="grid gap-4 sm:grid-cols-3">
       <Card
         variant="glass"
         clickable={true}

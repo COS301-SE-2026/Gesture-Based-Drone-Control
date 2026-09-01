@@ -32,7 +32,23 @@ export const gesturesSteps =[
         content:"A reference for every gesture the system recognizes, plus manual command buttons.",
     },
 
-//ADD THE EXTRA STUFF AFTER UI REFACTORING
+    {
+        route:"/gestures",
+        target:'[data-tour="sim-viewer"]',
+        title:"Sim Viewer",
+        content:"A live feed simulation drone, it shows the connection status as well as the current mode.This does switch to the actual caera of the physical drone depending on the mode selected",
+
+    },
+
+    {
+        route:"/gestures",
+        route:'[data-tour="command-history"]',
+        title:"Command History",
+        content:"Every command executed this session , whether triggered by a gesture, keyboard input or an onscreen button will show up here "
+
+    },
+
+
 ]
 
 
