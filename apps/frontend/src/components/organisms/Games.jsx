@@ -5,13 +5,21 @@ import { GestureCameraFeed } from "../molecules"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
 import { useGamepadControl } from "@/hooks/useGamepadControl"
 import { useGestureControl } from "@/hooks/useGestureControl"
+
 import FlappyDroneGame from "./FlappyDroneGame"
+import DebugGame from "./DebugGame"
+
+const GAMES = [
+  {id: "flappy", label: "Flappy Drone", component: FlappyDroneGame},
+  {id: "debug", label: "Debug", component: DebugGame},
+]
 
 const INPUT_ADAPTERS = ["keyboard", "gamepad", "gesture"]
 
 const Games = () => {
   const [gameActive, setGameActive] = useState(false)
-  const [input, setInput] = useState("keyboard")
+  const [input, setInput] = useState("gesture")
+  const [selectedGame, setSelectedGame] = useState("flappy")
   // uses the same sort of thing that we have to show connection status. just shittier
   const [status, setStatus] = useState("disconnected")
   const [error, setError] = useState("")
@@ -64,10 +72,24 @@ const Games = () => {
     }).catch(() => {})
   }, [])
 
+  const ActiveGame = GAMES.find((g) => g.id === selectedGame)?.component ?? null 
+
   return (
     <div className="p-6 space-y-6">
       {/* controls row */}
       <div className="flex items-center gap-4 flex-wrap">
+        {/* game selector */}
+        <select
+          value={selectedGame}
+          onChange={(e) => setSelectedGame(e.target.value)}
+          disabled={gameActive}
+        >
+          {GAMES.map((g) => (
+            <option key={g.id} value={g.id}>{g.label}</option>
+          ))}
+        </select>
+        
+        {/* input selector */}
         <select
           value={input}
           onChange={(e) => setInput(e.target.value)}
