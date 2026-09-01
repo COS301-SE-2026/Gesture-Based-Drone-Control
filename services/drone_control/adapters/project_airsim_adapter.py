@@ -269,9 +269,6 @@ class ProjectAirSimAdapter(DroneAdapter):
 				speed_ms : float m/s default 3.0
 				duration_s : float seconds default 0.1
 				degrees : float [ROTATE_CW/CCW] default 15.0
-
-		This will need to be refactored at some point down the road to allow for analog movement.
-		Will likely require changes in CommandType
 		"""
 		self._assert_connected()
 
