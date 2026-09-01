@@ -6,6 +6,7 @@ import background from "@/assets/games/flappy/background.jpg"
 import pipe from "@/assets/games/flappy/pipe.png"
 import testFont from "@/assets/games/testfont.ttf"
 import { useGameCommands } from "@/hooks/useGameCommands"
+import test from "node:test"
 
 /**
  * this page houses everything for the kaplay minigame
@@ -85,10 +86,13 @@ export default function FlappyDroneGame() {
         global: false,
       })
 
+      
       //load assets
       k.loadSprite("drone", droneSprite)
       k.loadSprite("backSprite", background)
       k.loadSprite("pipeSprite", pipe)
+      
+      k.loadFont("font", testFont)
 
       k.setGravity(1)
 
@@ -124,10 +128,7 @@ export default function FlappyDroneGame() {
         ])
 
         // wire up the refs so that the WS handler can call them
-        upRef.current = () => {
-          player.jump(JUMP_FORCE)
-          console.log("player jumpy")
-        }
+        upRef.current = () => player.jump(JUMP_FORCE)
         downRef.current = () => player.jump(-JUMP_FORCE)
         hoverRef.current = () => player.jump(0.00001)
         goLoseRef.current = () => k.go("lose", score)
@@ -197,7 +198,7 @@ export default function FlappyDroneGame() {
 
         let score = 0
         const scoreLabel = k.add([
-          k.text("0", { size: 48 }),
+          k.text("0", { size: 72, font: "font" }),
           k.anchor("center"), // keep it in place
           k.pos(k.width() / 2, 80), //top centered
           k.fixed(), //unaffected by camera
@@ -220,13 +221,13 @@ export default function FlappyDroneGame() {
         ])
 
         k.add([
-          k.text(`Score: ${score}`, { size: 48 }),
+          k.text(`Score: ${score}`, { size: 82, font: "font" }),
           k.anchor("center"),
           k.pos(k.width() / 2, k.height() / 2 - 40),
           k.color(20, 20, 20),
         ])
         k.add([
-          k.text("w or FLY UP to retry", { size: 24 }),
+          k.text("w or FLY UP to retry", { size: 38, font: "font" }),
           k.anchor("center"),
           k.pos(k.width() / 2, k.height() / 2 + 40),
           k.color(180, 180, 180),
