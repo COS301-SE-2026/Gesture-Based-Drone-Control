@@ -112,7 +112,9 @@ export const analyticsSteps=[
 ]
 
 
+//so i lowkey made it in a way that its a first time thing when we initially open it as a new user, if... for demo sakes wanna show either go to help page for full tour 
+// or do localStorage.clear() on the console.
 
 
 
-export const fullTourSteps =[...gesturesSteps, ...gpsSteps, ...analyticsSteps]
+export const fullTourSteps =[...gesturesSteps, ...analyticsSteps, ...gpsSteps]

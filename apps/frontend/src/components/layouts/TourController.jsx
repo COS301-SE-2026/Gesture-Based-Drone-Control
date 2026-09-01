@@ -64,7 +64,8 @@ const TourController = () => {
             waited += intervalMs
             if(found) {
                 clearInterval(check)
-                setReadyToShow(true)
+                found.scrollIntoView({ behavior:"smooth" , block: "center" })
+                setTimeout(() => setReadyToShow(true),300)
                 return
             }
             if(waited>=maxWaitMs){
