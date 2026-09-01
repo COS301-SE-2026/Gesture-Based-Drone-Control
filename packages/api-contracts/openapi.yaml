@@ -1,12 +1,13 @@
-
-# REST service contract for the backend
-
+# packages/api-contracts/openapi.yaml
+#
+# REST service contract for the Gesture-Based Drone Control backend.
+#
 # This is the AUTHORED contract. FastAPI also generates a document at runtime from
 # the Pydantic models (GET /openapi.json). The two are expected to agree; see
-# validate.py for the check
-
+# validate.py for the check.
+#
 # Every route below is mounted under the /api prefix by
-# apps/backend/app/api/__init__.py
+# apps/backend/app/api/__init__.py.
 
 openapi: 3.0.3
 
@@ -53,7 +54,7 @@ tags:
     description: Read-only flight history and aggregates.
 
 paths:
-  # health
+  # ------------------------------------------------------------------ health
   /api/health:
     get:
       summary: Backend liveness probe
@@ -106,7 +107,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthResponse'
 
-  # auth
+  # -------------------------------------------------------------------- auth
   /api/auth/signup:
     post:
       summary: Register a new operator
@@ -249,7 +250,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  # drone
+  # ------------------------------------------------------------------- drone
   /api/drone/connect:
     post:
       summary: Bind the backend to a drone adapter
@@ -399,6 +400,74 @@ paths:
               schema:
                 $ref: '#/components/schemas/GestureStreamStatus'
 
+  /api/gestures/recognizer:
+    get:
+      summary: Which gesture recognizer is active
+      operationId: getRecognizerMode
+      tags: [gestures]
+      description: |
+        Reports the mode currently in effect. When no pipeline is running this is the
+        mode that will be applied the next time one starts, so the value is always
+        meaningful even with the camera closed.
+      responses:
+        '200':
+          description: Active recognizer mode.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecognizerMode'
+              example:
+                mode: rule
+                requested: rule
+                available: [rule, ml]
+    post:
+      summary: Switch the gesture recognizer
+      operationId: setRecognizerMode
+      tags: [gestures]
+      description: |
+        Swaps the recognizer behind the shared `GestureRecognizer` interface. The swap
+        is live: it applies to a running pipeline without dropping subscribers or
+        reopening the camera.
+
+        `mode` and `requested` are separate fields because the pipeline is the final
+        authority on what took effect. Clients should render `mode`, not `requested`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecognizerModeRequest'
+            examples:
+              machineLearning:
+                value:
+                  mode: ml
+              ruleBased:
+                value:
+                  mode: rule
+      responses:
+        '200':
+          description: Recognizer switched.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecognizerMode'
+              example:
+                mode: ml
+                requested: ml
+                available: [rule, ml]
+        '400':
+          description: |
+            Unknown mode. Unlike the adapter-connect endpoints, this one uses a real
+            HTTP error status rather than an ok-flag in a 200 body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                detail: "unknown recognizer mode 'tflite', expected one of ('rule', 'ml')"
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
   # ------------------------------------------------------------ calibration
   /api/calibration/status:
     get:
@@ -450,7 +519,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CalibrationStatus'
 
-  # input
+  # ------------------------------------------------------------------- input
   /api/input/connect:
     post:
       summary: Connect an input adapter and wire it to the active drone
@@ -586,7 +655,7 @@ paths:
         '422':
           $ref: '#/components/responses/ValidationError'
 
-  # analytics
+  # --------------------------------------------------------------- analytics
   /api/analytics/flights:
     get:
       summary: Recent flights, newest first
@@ -698,7 +767,7 @@ components:
           type: string
           example: value_error
 
-    # auth
+    # ------------------------------------------------------------------ auth
     AuthResponse:
       type: object
       description: |
@@ -991,6 +1060,35 @@ components:
           items:
             $ref: '#/components/schemas/Hand'
 
+    RecognizerModeRequest:
+      type: object
+      required: [mode]
+      properties:
+        mode:
+          type: string
+          enum: [rule, ml]
+          description: |
+            `rule` is the deterministic finger-state classifier; `ml` is the trained
+            model. Both sit behind the same GestureRecognizer interface.
+
+    RecognizerMode:
+      type: object
+      required: [mode, requested, available]
+      properties:
+        mode:
+          type: string
+          description: The mode actually in effect. Render this one.
+        requested:
+          type: string
+          description: |
+            What the caller asked for. Differs from `mode` only if the pipeline
+            resolved the request differently.
+        available:
+          type: array
+          items:
+            type: string
+          example: [rule, ml]
+
     # ----------------------------------------------------------- calibration
     CalibrationWindow:
       type: object
@@ -1277,7 +1375,7 @@ components:
           format: float
           description: Rounded to one decimal. 0.0 when no flight has completed yet.
 
-    # shared
+    # ------------------------------------------------------------- shared
     CommandType:
       type: string
       description: |

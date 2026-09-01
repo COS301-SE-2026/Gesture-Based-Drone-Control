@@ -104,7 +104,7 @@ tasks:
 
   contracts:
     desc: Validates API service contracts
-    cmd: 
+    cmds: 
       - uv run python packages/api-contracts/validate_contracts.py
 
   e2e-test:
