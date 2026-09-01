@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react"
 import droneSprite from "@/assets/games/flappy/drone.png"
 import background from "@/assets/games/flappy/background.jpg"
 import pipe from "@/assets/games/flappy/pipe.png"
+import testFont from "@/assets/games/testfont.ttf"
 import { useGameCommands } from "@/hooks/useGameCommands"
 
 /**

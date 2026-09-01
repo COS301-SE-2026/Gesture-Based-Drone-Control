@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { useGameCommands } from "@/hooks/useGameCommands"
+import testFont from "@/assets/games/testfont.ttf"
 
 /**
  * Basically just a square that moves
@@ -35,6 +36,8 @@ export default function DebugGame() {
         background: [10, 10, 10],
         global: false,
       })
+
+      k.loadFont("font", testFont)
 
       // pretty much everything in this basic scene
       k.scene("debug", () => {
@@ -72,8 +75,8 @@ export default function DebugGame() {
         // placeholder labels for the log
         const LogLabels = Array.from({ length: MAX_LOG }, (_, i) =>
           k.add([
-            k.text("", { size: 13 }),
-            k.pos(12, 14 + i * 18),
+            k.text("", { size: 50, font: "font" }),
+            k.pos(12, 14 + i * 50),
             k.color(160, 160, 200),
             k.fixed(),
             k.z(100),
@@ -176,7 +179,7 @@ export default function DebugGame() {
 
         // title
         k.add([
-          k.text("DEBUG GAME", { size: 14 }),
+          k.text("DEBUG GAME", { size: 50, font: "font" }),
           k.anchor("topright"),
           k.pos(k.width() - 12, 12),
           k.color(80, 80, 100),
@@ -185,7 +188,7 @@ export default function DebugGame() {
         ])
       })
       //just go straight to the literal only thing
-      k.go("debug")
+      k.onLoad(() => k.go("debug"))
     })
 
     return () => {
