@@ -36,11 +36,15 @@ const CONTROL_LABELS=[
   {target: [720,195], text: "Emergency Stop", side: "right"},
 
 ]
+const CHAR_WIDTH =11
+const LABEL_BOX_PADDING =8
 
-const LEFT_MARGIN_X = -140
-const RIGHT_MARGIN_X =990
+const LEFT_MARGIN_X = -15
+const RIGHT_MARGIN_X =865
+
 const LABEL_TOP =10
 const LABEL_BOTTOM = 450
+const textWidthOf =(text) => text.length * CHAR_WIDTH
 
 function layoutLabels(labels) {
   const bySide = (side) =>
@@ -59,6 +63,20 @@ function layoutLabels(labels) {
     return [...space(bySide("left")), ...space(bySide("right"))]
 }
 const LABEL_POSITIONS = layoutLabels(CONTROL_LABELS)
+
+const maxTextWidth = (side) => 
+  Math.max(
+    0,
+    ...CONTROL_LABELS.filter((l) => l.side === side).map((l) => textWidthOf(l.text))
+  
+  )
+
+  const LEFT_CANVAS_EDGE =
+  LEFT_MARGIN_X -maxTextWidth("left") - LABEL_BOX_PADDING - 10
+  const RIGHT_CANVAS_EDGE =
+  RIGHT_MARGIN_X  + maxTextWidth("right") + LABEL_BOX_PADDING + 10
+
+  const VIEWBOX = `${LEFT_CANVAS_EDGE} -20 ${RIGHT_CANVAS_EDGE - LEFT_CANVAS_EDGE} 500`
 
 
 const ControllerLayout = ({ className = "" }) => {
@@ -135,7 +153,7 @@ const ControllerLayout = ({ className = "" }) => {
         </button>
       </div>
 
-      <svg viewBox="-160 -20 1170 500" className="w-full max-w-[600px]">
+      <svg viewBox={VIEWBOX} className="w-full max-w-[720px]">
         {/* the background circle and rectangle main ones */}
         <circle
           cx="150"
@@ -440,10 +458,12 @@ const ControllerLayout = ({ className = "" }) => {
 
         {showLabels &&
         LABEL_POSITIONS.map((l) => {
-          const charWidth = 6.6
-          const textWidth = l.text.length * charWidth
+          const textWidth = textWidthOf(l.text)
+
           const rectX = 
-          l.side === "left" ? l.labelX - 4 : l.labelX - textWidth - 4
+          l.side === "left" ? l.labelX - textWidth -LABEL_BOX_PADDING : l.labelX 
+          const textX=
+          l.side ==="left" ? l.labelX - 4 : l.labelX + 4
           return(
           <g key ={l.text}>
 
@@ -453,33 +473,33 @@ const ControllerLayout = ({ className = "" }) => {
             x2={l.target[0]}
             y2={l.target[1]}
 
-            strokeWidth="1.25"
+            strokeWidth="2"
             className="stroke-OffBlack/80 dark:stroke-OffWhite/80"
             />
 
             <circle
             cx={l.target[0]}
             cy={l.target[1]}
-            r="3.5"
+            r="5"
             className="fill-Red"
             />
 
             <rect
             x={rectX}
-            y={l.labelY - 8}
-            width={textWidth + 8}
-            height="16"
+            y={l.labelY - 13}
+            width={textWidth + LABEL_BOX_PADDING}
+            height="26"
             rx="3"
             className="fill-black/70"
             />
 
             <text
-            x={l.labelX}
+            x={textX}
             y={l.labelY}
 
-            textAnchor={l.side === "left" ? "start" : "end"}
+            textAnchor={l.side === "left" ? "end" : "start"}
             dominantBaseline="middle"
-            className="text-[11px] font-mono font-semibold fill-white "
+            className="text-[18px] font-mono  fill-white "
             >
               {l.text}
             </text>
