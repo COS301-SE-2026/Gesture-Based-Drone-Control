@@ -41,12 +41,8 @@ class TelloAdapter(DroneAdapter):
 
 	async def connect(self) -> bool:
 		try:
-			# await asyncio.wait_for(asyncio.to_thread(self._tello.connect()), timeout=5.0)
 			self._tello.connect()
-			# self._tello.streamon() for camera integration
-			# self._frame_reader = self._tello.get_frame_read()
 			self._connected = True
-			await self.start_video()
 			return True
 		except Exception:
 			self._tello.end()
