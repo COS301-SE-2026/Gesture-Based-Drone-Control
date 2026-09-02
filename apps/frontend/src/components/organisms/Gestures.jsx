@@ -6,6 +6,7 @@ import {
   GestureCameraFeed,
   GestureCalibration,
   DroneFeedPanel,
+  TelemetryAlerts
 } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
@@ -14,6 +15,7 @@ import { useCommands } from "@/context/CommandsContext"
 import { useDebug } from "@/context/DebugContext"
 import { fetchCalibrationStatus } from "@/hooks/useCalibrationStream"
 import { useGestureCommandLog } from "@/hooks/useGestureCommandLog"
+import { useTelemetryAlerts } from "@/hooks/useTelemetryAlerts"
 
 const MS_TO_KMH = 3.6
 const MAX_HISTORY = 50
@@ -27,7 +29,6 @@ function calibrationLabel(calibrated) {
   return calibrated ? "calibrated" : "required"
 }
 
-//TODO: this is still mocked for now
 const GestureControl = () => {
   const [commands, setCommands] = useState([])
   const manualIdRef = useRef(0)
@@ -107,6 +108,9 @@ const GestureControl = () => {
   //hardware isnt wired for now so we dont want to show the stale sim data
   const displayTelem =
     droneMode === "Hardware" || droneMode === "None" ? null : telemetry
+  const hardwareTelem = droneMode === "Hardware" ? telemetry : null
+  const { alerts, dismiss } = useTelemetryAlerts(hardwareTelem)
+
 
   //auto connect to airsim when the component is mounted
 
@@ -202,6 +206,7 @@ const GestureControl = () => {
 
   return (
     <div className="p-6 space-y-6">
+      <TelemetryAlerts alerts={alerts} onDismiss={dismiss} />
       {debugMode && (
         <div className="flex items-center gap-4 text-sm">
           <span className="text-dim">Drone status:</span>
