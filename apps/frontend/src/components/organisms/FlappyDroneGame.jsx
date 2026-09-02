@@ -6,7 +6,6 @@ import background from "@/assets/games/flappy/background.jpg"
 import pipe from "@/assets/games/flappy/pipe.png"
 import testFont from "@/assets/games/testfont.ttf"
 import { useGameCommands } from "@/hooks/useGameCommands"
-import test from "node:test"
 
 /**
  * this page houses everything for the kaplay minigame
