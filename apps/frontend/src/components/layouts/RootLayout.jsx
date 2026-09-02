@@ -58,6 +58,10 @@ const RootLayout = () => {
   }
 
   useEffect(() => {
+    if(navigator.webdriver)
+    {
+      return
+    }
     if (!hasSeenFullTour()) startFullTour(fullTourSteps)
   }, [])
 
