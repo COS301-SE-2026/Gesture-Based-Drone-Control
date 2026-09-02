@@ -8,7 +8,7 @@ export default function LoginPage() {
 
   const { formData, errors, isLoading, handleChange, handleSubmit } = useForm(
     { email: "", password: "", rememberMe: false },
-    () => navigate("/")
+    () => navigate("/app")
   )
   return (
     <AuthLayout

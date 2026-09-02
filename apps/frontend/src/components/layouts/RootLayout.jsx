@@ -5,6 +5,7 @@ import {
   DashboardSideCard,
   GpsSideContent,
   HelpSideContent,
+  SettingsSideContent,
 } from "../molecules"
 import { Home, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
 // import bgLight from "../../assets/Lightbackground.png"
@@ -15,20 +16,28 @@ const RootLayout = () => {
   // const { isDark } = useTheme()
   const location = useLocation()
   const menuItems = [
-    { id: "gestures", label: "Gestures", icon: Home, path: "/gestures" },
+    { id: "gestures", label: "Gestures", icon: Home, path: "/app/gestures" },
     {
       id: "analytics",
       label: "Analytics",
       icon: BarChart3,
-      path: "/analytics",
+      path: "/app/analytics",
     },
-    { id: "gps", label: "GPS", icon: MapPin, path: "/gps" },
-    { id: "settings", label: "Settings", icon: Settings, path: "/settings" },
-    { id: "help", label: "Help", icon: HelpCircle, path: "/help" },
+    { id: "gps", label: "GPS", icon: MapPin, path: "/app/gps" },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: Settings,
+      path: "/app/settings",
+    },
+    { id: "help", label: "Help", icon: HelpCircle, path: "/app/help" },
   ]
 
   const getTopContent = () => {
-    if (location.pathname === "/" || location.pathname.includes("/gestures")) {
+    if (
+      location.pathname === "/app" ||
+      location.pathname.includes("/gestures")
+    ) {
       return <DashboardSideCard />
     } else if (location.pathname.includes("/analytics")) {
       return <AnalyticsSideContent />
@@ -36,6 +45,8 @@ const RootLayout = () => {
       return <GpsSideContent />
     } else if (location.pathname.includes("/help")) {
       return <HelpSideContent />
+    } else if (location.pathname.includes("/settings")) {
+      return <SettingsSideContent />
     }
   }
 
