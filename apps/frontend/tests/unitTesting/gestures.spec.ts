@@ -125,7 +125,7 @@ test.describe('command history card', () => {
         const batttext = page.locator('text=/\\d+%|--%/').first()
         await expect(batttext).toBeVisible()
 
-        const sign = page.getByText('text=/\\d+%|--%/').first()
+        const sign = page.locator('text=/\\d+%|--%/').first()
         await expect(sign).toBeVisible()
 
         const speedy = page.locator('text=/(\\d+\\.?\\d*|--)\\s*km\\/h/').first()
