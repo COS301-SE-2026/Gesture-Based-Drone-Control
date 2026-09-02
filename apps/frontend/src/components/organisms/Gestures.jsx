@@ -6,7 +6,7 @@ import {
   GestureCameraFeed,
   GestureCalibration,
   DroneFeedPanel,
-  TelemetryAlerts
+  TelemetryAlerts,
 } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
@@ -83,12 +83,13 @@ const GestureControl = () => {
   const [isConnecting, setIsConnecting] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState("disconnected")
   const [connectionError, setConnectionError] = useState("")
-  const [ eventAlerts, setEventAlerts] = useState([])
+  const [eventAlerts, setEventAlerts] = useState([])
 
   //added this so emergency stop is persistant but other alerts are trigger based and persist for a time period
   const pushEventAlert = useCallback((alert) => {
     setEventAlerts((prev) =>
-      prev.some((a) => a.key === alert.key) ? prev : [...prev, alert])
+      prev.some((a) => a.key === alert.key) ? prev : [...prev, alert]
+    )
   }, [])
 
   const dismissEventAlert = useCallback((key) => {
@@ -120,14 +121,14 @@ const GestureControl = () => {
   const displayTelem = droneMode === "None" ? null : telemetry
   const hardwareTelem = isHardwareMode ? telemetry : null
   const signalValue = hardwareTelem?.extra?.signal
-  const { alerts: TelemetryThresholdAlerts, dismiss: dismissTelemetryAlert } = useTelemetryAlerts(hardwareTelem)
+  const { alerts: TelemetryThresholdAlerts, dismiss: dismissTelemetryAlert } =
+    useTelemetryAlerts(hardwareTelem)
   const allAlerts = [...eventAlerts, ...TelemetryThresholdAlerts]
 
   const handleDismissAlert = (key) => {
     dismissEventAlert(key)
     dismissTelemetryAlert(key)
   }
-
 
   //auto connect to airsim when the component is mounted
 
@@ -229,9 +230,10 @@ const GestureControl = () => {
             id: "emergency-stop",
             severity: "error",
             title: "Emergency Stop Activated",
-            message: "All motors stopping immediately. Confirm the drone is safe before resuming"
-          });
-        }, 0);
+            message:
+              "All motors stopping immediately. Confirm the drone is safe before resuming",
+          })
+        }, 0)
       }
     }
   }, [lastResp, pushManualCommand, pushEventAlert])
@@ -244,11 +246,9 @@ const GestureControl = () => {
         method: "POST",
       })
       console.log("disconnected from current adapter")
-    }
-    catch (error) {
+    } catch (error) {
       console.warn("error disconnecting:", error)
-    }
-    finally {
+    } finally {
       setDroneMode("None")
       setConnectionStatus("disconnected")
       setConnectionError("")

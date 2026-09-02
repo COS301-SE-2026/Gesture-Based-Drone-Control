@@ -27,18 +27,18 @@ const DroneModeCard = ({
     <Card variant="glass" className={`py-3 ${className}`}>
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-        <Label size="md">Select Drone Mode</Label>
-        {isConnected && (
-          <button
-            type="button"
-            onClick={() => onDisconnect?.()}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-dim hover:text-red hover:bg-red/10 transition-colors"
-            aria-label="Disconnect drone"
-            title="Disconnect"
-          >
-            <PowerOff className="w-4 h-4" />
-          </button>
-        )}
+          <Label size="md">Select Drone Mode</Label>
+          {isConnected && (
+            <button
+              type="button"
+              onClick={() => onDisconnect?.()}
+              className="flex items-center justify-center w-8 h-8 rounded-lg text-dim hover:text-red hover:bg-red/10 transition-colors"
+              aria-label="Disconnect drone"
+              title="Disconnect"
+            >
+              <PowerOff className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         <div className="flex gap-3">

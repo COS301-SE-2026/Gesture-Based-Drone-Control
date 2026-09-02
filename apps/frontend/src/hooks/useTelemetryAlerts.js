@@ -46,8 +46,7 @@ const THRESHOLDS = {
     clear: (t) => typeof t.extra?.signal === "number" && t.extra.signal >= 60,
     message: (t) =>
       `Signal at ${t.extra.signal}% Fly the drone closer to avoid disconnection.`,
-  }
-  
+  },
 }
 
 /**
