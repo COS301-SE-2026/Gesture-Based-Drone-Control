@@ -189,7 +189,10 @@ const ControllerLayout = ({ className = "" }) => {
         />
 
         {/* top rectange thingies, i dont game so idk what its call man, dont judge */}
-        <rect
+        {(isPressed(4) ? ["lt" , "lb"] : ["lb","lt"]).map ((id)=> 
+        id === "lb" ? (
+          <rect
+          key="lb"
           data-testid="btn-lb"
           x="130"
           y="15"
@@ -199,8 +202,11 @@ const ControllerLayout = ({ className = "" }) => {
           strokeWidth="2"
           className={btnFill(4)}
         />
-        <rect
-          data-testid="btn-lt"
+
+        ):(
+          <rect
+          key="lt"
+          data-testid="btn-lb"
           x="200"
           y="0"
           width="150"
@@ -209,7 +215,14 @@ const ControllerLayout = ({ className = "" }) => {
           strokeWidth="2"
           className={btnFill(6)}
         />
-        <rect
+        )
+
+        )}
+        
+        {(isPressed(7) ? ["rb", "rt"] : ["rt", "rb"]).map((id) => 
+        id === "rt" ? (
+          <rect
+          key="rt"
           data-testid="btn-rt"
           x="520"
           y="0"
@@ -219,8 +232,11 @@ const ControllerLayout = ({ className = "" }) => {
           strokeWidth="2"
           className={btnFill(7)}
         />
-        <rect
-        data-testid="btn-rb"
+
+        ): (
+          <rect
+          key="rb"
+          data-testid="btn-rb"
           x="590"
           y="15"
           width="150"
@@ -229,6 +245,11 @@ const ControllerLayout = ({ className = "" }) => {
           strokeWidth="2"
           className={btnFill(5)}
         />
+
+        )
+        )}
+        
+        
         {/* LHS mini circles */}
 
         <circle
