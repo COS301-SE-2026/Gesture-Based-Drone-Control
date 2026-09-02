@@ -38,6 +38,16 @@ const THRESHOLDS = {
     message: (t) =>
       `${t.altitude_m.toFixed(1)}m - You are above the safety height.`,
   },
+  signal: {
+    id: "signal-weak",
+    severity: "warning",
+    title: "Signal Weak",
+    check: (t) => typeof t.extra?.signal === "number" && t.extra.signal < 50,
+    clear: (t) => typeof t.extra?.signal === "number" && t.extra.signal >= 60,
+    message: (t) =>
+      `Signal at ${t.extra.signal}% Fly the drone closer to avoid disconnection.`,
+  }
+  
 }
 
 /**
