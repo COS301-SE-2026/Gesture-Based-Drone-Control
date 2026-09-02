@@ -106,9 +106,9 @@ const GestureControl = () => {
   }
 
   const isHardwareMode = droneMode === "Hardware" || droneMode === "Tello"
-  const displayTelem =
-    droneMode === isHardwareMode || droneMode === "None" ? null : telemetry
+  const displayTelem = droneMode === "None" ? null : telemetry
   const hardwareTelem = isHardwareMode ? telemetry : null
+  const signalValue = hardwareTelem?.extra?.signal
   const { alerts, dismiss } = useTelemetryAlerts(hardwareTelem)
 
 
@@ -286,8 +286,7 @@ const GestureControl = () => {
               <div>
                 <p className=" text-xs text-ink uppercase">Signal</p>
                 <p className="text-lg font-bold text-ink">
-                  {/* TODO: this is still mocked for now - theres no signl_pct field on the telem return yet */}
-                  100%
+                  {typeof signalValue === "number" ? `${signalValue}%` : "--%"}
                 </p>
               </div>
             </div>
