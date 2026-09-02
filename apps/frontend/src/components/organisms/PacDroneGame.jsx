@@ -10,6 +10,24 @@ import { useGameCommands } from "@/hooks/useGameCommands"
  * G = ghost spawn
  */
 
+const MAZE_A = [
+  "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+  " ...................P................. ",
+  "W..WWW..W..WWW.W...WWW.WWW.WW.W.WWW.W.W",
+  "W..Wo..W.W.WWW.WWW..W..WoW.W.WW..oW...W",
+  "W..WWW.W.W.W.....W..W..WWW.W..W.WWW.W.W",
+  "W.....................................W",
+  "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W.W",
+  "W.W......W.....W.W....W..W......W...W.W",
+  "W.W.WWWW.W.WWW.W.W.WW..W.W.......WoW..W",
+  " ...Wo...............G...WWWWWW...W... ",
+  "W.W.WWWW.W.WWW.W.W.WW..W.W.......W.W..W",
+  "W.W......W.....W.W....W..W......W...W.W",
+  "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W.W",
+  " ..................................... ",
+  "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+]
+
 export default function PacDroneGame() {
     const canvasRef = useRef(null)
     const initialisedRef = useRef(false)
