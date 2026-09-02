@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Help Page', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/#/help');
+        await page.goto('/#/app/help');
         await page.waitForLoadState('domcontentloaded');
     });
 

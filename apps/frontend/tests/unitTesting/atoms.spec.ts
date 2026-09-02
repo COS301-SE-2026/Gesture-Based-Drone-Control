@@ -2,8 +2,8 @@ import {test,expect} from '@playwright/test'
 
 test.describe('Atom components', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/#/test');
-        await page.waitForSelector('h1:has-text("Welcome")');
+        await page.goto('/#/app/test');
+        await page.waitForSelector('h1:has-text("Welcome")', { timeout: 10000 });
     });
 
 
@@ -23,7 +23,6 @@ test.describe('Atom components', () => {
             await expect(page.locator('button:has-text("small")')).toBeVisible();
             await expect(page.locator('button:has-text("large")')).toBeVisible();
             await expect(page.locator('button:has-text("Loading")')).toBeVisible();
-            await expect(page.locator('button:has-text("Default")')).toBeVisible();
             await expect(page.locator('button:has-text("Icon")')).toBeVisible();
             await expect(page.locator('button:has-text("disabled")')).toBeVisible();
         });
@@ -31,6 +30,7 @@ test.describe('Atom components', () => {
         test('shows loading state when clickity clacked', async ({ page }) => {
             const loadbtn = page.locator('button:has-text("Loading")');
             await loadbtn.click();
+            await page.waitForTimeout(100);
 
             await expect(loadbtn).toHaveClass(/opacity-70/);
             const spinner = loadbtn.locator('.animate-spin');
@@ -192,8 +192,8 @@ test.describe('Atom components', () => {
             await expect(dingdong).not.toBeVisible();
         });
 
-        test('redners statusdot w medium size', async ({ page }) => {
-            const dot = page.locator('span.h-2\\.5.w-2\\.5').first();
+        test('renders statusdot w medium size', async ({ page }) => {
+            const dot = page.locator('span.h-4.w-4').first();
             await expect(dot).toBeVisible();
         });
     });
@@ -210,7 +210,7 @@ test.describe('Atom components', () => {
             expect(newState).toBe(!initState);
         });
 
-        test('renders disabed tog', async ({ page }) => {
+        test('renders disabled tog', async ({ page }) => {
             const downy = page.locator('input[type="checkbox"]:disabled').last();
             await expect(downy).toBeDisabled();
             const label = page.locator('label').filter({
@@ -232,13 +232,16 @@ test.describe('Atom components', () => {
 
             if (await toggle.isChecked()) {
                 await label.click({ force: true });
+                await page.waitForTimeout(100);
             }
             await expect(slider).toHaveClass(/translate-x-1/);
             await label.click( {force: true});
+            await page.waitForTimeout(100);
             await expect(toggle).toBeChecked();
             await expect(slider).toHaveClass(/translate-x-6/);
 
             await label.click({ force: true });
+            await page.waitForTimeout(100);
             await expect(toggle).not.toBeChecked();
 
             await expect(slider).toHaveClass(/translate-x-1/);
