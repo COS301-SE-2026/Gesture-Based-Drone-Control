@@ -181,7 +181,15 @@ const GestureGuide = memo(function GestureGuide({
 }) {
   const [activeTab, setActiveTab] = useState("onscreen")
   const { handleControlPress, isControlActive } = useDroneControls(sendCommand)
+  const [isFlying, setIsFlying] = useState(false)
   const { debugMode } = useDebug()
+
+  //wrap handlePress so takeoff/land/emergencyStop also toggle the isFlying
+  const handlePress = (action, label) => {
+    handleControlPress(action, label)
+    if (action === "takeoff") setIsFlying(true)
+    if (action === "land" || action === "emergencyStop") setIsFlying(false)
+  }
 
   /**will only be active when the keyboard tab is selected and handles connecting  the backend keyboard input adapter,
     opening the /input/ws/keyboard/socket, and listening for real key events **/
@@ -224,7 +232,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Move Forward") ? "default" : "secondary"}
             icon={ArrowUp}
-            onClick={() => handleControlPress("moveForward", "Move Forward")}
+            onClick={() => handlePress("moveForward", "Move Forward")}
+            disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
           />
@@ -234,7 +243,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Move Left") ? "default" : "secondary"}
             icon={ArrowLeft}
-            onClick={() => handleControlPress("moveLeft", "Move Left")}
+            onClick={() => handlePress("moveLeft", "Move Left")}
+            disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
           />
@@ -242,7 +252,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Hover") ? "default" : "secondary"}
             icon={CircleDot}
-            onClick={() => handleControlPress("hover", "Hover")}
+            onClick={() => handlePress("hover", "Hover")}
+            disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
           />
@@ -250,7 +261,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Move Right") ? "default" : "secondary"}
             icon={ArrowRight}
-            onClick={() => handleControlPress("moveRight", "Move Right")}
+            onClick={() => handlePress("moveRight", "Move Right")}
+            disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
           />
@@ -260,7 +272,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Move Backward") ? "default" : "secondary"}
             icon={ArrowDown}
-            onClick={() => handleControlPress("moveBackward", "Move Backward")}
+            onClick={() => handlePress("moveBackward", "Move Backward")}
+            disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
           />
@@ -277,7 +290,8 @@ const GestureGuide = memo(function GestureGuide({
               isControlActive("Increase Altitude") ? "default" : "secondary"
             }
             icon={ChevronUp}
-            onClick={() => handleControlPress("goUp", "Increase Altitude")}
+            onClick={() => handlePress("goUp", "Increase Altitude")}
+            disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
@@ -287,7 +301,8 @@ const GestureGuide = memo(function GestureGuide({
               isControlActive("Decrease Altitude") ? "default" : "secondary"
             }
             icon={ChevronDown}
-            onClick={() => handleControlPress("goDown", "Decrease Altitude")}
+            onClick={() => handlePress("goDown", "Decrease Altitude")}
+            disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
@@ -295,7 +310,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Rotate Left") ? "default" : "secondary"}
             icon={RotateCcw}
-            onClick={() => handleControlPress("rotateLeft", "Rotate Left")}
+            onClick={() => handlePress("rotateLeft", "Rotate Left")}
+            disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
@@ -303,7 +319,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Rotate Right") ? "default" : "secondary"}
             icon={RotateCw}
-            onClick={() => handleControlPress("rotateRight", "Rotate Right")}
+            onClick={() => handlePress("rotateRight", "Rotate Right")}
+            disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
@@ -314,14 +331,16 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Take Off") ? "default" : "secondary"}
             icon={PlaneTakeoff}
-            onClick={() => handleControlPress("takeoff", "Take Off")}
+            onClick={() => handlePress("takeoff", "Take Off")}
+            disabled={isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
           <Button
             variant={isControlActive("Land") ? "default" : "secondary"}
             icon={PlaneLanding}
-            onClick={() => handleControlPress("land", "Land")}
+            onClick={() => handlePress("land", "Land")}
+            disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
@@ -331,7 +350,7 @@ const GestureGuide = memo(function GestureGuide({
         <Button
           variant={isControlActive("Emergency Stop") ? "default" : "secondary"}
           icon={OctagonX}
-          onClick={() => handleControlPress("emergencyStop", "Emergency Stop")}
+          onClick={() => handlePress("emergencyStop", "Emergency Stop")}
           className="w-full h-16 rounded-lg text-sm font-bold"
           size="lg"
         >

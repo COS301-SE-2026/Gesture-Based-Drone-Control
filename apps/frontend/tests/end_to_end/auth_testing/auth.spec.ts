@@ -60,7 +60,7 @@ test.describe('Signup then Login flow',() => {
         await page.getByLabel(/password/i).fill(password)
         await page.getByRole('button',{name:/sign in/i}).click()
 
-        await expect(page).toHaveURL('/#/')
+        await expect(page).toHaveURL('/#/app')
     })
 
 
