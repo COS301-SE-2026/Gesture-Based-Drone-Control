@@ -105,10 +105,10 @@ const GestureControl = () => {
     setCalibrated(false)
   }
 
-  //hardware isnt wired for now so we dont want to show the stale sim data
+  const isHardwareMode = droneMode === "Hardware" || droneMode === "Tello"
   const displayTelem =
-    droneMode === "Hardware" || droneMode === "None" ? null : telemetry
-  const hardwareTelem = droneMode === "Hardware" ? telemetry : null
+    droneMode === isHardwareMode || droneMode === "None" ? null : telemetry
+  const hardwareTelem = isHardwareMode ? telemetry : null
   const { alerts, dismiss } = useTelemetryAlerts(hardwareTelem)
 
 

@@ -13,8 +13,8 @@ const THRESHOLDS = {
     id: "battery-low",
     severity: "error",
     title: "Battery low",
-    check: (t) => typeof t.battery_pct === "number" && t.battery_pct < 20,
-    clear: (t) => typeof t.battery_pct === "number" && t.battery_pct >= 23, //small hysteresis buffer
+    check: (t) => typeof t.battery_pct === "number" && t.battery_pct < 30,
+    clear: (t) => typeof t.battery_pct === "number" && t.battery_pct >= 32, //small hysteresis buffer
     message: (t) =>
       `Battery at ${t.battery_pct.toFixed(0)}%. Please Land soon.`,
   },
