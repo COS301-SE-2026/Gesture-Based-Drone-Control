@@ -19,6 +19,34 @@ import { useGestureCommandLog } from "@/hooks/useGestureCommandLog"
 const MS_TO_KMH = 3.6
 const MAX_HISTORY = 50
 
+const KEY_ACTION_LABELS ={
+  ArrowUp: "Move Forward",
+  ArrowDown:"Move Backward",
+  ArrowLeft: "Move Left",
+  ArrowRight: "Move Right",
+  w:"Increase Altitude",
+  s:"Decrease Altitude",
+  a:"Rotate Left",
+  d:"Rotate Right",
+  t:"Takeoff",
+  l:"Land",
+  " ":"Hover",
+  Spacebar:"Hover",
+  Escape:"Emergency Stop",
+}
+
+const KEY_DISPLAY_LABELS={
+  " ":"Space",
+  Spacebar:"Space",
+  Escape:"Esc",
+}
+
+function describeKeyPress(key) {
+  const keyLabel = KEY_DISPLAY_LABELS[key]?? key
+  const actionLabel = KEY_ACTION_LABELS[key]
+  return actionLabel ? `${keyLabel} - ${actionLabel}` : keyLabel
+}
+
 function fmt(value, digits = 0) {
   return typeof value === "number" ? value.toFixed(digits) : "--"
 }
@@ -60,7 +88,7 @@ const GestureControl = () => {
   )
 
   const handleKeyboardResp = (resp) => {
-    pushManualCommand(resp.key, "keyboard")
+    pushManualCommand(describeKeyPress(resp.key), "keyboard")
   }
 
   const commandHistory = useMemo(
@@ -71,14 +99,7 @@ const GestureControl = () => {
     [gestureCommands, commands]
   )
 
-  // //mock data for drone status
-  // const droneMetrics = {
-  //   battery: 56,
-  //   speed: 5.6,
-  //   altitude: 72,
-  //   signal: 71,
-  // }
-
+  
   const [droneMode, setDroneMode] = useState("DroneSim")
   const [isConnecting, setIsConnecting] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState("disconnected")
