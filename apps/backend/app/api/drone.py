@@ -215,7 +215,7 @@ async def feed(state: Annotated[AppState, Depends(get_state)]):
 		raise HTTPException(status_code=409, detail=f'{state.adapter_name} adapter has no camera')
 
 	# lazy start for the camera
-	if not adapter.video_on and not await adapter.start_video():
+	if not await adapter.start_video():
 		raise HTTPException(status_code=503, detail='Could not start video stream')
 
 	deadline = time.monotonic() + STARTUP_TIMEOUT_S

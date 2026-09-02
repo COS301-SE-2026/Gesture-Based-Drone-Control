@@ -64,7 +64,7 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
               alt="drone live feed"
               onLoad={() => setLoaded(true)}
               className={`w-full h-full object-cover transition-opacity duration-500 ${
-                loaded ? "opacity-100" : "opacity-0"
+                loaded ? "opacity-100" : "opacity-100"
               }`}
             />
           )}
