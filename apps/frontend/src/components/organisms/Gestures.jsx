@@ -5,8 +5,8 @@ import {
   DroneModeCard,
   GestureCameraFeed,
   GestureCalibration,
-  RecognizerToggle,
   DroneFeedPanel,
+  TelemetryAlerts,
 } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
@@ -15,6 +15,7 @@ import { useCommands } from "@/context/CommandsContext"
 import { useDebug } from "@/context/DebugContext"
 import { fetchCalibrationStatus } from "@/hooks/useCalibrationStream"
 import { useGestureCommandLog } from "@/hooks/useGestureCommandLog"
+import { useTelemetryAlerts } from "@/hooks/useTelemetryAlerts"
 
 const MS_TO_KMH = 3.6
 const MAX_HISTORY = 50
@@ -56,7 +57,6 @@ function calibrationLabel(calibrated) {
   return calibrated ? "calibrated" : "required"
 }
 
-//TODO: this is still mocked for now
 const GestureControl = () => {
   const [commands, setCommands] = useState([])
   const manualIdRef = useRef(0)
@@ -99,11 +99,30 @@ const GestureControl = () => {
     [gestureCommands, commands]
   )
 
-  
-  const [droneMode, setDroneMode] = useState("DroneSim")
+  // //mock data for drone status
+  // const droneMetrics = {
+  //   battery: 56,
+  //   speed: 5.6,
+  //   altitude: 72,
+  //   signal: 71,
+  // }
+
+  const [droneMode, setDroneMode] = useState("None")
   const [isConnecting, setIsConnecting] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState("disconnected")
   const [connectionError, setConnectionError] = useState("")
+  const [eventAlerts, setEventAlerts] = useState([])
+
+  //added this so emergency stop is persistant but other alerts are trigger based and persist for a time period
+  const pushEventAlert = useCallback((alert) => {
+    setEventAlerts((prev) =>
+      prev.some((a) => a.key === alert.key) ? prev : [...prev, alert]
+    )
+  }, [])
+
+  const dismissEventAlert = useCallback((key) => {
+    setEventAlerts((prev) => prev.filter((a) => a.key !== key))
+  }, [])
 
   //calibration gate for camera card
   // null = still checking, false = calibration UI, true = normal detection feed
@@ -126,8 +145,18 @@ const GestureControl = () => {
     setCalibrated(false)
   }
 
-  //hardware isnt wired for now so we dont want to show the stale sim data
-  const displayTelem = telemetry
+  const isHardwareMode = droneMode === "Hardware" || droneMode === "Tello"
+  const displayTelem = droneMode === "None" ? null : telemetry
+  const hardwareTelem = isHardwareMode ? telemetry : null
+  const signalValue = hardwareTelem?.extra?.signal
+  const { alerts: TelemetryThresholdAlerts, dismiss: dismissTelemetryAlert } =
+    useTelemetryAlerts(hardwareTelem)
+  const allAlerts = [...eventAlerts, ...TelemetryThresholdAlerts]
+
+  const handleDismissAlert = (key) => {
+    dismissEventAlert(key)
+    dismissTelemetryAlert(key)
+  }
 
   //auto connect to airsim when the component is mounted
 
@@ -220,17 +249,43 @@ const GestureControl = () => {
   //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
   useEffect(() => {
     if (lastResp?.ok && lastResp.command) {
-      // setStae has to be called in use effect here because lastResp is not in this component
-      //its basically coming from useCommands in the websocket, so that whenever there is a new response its added to the local log.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       pushManualCommand(lastResp.command, lastResp.source ?? "onscreen")
+
+      if (lastResp.command === "EMERGENCY_STOP") {
+        setTimeout(() => {
+          pushEventAlert({
+            key: `emergency-stop-${Date.now()}`,
+            id: "emergency-stop",
+            severity: "error",
+            title: "Emergency Stop Activated",
+            message:
+              "All motors stopping immediately. Confirm the drone is safe before resuming",
+          })
+        }, 0)
+      }
     }
-  }, [lastResp, pushManualCommand])
+  }, [lastResp, pushManualCommand, pushEventAlert])
 
   const { debugMode } = useDebug()
 
+  const handleDisconnect = async () => {
+    try {
+      await fetch("http://localhost:3001/api/drone/disconnection", {
+        method: "POST",
+      })
+      console.log("disconnected from current adapter")
+    } catch (error) {
+      console.warn("error disconnecting:", error)
+    } finally {
+      setDroneMode("None")
+      setConnectionStatus("disconnected")
+      setConnectionError("")
+    }
+  }
+
   return (
     <div className="p-6 space-y-6">
+      <TelemetryAlerts alerts={allAlerts} onDismiss={handleDismissAlert} />
       {debugMode && (
         <div className="flex items-center gap-4 text-sm">
           <span className="text-dim">Drone status:</span>
@@ -303,8 +358,7 @@ const GestureControl = () => {
               <div>
                 <p className=" text-xs text-ink uppercase">Signal</p>
                 <p className="text-lg font-bold text-ink">
-                  {/* TODO: this is still mocked for now - theres no signl_pct field on the telem return yet */}
-                  100%
+                  {typeof signalValue === "number" ? `${signalValue}%` : "--%"}
                 </p>
               </div>
             </div>
@@ -341,6 +395,7 @@ const GestureControl = () => {
         <DroneModeCard
           currentMode={droneMode}
           onModeChange={handleModeChange}
+          onDisconnect={handleDisconnect}
           className="w-72"
         />
         </div>
@@ -364,18 +419,16 @@ const GestureControl = () => {
                 <Label className="text-lg font-semibold">
                   Gesture Detection
                 </Label>
-                <div className="flex items-center gap-4">
-                  <RecognizerToggle />
-                  {calibrated && (
-                    <button
-                      type="button"
-                      onClick={handleRecalibrate}
-                      className="text-xs text-DarkGrey hover:text-OffBlack dark:hover:text-OffWhite underline underline-offset-2 transition-colors"
-                    >
-                      Recalibrate
-                    </button>
-                  )}
-                </div>
+
+                {calibrated && (
+                  <button
+                    type="button"
+                    onClick={handleRecalibrate}
+                    className="text-xs text-dim hover:text-red underline underline-offset-2 transition-colors"
+                  >
+                    Recalibrate
+                  </button>
+                )}
               </div>
 
               <GestureCameraFeed className="flex-1" />
