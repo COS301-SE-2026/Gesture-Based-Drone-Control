@@ -1,7 +1,14 @@
-import{test,expect}from '@playwright/test'
+import{test,expect, Page}from '@playwright/test'
+
+async function mockAuth(page: Page) {
+    await page.addInitScript(() => {
+        localStorage.setItem('authToken', 'test-token')
+    })
+}
 
 test.describe('gesture control page aka dashboard', () =>{
     test.beforeEach(async ({ page}) => {
+        await mockAuth(page)
         await page.route('**/api/drone/connect', async (route) => {
             await route.fulfill({
                 status: 200,
@@ -16,7 +23,7 @@ test.describe('gesture control page aka dashboard', () =>{
             })
         })
 
-        await page.goto('/#/gestures')
+        await page.goto('/#/app/gestures')
         await page.waitForLoadState('domcontentloaded')
 
     })
@@ -27,6 +34,7 @@ test.describe('gesture control page aka dashboard', () =>{
         })
 
         test('active status indicator shows',async ({page})=>{
+            await mockAuth(page)
             await page.addInitScript(()=>{
                 class FakeWebSocket{
                     onopen:(() => void)|null=null
