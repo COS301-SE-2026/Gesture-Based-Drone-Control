@@ -97,7 +97,11 @@ export default function PacDroneGame() {
         global: false,
       })
 
-      //TODO: helper functions for collission
+      //helper functions for collission
+      const tileAt = (maze, col, row) => maze[row]?.[col] ?? "W"
+      const isWall = (maze, col, row) => tileAt(maze, col, row) === "W"
+      const px = (col) => col * tile + tile / 2
+      const py = (row) => row * tile + tile / 2
 
       // title scene
       k.scene("title", () => {
@@ -142,41 +146,144 @@ export default function PacDroneGame() {
         refresh()
 
         const move = (delta) => {
-            cursor = (cursor + delta + 2) % 2
-            refresh()
+          cursor = (cursor + delta + 2) % 2
+          refresh()
         }
 
         const pick = () => k.go("game", cursor)
-        
+
         // fallback controls
-        k.onKeyPress("arrowup",() => move(-1))
-        k.onKeyPress("arrowdown",() => move( 1))
+        k.onKeyPress("arrowup", () => move(-1))
+        k.onKeyPress("arrowdown", () => move(1))
         k.onKeyPress("w", () => move(-1))
-        k.onKeyPress("s",() => move( 1))
+        k.onKeyPress("s", () => move(1))
         k.onKeyPress("enter", () => pick())
         k.onKeyPress("space", () => pick())
 
-        // ws direction picks 
+        // ws direction picks
         k.onUpdate(() => {
           const d = dirRef.current
-          if (d.y === -1) { move(-1); dirRef.current = { x:0, y:0 }}
-          if (d.y ===  1) { move( 1); dirRef.current = { x:0, y:0 }}
-          if (d.x !== 0 || d.y !== 0 && Math.abs(d.x) > 0) {
+          if (d.y === -1) {
+            move(-1)
+            dirRef.current = { x: 0, y: 0 }
+          }
+          if (d.y === 1) {
+            move(1)
+            dirRef.current = { x: 0, y: 0 }
+          }
+          if (d.x !== 0 || (d.y !== 0 && Math.abs(d.x) > 0)) {
             pick()
-            dirRef.current = { x:0, y:0 }
+            dirRef.current = { x: 0, y: 0 }
           }
         })
 
-        k.add([k.text("W/S or FLY UP to choose | Enter or FLY RIGHT to start",
-            { size: 14 }), k.anchor("center"),
-            k.pos(w/2, h - 30), col_wall
+        k.add([
+          k.text("W/S or FLY UP to choose | Enter or FLY RIGHT to start", {
+            size: 14,
+          }),
+          k.anchor("center"),
+          k.pos(w / 2, h - 30),
+          col_wall,
         ])
-
       })
+
+      // main game scene
+      k.scene("game", (mazeIndex = 0) => {
+        const maze = mazes[mazeIndex].map((row) => row.split("")) //render line by line
+        let dotsLeft = 0
+        let scorre = 0
+        let scared = false
+        let scaredTimer = 0
+
+        // draw the tiles and spawn locations
+
+        let playerSpawn = { col: 1, row: 1 } //placeholder first index
+        const ghostSpawns = []
+
+        // parse the grid one by one char
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            const ch = maze[row][col]
+
+            // see a wall
+            if (ch === "W") {
+              k.add([
+                k.rect(tile, tile),
+                k.pos(col * tile, row * tile),
+                k.color(...COL_WALL),
+                k.z(0),
+              ])
+              // subtle border highlight
+              k.add([
+                k.rect(tile - 2, tile - 2),
+                k.pos(col * tile + 1, row * tile + 1),
+                k.color(40, 80, 200),
+                k.z(1),
+              ])
+              continue
+            }
+
+            // see floor that can be replaced with something else
+            // floor
+            k.add([
+              k.rect(tile, tile),
+              k.pos(col * tile, row * tile),
+              k.color(20, 20, 30),
+              k.z(0),
+            ])
+
+            // see a pellet on the floor
+            if (ch === ".") {
+              k.add([
+                k.circle(3),
+                k.anchor("center"),
+                k.pos(px(col), py(row)),
+                k.color(...col_dot),
+                k.z(2),
+                "dot",
+                { col, row },
+              ])
+              dotsLeft++
+            }
+            // see a power up on the floor
+            else if (ch === "o") {
+              k.add([
+                k.circle(7),
+                k.anchor("center"),
+                k.pos(px(col), py(row)),
+                k.color(...col_power),
+                k.z(2),
+                "pellet",
+                { col, row },
+              ])
+              dotsLeft++
+            }
+            // player will spwn on this tile
+            else if (ch === "P") {
+              playerSpawn = { col, row }
+            }
+            // ghosts will spawn on this tile
+            else if (ch === "G") {
+              ghostSpawns.push({ col, row })
+            }
+          }
+        }
+
+        // TODO:
+        // score labels
+        // actual player
+        // ghosts and ghost AI
+        // controls
+        // movement
+        // collission
+      })
+
       k.go("title")
     })
 
-    return () => {}
+    return () => {
+      dirRef.current = { x: 0, y: 0 }
+    }
   }, [])
   return (
     <canvas
