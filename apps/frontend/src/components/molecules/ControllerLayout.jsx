@@ -33,8 +33,9 @@ const CONTROL_LABELS=[
   {target: [590,205], text: "Increase Altitude", side: "right"},
   {target: [590,295], text: "Decrease Altitude", side: "right"},
 
-  {target: [545,250], text: "Rotate Left", side: "right"},
   {target: [635,250], text: "Rotate Right", side: "right"},
+  {target: [545,250], text: "Rotate Left", side: "right"},
+  
 
   {target: [720,115], text: "Emergency Stop", side: "right"},
 
@@ -189,7 +190,7 @@ const ControllerLayout = ({ className = "" }) => {
         />
 
         {/* top rectange thingies, i dont game so idk what its call man, dont judge */}
-        {(isPressed(4) ? ["lt" , "lb"] : ["lb","lt"]).map ((id)=> 
+        {(isPressed(4) ? ["lb" , "lt"] : ["lt","lb"]).map ((id)=> 
         id === "lb" ? (
           <rect
           key="lb"
