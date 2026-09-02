@@ -106,7 +106,7 @@ const GestureControl = () => {
   }
 
   //hardware isnt wired for now so we dont want to show the stale sim data
-  const displayTelem = droneMode === "Hardware" ? null : telemetry
+  const displayTelem = telemetry
 
   //auto connect to airsim when the component is mounted
 
@@ -130,6 +130,11 @@ const GestureControl = () => {
         requestBody = {
           ...requestBody,
           vehicle_name: "Drone-1",
+        }
+      } else if (adapterType === "tello") {
+        requestBody = {
+          ...requestBody,
+          vehicle_name: "Tello-1",
         }
       }
       //add xfly adapter later here
@@ -177,6 +182,8 @@ const GestureControl = () => {
       await connectToDrone("projectairsim")
     } else if (mode === "Manual" || mode === "Autonomous") {
       await connectToDrone("dummy")
+    } else if (mode === "Tello" || mode === "Hardware") {
+      await connectToDrone("tello")
     }
   }
   //add hardware mode when drone works
