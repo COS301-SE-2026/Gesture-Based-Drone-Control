@@ -86,12 +86,11 @@ export default function FlappyDroneGame() {
         global: false,
       })
 
-      
       //load assets
       k.loadSprite("drone", droneSprite)
       k.loadSprite("backSprite", background)
       k.loadSprite("pipeSprite", pipe)
-      
+
       k.loadFont("font", testFont)
 
       k.setGravity(1)
