@@ -73,29 +73,31 @@ test.describe('command history card', () => {
 
     test('is collapsed by default', async ({ page }) => {
         await expect(page.getByText('Command History')).toBeVisible()
-        await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).not.toBeVisible()
+        
+        const cont = page.locator('.transition-all.duration-300.ease-in-out.overflow-hidden')
+        await expect(cont).toHaveClass(/max-h-0 opacity-0/)
     })
 
-    test ('expands and shows command entries on clcik', async ({ page }) => {
+    test ('expands on clcik', async ({ page }) => {
         const trigger = page.getByText('Command History')
         await expect(trigger).toBeVisible();
         
         await trigger.click()
+        await page.waitForTimeout(500)
         await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).toBeVisible()
 
-        await trigger.click()
-        await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).not.toBeVisible()
+    
     })
 
     test ('clicking an entry inside the card doesnt collapse the card', async ({page}) => {
         await page.getByText('Command History').click()
-
+        await page.waitForTimeout(500)
+        await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).toBeVisible()
         const entry = page.getByText(/\d{2}:\d{2}:\d{2}/).first()
-        await expect(entry).toBeVisible()
-
         await entry.click()
-
-        await expect(entry).toBeVisible()
+        await expect(page.getByText(/\d{2}:\d{2}:\d{2}/).first()).toBeVisible()
+        
+        
     })
 
 

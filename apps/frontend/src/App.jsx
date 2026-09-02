@@ -16,6 +16,8 @@ import { ThemeProvider } from "./context/ThemeProvider.jsx"
 import { TelemetryProvider } from "./context/TelemetryProvider.jsx"
 import { CommandsProvider } from "./context/CommandsProvider.jsx"
 import TestPage from "@/components/testPageForAtoms/TestPage.jsx"
+import { DebugProvider } from "./context/DebugProvider.jsx"
+import CursorGlow from "./components/atoms/CursorGlow.jsx"
 import { CameraConsentProvider } from "./context/CameraConsentProvider.jsx"
 
 function App() {
@@ -23,24 +25,27 @@ function App() {
     <ThemeProvider>
       <TelemetryProvider>
         <CommandsProvider>
-          <CameraConsentProvider>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/" element={<RootLayout />}>
-                <Route index element={<Gestures />} />
-                <Route path="gestures" element={<Gestures />} />
-                <Route path="analytics" element={<Analytics />} />
-                <Route path="settings" element={<Settings />} />
-                <Route path="gps" element={<GPS />} />
-                <Route path="help" element={<Help />} />
-                <Route path="tutorial" element={<Tutorial />} />
-                <Route path="test" element={<TestPage />} />
-                <Route path="games" element={<Games />} />
+          <DebugProvider>
+            <CursorGlow />
+            <CameraConsentProvider>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/" element={<RootLayout />}>
+                  <Route index element={<Gestures />} />
+                  <Route path="gestures" element={<Gestures />} />
+                  <Route path="analytics" element={<Analytics />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="gps" element={<GPS />} />
+                  <Route path="help" element={<Help />} />
+                  <Route path="tutorial" element={<Tutorial />} />
+                  <Route path="test" element={<TestPage />} />
+                  <Route path="games" element={<Games />} />
               </Route>
-            </Routes>
-          </CameraConsentProvider>
+              </Routes>
+            </CameraConsentProvider>
+          </DebugProvider>
         </CommandsProvider>
       </TelemetryProvider>
     </ThemeProvider>

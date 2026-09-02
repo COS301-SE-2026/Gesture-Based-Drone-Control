@@ -84,11 +84,19 @@ def _build_adapter(body: ConnectRequest) -> DroneAdapter:
 			vehicle_name=body.vehicle_name,
 		)
 
+	if body.adapter == 'tello':
+		from services.drone_control.adapters.tello_adapter import TelloAdapter
+
+		return TelloAdapter()
+
 	if body.adapter == 'game':
 		from services.drone_control.adapters.game_adapter import GameAdapter
 
 		return GameAdapter()
-	raise ValueError(f'Unknown adapter: {body.adapter}. Supported: dummy, airsim, projectairsim')
+
+	raise ValueError(
+		f'Unknown adapter: {body.adapter}. Supported: dummy, airsim, projectairsim, tello, game'
+	)
 
 
 # REST endpoints\
@@ -136,7 +144,7 @@ async def connect(
 
 	# start flight record
 	drone_row = await flight_manager.get_or_create_drone(
-		db, display_name=body.adapter, is_simulated=(body.adapter != 'hardware')
+		db, display_name=body.adapter, is_simulated=(body.adapter != 'tello')
 	)
 	state.current_drone_id = drone_row.id
 
