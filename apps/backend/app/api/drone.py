@@ -24,7 +24,7 @@ from dataclasses import asdict
 from typing import Annotated
 
 import cv2
-from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -202,10 +202,13 @@ JPEG_QUALITY = 70
 FRAME_W, FRAME_H = 640, 480
 STARTUP_TIMEOUT_S = 5.0
 STALE_AFTER_S = 3.0
+MIN_DIM, MAX_DIM = 160, 1280
 
 
 @router.get('/feed')
-async def feed(state: Annotated[AppState, Depends(get_state)]):
+async def feed(state: Annotated[AppState, Depends(get_state)],
+			   w: Annotated[int, Query(ge=MIN_DIM, le=MAX_DIM)] = FRAME_W,
+			   h: Annotated[int, Query(ge=MIN_DIM, le=MAX_DIM)] = FRAME_H):
 	if not state.is_connected or state.adapter is None:
 		raise HTTPException(status_code=409, detail='No drone connected')
 
@@ -225,7 +228,7 @@ async def feed(state: Annotated[AppState, Depends(get_state)]):
 		await asyncio.sleep(0.1)
 
 	return StreamingResponse(
-		_mjpeg_stream(adapter),
+		_mjpeg_stream(adapter, w, h),
 		media_type=f'multipart/x-mixed-replace; boundary={BOUNDARY}',
 		headers={
 			'Cache-Control': 'no-store, no-cache, must-revalidate',
@@ -235,13 +238,13 @@ async def feed(state: Annotated[AppState, Depends(get_state)]):
 	)
 
 
-def _encode_jpeg(frame) -> bytes | None:
+def _encode_jpeg(frame, width:int, height:int) -> bytes | None:
 	"""
 	Downscale and Jpeg encode a BGR frame
 
 	called via asyncio.to_thread - at target fps
 	"""
-	small = cv2.resize(frame, (FRAME_W, FRAME_H), interpolation=cv2.INTER_AREA)
+	small = cv2.resize(frame, (width, height), interpolation=cv2.INTER_AREA)
 	ok, buf = cv2.imencode('.jpg', small, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
 	return buf.tobytes() if ok else None
 
@@ -254,7 +257,7 @@ def _mjpeg_part(jpeg: bytes) -> bytes:
 	)
 
 
-async def _mjpeg_stream(adapter: DroneAdapter):
+async def _mjpeg_stream(adapter: DroneAdapter, box_w:int, box_h:int):
 	"""
 	yields multipart jpeg parts until the client disconnects or the feed goes stale
 
@@ -271,7 +274,7 @@ async def _mjpeg_stream(adapter: DroneAdapter):
 
 			if shot.frame is not None and shot.seq != last_seq:
 				last_seq = shot.seq
-				jpeg = await asyncio.to_thread(_encode_jpeg, shot.frame)
+				jpeg = await asyncio.to_thread(_encode_jpeg, shot.frame, box_w, box_h)
 				if jpeg is not None:
 					last_good = time.monotonic()
 					yield _mjpeg_part(jpeg)
