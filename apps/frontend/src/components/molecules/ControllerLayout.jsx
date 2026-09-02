@@ -21,19 +21,31 @@ const CONTROL_LABELS=[
   {target: [215,250], text: "Move Left", side: "left"},
   {target: [305,250], text: "Move Right", side: "left"},
 
+  {target: [160,127], text: "Move Forward", side: "left"},
+  {target: [160,183], text: "Move Backward", side: "left"},
+  {target: [132,155], text: "Move Left", side: "left"},
+  {target: [188,155], text: "Move Right", side: "left"},
+
+  {target: [165,37], text: "Rotate Left", side: "left"},
+  {target: [315,32], text: "Increase Altitude", side: "left"},
+
+
   {target: [590,205], text: "Increase Altitude", side: "right"},
   {target: [590,295], text: "Decrease Altitude", side: "right"},
 
   {target: [545,250], text: "Rotate Left", side: "right"},
   {target: [635,250], text: "Rotate Right", side: "right"},
 
-  {target: [720,115], text: "Takeoff", side: "right"},
+  {target: [720,115], text: "Emergency Stop", side: "right"},
 
   {target: [680,155], text: "Hover", side: "right"},
 
   {target: [760,155], text: "Land", side: "right"},
 
-  {target: [720,195], text: "Emergency Stop", side: "right"},
+  {target: [720,195], text: "Takeoff", side: "right"},
+
+  {target: [555,32], text: "Decrease Altitude", side: "right"},
+  {target: [705,37], text: "Rotate Right", side: "right"},
 
 ]
 const CHAR_WIDTH =11
@@ -178,36 +190,44 @@ const ControllerLayout = ({ className = "" }) => {
 
         {/* top rectange thingies, i dont game so idk what its call man, dont judge */}
         <rect
+          data-testid="btn-lb"
           x="130"
           y="15"
           width="150"
           height="45"
           rx="10"
-          className="fill-Grey/60 dark:fill-DarkGrey/90"
+          strokeWidth="2"
+          className={btnFill(4)}
         />
         <rect
+          data-testid="btn-lt"
           x="200"
           y="0"
           width="150"
           height="65"
           rx="10"
-          className="fill-Grey/80 dark:fill-DarkGrey/70"
+          strokeWidth="2"
+          className={btnFill(6)}
         />
         <rect
+          data-testid="btn-rt"
           x="520"
           y="0"
           width="150"
           height="65"
           rx="10"
-          className="fill-Grey/80 dark:fill-DarkGrey/70"
+          strokeWidth="2"
+          className={btnFill(7)}
         />
         <rect
+        data-testid="btn-rb"
           x="590"
           y="15"
           width="150"
           height="45"
           rx="10"
-          className="fill-Grey/60 dark:fill-DarkGrey/90"
+          strokeWidth="2"
+          className={btnFill(5)}
         />
         {/* LHS mini circles */}
 
