@@ -238,6 +238,23 @@ const GestureControl = () => {
 
   const { debugMode } = useDebug()
 
+  const handleDisconnect = async () => {
+    try {
+      await fetch("http://localhost:3001/api/drone/disconnection", {
+        method: "POST",
+      })
+      console.log("disconnected from current adapter")
+    }
+    catch (error) {
+      console.warn("error disconnecting:", error)
+    }
+    finally {
+      setDroneMode("None")
+      setConnectionStatus("disconnected")
+      setConnectionError("")
+    }
+  }
+
   return (
     <div className="p-6 space-y-6">
       <TelemetryAlerts alerts={allAlerts} onDismiss={handleDismissAlert} />
@@ -349,6 +366,7 @@ const GestureControl = () => {
         <DroneModeCard
           currentMode={droneMode}
           onModeChange={handleModeChange}
+          onDisconnect={handleDisconnect}
           className="w-72"
         />
       </div>
