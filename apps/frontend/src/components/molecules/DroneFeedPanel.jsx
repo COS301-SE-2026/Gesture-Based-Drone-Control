@@ -86,7 +86,7 @@ DroneFeedPanel.propTypes = {
 DroneFeedPanel.defaultProps = {
   connectionStatus: "disconnected",
   droneSimUrl: "http and port for dronesim",
-  hardwareFeedUrl: "http://localhost:3001/api/drone/feed",
+  hardwareFeedUrl: "http://localhost:3001/api/drone/feed?w=1200&h=480",
 }
 
 export default DroneFeedPanel
