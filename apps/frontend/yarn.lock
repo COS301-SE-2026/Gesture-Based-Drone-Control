@@ -2482,6 +2482,11 @@ jsonfile@^6.0.1:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
+kaplay@^3001.0.19:
+  version "3001.0.19"
+  resolved "https://registry.yarnpkg.com/kaplay/-/kaplay-3001.0.19.tgz#39506c6872813c443a3b2963f44d37a9e9d3a3a2"
+  integrity sha512-T8GdXGXvgv/vbYVA1lcHzuDNVhp3juOJJE8OZs0vR5MdGNElBvANEeTSnqAAhJpSXtNxpeNy29pqkok3RnXKtg==
+
 keyv@^4.0.0, keyv@^4.5.4:
   version "4.5.4"
   resolved "https://registry.npmjs.org/keyv/-/keyv-4.5.4.tgz"

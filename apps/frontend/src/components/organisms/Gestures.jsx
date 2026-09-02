@@ -201,7 +201,6 @@ const GestureControl = () => {
     if (lastResp?.ok && lastResp.command) {
       // setStae has to be called in use effect here because lastResp is not in this component
       //its basically coming from useCommands in the websocket, so that whenever there is a new response its added to the local log.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       pushManualCommand(lastResp.command, lastResp.source ?? "onscreen")
     }
   }, [lastResp, pushManualCommand])

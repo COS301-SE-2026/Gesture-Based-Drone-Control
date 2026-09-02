@@ -89,8 +89,13 @@ def _build_adapter(body: ConnectRequest) -> DroneAdapter:
 
 		return TelloAdapter()
 
+	if body.adapter == 'game':
+		from services.drone_control.adapters.game_adapter import GameAdapter
+
+		return GameAdapter()
+
 	raise ValueError(
-		f'Unknown adapter: {body.adapter}. Supported: dummy, airsim, projectairsim, tello'
+		f'Unknown adapter: {body.adapter}. Supported: dummy, airsim, projectairsim, tello, game'
 	)
 
 

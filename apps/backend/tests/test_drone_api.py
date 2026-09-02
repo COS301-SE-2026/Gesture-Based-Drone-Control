@@ -159,6 +159,38 @@ async def test_connect_airsim():
 	assert state.adapter_name == 'airsim'
 
 
+@pytest.mark.asyncio
+async def test_connect_game():
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	mock_adapter = make_mock_adapter()
+	mock_drone = MagicMock()
+	mock_drone.id = 44
+
+	with (
+		patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.get_or_create_drone',
+			AsyncMock(return_value=mock_drone),
+		),
+		patch(
+			'apps.backend.app.api.drone.flight_manager.start_flight',
+			AsyncMock(return_value=MagicMock(id=uuid4())),
+		),
+	):
+		response = client.post(
+			'/drone/connect',
+			json={
+				'adapter': 'game',
+			},
+		)
+
+	assert response.status_code == 200
+	assert response.json()['connected'] is True
+	assert state.adapter_name == 'game'
+
+
 # test failures
 async def test_connect_adapter_connect_fails():  # NOSONAR
 	"""should get a 200 with connected==False"""

@@ -6,7 +6,14 @@ import {
   GpsSideContent,
   HelpSideContent,
 } from "../molecules"
-import { Home, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
+import {
+  Home,
+  BarChart3,
+  MapPin,
+  Settings,
+  HelpCircle,
+  Gamepad,
+} from "lucide-react"
 // import bgLight from "../../assets/Lightbackground.png"
 // import bgDark from "../../assets/darkbackground.png"
 // import { useTheme } from "../../context/ThemeContext"
@@ -23,6 +30,7 @@ const RootLayout = () => {
       path: "/analytics",
     },
     { id: "gps", label: "GPS", icon: MapPin, path: "/gps" },
+    { id: "games", label: "Games", icon: Gamepad, path: "/games" },
     { id: "settings", label: "Settings", icon: Settings, path: "/settings" },
     { id: "help", label: "Help", icon: HelpCircle, path: "/help" },
   ]
