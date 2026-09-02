@@ -83,6 +83,17 @@ const GestureControl = () => {
   const [isConnecting, setIsConnecting] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState("disconnected")
   const [connectionError, setConnectionError] = useState("")
+  const [ eventAlerts, setEventAlerts] = useState([])
+
+  //added this so emergency stop is persistant but other alerts are trigger based and persist for a time period
+  const pushEventAlert = useCallback((alert) => {
+    setEventAlerts((prev) =>
+      prev.some((a) => a.key === alert.key) ? prev : [...prev, alert])
+  }, [])
+
+  const dismissEventAlert = useCallback((key) => {
+    setEventAlerts((prev) => prev.filter((a) => a.key !== key))
+  }, [])
 
   //calibration gate for camera card
   // null = still checking, false = calibration UI, true = normal detection feed
@@ -109,7 +120,13 @@ const GestureControl = () => {
   const displayTelem = droneMode === "None" ? null : telemetry
   const hardwareTelem = isHardwareMode ? telemetry : null
   const signalValue = hardwareTelem?.extra?.signal
-  const { alerts, dismiss } = useTelemetryAlerts(hardwareTelem)
+  const { alerts: TelemetryThresholdAlerts, dismiss: dismissTelemetryAlert } = useTelemetryAlerts(hardwareTelem)
+  const allAlerts = [...eventAlerts, ...TelemetryThresholdAlerts]
+
+  const handleDismissAlert = (key) => {
+    dismissEventAlert(key)
+    dismissTelemetryAlert(key)
+  }
 
 
   //auto connect to airsim when the component is mounted
@@ -203,17 +220,27 @@ const GestureControl = () => {
   //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
   useEffect(() => {
     if (lastResp?.ok && lastResp.command) {
-      // setStae has to be called in use effect here because lastResp is not in this component
-      //its basically coming from useCommands in the websocket, so that whenever there is a new response its added to the local log.
       pushManualCommand(lastResp.command, lastResp.source ?? "onscreen")
+
+      if (lastResp.command === "EMERGENCY_STOP") {
+        setTimeout(() => {
+          pushEventAlert({
+            key: `emergency-stop-${Date.now()}`,
+            id: "emergency-stop",
+            severity: "error",
+            title: "Emergency Stop Activated",
+            message: "All motors stopping immediately. Confirm the drone is safe before resuming"
+          });
+        }, 0);
+      }
     }
-  }, [lastResp, pushManualCommand])
+  }, [lastResp, pushManualCommand, pushEventAlert])
 
   const { debugMode } = useDebug()
 
   return (
     <div className="p-6 space-y-6">
-      <TelemetryAlerts alerts={alerts} onDismiss={dismiss} />
+      <TelemetryAlerts alerts={allAlerts} onDismiss={handleDismissAlert} />
       {debugMode && (
         <div className="flex items-center gap-4 text-sm">
           <span className="text-dim">Drone status:</span>
