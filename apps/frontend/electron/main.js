@@ -100,6 +100,12 @@ app.whenReady().then(async () => {
   createWindow()
 })
 
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin"){
+    app.quit()
+  }
+})
+
 app.on("before-quit", killBackend)
 app.on("will-quit", killBackend)
 process.on("exit", killBackend)

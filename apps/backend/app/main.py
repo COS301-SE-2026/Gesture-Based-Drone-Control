@@ -45,9 +45,23 @@ async def lifespan(app: FastAPI):
 		await conn.run_sync(Base.metadata.create_all)
 
 	app.state.app = AppState()
-	yield
-	await gesture_stream.shutdown()
-	logger.info('Stopping API...')
+	try:
+
+		yield
+	finally:
+		try:
+			await gesture_stream.shutdown()
+		except Exception:
+			logger.exception('Error in shutting down gesture stream')
+
+		try:
+			await app.state.app.shutdown()
+		except Exception:
+			logger.exception('Error in shutting down app state')
+
+		
+		await engine.dispose()
+		logger.info('Stopping API...')
 
 
 app = FastAPI(
