@@ -5,6 +5,7 @@ import {
   DashboardSideCard,
   GpsSideContent,
   HelpSideContent,
+  SettingsSideContent,
 } from "../molecules"
 import {
   Home,
@@ -22,12 +23,12 @@ const RootLayout = () => {
   // const { isDark } = useTheme()
   const location = useLocation()
   const menuItems = [
-    { id: "gestures", label: "Gestures", icon: Home, path: "/gestures" },
+    { id: "gestures", label: "Gestures", icon: Home, path: "/app/gestures" },
     {
       id: "analytics",
       label: "Analytics",
       icon: BarChart3,
-      path: "/analytics",
+      path: "/app/analytics",
     },
     { id: "gps", label: "GPS", icon: MapPin, path: "/gps" },
     { id: "games", label: "Games", icon: Gamepad, path: "/games" },
@@ -36,7 +37,10 @@ const RootLayout = () => {
   ]
 
   const getTopContent = () => {
-    if (location.pathname === "/" || location.pathname.includes("/gestures")) {
+    if (
+      location.pathname === "/app" ||
+      location.pathname.includes("/gestures")
+    ) {
       return <DashboardSideCard />
     } else if (location.pathname.includes("/analytics")) {
       return <AnalyticsSideContent />
@@ -44,6 +48,8 @@ const RootLayout = () => {
       return <GpsSideContent />
     } else if (location.pathname.includes("/help")) {
       return <HelpSideContent />
+    } else if (location.pathname.includes("/settings")) {
+      return <SettingsSideContent />
     }
   }
 
