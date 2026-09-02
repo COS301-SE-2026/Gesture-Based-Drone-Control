@@ -42,7 +42,7 @@ async function mockGamepad(page: Page) {
 
 test.describe('ControllerLayout',() => {
     test.beforeEach(async({page}) =>{
-        await page.goto('/gestures')
+        await page.goto('/app/gestures')
         await page.waitForLoadState('domcontentloaded')
         await page.getByRole('button',{name:/controller/i}).click()
     })

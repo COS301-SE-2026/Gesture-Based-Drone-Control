@@ -62,7 +62,7 @@ test.describe('gesture control page aka dashboard', () =>{
                 })
             })
 
-            await page.goto('/#/gestures')
+            await page.goto('/#/app/gestures')
             await page.waitForLoadState('domcontentloaded')
             await page.waitForTimeout(1000)
 
