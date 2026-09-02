@@ -90,4 +90,8 @@ app.include_router(router)
 if __name__ == '__main__':
 	import uvicorn
 
-	uvicorn.run(app, host='127.0.0.1', port=3001)
+	# timeout_graceful_shutdown caps how long uvicorn waits for open connections
+	# before running lifespan shutdown. without it a wedged /stream websocket blocks
+	# the drain forever, so gesture_stream.shutdown() never runs and the webcam is
+	# never released. must stay under electron's BACKEND_KILL_DEADLINE_MS
+	uvicorn.run(app, host='127.0.0.1', port=3001, timeout_graceful_shutdown=3)
