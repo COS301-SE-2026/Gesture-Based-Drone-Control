@@ -205,7 +205,13 @@ STALE_AFTER_S = 3.0
 MIN_DIM, MAX_DIM = 160, 1280
 
 
-@router.get('/feed')
+@router.get(
+	'/feed',
+	responses={
+		409: {'description': 'No drone connected, or the connected adapter has no camera'},
+		503: {'description': 'Video stream could not be started, or is not producing frames'},
+	},
+)
 async def feed(
 	state: Annotated[AppState, Depends(get_state)],
 	w: Annotated[int, Query(ge=MIN_DIM, le=MAX_DIM)] = FRAME_W,
