@@ -603,6 +603,40 @@ export default function PacDroneGame() {
       })
 
       // lose scene
+      k.scene("lose", (score = 0, mazeIndex = 0) => {
+        k.add([
+          k.text("WASTED", { size: 52 }),
+          k.anchor("center"),
+          k.pos(w / 2, h / 2 - 80),
+          k.color(...col_ghost),
+        ])
+        k.add([
+          k.text(`Score: ${score}`, { size: 28 }),
+          k.anchor("center"),
+          k.pos(w / 2, h / 2),
+          k.color(...col_wall),
+        ])
+        k.add([
+          k.text("Enter / Space to retry  |  T for title", { size: 16 }),
+          k.anchor("center"),
+          k.pos(w / 2, h / 2 + 70),
+          k.color(120, 120, 140),
+        ])
+        k.wait(0.3, () => {
+          k.onKeyPress("enter", () => k.go("game", mazeIndex))
+          k.onKeyPress("space", () => k.go("game", mazeIndex))
+          k.onKeyPress("t", () => k.go("title"))
+          // any ws command restarts
+          const unsub = k.onUpdate(() => {
+            const d = dirRef.current
+            if (d.x !== 0 || d.y !== 0) {
+              dirRef.current = { x: 0, y: 0 }
+              k.go("game", mazeIndex)
+              unsub.cancel()
+            }
+          })
+        })
+      })
 
       k.go("title")
     })
