@@ -547,10 +547,35 @@ export default function PacDroneGame() {
             }
 
             // collision logic comparing logical coords
+            const gc = tileCol(g.pos.x)
+            const gr = tileRow(g.pos.y)
+            if (gc == playerCol && gr === playerRow) {
+              // eat the ghost 
+              if (scared) {
+                const spawn = ghostSpawns[ghosts.indexOf(g)] ??
+                              ghostSpawns[0] ?? {col:1. row: 1}
+                g._col = spawn.col
+                g._row = spawn.row
+                g.pos.x = px(spawn.col)
+                g.pos.y = py(spawn.row)
+                g.color = k.rgb(...col_ghost)
+                score += 200
+                scoreLbl.text = `SCORE  ${score}`
+              } else { // ghost eat us
+                 k.go("lose", score, mazeIndex)
+              }
+            }
           })
-        })
 
+          // win condition
+          if (dotsLeft <= 0) {
+            const next = (mazeIndex + 1) % maze.length
+            k.go("win", score, next)
+          }
+        })
       })
+
+      
 
       k.go("title")
     })
