@@ -1,0 +1,10 @@
+{
+  "id": "QR-07",
+  "requirement": "NFR2.1",
+  "metric": "access-token lifetime (minutes)",
+  "actual": 15,
+  "target": " <= 30",
+  "pass": true,
+  "recorded_at": "2026-09-03T18:20:56+00:00",
+  "machine": "Darwin arm64, 8 cores"
+}

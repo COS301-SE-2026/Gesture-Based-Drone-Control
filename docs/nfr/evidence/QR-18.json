@@ -1,0 +1,13 @@
+{
+  "id": "QR-18",
+  "requirement": "NFR1.2",
+  "metric": "max queue depth under sustained load",
+  "actual": 2,
+  "target": "<= 2",
+  "pass": true,
+  "recorded_at": "2026-09-03T18:20:56+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "pushes": 100,
+  "drop_count": 98,
+  "expected_drops": 98
+}

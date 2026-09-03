@@ -6,7 +6,7 @@ import {
   GpsSideContent,
   HelpSideContent,
   SettingsSideContent,
-  GamesSideContent,
+  GamesSideContent
 } from "../molecules"
 import {
   Home,

@@ -1,12 +1,12 @@
 import PropTypes from "prop-types"
-import { BookOpen, PlayCircle } from "lucide-react"
-import { Card } from "../atoms"
+import { BookOpen, PlayCircle, Compass, ArrowRightCircle } from "lucide-react"
+import { Card, Button } from "../atoms"
 
 //molecule used on help page for top buttons
 
-export default function HelpResource({ onOpenManual, onOpenTut }) {
+export default function HelpResource({ onOpenManual, onOpenTut, onStartTour }) {
   return (
-    <section className="grid gap-4 sm:grid-cols-2">
+    <section className="grid gap-4 sm:grid-cols-3">
       <Card
         variant="glass"
         clickable={true}
@@ -38,6 +38,27 @@ export default function HelpResource({ onOpenManual, onOpenTut }) {
           </div>
         </div>
       </Card>
+
+      <Card variant="glass" className="flex item-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 rounded-lg bg-Red/10 flex items-center justify-center flex-shrink-0">
+            <Compass className="w-5 h-5 text-OffBlack dark:text-OffWhite" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-OffBlack dark:text-OffWhite">
+              Take the full tour
+            </h3>
+          </div>
+        </div>
+        <Button
+          variant="secondary"
+          size="lg"
+          onClick={onStartTour}
+          aria-label="Take the full tour"
+        >
+          <ArrowRightCircle />
+        </Button>
+      </Card>
     </section>
   )
 }
@@ -45,9 +66,11 @@ export default function HelpResource({ onOpenManual, onOpenTut }) {
 HelpResource.propTypes = {
   onOpenManual: PropTypes.func,
   onOpenTut: PropTypes.func,
+  onStartTour: PropTypes.func,
 }
 
 HelpResource.defaultProps = {
   onOpenManual: undefined,
   onOpenTut: undefined,
+  onStartTour: undefined,
 }

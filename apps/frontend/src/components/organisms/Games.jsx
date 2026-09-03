@@ -7,10 +7,12 @@ import { useGamepadControl } from "@/hooks/useGamepadControl"
 import { useGestureControl } from "@/hooks/useGestureControl"
 
 import FlappyDroneGame from "./FlappyDroneGame"
+import PacDroneGame from "./PacDroneGame"
 import DebugGame from "./DebugGame"
 
 const GAMES = [
   { id: "flappy", label: "Flappy Drone", component: FlappyDroneGame },
+  { id: "pacman", label: "Pac-Drone", component: PacDroneGame },
   { id: "debug", label: "Debug", component: DebugGame },
 ]
 

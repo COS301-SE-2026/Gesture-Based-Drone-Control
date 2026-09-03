@@ -89,6 +89,9 @@
     <td align="center">08</td><td><b>Testing Manual</b></td><td>How to run the suites and what they cover</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/testing/TESTING/">Testing</a></td>
   </tr>
   <tr>
+    <td align="center">8a</td><td><b>NFR Verification</b></td><td>Evidence-backed non-functional requirement tests and traceability matrix</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/nfr/NFR/">NFR</a></td>
+  </tr>
+  <tr>
     <td align="center">09</td><td><b>API Reference</b></td><td>REST and WebSocket contracts, schemas, examples</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/api/API_REFERENCE/">API</a></td>
   </tr>
   <tr>

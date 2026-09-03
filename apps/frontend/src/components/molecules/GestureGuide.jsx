@@ -134,10 +134,10 @@ const inputMapping = {
     "R Stick Down",
     "R Stick Left",
     "R Stick Right",
-    "Triangle",
+    "Cross",
     "Square",
     "Circle",
-    "Cross",
+    "Triangle",
   ],
   gestures: [
     "1 finger + 1 finger",
