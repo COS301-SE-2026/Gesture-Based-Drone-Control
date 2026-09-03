@@ -4,13 +4,13 @@ import{test,expect} from '@playwright/test'
 
 test.describe('Command History',()=>{
     test('the label of the command history gets rendered', async ({page})=>{
-        await page.goto('/#/gestures')
+        await page.goto('/#/app/gestures')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByText(/command history/i)).toBeVisible()
     })
 
     test('the command entries are rendered', async ({page})=> {
-        await page.goto('/#/gestures')
+        await page.goto('/#/app/gestures')
         await page.waitForLoadState('domcontentloaded')
         await page.waitForSelector('[class*="CommandHistory"]', { timeout: 5000 })
         const historyLabel = page.getByText('Command History')
@@ -21,7 +21,7 @@ test.describe('Command History',()=>{
     })
 
     test('the timestamps alongside the commands showing up',async ({page})=> {
-        await page.goto('/#/gestures')
+        await page.goto('/#/app/gestures')
         await page.waitForLoadState('domcontentloaded')
         await page.getByText('Command History').click()
         await page.waitForTimeout(500)
@@ -33,14 +33,14 @@ test.describe('Command History',()=>{
 
 test.describe('Sidebar',()=>{
     test('the logo comes through',async ({page})=>{
-        await page.goto('/#/')
+        await page.goto('/#/app')
         await page.waitForLoadState('domcontentloaded')
         const logo = page.getByAltText(/codex merchants/i)
         await expect(logo).toBeVisible({ timeout: 10000 })
     })
 
     test('all the nav items show up', async ({page})=> {
-        await page.goto('/#/')
+        await page.goto('/#/app')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByText(/analytics/i).first()).toBeVisible()
         await expect(page.getByText(/gestures/i).first()).toBeVisible()
@@ -53,14 +53,14 @@ test.describe('Sidebar',()=>{
 
 test.describe('DarkModeToggle',()=>{
     test('the toggle bar shows up',async ({page})=>{
-        await page.goto('/#/')
+        await page.goto('/#/app')
         await page.waitForLoadState('domcontentloaded')
         const toggle = page.getByRole('button' , {name: /switch to (light|dark) mode/i})
         await expect(toggle).toBeVisible()
     })
 
     test('clicking the button flips the data theme attribute on html?', async({page}) => {
-        await page.goto('/#/')
+        await page.goto('/#/app')
         await page.waitForLoadState('domcontentloaded')
         const html = page.locator('html')
         const before=await html.getAttribute('data-theme')
@@ -73,7 +73,7 @@ test.describe('DarkModeToggle',()=>{
     })
 
     test ('the aria-label updates after toggling', async ({page}) => {
-        await page.goto('/#/')
+        await page.goto('/#/app')
         await page.waitForLoadState('domcontentloaded')
         const toggle = page.getByRole('button', {name:/switch to (light|dark) mode/i})
         const labelBefore = await toggle.getAttribute('aria-label')
@@ -85,7 +85,7 @@ test.describe('DarkModeToggle',()=>{
 
 test.describe('HandSkeleton',() => {
     test('test hand landmark svg renders for the current gesture', async ({page}) => {
-        await page.goto ('/#/tutorial')
+        await page.goto ('/#/app/tutorial')
         await page.waitForLoadState('domcontentloaded')
         await expect (page.getByRole('img',{name:/hand landmark skeleton showing the current gesture/i})).toBeVisible()
     })
@@ -93,7 +93,7 @@ test.describe('HandSkeleton',() => {
 
 test.describe('GestureTargetSkeleton',() =>{
     test('the idle taget pose shows before the gesture is matched' ,async({page}) =>{
-        await page.goto('/#/tutorial')
+        await page.goto('/#/app/tutorial')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByText(/try the gesture/i)).toBeVisible()
         await expect(page.getByRole('img' , {name:/hand landmark skeleton showing the current gesture/i})).toBeVisible()
@@ -102,14 +102,14 @@ test.describe('GestureTargetSkeleton',() =>{
 
 test.describe('GestureTutorialCarousel' , () =>{
     test('the first gesture name and progress counter render' ,async ({page}) => {
-        await page.goto('/#/tutorial')
+        await page.goto('/#/app/tutorial')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByText(/open-palm - hover/i)).toBeVisible()
         await expect(page.getByText('1/12')).toBeVisible()
     })
 
     test('the hint button toggles the instructions text', async ({page})=>{
-        await page.goto('/#/tutorial')
+        await page.goto('/#/app/tutorial')
         await page.waitForLoadState('domcontentloaded')
         await page.waitForSelector('[class*="GestureTutorialCarousel"]', { timeout: 1000 })
         const hintButton = page.getByRole('button',{name:'Hint'})
@@ -120,7 +120,7 @@ test.describe('GestureTutorialCarousel' , () =>{
     })
 
     test('the next button stays disabled until the gesture is matched', async ({page})=>{
-        await page.goto('/#/tutorial')
+        await page.goto('/#/app/tutorial')
         await page.waitForLoadState('domcontentloaded')
         const nextButton = page.getByRole('button',{name:'Next'})
         await expect(nextButton).toBeDisabled()
