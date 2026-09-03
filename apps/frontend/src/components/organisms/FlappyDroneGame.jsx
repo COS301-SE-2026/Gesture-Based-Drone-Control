@@ -1,11 +1,11 @@
 import { useRef } from "react"
 import droneSprite from "@/assets/games/flappy/drone.png"
-import background from "@/assets/games/flappy/background.jpg"
-import pipe from "@/assets/games/flappy/pipe.png"
+import background from "@/assets/games/flappy/sky_cropped.png"
+import pipe from "@/assets/games/flappy/towerr.png"
+import pipeFlipped from "@/assets/games/flappy/towerr_flipped.png"
 import { useGameCommands } from "@/hooks/useGameCommands"
 import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
 import { GAME_COLORS } from "@/lib/gameTheme"
-
 
 /**
  * this page houses everything for the kaplay minigame
@@ -33,6 +33,10 @@ const DOWN_COMMANDS = new Set([
   "ROTATE_CCW",
 ])
 const HOVER_COMMANDS = new Set(["MOVE_RIGHT", "MOVE_LEFT", "HOVER"])
+const TOWER_ASPECT = 941 / 1672
+const BUILDING_WIDTH = 64
+const BUILDING_HEIGHT = BUILDING_WIDTH / TOWER_ASPECT
+const BUILDING_FILL = [9, 15, 28]
 
 export default function FlappyDroneGame() {
   const canvasRef = useRef(null)
@@ -76,227 +80,256 @@ export default function FlappyDroneGame() {
     k.loadSprite("drone", droneSprite)
     k.loadSprite("backSprite", background)
     k.loadSprite("pipeSprite", pipe)
-    
+    k.loadSprite("pipeSpriteFlipped", pipeFlipped)
 
     k.setGravity(1)
 
     //main scene for gameplay
-      k.scene("game", () => {
-        const PIPE_OPEN = 180
-        const PIPE_MIN = 60
-        const JUMP_FORCE = 150
-        const SPEED = 200
-        const CEILING = -250
+    k.scene("game", () => {
+      const PIPE_OPEN = 180
+      const PIPE_MIN = 60
+      const JUMP_FORCE = 150
+      const SPEED = 200
+      const CEILING = -250
 
-        // game object comprising of a bunch of components and tags
-        const player = k.add([
-          k.sprite("drone", {
-            width: 64,
-            height: 64,
-          }),
-          // position (x,y)
-          k.pos(k.width() / 8, k.height() / 2),
-          // enable collision checking
-          k.area({ isSensor: true }),
-          //it will respond to gravity
-          k.body(),
-          "player",
-        ])
+      // game object comprising of a bunch of components and tags
+      const player = k.add([
+        k.sprite("drone", {
+          width: 64,
+          height: 64,
+        }),
+        // position (x,y)
+        k.pos(k.width() / 8, k.height() / 2),
+        // enable collision checking
+        k.area({ isSensor: true }),
+        //it will respond to gravity
+        k.body(),
+        "player",
+      ])
 
-        // static background image
-        k.add([
-          k.sprite("backSprite"),
-          k.pos(0, 0),
-          k.scale(k.width() / 201, k.height() / 251),
-          k.z(-1), //should be behind everything else
-        ])
+      // static background image
+      k.add([
+        k.sprite("backSprite", { width: k.width(), height: k.height() }),
+        k.pos(0, 0),
+        k.z(-1), //should be behind everything else
+      ])
 
-        //dark scrim so backgorund fits the pallete
-        k.add([
-          k.rect(k.width(), k.height()),
-          k.pos(0, 0),
-          k.color(...GAME_COLORS.bg),
-          k.opacity(0.35),
-          k.z(-1)
-        ])
+      //dark scrim so backgorund fits the pallete
+      k.add([
+        k.rect(k.width(), k.height()),
+        k.pos(0, 0),
+        k.color(...GAME_COLORS.bg),
+        k.opacity(0.35),
+        k.z(-1),
+      ])
 
-        //top HUD bar, styled like the app nav bar
-        k.add([
-          k.rect(k.width(), 56),
-          k.pos(0, 0),
-          k.color(...GAME_COLORS.surface),
-          k.opacity(0.55),
-          k.fixed(),
-          k.z(900)
-        ])
-        k.add([
-          k.rect(k.width(), 2),
-          k.pos(0, 56),
-          k.color(...GAME_COLORS.red),
-          k.opacity(0.7),
-          k.fixed(),
-          k.z(900)
-        ])
-        k.add([
-          k.text("SCORE", { size: 18, font: "heading" }),
-          k.pos(24, 14),
-          k.color(...GAME_COLORS.dim),
-          k.fixed(),
-          k.z(1000)
-        ])
+      k.add([
+        k.text("SCORE", { size: 18, font: "heading" }),
+        k.pos(24, 14),
+        k.color(...GAME_COLORS.dim),
+        k.fixed(),
+        k.z(1000),
+      ])
 
-        // wire up the refs so that the WS handler can call them
-        upRef.current = () => player.jump(JUMP_FORCE)
-        downRef.current = () => player.jump(-JUMP_FORCE)
-        hoverRef.current = () => player.jump(0.00001)
-        goLoseRef.current = () => k.go("lose", score)
+      let score = 0
+      const scoreLabel = k.add([
+        k.text("0", { size: 72, font: "body" }),
+        k.anchor("center"), // keep it in place
+        k.pos(70, 80), //top centered
+        k.color(...GAME_COLORS.ink),
+        k.fixed(), //unaffected by camera
+        k.z(1000), //big number because on top layer above all else
+      ])
 
-        // kill if player goes out of bounds
-        player.onUpdate(() => {
-          if (player.pos.y >= k.height() || player.pos.y <= CEILING) {
-            k.go("lose", score)
-          }
-        })
+      // wire up the refs so that the WS handler can call them
+      upRef.current = () => player.jump(JUMP_FORCE)
+      downRef.current = () => player.jump(-JUMP_FORCE)
+      hoverRef.current = () => player.jump(0.00001)
+      goLoseRef.current = () => k.go("lose", score)
 
-        //controls here. will add handlers when integrated with backend stuffs
-        k.onKeyPress("w", () => player.jump(JUMP_FORCE))
-        k.onKeyPress("space", () => player.jump(0.00001))
-        k.onKeyPress("s", () => player.jump(-JUMP_FORCE))
+      // kill if player goes out of bounds
+      player.onUpdate(() => {
+        if (player.pos.y >= k.height() || player.pos.y <= CEILING) {
+          goLoseRef.current?.()
+        }
+      })
 
-        // we want to spawn pipes around the center
-        // take prev pipe into consideration so its not impossible
-        let prevPipeH1 = k.center().y - PIPE_OPEN / 2
+      //controls here. will add handlers when integrated with backend stuffs
+      k.onKeyPress("w", () => player.jump(JUMP_FORCE))
+      k.onKeyPress("space", () => player.jump(0.00001))
+      k.onKeyPress("s", () => player.jump(-JUMP_FORCE))
 
-        // recalled to dynamically create pipes within a random window
-        function spawnPipe() {
-          const PIPE_MAX = k.height() - PIPE_MIN - PIPE_OPEN
-          const low = Math.max(PIPE_MIN, prevPipeH1 - PIPE_OPEN * 1.2)
-          const high = Math.min(PIPE_MAX, prevPipeH1 + PIPE_OPEN * 1.2)
-          const h1 = (prevPipeH1 = k.rand(low, high))
-          const h2 = k.height() - h1 - PIPE_OPEN
+      // we want to spawn pipes around the center
+      // take prev pipe into consideration so its not impossible
+      let prevPipeH1 = k.center().y - PIPE_OPEN / 2
 
-          // generic object template for pipes to follow
-          const makePipe = (posY, h) => [
-            k.sprite("pipeSprite", {
-              width: 64,
-              height: h,
-            }),
+      // recalled to dynamically create pipes within a random window
+      function spawnPipe() {
+        const PIPE_MAX = k.height() - PIPE_MIN - PIPE_OPEN
+        const low = Math.max(PIPE_MIN, prevPipeH1 - PIPE_OPEN * 1.2)
+        const high = Math.min(PIPE_MAX, prevPipeH1 + PIPE_OPEN * 1.2)
+        const h1 = (prevPipeH1 = k.rand(low, high))
+        const h2 = k.height() - h1 - PIPE_OPEN
+
+        // generic object template for pipes to follow
+        // const makePipe = (posY, h) => [
+        //   k.sprite("pipeSprite", {
+        //     width: 64,
+        //     height: h,
+        //   }),
+        //   k.pos(k.width(), posY),
+        //   //k.rect(64, h),
+        //   //k.color(10, 0, 33),
+        //   k.outline(4, k.rgb(...GAME_COLORS.redDeep)),
+        //   k.area({ isSensor: true }), //collision
+        //   k.move(k.LEFT, SPEED), //illusion of scrolling level
+        //   k.offscreen({ destroy: true }), //it dont exist if its behind us
+        //   "pipe", //easier to refer to later on with a tag
+        // ]
+
+        // //make a top pipe
+        // k.add(makePipe(0, h1), { passed: true })
+
+        // //make a bottom pipe
+        // k.add([...makePipe(h1 + PIPE_OPEN, h2), { passed: false }])
+
+        const makeBuilding = (posY, h, flipped) => {
+          const parent = k.add([
             k.pos(k.width(), posY),
-            //k.rect(64, h),
-            //k.color(10, 0, 33),
-            k.outline(4, k.rgb(...GAME_COLORS.redDeep)),
-            k.area({ isSensor: true }), //collision
-            k.move(k.LEFT, SPEED), //illusion of scrolling level
-            k.offscreen({ destroy: true }), //it dont exist if its behind us
-            "pipe", //easier to refer to later on with a tag
-          ]
+            k.area({
+              isSensor: true,
+              shape: new k.Rect(k.vec2(0, 0), BUILDING_WIDTH, h),
+            }),
+            k.move(k.LEFT, SPEED),
+            k.offscreen({ destroy: true }),
+            "pipe",
+          ])
 
-          //make a top pipe
-          k.add(makePipe(0, h1), { passed: true })
+          if (flipped) {
+            const fillerHeight = Math.max(0, h - BUILDING_HEIGHT)
+            parent.add([
+              k.rect(BUILDING_WIDTH, fillerHeight),
+              k.pos(0, 0),
+              k.color(...BUILDING_FILL),
+            ])
+            parent.add([
+              k.sprite("pipeSpriteFlipped", {
+                width: BUILDING_WIDTH,
+                height: BUILDING_HEIGHT,
+              }),
+              k.pos(0, fillerHeight),
+            ])
+          } else {
+            parent.add([
+              k.sprite("pipeSprite", {
+                width: BUILDING_WIDTH,
+                height: BUILDING_HEIGHT,
+              }),
+              k.pos(0, 0),
+            ])
+            const fillerHeight = Math.max(0, h - BUILDING_HEIGHT)
+            parent.add([
+              k.rect(BUILDING_WIDTH, fillerHeight),
+              k.pos(0, BUILDING_HEIGHT),
+              k.color(...BUILDING_FILL),
+            ])
+          }
 
-          //make a bottom pipe
-          k.add([...makePipe(h1 + PIPE_OPEN, h2), { passed: false }])
+          return parent
         }
 
-        // lose condition
-        player.onCollide("pipe", () => k.go("lose", score))
+        const top = makeBuilding(0, h1, true)
+        top.passed = true
 
-        // the pipe is actually moving not the player
-        // so when the pipe passes the player, give them a point
-        k.onUpdate("pipe", (p) => {
-          if (p.pos.x + p.width <= player.pos.x && !p.passed) {
-            score++
-            scoreLabel.text = score.toString()
-            p.passed = true
-          }
-        })
+        const bottom = makeBuilding(h1 + PIPE_OPEN, h2, false)
+        bottom.passed = false
+      }
 
-        // spawn pipe every second
-        k.loop(1.5, spawnPipe)
+      // lose condition
+      player.onCollide("pipe", () => goLoseRef.current?.())
 
-        let score = 0
-        const scoreLabel = k.add([
-          k.text("0", { size: 72, font: "body" }),
-          // k.anchor("center"), // keep it in place
-          // k.pos(k.width() / 2, 80), //top centered
-          k.pos(24, 6),
-          k.color(...GAME_COLORS.ink),
-          k.fixed(), //unaffected by camera
-          k.z(1000), //big number because on top layer above all else
-        ])
+      // the pipe is actually moving not the player
+      // so when the pipe passes the player, give them a point
+      k.onUpdate("pipe", (p) => {
+        if (p.pos.x + BUILDING_WIDTH <= player.pos.x && !p.passed) {
+          score++
+          scoreLabel.text = score.toString()
+          p.passed = true
+        }
       })
 
-      // the scene that shows when one crashes
-      k.scene("lose", (score = 0) => {
-        // clear all refs so laggy commands dont fire here
-        upRef.current = null
-        downRef.current = null
-        hoverRef.current = null
-        goLoseRef.current = null
+      // spawn pipe every second
+      k.loop(1.5, spawnPipe)
+    })
 
-        k.add([
-          k.sprite("backSprite"),
-          k.pos(0, 0),
-          k.scale(k.width() / 201, k.height() / 251),
-          k.z(-1), //should be behind everything else
-        ])
+    // the scene that shows when one crashes
+    k.scene("lose", (score = 0) => {
+      // clear all refs so laggy commands dont fire here
+      upRef.current = null
+      downRef.current = null
+      hoverRef.current = null
+      goLoseRef.current = null
 
-        //dark panel overlay
-        k.add([
-          k.rect(k.width(), k.height()),
-          k.pos(0, 0),
-          k.color(...GAME_COLORS.bg),
-          k.opacity(0.7),
-          k.z(0)
-        ])
+      k.add([
+        k.sprite("backSprite", { width: k.width(), height: k.height() }),
+        k.pos(0, 0),
+        k.z(-1), //should be behind everything else
+      ])
 
-        //red glow behind score
-        k.add([
-          k.circle(140),
-          k.pos(k.width() / 2, k.height() / 2 - 40),
-          k.anchor("center"),
-          k.color(...GAME_COLORS.redShadow),
-          k.opacity(0.25),
-          k.z(1)
-        ])
+      //dark panel overlay
+      k.add([
+        k.rect(k.width(), k.height()),
+        k.pos(0, 0),
+        k.color(...GAME_COLORS.bg),
+        k.opacity(0.7),
+        k.z(0),
+      ])
 
-        k.add([
-          k.text("CRASHED", { size: 32, font: "heading" }),
-          k.anchor("center"),
-          k.pos(k.width() / 2, k.height() / 2 - 100),
-          k.color(...GAME_COLORS.red),
-          k.z(2)
-        ])
+      //red glow behind score
+      k.add([
+        k.circle(140),
+        k.pos(k.width() / 2, k.height() / 2 - 40),
+        k.anchor("center"),
+        k.color(...GAME_COLORS.redShadow),
+        k.opacity(0.25),
+        k.z(1),
+      ])
 
-        k.add([
-          k.text(`Score: ${score}`, { size: 82, font: "body" }),
-          k.anchor("center"),
-          k.pos(k.width() / 2, k.height() / 2 - 20),
-          k.color(...GAME_COLORS.ink),
-          k.z(2)
-        ])
+      k.add([
+        k.text("CRASHED", { size: 32, font: "heading" }),
+        k.anchor("center"),
+        k.pos(k.width() / 2, k.height() / 2 - 100),
+        k.color(...GAME_COLORS.red),
+        k.z(2),
+      ])
 
-        k.add([
-          k.text("w or FLY UP to retry", { size: 24, font: "mono" }),
-          k.anchor("center"),
-          k.pos(k.width() / 2, k.height() / 2 + 60),
-          k.color(...GAME_COLORS.dim),
-          k.z(2)
-        ])
+      k.add([
+        k.text(`Score: ${score}`, { size: 82, font: "body" }),
+        k.anchor("center"),
+        k.pos(k.width() / 2, k.height() / 2 - 20),
+        k.color(...GAME_COLORS.ink),
+        k.z(2),
+      ])
 
-        // option to retry
-        k.wait(0.2, () => {
-          upRef.current = () => k.go("game")
-          k.onKeyPress("w", () => k.go("game"))
-          k.onMousePress(() => k.go("game"))
-        })
+      k.add([
+        k.text("w or FLY UP to retry", { size: 24, font: "mono" }),
+        k.anchor("center"),
+        k.pos(k.width() / 2, k.height() / 2 + 60),
+        k.color(...GAME_COLORS.dim),
+        k.z(2),
+      ])
+
+      // option to retry
+      k.wait(0.2, () => {
+        upRef.current = () => k.go("game")
+        k.onKeyPress("w", () => k.go("game"))
+        k.onMousePress(() => k.go("game"))
       })
+    })
 
-      //only enter game once assets load\
-      k.onLoad(() => k.go("game"))
+    //only enter game once assets load\
+    k.onLoad(() => k.go("game"))
   })
-
- 
 
   return (
     <canvas

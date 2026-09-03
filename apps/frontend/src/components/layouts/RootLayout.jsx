@@ -32,7 +32,12 @@ const RootLayout = () => {
     },
     { id: "gps", label: "GPS", icon: MapPin, path: "/app/gps" },
     { id: "games", label: "Games", icon: Gamepad, path: "/app/games" },
-    { id: "settings", label: "Settings", icon: Settings, path: "/app/settings" },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: Settings,
+      path: "/app/settings",
+    },
     { id: "help", label: "Help", icon: HelpCircle, path: "/app/help" },
   ]
 
