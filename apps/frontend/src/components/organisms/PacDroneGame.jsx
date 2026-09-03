@@ -18,11 +18,11 @@ const MAZE_A = [
   "W..WWW.W.W.W.....W..W..WWW.W..W.WWW.W.W",
   "W.....................................W",
   "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W.W",
-  "W.W......W.....W.W....W..W......W...W.W",
+  "W.W......W.....W.WG...W..W......W...W.W",
   "W.W.WWWW.W.WWW.W.W.WW..W.W.......WoW..W",
-  " ...Wo...............G...WWWWWW...W... ",
+  " ...Wo..............GG...WWWWWW...W... ",
   "W.W.WWWW.W.WWW.W.W.WW..W.W.......W.W..W",
-  "W.W......W.....W.W....W..W......W...W.W",
+  "W.W......W.....W.WG...W..W......W...W.W",
   "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W.W",
   " ..................................... ",
   "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -44,6 +44,7 @@ const col_dot = [200, 200, 150]
 const col_power = [255, 255, 25]
 const col_player = [255, 220, 0]
 const col_bg = [12, 12, 12]
+const col_ghost = [90, 5, 5]
 
 export default function PacDroneGame() {
   const canvasRef = useRef(null)
@@ -271,16 +272,65 @@ export default function PacDroneGame() {
 
         // score labels
         const scoreLbl = k.add([
-          k.text(`SCORE ${score}`, { size: 18 }), k.anchor("topleft"),
-          k.pos(8, 8), k.color(...col_player), k.fixed(), k.z(200),
+          k.text(`SCORE ${score}`, { size: 18 }),
+          k.anchor("topleft"),
+          k.pos(8, 8),
+          k.color(...col_player),
+          k.fixed(),
+          k.z(200),
         ])
         const statusLbl = k.add([
-          k.text("", { size: 15 }), k.anchor("topright"),
-          k.pos(w-8, 8), k.color(...col_power), k.fixed(), k.z(200),
+          k.text("", { size: 15 }),
+          k.anchor("topright"),
+          k.pos(w - 8, 8),
+          k.color(...col_power),
+          k.fixed(),
+          k.z(200),
         ])
 
         // actual player
+        const PLAYER_SPEED = tile * 7
+        const GHOST_SPEED = tile * 3.5
+        const ALIGN_THRESHOLD = 3
+
+        const player = k.add([
+          k.circle(TILE / 2),
+          k.anchor("cneter"),
+          k.popTransform(px(playerSpawn.col), py(playerSpawn.row)), //spawn point
+          k.color(...col_player),
+          k.z(10),
+          "player",
+        ])
+
+        //the players logical position (tile) is tracked separately from
+        //real position, to track collission
+        let playerCol = playerSpawn.col
+        let playerRow = playerSpawn.row
+        let facing = { x: 1, y: 0 } //to decide next movement
+        let pending = { x: 1, y: 0 }
+
         // ghosts and ghost AI
+        //ghosts will randomly pick a direction from here
+        const GHOST_DIRS = [
+          {x:1, y:0}, {x:-1, y:0}, {x:0, y:1}, {x:0, y:-1}
+        ]
+
+        // spawn a ghost in each ghost spawn location
+        // then give it a random direction to go in 
+        const ghosts = (ghostSpawns.length ? ghostSpawns : [{col:1, row:11}])
+          .map(({col, row}, i) => {
+            const g = k.add([
+              k.rect(tile-8, tile-8), k.anchor("center"),
+              k.pos(px(col), py(row)),
+              k.color(...col_ghost), k.z(10), "ghost",
+            ])
+            g._col = col
+            g._row = row
+            g._dir = GHOST_DIRS[i%GHOST_DIRS.length]
+            g._speed = GHOST_SPEED * (1 + i * 0.1) //random variances in speed
+            return g
+          })
+
         // controls
         // movement
         // collission
