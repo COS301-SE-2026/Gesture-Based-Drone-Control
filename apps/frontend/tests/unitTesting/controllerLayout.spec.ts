@@ -23,6 +23,12 @@ interface MockWindow extends Window {
     __mockPad:MockGamepad
 }
 
+async function mockAuth(page: Page) {
+    await page.addInitScript(() => {
+        localStorage.setItem('authToken', 'test-token')
+    })
+}
+
 async function mockGamepad(page: Page) {
     await page.addInitScript(() => {
         const mockPad={
@@ -42,7 +48,8 @@ async function mockGamepad(page: Page) {
 
 test.describe('ControllerLayout',() => {
     test.beforeEach(async({page}) =>{
-        await page.goto('/gestures')
+        await mockAuth(page)
+        await page.goto('/#/app/gestures')
         await page.waitForLoadState('domcontentloaded')
         await page.getByRole('button',{name:/controller/i}).click()
     })
@@ -63,8 +70,10 @@ test.describe('ControllerLayout',() => {
 
     test.describe('with a mock gamepad connected', () =>{
         test.beforeEach(async({page}) => {
+            await mockAuth(page)
             await mockGamepad(page)
-            await page.goto('/gestures')
+            await page.reload()
+            // await page.goto('/#/app/gestures')
             await page.waitForLoadState('domcontentloaded')
             await page.getByRole('button', {name:/controller/i}).click()
         })

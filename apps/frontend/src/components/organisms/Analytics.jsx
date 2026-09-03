@@ -161,7 +161,7 @@ const Analytics = () => {
     <div className="space-y-6">
       {loadError && <p className="text-error text-sm">{loadError}</p>}
       {/* top metric cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4" data-tour="analytics-summary">
         {/* flight time card */}
         <Card variant="glass">
           <div className="flex flex-col gap-3">
@@ -206,7 +206,7 @@ const Analytics = () => {
 
       {/* the two charts go here */}
       {/* these should be live now, driven by telem websocket */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6" data-tour="analytics-live-charts">
         {/* flight telemetry */}
         <Card variant="glass">
           <div className="flex flex-col gap-4">
@@ -282,7 +282,7 @@ const Analytics = () => {
 
       {/* bar graph here */}
       {/* this graph is from the db */}
-      <Card variant="glass">
+      <Card variant="glass" data-tour="analytics-performance">
         <div className="flex flex-col gap-4">
           <h3 className="text-md font-semibold text-ink">
             Performance Metrics (recent flights)
@@ -323,7 +323,7 @@ const Analytics = () => {
       </Card>
 
       {/* bottom stats part -> same as above */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4" data-tour="analytics-totals">
         {/* Total distance */}
         <Card variant="glass">
           <div className="text-center">
