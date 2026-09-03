@@ -20,8 +20,14 @@ export function useKaplayCanvas(canvasRef, onReady) {
   const initRef = useRef(false)
   const kRef = useRef(null)
 
+  const onReadyRef = useRef(onReady)
   useEffect(() => {
-    if (!canvasRef.current || initRef.current) return
+    onReadyRef.current = onReady
+  })
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas || initRef.current) return
     initRef.current = true
 
     let cancelled = false
@@ -30,7 +36,7 @@ export function useKaplayCanvas(canvasRef, onReady) {
       if (cancelled) return
 
       const k = kaplay({
-        canvas: canvasRef.current,
+        canvas: canvas,
         width: GAME_CANVAS.width,
         height: GAME_CANVAS.height,
         stretch: true,
@@ -44,7 +50,7 @@ export function useKaplayCanvas(canvasRef, onReady) {
       k.loadFont("mono", jetbrainsMono)
 
       kRef.current = k
-      onReady(k)
+      onReadyRef.current?.(k)
     })
 
     return () => {
@@ -53,7 +59,7 @@ export function useKaplayCanvas(canvasRef, onReady) {
       kRef.current = null
       initRef.current = false
     }
-  }, [])
+  }, [canvasRef])
 
   return kRef
 }
