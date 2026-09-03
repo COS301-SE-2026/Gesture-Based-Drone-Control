@@ -30,10 +30,10 @@ const RootLayout = () => {
       icon: BarChart3,
       path: "/app/analytics",
     },
-    { id: "gps", label: "GPS", icon: MapPin, path: "/gps" },
-    { id: "games", label: "Games", icon: Gamepad, path: "/games" },
-    { id: "settings", label: "Settings", icon: Settings, path: "/settings" },
-    { id: "help", label: "Help", icon: HelpCircle, path: "/help" },
+    { id: "gps", label: "GPS", icon: MapPin, path: "/app/gps" },
+    { id: "games", label: "Games", icon: Gamepad, path: "/app/games" },
+    { id: "settings", label: "Settings", icon: Settings, path: "/app/settings" },
+    { id: "help", label: "Help", icon: HelpCircle, path: "/app/help" },
   ]
 
   const getTopContent = () => {
