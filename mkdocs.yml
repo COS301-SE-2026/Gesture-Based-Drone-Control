@@ -139,7 +139,7 @@ copyright: >
 nav:
   - Home: index.md
 
-  - Demo 2 Deliverables:
+  - Demo 3 Deliverables:
     - Software Requirements (SRS): SRS.md
     - Software Architecture (SAS): SAS.md
     - Brand & Design System: BRAND.md

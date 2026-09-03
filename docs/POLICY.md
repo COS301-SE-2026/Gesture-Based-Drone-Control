@@ -1,7 +1,7 @@
 # Testing Policy
 
 <div class="tx-badges">
-  <span class="tx-status"><span class="tx-status__dot"></span>Demo 2 deliverable</span>
+  <span class="tx-status"><span class="tx-status__dot"></span>Demo 3 deliverable</span>
   <span class="tx-status">Coverage gate · ≥ 80 % (enforced in CI)/span>
   <span class="tx-status">Severity · Critical / High / Medium / Low</span>
 </div>

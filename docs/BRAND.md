@@ -1,7 +1,7 @@
 # Brand & Design System
 
 <div class="tx-badges">
-  <span class="tx-status"><span class="tx-status__dot"></span>Demo 2 — v2.1</span>
+  <span class="tx-status"><span class="tx-status__dot"></span>Demo 3 — v2.1</span>
   <span class="tx-status">Accessibility · WCAG 2.2 AA target</span>
   <span class="tx-status">Tokens · canonical in this document</span>
 </div>
