@@ -410,7 +410,11 @@ export default function PacDroneGame() {
 
           {
             // check if the player can be considered 'on the tile'
-            const offPerp = perpendicularOffset(player.pos.x, player.pos.y, facing)
+            const offPerp = perpendicularOffset(
+              player.pos.x,
+              player.pos.y,
+              facing
+            )
             const aligned = offPerp < ALIGN_THRESHOLD
 
             if (aligned) {
@@ -419,7 +423,7 @@ export default function PacDroneGame() {
               const nr = tileRow(player.pos.y) + pending.y
               const wc = (nc + cols) % cols
               if (!isWall(maze, wc, nr)) {
-                facing = {...pending}
+                facing = { ...pending }
                 snapToAxis(player, facing)
               }
             }
@@ -434,17 +438,17 @@ export default function PacDroneGame() {
               player.pos.y += facing.y * PLAYER_SPEED * dt
 
               //horizontal tunnel, wraparound to the other side
-              if (player.pos.x < 0){
+              if (player.pos.x < 0) {
                 player.pos.x += cols * tile
               }
-              if (player.pos.x > cols*tile){
-                player.pos.x -= cols* tile
+              if (player.pos.x > cols * tile) {
+                player.pos.x -= cols * tile
               }
             } else {
-              if (facing.x !== 0){
+              if (facing.x !== 0) {
                 player.pos.x = px(tileCol(player.pos.x))
               }
-              if (facing.y !== 0){
+              if (facing.y !== 0) {
                 player.pos.y = py(tileRow(player.pos.y))
               }
             }
@@ -456,9 +460,9 @@ export default function PacDroneGame() {
             // collect dots and pellets according to logical coordinate
             k.get("dot").forEach((d) => {
               if (d.col === playerCol && d.row === playerRow) {
-                k.destroy(d); //one time use
-                score += 10; 
-                dotsLeft--; //tracked for win condition
+                k.destroy(d) //one time use
+                score += 10
+                dotsLeft-- //tracked for win condition
                 scoreLbl.text = `SCORE ${score}`
               }
             })
@@ -470,15 +474,82 @@ export default function PacDroneGame() {
                 scoreLbl.text = `SCORE ${score}`
                 scared = true // set the ghosts to be consumed
                 scaredTimer = 10
-                ghosts.forEach((g) => g.color = k.rgb(...col_scared))
+                ghosts.forEach((g) => (g.color = k.rgb(...col_scared)))
                 statusLbl.text = "EAT THE GHOSTS!!!"
               }
             })
           }
-          
+
+          // scared timer countdown
+          if (scared) {
+            scaredTimer -= dt
+            if (scaredTimer <= 0) {
+              scared = false
+              ghosts.forEach((g) => (g.color = k.rgb(...col_ghost)))
+              statusLbl.text = ""
+              // timer running out
+            } else if (scaredTimer < 2) {
+              const flash = Math.floor(scaredTime * 4) % 2 === 0
+              ghosts.forEach(
+                (g) =>
+                  (g.color = flash
+                    ? k.rgb(...col_scared)
+                    : k.rgb(200, 200, 255))
+              )
+            }
+          }
+
+          // smooth ghost movement
+          ghosts.forEach((g) => {
+            const offPerp = perpendicularOffset(g.pos.x, g.pos.y, g._dir)
+            const aligned = offPerp < ALIGN_THRESHOLD
+
+            if (aligned) {
+              snapToAxis(g, g._dir)
+              g._col = tileCol(g.pos.x)
+              g._row = tileRow(g.pos.y)
+
+              // check if we can continue in this direction
+              const nc = (g._col + g._dir.x + cols) % cols
+              const nr = g._row + g._dir.y
+
+              //hit a brick wall
+              if (isWall(maze, nc, nr)) {
+                // pick a random valid direction, preferring not to reverse
+                const reverse = { x: -g._dir.x, y: -g._dir.y }
+                const shuffled = [...GHOST_DIRS]
+                  .filter((d) => !(d.x === reverse.x && d.y === reverse.y))
+                  .sort(() => Math.random() - 0.5)
+
+                // fall back to reverse if completely boxed in
+                const options = [...shuffled, reverse]
+                for (const d of options) {
+                  const tc = (g._col + d.x + cols) % cols
+                  const tr = g._row + d.y
+                  if (!isWall(maze, tc, tr)) {
+                    g._dir = d
+                    break
+                  }
+                }
+              }
+            }
+
+            // advance the ghost
+            g.pos.x += g._dir.x * g._speed * dt
+            g.pos.y += g._dir.y * g._speed * dt
+
+            // edge of screen wraparound
+            if (g.pos.x < 0) {
+              g.pos.x += cols * tile
+            }
+            if (g.pos.x > cols * tile) {
+              g.pos.x -= cols * tile
+            }
+
+            // collision logic comparing logical coords
+          })
         })
 
-        // collission
       })
 
       k.go("title")
