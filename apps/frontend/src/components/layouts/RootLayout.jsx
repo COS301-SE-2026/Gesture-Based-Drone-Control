@@ -21,7 +21,7 @@ import TourController from "./TourController"
 const RootLayout = () => {
   // const { isDark } = useTheme()
   const location = useLocation()
-  const { startFullTour, hasSeenFullTour,tourKey } = useTour()
+  const { startFullTour, hasSeenFullTour, tourKey } = useTour()
   const menuItems = [
     { id: "gestures", label: "Gestures", icon: Home, path: "/app/gestures" },
     {
@@ -62,7 +62,7 @@ const RootLayout = () => {
       return
     }
     if (!hasSeenFullTour()) startFullTour(fullTourSteps)
-  }, [hasSeenFullTour,startFullTour])
+  }, [hasSeenFullTour, startFullTour])
 
   return (
     <div className="flex h-screen overflow-hidden">
