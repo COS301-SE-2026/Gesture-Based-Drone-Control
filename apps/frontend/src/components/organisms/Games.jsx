@@ -186,10 +186,7 @@ const Games = () => {
 
       {/* main content */}
       <div className="flex gap-md items-start">
-        <Card
-          variant="glass"
-          className="flex-1 !p-0 overflow-hidden"
-        >
+        <Card variant="glass" className="flex-1 !p-0 overflow-hidden">
           {ActiveGame ? (
             <ActiveGame />
           ) : (

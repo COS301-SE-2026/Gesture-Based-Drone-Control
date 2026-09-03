@@ -6,6 +6,7 @@ import {
   GpsSideContent,
   HelpSideContent,
   SettingsSideContent,
+  GamesSideContent,
 } from "../molecules"
 import {
   Home,
@@ -55,6 +56,8 @@ const RootLayout = () => {
       return <HelpSideContent />
     } else if (location.pathname.includes("/settings")) {
       return <SettingsSideContent />
+    } else if (location.pathname.includes("/games")) {
+      return <GamesSideContent />
     }
   }
 
