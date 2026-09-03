@@ -113,6 +113,12 @@ tasks:
     cmds:
       - yarn e2e-test
 
+  nfr-test:
+    desc: Runs NFR tests and regenerates docs/nfr/Matrix.md
+    cmds:
+      - cmd: uv run pytest tests/nfr -q
+      - uv run python tests/nfr/report.py
+
   lint:
     desc: Runs lint checks
     deps:

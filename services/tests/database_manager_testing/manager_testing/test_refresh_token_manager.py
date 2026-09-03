@@ -48,7 +48,7 @@ class TestGetByValidHash:
 		result.scalar_one_or_none.assert_called_once()
 		assert returned is token
 
-	@pytest.mark.aasyncio
+	@pytest.mark.asyncio
 	async def test_returns_none_when_not_found(self):
 		db = AsyncMock()
 		result = MagicMock()
