@@ -40,11 +40,11 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
             </div>
           )}
 
-          {isConnected && !loaded && (
+          {/* {isConnected && !loaded && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/30">
               <div className="w-10 h-10 rounded-full border-2 border-glassBrd border-t-red animate-spin" />
             </div>
-          )}
+          )} */}
 
           {isConnected && isSim && (
             <iframe
