@@ -5,7 +5,7 @@
   "actual": 55.9,
   "target": "informational (ML is the gated engine)",
   "pass": true,
-  "recorded_at": "2026-09-03T17:56:07+00:00",
+  "recorded_at": "2026-09-03T18:20:53+00:00",
   "machine": "Darwin arm64, 8 cores",
   "engine": "rule",
   "lowest_per_gesture": 37.5,

@@ -88,8 +88,6 @@ quote-style = "single"
 indent-style = "tab"
 
 [tool.pytest.ini_options]
-addopts = "--import-mode=importlib"
-consider_namespace_packages = true
 asyncio_mode = "auto"
 pythonpath = ["."]
 markers = [
