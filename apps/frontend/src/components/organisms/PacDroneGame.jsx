@@ -549,7 +549,10 @@ export default function PacDroneGame() {
               g.pos.x -= cols * tile
             }
             //clamp vertical so ghost doesnt go offsccreen
-            g.posY = Math.max(tile/2, Math.min(g.pos.y, (rows-1) * tile + tile / 2))
+            g.posY = Math.max(
+              tile / 2,
+              Math.min(g.pos.y, (rows - 1) * tile + tile / 2)
+            )
 
             // collision logic comparing logical coords
             const gc = tileCol(g.pos.x)
