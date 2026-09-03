@@ -1,0 +1,15 @@
+{
+  "id": "QR-04",
+  "requirement": "NFR2.4",
+  "metric": "single-hand gestures resloving to command",
+  "actual": "3/3",
+  "target": "all mapped",
+  "pass": true,
+  "recorded_at": "2026-09-03T15:49:45+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "mapped": {
+    "OPEN_PALM": "HOVER",
+    "ONE_FINGER": "MOVE_UP",
+    "TWO_FINGERS": "MOVE_DOWN"
+  }
+}
