@@ -40,7 +40,7 @@ const RootLayout = () => {
       location.pathname === "/app" ||
       location.pathname.includes("/gestures")
     ) {
-      return <DashboardSideCard userName={displayName}/>
+      return <DashboardSideCard userName={displayName} />
     } else if (location.pathname.includes("/analytics")) {
       return <AnalyticsSideContent />
     } else if (location.pathname.includes("/gps")) {
