@@ -17,6 +17,7 @@
 [![Site](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/docs.yml?style=for-the-badge&logo=readthedocs&logoColor=F5F3F4&label=SITE&color=A4161A&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/docs.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/COS301-SE-2026/Gesture-Based-Drone-Control?style=for-the-badge&logo=codecov&logoColor=F5F3F4&label=COVERAGE&color=BA181B&labelColor=161A1D)](https://codecov.io/gh/COS301-SE-2026/Gesture-Based-Drone-Control)
 [![Issues](https://img.shields.io/github/issues/COS301-SE-2026/Gesture-Based-Drone-Control?style=for-the-badge&logo=github&logoColor=F5F3F4&label=ISSUES&color=E5383B&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/issues)
+[![Uptime](https://img.shields.io/uptimerobot/ratio/m803907992-915bf49f0aeef3452154e8b3?style=for-the-badge&logo=uptimerobot&logoColor=F5F3F4&color=A4161A&labelColor=161A1D)](https://uptimerobot.com)
 
 <br/>
 
