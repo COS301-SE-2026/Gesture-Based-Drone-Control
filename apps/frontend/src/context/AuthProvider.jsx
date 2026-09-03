@@ -14,7 +14,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   const refreshUser = useCallback(async () => {
-    setLoading(true)
     try {
       setUser(await fetchCurrentUser())
     } catch {
@@ -27,8 +26,20 @@ export const AuthProvider = ({ children }) => {
   const clearUser = useCallback(() => setUser(null), [])
 
   useEffect(() => {
-    refreshUser()
-  }, [refreshUser])
+    let cancelled = false
+
+    fetchCurrentUser()
+      .then((current) => {
+        if (!cancelled) setUser(current)
+      })
+      .catch(() => {
+        if (!cancelled) setUser(null)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const value = useMemo(
     () => ({
