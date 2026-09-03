@@ -26,7 +26,7 @@ def fake_frame_read(fake_frame):
 	return reader
 
 @pytest.fixture
-def mock_tello():
+def mock_tello(fake_frame_read):
 	"""Create a mock Tello instance."""
 	tello = MagicMock()
 	tello.connect = MagicMock()
@@ -414,3 +414,65 @@ def test_assert_flying(adapter):
 	with pytest.raises(RuntimeError, match='Tello Drone is not flying.'):
 		adapter._assert_flying()
 
+def test_has_camera_is_true(adapter):
+	assert adapter.has_camera is True
+
+async def test_start_video_success(adapter, mock_tello, fake_frame_read):
+	adapter._connected = True
+
+	result = await adapter.start_video()
+
+	assert result is True
+	mock_tello.streamon.assert_called_once()
+	mock_tello.get_frame_read.assert_called_once()
+	assert adapter._video_on is True
+	assert adapter._frame_read is fake_frame_read
+
+async def test_start_video_is_idempotent(adapter, mock_tello):
+	adapter._connected = True
+
+	assert await adapter.start_video() is True
+	assert await adapter.start_video() is True
+
+	mock_tello.streamon.assert_called_once()
+	mock_tello.get_frame_read.assert_called_once()
+
+async def test_start_video_not_connected(adapter, mock_tello):
+	adapter._connected = False
+
+	with pytest.raises(RuntimeError, match='Tello Drone is not connected.'):
+		await adapter.start_video()	
+	mock_tello.streamon.assert_not_called()
+
+async def test_start_video_streamon_fails(adapter, mock_tello):
+	adapter._connected = True
+	mock_tello.streamon.side_effect = Exception('streamon failed')
+
+	result = await adapter.start_video()
+
+	assert result is False
+	mock_tello.get_frame_read.assert_not_called()
+	assert adapter._video_on is False
+	assert adapter._frame_read is None
+
+async def test_start_video_get_frame_read_fails(adapter, mock_tello):
+	adapter._connected = True
+	mock_tello.get_frame_read.side_effect = Exception ('no reader')
+
+	result = await adapter.start_video()
+
+	assert result is False
+	mock_tello.streamon.assert_called_once()
+	assert adapter._video_on is False
+	assert adapter._frame_read is None
+
+async def test_start_video_can_retry_after_failure(adapter, mock_tello, fake_frame_read):
+	adapter._connected = True
+	mock_tello.streamon.side_effect = Exception('streamon failed')
+	assert await adapter.start_video() is False
+
+	mock_tello.streamon.side_effect = None
+	assert await adapter.start_video() is True
+	assert adapter._frame_read is fake_frame_read
+
+	
