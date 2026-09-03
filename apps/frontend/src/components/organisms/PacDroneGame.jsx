@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react"
 import { useGameCommands } from "@/hooks/useGameCommands"
-import { Dir } from "fs"
 
 /**
  * mazes are defined as 2d arrays
@@ -87,6 +86,7 @@ export default function PacDroneGame() {
     if (!canvasRef.current || initialisedRef.current) {
       return
     }
+    initialisedRef.current = true
 
     import("kaplay").then(({ default: kaplay }) => {
       const k = kaplay({
@@ -185,7 +185,7 @@ export default function PacDroneGame() {
           }),
           k.anchor("center"),
           k.pos(w / 2, h - 30),
-          col_wall,
+          k.Color(...col_wall),
         ])
       })
 
@@ -212,7 +212,7 @@ export default function PacDroneGame() {
               k.add([
                 k.rect(tile, tile),
                 k.pos(col * tile, row * tile),
-                k.color(...COL_WALL),
+                k.color(...col_wall),
                 k.z(0),
               ])
               // subtle border highlight
@@ -295,9 +295,9 @@ export default function PacDroneGame() {
         const ALIGN_THRESHOLD = 3
 
         const player = k.add([
-          k.circle(TILE / 2),
-          k.anchor("cneter"),
-          k.popTransform(px(playerSpawn.col), py(playerSpawn.row)), //spawn point
+          k.circle(tile / 2),
+          k.anchor("center"),
+          k.pos(px(playerSpawn.col), py(playerSpawn.row)), //spawn point
           k.color(...col_player),
           k.z(10),
           "player",
@@ -394,7 +394,7 @@ export default function PacDroneGame() {
 
         // get the current coordiantes as a tile from pixel positions
         const tileCol = (x) => Math.round((x - tile / 2) / tile)
-        const tileRow = (y) => Math.round((y = tile / 2) / tile)
+        const tileRow = (y) => Math.round((y - tile / 2) / tile)
 
         //update positions
         k.onUpdate(() => {
@@ -489,7 +489,7 @@ export default function PacDroneGame() {
               statusLbl.text = ""
               // timer running out
             } else if (scaredTimer < 2) {
-              const flash = Math.floor(scaredTime * 4) % 2 === 0
+              const flash = Math.floor(scaredTimer * 4) % 2 === 0
               ghosts.forEach(
                 (g) =>
                   (g.color = flash
@@ -570,7 +570,7 @@ export default function PacDroneGame() {
 
           // win condition
           if (dotsLeft <= 0) {
-            const next = (mazeIndex + 1) % maze.length
+            const next = (mazeIndex + 1) % mazes.length
             k.go("win", score, next)
           }
         })
