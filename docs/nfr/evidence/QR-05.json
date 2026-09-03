@@ -1,0 +1,20 @@
+{
+  "id": "QR-05",
+  "requirement": "NFR2.2",
+  "metric": "secrets detected in repo history",
+  "actual": 0,
+  "target": "0",
+  "pass": true,
+  "recorded_at": "2026-09-03T10:59:18+00:00",
+  "commit": "2d37802",
+  "machine": {
+    "os": "Darwin 24.6.0",
+    "arch": "arm64",
+    "python": "3.14.6",
+    "logical_cores": 8,
+    "ram_gb": null,
+    "ci": false
+  },
+  "scanner": "gitleaks (full history)",
+  "findings": []
+}

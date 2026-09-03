@@ -39,6 +39,7 @@ dev = [
     "pytest-asyncio>=1.3.0",
     "setuptools>=68",
     "wheel",
+    "pytest-timeout>=2.4.0",
 ]
 
 [build-system]
@@ -85,8 +86,14 @@ quote-style = "single"
 indent-style = "tab"
 
 [tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+consider_namespace_packages = true
 asyncio_mode = "auto"
 pythonpath = ["."]
+markers = [
+    "nfr: non-functional requirement test",
+    "slow: long-running NFR test, nightly only",
+]
 filterwarnings = [
     "ignore:module 'sre_parse' is deprecated:DeprecationWarning",
     "ignore:module 'sre_constants' is deprecated:DeprecationWarning",
@@ -96,5 +103,6 @@ filterwarnings = [
 omit=[
     "vendors/*",
     "*/tests/*",
-    "*/test_*.py"
+    "*/test_*.py",
+    "*/ml_training/*"
     ]

@@ -1,0 +1,44 @@
+{
+  "id": "QR-11",
+  "requirement": "NFR4.2",
+  "metric": "line coverage (%), overall and per module",
+  "actual": 89.72,
+  "target": ">= 80.0",
+  "pass": false,
+  "recorded_at": "2026-09-03T11:04:40+00:00",
+  "commit": "2d37802",
+  "machine": {
+    "os": "Darwin 24.6.0",
+    "arch": "arm64",
+    "python": "3.11.15",
+    "logical_cores": 8,
+    "ram_gb": null,
+    "ci": false
+  },
+  "per_package": {
+    "apps.backend.app": 98.11,
+    "apps.backend.app.api": 92.46,
+    "apps.backend.app.cv": 97.61,
+    "services": 100.0,
+    "services.auth": 98.99,
+    "services.commands": 95.92,
+    "services.cv_pipeline": 100.0,
+    "services.cv_pipeline.camera": 87.14,
+    "services.cv_pipeline.gestures": 30.93,
+    "services.cv_pipeline.gestures.recognizers": 99.26,
+    "services.cv_pipeline.hand_detection": 72.17,
+    "services.cv_pipeline.processing": 83.84,
+    "services.database_manager": 96.55,
+    "services.database_manager.managers": 90.0,
+    "services.database_manager.models": 100.0,
+    "services.drone_control": 100.0,
+    "services.drone_control.adapters": 88.47,
+    "services.input": 95.12,
+    "services.input.sources": 93.82,
+    "services.telemetry": 100.0
+  },
+  "packages_below_target": {
+    "services.cv_pipeline.gestures": 30.93,
+    "services.cv_pipeline.hand_detection": 72.17
+  }
+}
