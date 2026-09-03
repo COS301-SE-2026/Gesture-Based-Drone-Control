@@ -18,6 +18,7 @@ import TestPage from "@/components/testPageForAtoms/TestPage.jsx"
 import { DebugProvider } from "./context/DebugProvider.jsx"
 import CursorGlow from "./components/atoms/CursorGlow.jsx"
 import { CameraConsentProvider } from "./context/CameraConsentProvider.jsx"
+import {AuthProvider} from "./context/AuthProvider.jsx"
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <CursorGlow />
             <CameraConsentProvider>
               <Routes>
+                <AuthProvider>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/terms" element={<Terms />} />
@@ -41,6 +43,7 @@ function App() {
                   <Route path="tutorial" element={<Tutorial />} />
                   <Route path="test" element={<TestPage />} />
                 </Route>
+                </AuthProvider>
               </Routes>
             </CameraConsentProvider>
           </DebugProvider>
