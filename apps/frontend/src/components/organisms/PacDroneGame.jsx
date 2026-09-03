@@ -550,10 +550,10 @@ export default function PacDroneGame() {
             const gc = tileCol(g.pos.x)
             const gr = tileRow(g.pos.y)
             if (gc == playerCol && gr === playerRow) {
-              // eat the ghost 
+              // eat the ghost
               if (scared) {
                 const spawn = ghostSpawns[ghosts.indexOf(g)] ??
-                              ghostSpawns[0] ?? {col:1. row: 1}
+                  ghostSpawns[0] ?? { col: 1, row: 1 }
                 g._col = spawn.col
                 g._row = spawn.row
                 g.pos.x = px(spawn.col)
@@ -561,8 +561,9 @@ export default function PacDroneGame() {
                 g.color = k.rgb(...col_ghost)
                 score += 200
                 scoreLbl.text = `SCORE  ${score}`
-              } else { // ghost eat us
-                 k.go("lose", score, mazeIndex)
+              } else {
+                // ghost eat us
+                k.go("lose", score, mazeIndex)
               }
             }
           })
@@ -575,7 +576,33 @@ export default function PacDroneGame() {
         })
       })
 
-      
+      // win scene
+      k.scene("win", (score = 0, nextMaze = 0) => {
+        k.add([
+          k.text("YOUR'E WINNER!", { size: 48 }),
+          k.anchor("center"),
+          k.pos(w / 2, h / 2 - 80),
+          k.color(...col_power),
+        ])
+
+        k.add([
+          k.text(`Score: ${score}`, { size: 28 }),
+          k.anchor("center"),
+          k.pos(w / 2, h / 2),
+          k.color(...col_wall),
+        ])
+
+        k.add([
+          k.text("Next", { size: 18 }),
+          k.anchor("center"),
+          k.pos(w / 2, h / 2 + 60),
+          k.color(...col_player),
+        ])
+
+        k.wait(2.5, () => k.go("game", nextMaze))
+      })
+
+      // lose scene
 
       k.go("title")
     })
