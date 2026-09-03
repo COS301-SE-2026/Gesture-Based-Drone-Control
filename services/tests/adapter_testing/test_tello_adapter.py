@@ -1,6 +1,7 @@
 import math
 from unittest.mock import MagicMock, patch
 
+import numpy as np
 import pytest
 
 with patch.dict(
@@ -10,9 +11,19 @@ with patch.dict(
 	},
 ):
 	from services.commands.command import AnalogInput, CommandType
-	from services.drone_control.adapters.drone_adapter import TelemetryData
+	from services.drone_control.adapters.drone_adapter import CameraFrame, TelemetryData
 	from services.drone_control.adapters.tello_adapter import TelloAdapter
 
+@pytest.fixture
+def fake_frame():
+	return np.zeros((720, 960, 3), dtype=np.uint8)
+
+@pytest.fixture
+def fake_frame_read(fake_frame):
+	reader = MagicMock()
+	reader.frame = fake_frame
+	reader.stop= MagicMock()
+	return reader
 
 @pytest.fixture
 def mock_tello():
@@ -20,7 +31,7 @@ def mock_tello():
 	tello = MagicMock()
 	tello.connect = MagicMock()
 	tello.streamon = MagicMock()
-	tello.get_frame_read = MagicMock(return_value=MagicMock())
+	tello.get_frame_read = MagicMock(return_value=fake_frame_read)
 	tello.land = MagicMock()
 	tello.streamoff = MagicMock()
 	tello.end = MagicMock()
@@ -52,15 +63,24 @@ def adapter(mock_tello):
 		adapter._schedule_wifi_query_sometimes = MagicMock()
 		return adapter
 
+@pytest.fixture
+def streaming_adapter(adaoter, fake_frame_read):
+	adapter._connected = True
+	adapter._video_on = True
+	adapter._frame_read = fake_frame_read
+	return adapter
+
 
 @pytest.mark.asyncio
 async def test_connect_success(adapter, mock_tello):
 	result = await adapter.connect()
 	assert result is True
 	mock_tello.connect.assert_called_once()
-	# mock_tello.streamon.assert_called_once()
-	# mock_tello.get_frame_read.assert_called_once()
+	mock_tello.streamon.assert_not_called()
+	mock_tello.get_frame_read.assert_not_called()
 	assert adapter._connected is True
+	assert adapter._video_on is False	
+	assert adapter._frame_read is None
 
 
 @pytest.mark.asyncio
@@ -78,7 +98,7 @@ async def test_disconnect(adapter, mock_tello):
 	adapter._is_flying = True
 	await adapter.disconnect()
 	mock_tello.land.assert_called_once()
-	# mock_tello.streamoff.assert_called_once()
+	mock_tello.streamoff.assert_not_called()
 	mock_tello.end.assert_called_once()
 	assert adapter._connected is False
 
@@ -393,3 +413,4 @@ def test_assert_flying(adapter):
 	adapter._is_flying = False
 	with pytest.raises(RuntimeError, match='Tello Drone is not flying.'):
 		adapter._assert_flying()
+
