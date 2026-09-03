@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.auth.auth_manager import (
 	EmailAlreadyRegisteredError,
+	InvalidAccessTokenError,
 	InvalidCredentialsError,
 	InvalidRefreshTokenError,
 	SessionTokens,
@@ -21,7 +22,7 @@ from services.auth.auth_manager import (
 )
 from services.auth.auth_settings import get_auth_settings
 from services.auth.cookies import clear_auth_cookies, set_auth_cookies
-from services.auth.schemas import AuthResponse, LoginRequest, SignupRequest
+from services.auth.schemas import AuthResponse, LoginRequest, SignupRequest, UserResponse
 from services.database_manager.database import get_db
 
 settings = get_auth_settings()
@@ -127,3 +128,19 @@ async def logout(
 		return AuthResponse(message='Logout Successful')
 	except InvalidRefreshTokenError as e:
 		raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+
+
+@router.get('/me', response_model=UserResponse)
+async def me(
+	db: Annotated[AsyncSession, Depends(get_db)],
+	access_token: Annotated[str | None, Cookie(alias=settings.access_cookie_name)] = None,
+):
+	if access_token is None:
+		raise HTTPException(
+			status_code=status.HTTP_401_UNAUTHORIZED, detail='No access token provided'
+		)
+
+	try:
+		return await auth_manager.get_user_from_access_token(db=db, access_token=access_token)
+	except InvalidAccessTokenError as ex:
+		raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(ex))
