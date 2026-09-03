@@ -332,7 +332,58 @@ export default function PacDroneGame() {
           })
 
         // controls
-        // movement
+        // keyboard controls fallback
+        k.onKeyDown("arrowleft",  () => { pending = { x:-1, y: 0 } })
+        k.onKeyDown("arrowright", () => { pending = { x: 1, y: 0 } })
+        k.onKeyDown("arrowup",    () => { pending = { x: 0, y:-1 } })
+        k.onKeyDown("arrowdown",  () => { pending = { x: 0, y: 1 } })
+        k.onKeyDown("a",          () => { pending = { x:-1, y: 0 } })
+        k.onKeyDown("d",          () => { pending = { x: 1, y: 0 } })
+        k.onKeyDown("w",          () => { pending = { x: 0, y:-1 } })
+        k.onKeyDown("s",          () => { pending = { x: 0, y: 1 } })
+      
+        //smooth movement
+          
+        //how far is the entity from the center of its current tile?
+        //when this is small enough we can count the entity as 'on' the tile
+        const perpendicularOffset = (posX, posY, dir) => {
+          if (dir.x !== 0){
+            return Math.abs(posY - py(Math.round((posY-tile/2) / tile)))
+          }
+          if (dir.y !== 0){
+            return Math.abs(posX - px(Math.round((posX - tile/2) / tile)))
+          }
+          return 0
+        }
+
+        // Snap the entity onto the grid axis its on
+        // so it can go through corridors neatly
+        const snapToAxis = (entity, dir) => {
+          if (dir.x !== 0){
+            const row = Math.round((entity.pos.y - tile/2) / 2)
+            entity.pos.y = py(row)
+          }
+          else if (dir.y !== 0) {
+            const col = Math.round((entity.pos.x - tile/2) /2)
+            entity.pos.x = px(col)
+          }
+        }
+
+        // get the current coordiantes as a tile from pixel positions
+        const tileCol = (x) => Math.round((x - tile/2) / tile)
+        const tileRow = (y) => Math.round((y = tile/2) / tile)
+
+        //update positions
+        k.onUpdate(() => {
+          const dt = k.dt()
+
+          // apply the pending direction
+          const wd = dirRef.current
+          if (wd.x !== 0 || wd.y !== 0){
+            pending = {...wd}
+          }
+        })
+
         // collission
       })
 
