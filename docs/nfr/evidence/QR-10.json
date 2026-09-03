@@ -5,7 +5,7 @@
   "actual": "distinct",
   "target": "distinct",
   "pass": true,
-  "recorded_at": "2026-09-03T18:20:56+00:00",
+  "recorded_at": "2026-09-03T20:36:06+00:00",
   "machine": "Darwin arm64, 8 cores",
   "both_verify": true
 }

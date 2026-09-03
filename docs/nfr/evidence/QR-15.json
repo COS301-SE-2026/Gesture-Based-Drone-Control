@@ -1,0 +1,16 @@
+{
+  "id": "QR-15",
+  "requirement": "NFR6.1",
+  "metric": "InputAdapter adapters fully implementing the interface",
+  "actual": "4/4 loaded",
+  "target": "all loaded adapters complete",
+  "pass": true,
+  "recorded_at": "2026-09-03T20:36:03+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "interface_methods": [
+    "handle_message",
+    "start"
+  ],
+  "incomplete": {},
+  "skipped_optional": {}
+}
