@@ -13,6 +13,7 @@ import { Home, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
 // import bgLight from "../../assets/Lightbackground.png"
 // import bgDark from "../../assets/darkbackground.png"
 // import { useTheme } from "../../context/ThemeContext"
+import { useAuth } from "../../context/AuthContext"
 
 import { useTour } from "@/context/TourContext"
 import { fullTourSteps } from "@/lib/tours/steps"
@@ -20,6 +21,7 @@ import TourController from "./TourController"
 
 const RootLayout = () => {
   // const { isDark } = useTheme()
+  const { displayName } = useAuth()
   const location = useLocation()
   const { startFullTour, hasSeenFullTour, tourKey } = useTour()
   const menuItems = [
@@ -45,7 +47,7 @@ const RootLayout = () => {
       location.pathname === "/app" ||
       location.pathname.includes("/gestures")
     ) {
-      return <DashboardSideCard />
+      return <DashboardSideCard userName={displayName} />
     } else if (location.pathname.includes("/analytics")) {
       return <AnalyticsSideContent />
     } else if (location.pathname.includes("/gps")) {
