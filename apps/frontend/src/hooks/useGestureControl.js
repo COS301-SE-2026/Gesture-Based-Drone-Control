@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { API_BASE_URL, getWsUrl } from "@/lib/api"
 import { useWebSocket } from "./useWebSocket"
+import { useCameraConsent } from "@/context/CameraConsentContext"
 
 const DEFAULT_STATUS = {
   active: false,
@@ -26,10 +27,15 @@ export function useGestureControl(enabled) {
   const [connected, setConnected] = useState(false)
   const [status, setStatus] = useState(DEFAULT_STATUS)
 
+  // the backend opens the webcam the moment the gesture adapter connects,
+  // so consent has to gate the connect not just ui element
+  const { enabled: cameraEnabled } = useCameraConsent()
+  const active = enabled && cameraEnabled
+
   // connection handling
 
   useEffect(() => {
-    if (!enabled) return
+    if (!active) return
 
     let cancelled = false
 
@@ -63,7 +69,7 @@ export function useGestureControl(enabled) {
         }).catch(() => {})
       }
     }
-  }, [enabled])
+  }, [active])
 
   // websocket polling
   const { status: wsStatus } = useWebSocket(

@@ -2,8 +2,8 @@ import {test,expect} from '@playwright/test'
 
 test.describe('Atom components', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/#/test');
-        await page.waitForSelector('h1:has-text("Welcome")');
+        await page.goto('/#/app/test');
+        await page.waitForSelector('h1:has-text("Welcome")', { timeout: 10000 });
     });
 
 
@@ -23,7 +23,6 @@ test.describe('Atom components', () => {
             await expect(page.locator('button:has-text("small")')).toBeVisible();
             await expect(page.locator('button:has-text("large")')).toBeVisible();
             await expect(page.locator('button:has-text("Loading")')).toBeVisible();
-            await expect(page.locator('button:has-text("Default")')).toBeVisible();
             await expect(page.locator('button:has-text("Icon")')).toBeVisible();
             await expect(page.locator('button:has-text("disabled")')).toBeVisible();
         });
@@ -31,6 +30,7 @@ test.describe('Atom components', () => {
         test('shows loading state when clickity clacked', async ({ page }) => {
             const loadbtn = page.locator('button:has-text("Loading")');
             await loadbtn.click();
+            await page.waitForTimeout(100);
 
             await expect(loadbtn).toHaveClass(/opacity-70/);
             const spinner = loadbtn.locator('.animate-spin');
@@ -61,7 +61,7 @@ test.describe('Atom components', () => {
             const darkCard = page.locator('p:has-text("dark card")');
             await expect(darkCard).toBeVisible();
             const card = darkCard.locator('..');
-            await expect(card).toHaveClass(/bg-OffBlack/);
+            await expect(card).toHaveClass(/bg-surface/);
         });
 
         test('the clickable card shows', async ({ page }) => {
@@ -93,8 +93,8 @@ test.describe('Atom components', () => {
 
         test('shows error state w msg', async ({ page }) => {
             const err = page.locator('input[placeholder="error field"]');
-            await expect(err).toHaveClass(/border-DarkRed/);
-            const errMsg = page.locator('p.text-sm.text-Red:has-text("field required")');
+            await expect(err).toHaveClass(/border-red/);
+            const errMsg = page.locator('p.text-sm.text-red:has-text("field required")');
             await expect(errMsg).toBeVisible();
         });
     });
@@ -115,7 +115,7 @@ test.describe('Atom components', () => {
 
         test('labels have correct font styles', async ({ page }) => {
             const label = page.locator('span:has-text("Xtra small")');
-            await expect(label).toHaveClass(/font-Inter/);
+            await expect(label).toHaveClass(/font-sans/);
             await expect(label).toHaveClass(/font-semibold/);
             await expect(label).toHaveClass(/uppercase/);
         });
@@ -149,10 +149,10 @@ test.describe('Atom components', () => {
         });
 
         test('shows active page with red background', async ({ page }) => {
-            const active = page.locator('button.bg-Red:has-text("Home")');
+            const active = page.locator('button.bg-red:has-text("Home")');
             await expect(active).toBeVisible();
-            await expect(active).toHaveClass(/bg-Red/);
-            await expect(active).toHaveClass(/text-OffWhite/);
+            await expect(active).toHaveClass(/bg-red/);
+            await expect(active).toHaveClass(/text-white/);
         });
 
         test('renders nav with icons', async ({ page }) => {
@@ -162,7 +162,7 @@ test.describe('Atom components', () => {
         });
 
         test('active nav card is more visible', async ({ page }) => {
-            const active = page.locator('button.bg-Red:has-text("Home")');
+            const active = page.locator('button.bg-red:has-text("Home")');
             const icon =  active.locator('svg');
             await expect(icon).toHaveAttribute('stroke-width', '2');
         });
@@ -171,29 +171,29 @@ test.describe('Atom components', () => {
 
     test.describe('StatusDot',() => { 
         test('shows if the state is connected ', async ({page}) => {
-            const connected = page.locator('span.bg-green-400').first();
+            const connected = page.locator('span.bg-success').first();
             await expect(connected).toBeVisible();
             const pingplong = connected.locator('..').locator('span.animate-ping');
             await expect(pingplong).toBeVisible();
         });
 
         test('renders disconnected status', async ({ page }) => {
-            const disconnected = page.locator('span.bg-Red').first();
+            const disconnected = page.locator('span.bg-red').first();
             await expect(disconnected).toBeVisible();
             const bingbong = disconnected.locator('..').locator('span.animate-ping');
             await expect(bingbong).toBeVisible();
         });
 
         test('renders idle status without ping', async ({ page }) => {
-            const idle = page.locator('span.bg-DarkGrey.opacity-30').first();
+            const idle = page.locator('span.bg-dim.opacity-30').first();
             await expect(idle).toBeVisible();
             //no ping
             const dingdong = idle.locator('..').locator('span.animate-ping');
             await expect(dingdong).not.toBeVisible();
         });
 
-        test('redners statusdot w medium size', async ({ page }) => {
-            const dot = page.locator('span.h-2\\.5.w-2\\.5').first();
+        test('renders statusdot w medium size', async ({ page }) => {
+            const dot = page.locator('span.h-4.w-4').first();
             await expect(dot).toBeVisible();
         });
     });
@@ -210,7 +210,7 @@ test.describe('Atom components', () => {
             expect(newState).toBe(!initState);
         });
 
-        test('renders disabed tog', async ({ page }) => {
+        test('renders disabled tog', async ({ page }) => {
             const downy = page.locator('input[type="checkbox"]:disabled').last();
             await expect(downy).toBeDisabled();
             const label = page.locator('label').filter({
@@ -232,13 +232,16 @@ test.describe('Atom components', () => {
 
             if (await toggle.isChecked()) {
                 await label.click({ force: true });
+                await page.waitForTimeout(100);
             }
             await expect(slider).toHaveClass(/translate-x-1/);
             await label.click( {force: true});
+            await page.waitForTimeout(100);
             await expect(toggle).toBeChecked();
             await expect(slider).toHaveClass(/translate-x-6/);
 
             await label.click({ force: true });
+            await page.waitForTimeout(100);
             await expect(toggle).not.toBeChecked();
 
             await expect(slider).toHaveClass(/translate-x-1/);

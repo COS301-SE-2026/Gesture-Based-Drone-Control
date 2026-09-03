@@ -3,15 +3,13 @@ import { Link } from "react-router-dom"
 
 export default function Terms() {
   return (
-    <div className="min-h-screen bg-OffWhite dark:bg-OffBlack py-12 px-4">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-OffBlack rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-OffBlack dark:text-OffWhite mb-6">
-          Terms & Conditions
-        </h1>
+    <div className="min-h-screen bg-surface py-12 px-4">
+      <div className="max-w-4xl mx-auto bg-surface rounded-lg shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-ink mb-6">Terms & Conditions</h1>
 
-        <div className="space-y-6 text-Grey dark:text-DarkGrey">
+        <div className="space-y-6 text-dim">
           <section>
-            <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-3">
+            <h2 className="text-xl font-semibold text-ink mb-3">
               1. Acceptance of Terms
             </h2>
             <p>
@@ -21,7 +19,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-3">
+            <h2 className="text-xl font-semibold text-ink mb-3">
               2. Use of Services
             </h2>
             <p>
@@ -31,7 +29,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-3">
+            <h2 className="text-xl font-semibold text-ink mb-3">
               3. User Accounts
             </h2>
             <p>
@@ -42,7 +40,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-3">
+            <h2 className="text-xl font-semibold text-ink mb-3">
               4. Privacy Policy
             </h2>
             <p>
@@ -52,7 +50,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-3">
+            <h2 className="text-xl font-semibold text-ink mb-3">
               5. Limitation of Liability
             </h2>
             <p>
@@ -63,7 +61,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-3">
+            <h2 className="text-xl font-semibold text-ink mb-3">
               6. Changes to Terms
             </h2>
             <p>
@@ -73,7 +71,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-OffBlack dark:text-OffWhite mb-3">
+            <h2 className="text-xl font-semibold text-ink mb-3">
               7. Contact Information
             </h2>
             <p>
@@ -83,10 +81,10 @@ export default function Terms() {
           </section>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-Grey/20 dark:border-DarkGrey/20">
+        <div className="mt-8 pt-6 border-t border-dim/20">
           <Link
             to="/signup"
-            className="text-Red hover:text-DarkRed font-semibold"
+            className="text-Red hover:text-redDeep font-semibold"
           >
             ← Back to Sign Up
           </Link>

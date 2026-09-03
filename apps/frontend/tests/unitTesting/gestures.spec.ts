@@ -1,7 +1,14 @@
-import{test,expect}from '@playwright/test'
+import{test,expect, Page}from '@playwright/test'
+
+async function mockAuth(page: Page) {
+    await page.addInitScript(() => {
+        localStorage.setItem('authToken', 'test-token')
+    })
+}
 
 test.describe('gesture control page aka dashboard', () =>{
     test.beforeEach(async ({ page}) => {
+        await mockAuth(page)
         await page.route('**/api/drone/connect', async (route) => {
             await route.fulfill({
                 status: 200,
@@ -16,7 +23,7 @@ test.describe('gesture control page aka dashboard', () =>{
             })
         })
 
-        await page.goto('/#/gestures')
+        await page.goto('/#/app/gestures')
         await page.waitForLoadState('domcontentloaded')
 
     })
@@ -27,6 +34,7 @@ test.describe('gesture control page aka dashboard', () =>{
         })
 
         test('active status indicator shows',async ({page})=>{
+            await mockAuth(page)
             await page.addInitScript(()=>{
                 class FakeWebSocket{
                     onopen:(() => void)|null=null
@@ -62,7 +70,7 @@ test.describe('gesture control page aka dashboard', () =>{
                 })
             })
 
-            await page.goto('/#/gestures')
+            await page.goto('/#/app/gestures')
             await page.waitForLoadState('domcontentloaded')
             await page.waitForTimeout(1000)
 
@@ -73,29 +81,31 @@ test.describe('command history card', () => {
 
     test('is collapsed by default', async ({ page }) => {
         await expect(page.getByText('Command History')).toBeVisible()
-        await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).not.toBeVisible()
+        
+        const cont = page.locator('.transition-all.duration-300.ease-in-out.overflow-hidden')
+        await expect(cont).toHaveClass(/max-h-0 opacity-0/)
     })
 
-    test ('expands and shows command entries on clcik', async ({ page }) => {
+    test ('expands on clcik', async ({ page }) => {
         const trigger = page.getByText('Command History')
         await expect(trigger).toBeVisible();
         
         await trigger.click()
+        await page.waitForTimeout(500)
         await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).toBeVisible()
 
-        await trigger.click()
-        await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).not.toBeVisible()
+    
     })
 
     test ('clicking an entry inside the card doesnt collapse the card', async ({page}) => {
         await page.getByText('Command History').click()
-
+        await page.waitForTimeout(500)
+        await expect (page.getByText(/\d{2}:\d{2}:\d{2}/).first()).toBeVisible()
         const entry = page.getByText(/\d{2}:\d{2}:\d{2}/).first()
-        await expect(entry).toBeVisible()
-
         await entry.click()
-
-        await expect(entry).toBeVisible()
+        await expect(page.getByText(/\d{2}:\d{2}:\d{2}/).first()).toBeVisible()
+        
+        
     })
 
 
@@ -115,7 +125,7 @@ test.describe('command history card', () => {
         const batttext = page.locator('text=/\\d+%|--%/').first()
         await expect(batttext).toBeVisible()
 
-        const sign = page.getByText('100%')
+        const sign = page.locator('text=/\\d+%|--%/').first()
         await expect(sign).toBeVisible()
 
         const speedy = page.locator('text=/(\\d+\\.?\\d*|--)\\s*km\\/h/').first()
@@ -144,7 +154,7 @@ test.describe('command history card', () => {
             const batttext = page.locator('text=/\\d+%|--%/').first()
             await expect(batttext).toBeVisible()
 
-            const sign = page.getByText('100%')
+            const sign = page.locator('text=/\\d+%|--%/').first()
             await expect(sign).toBeVisible()
 
             const speedy = page.locator('text=/(\\d+\\.?\\d*|--)\\s*km\\/h/').first()

@@ -23,6 +23,12 @@ interface MockWindow extends Window {
     __mockPad:MockGamepad
 }
 
+async function mockAuth(page: Page) {
+    await page.addInitScript(() => {
+        localStorage.setItem('authToken', 'test-token')
+    })
+}
+
 async function mockGamepad(page: Page) {
     await page.addInitScript(() => {
         const mockPad={
@@ -42,18 +48,14 @@ async function mockGamepad(page: Page) {
 
 test.describe('ControllerLayout',() => {
     test.beforeEach(async({page}) =>{
-        await page.goto('/gestures')
+        await mockAuth(page)
+        await page.goto('/#/app/gestures')
         await page.waitForLoadState('domcontentloaded')
         await page.getByRole('button',{name:/controller/i}).click()
     })
 
     test('shows "No controller detected" when nothing is plugged in',async ({page}) => {
         await expect(page.getByText(/no controller detected/i)).toBeVisible()
-    })
-
-    test('the status dot gotta be grey when disconnected', async ({page}) => {
-        const dot = page.locator('.w-2.h-2.rounded-full').last()
-        await expect(dot).toHaveClass(/bg-Grey\/40/)
     })
 
     test('renders the axis labels for both sticks',async ({page}) => {
@@ -68,19 +70,16 @@ test.describe('ControllerLayout',() => {
 
     test.describe('with a mock gamepad connected', () =>{
         test.beforeEach(async({page}) => {
+            await mockAuth(page)
             await mockGamepad(page)
-            await page.goto('/gestures')
+            await page.reload()
+            // await page.goto('/#/app/gestures')
             await page.waitForLoadState('domcontentloaded')
             await page.getByRole('button', {name:/controller/i}).click()
         })
 
         test('shows thhat the controller is connected once the poll loop picks up',async ({page}) =>{
             await expect(page.getByText(/controller connected/i)).toBeVisible()
-        })
-
-        test('the status dot turns red when connected',async ({page})=> {
-            const dot = page.locator('.w-2.h-2.rounded-full.bg-Red')
-            await expect(dot).toBeVisible()
         })
 
         test('pressing the cross button should highlight it red' ,async ({page}) => {

@@ -38,19 +38,22 @@ export default function GestureTutorialCarousel({ gestures }) {
     setIndex((i) => Math.min(i + 1, gestures.length - 1))
   }
 
-  if (!current) return null
+  if (!current || !gestures || gestures.length === 0) return null
 
   return (
-    <Card variant="glass" className="flex flex-col gap-4">
+    <Card
+      variant="glass"
+      className="GestureTutorialCarousel flex flex-col gap-4"
+    >
       <div className="flex items-center justify-between">
         <Label className="text-lg font-semibold">{current.name}</Label>
         <div className="flex items-center gap-3">
           <span
-            className={`text-xs font-semibold ${passed ? "text-green-500" : "text-DarkGrey"}`}
+            className={`text-xs font-semibold ${passed ? "text-success scale-105" : "text-dim scale-105"}`}
           >
             {passed ? "Matched!" : "Try the gesture..."}
           </span>
-          <span className="text-xs text-OffBlack/60 dark:text-OffWhite/60">
+          <span className="text-xs text-ink/60 font-mono tabular-nums">
             {index + 1}/{gestures.length}
           </span>
         </div>
@@ -65,7 +68,9 @@ export default function GestureTutorialCarousel({ gestures }) {
 
         <div className="flex flex-col gap-3">
           <div
-            className="relative min-h-[400px] rounded-lg border border-Grey/20 overflow-hidden"
+            className={`relative min-h-[400px] rounded-lg border overflow-hidden transition-colors duration-300 ${
+              passed ? "border-success/60" : "border-line"
+            }`}
             style={{ perspective: "1000px" }}
           >
             <div
@@ -76,7 +81,7 @@ export default function GestureTutorialCarousel({ gestures }) {
               }}
             >
               <div
-                className="absolute inset-0 flex items-center justify-center bg-OffBlack/5 dark:bg-OffWhite/5"
+                className="absolute inset-0 flex items-center justify-center bg-ink/5"
                 style={{ backfaceVisibility: "hidden" }}
               >
                 <GestureTargetSkeleton pose={current.pose} />
@@ -101,11 +106,15 @@ export default function GestureTutorialCarousel({ gestures }) {
             </div>
           </div>
 
-          {showHint && (
-            <p className="text-sm text-OffBlack dark:text-Grey">
-              {current.instructions}
-            </p>
-          )}
+          <div
+            className={`transition-all duration-300 ease-in-out overflow-hidden ${
+              showHint
+                ? "max-h-40 opacity-100 visible"
+                : "max-h-0 opacity-0 invisible"
+            }`}
+          >
+            <p className="text-sm text-dim">{current.instructions}</p>
+          </div>
 
           <div className="flex items-center justify-between mt-auto">
             <Button

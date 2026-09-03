@@ -13,10 +13,86 @@ const STICK_RANGE = 22 //its like how far it can move when pressed
 const DEADZONE = 0.08 //da deadzone like an ignore zone basically
 
 const cleanAxis = (axis = 0) => (Math.abs(axis) < DEADZONE ? 0 : axis)
+
+//labels stuff for the controller so that the user knows whats what(cause peopel like me dont know controller ball)
+const CONTROL_LABELS = [
+  { target: [260, 205], text: "Move Forward", side: "left" },
+  { target: [260, 295], text: "Move Backward", side: "left" },
+  { target: [215, 250], text: "Move Left", side: "left" },
+  { target: [305, 250], text: "Move Right", side: "left" },
+
+  { target: [160, 127], text: "Move Forward", side: "left" },
+  { target: [160, 183], text: "Move Backward", side: "left" },
+  { target: [132, 155], text: "Move Left", side: "left" },
+  { target: [188, 155], text: "Move Right", side: "left" },
+
+  { target: [165, 37], text: "Rotate Left", side: "left" },
+  { target: [315, 32], text: "Increase Altitude", side: "left" },
+
+  { target: [590, 205], text: "Increase Altitude", side: "right" },
+  { target: [590, 295], text: "Decrease Altitude", side: "right" },
+
+  { target: [635, 250], text: "Rotate Right", side: "right" },
+  { target: [545, 250], text: "Rotate Left", side: "right" },
+
+  { target: [720, 115], text: "Emergency Stop", side: "right" },
+
+  { target: [680, 155], text: "Hover", side: "right" },
+
+  { target: [760, 155], text: "Land", side: "right" },
+
+  { target: [720, 195], text: "Takeoff", side: "right" },
+
+  { target: [555, 32], text: "Decrease Altitude", side: "right" },
+  { target: [705, 37], text: "Rotate Right", side: "right" },
+]
+const CHAR_WIDTH = 11
+const LABEL_BOX_PADDING = 8
+
+const LEFT_MARGIN_X = -15
+const RIGHT_MARGIN_X = 865
+
+const LABEL_TOP = 10
+const LABEL_BOTTOM = 450
+const textWidthOf = (text) => text.length * CHAR_WIDTH
+
+function layoutLabels(labels) {
+  const bySide = (side) =>
+    labels
+      .filter((l) => l.side === side)
+      .sort((a, b) => a.target[1] - b.target[1])
+
+  const space = (arr) =>
+    arr.map((l, i) => ({
+      ...l,
+      labelX: l.side === "left" ? LEFT_MARGIN_X : RIGHT_MARGIN_X,
+      labelY:
+        LABEL_TOP + (i * (LABEL_BOTTOM - LABEL_TOP)) / (arr.length - 1 || 1),
+    }))
+  return [...space(bySide("left")), ...space(bySide("right"))]
+}
+const LABEL_POSITIONS = layoutLabels(CONTROL_LABELS)
+
+const maxTextWidth = (side) =>
+  Math.max(
+    0,
+    ...CONTROL_LABELS.filter((l) => l.side === side).map((l) =>
+      textWidthOf(l.text)
+    )
+  )
+
+const LEFT_CANVAS_EDGE =
+  LEFT_MARGIN_X - maxTextWidth("left") - LABEL_BOX_PADDING - 10
+const RIGHT_CANVAS_EDGE =
+  RIGHT_MARGIN_X + maxTextWidth("right") + LABEL_BOX_PADDING + 10
+
+const VIEWBOX = `${LEFT_CANVAS_EDGE} -20 ${RIGHT_CANVAS_EDGE - LEFT_CANVAS_EDGE} 500`
+
 const ControllerLayout = ({ className = "" }) => {
   const [connected, setConnected] = useState(false) //detedted by the brosweser or nah?
   const [buttons, setButtons] = useState(Array(17).fill(false))
   const [axes, setAxes] = useState([0, 0, 0, 0]) //left x then y then right x then y
+  const [showLabels, setShowLabels] = useState(true) // so that it starts on and the user can collapse it if they dont like da labels
   const rafRef = useRef(0)
 
   useEffect(() => {
@@ -73,16 +149,20 @@ const ControllerLayout = ({ className = "" }) => {
     <div className={`flex flex-col items-center gap-3 ${className}`}>
       <div className="w-full flex items-center justify-between px-1">
         <span className="text-xs font-mono text-OffBlack/60 dark:text-OffWhite/60">
-          {connected ? "Controller Connected" : "No Controller Detected"}
+          {connected
+            ? "Controller Connected Successfully"
+            : "No Controller Detected"}
         </span>
-        <span
-          className={`w-2 h-2 rounded-full ${
-            connected ? "bg-Red" : "bg-Grey/40"
-          }`}
-        />
+        <button
+          type="button"
+          onClick={() => setShowLabels((v) => !v)}
+          className="text-xs font-mono text-OffBlack/60 dark:text-OffWhite/60 underline underline-offset-2 hover:text-OffBlack dark:hover:text-OffWhite transition-colors"
+        >
+          {showLabels ? "HideLabels" : "Show Labels"}
+        </button>
       </div>
 
-      <svg viewBox="0 0 850 460" className="w-full max-w-[600px]">
+      <svg viewBox={VIEWBOX} className="w-full max-w-[720px]">
         {/* the background circle and rectangle main ones */}
         <circle
           cx="150"
@@ -106,38 +186,62 @@ const ControllerLayout = ({ className = "" }) => {
         />
 
         {/* top rectange thingies, i dont game so idk what its call man, dont judge */}
-        <rect
-          x="130"
-          y="15"
-          width="150"
-          height="45"
-          rx="10"
-          className="fill-Grey/60 dark:fill-DarkGrey/90"
-        />
-        <rect
-          x="200"
-          y="0"
-          width="150"
-          height="65"
-          rx="10"
-          className="fill-Grey/80 dark:fill-DarkGrey/70"
-        />
-        <rect
-          x="520"
-          y="0"
-          width="150"
-          height="65"
-          rx="10"
-          className="fill-Grey/80 dark:fill-DarkGrey/70"
-        />
-        <rect
-          x="590"
-          y="15"
-          width="150"
-          height="45"
-          rx="10"
-          className="fill-Grey/60 dark:fill-DarkGrey/90"
-        />
+        {(isPressed(4) ? ["lb", "lt"] : ["lt", "lb"]).map((id) =>
+          id === "lb" ? (
+            <rect
+              key="lb"
+              data-testid="btn-lb"
+              x="130"
+              y="15"
+              width="150"
+              height="45"
+              rx="10"
+              strokeWidth="2"
+              className={btnFill(4)}
+            />
+          ) : (
+            <rect
+              key="lt"
+              data-testid="btn-lb"
+              x="200"
+              y="0"
+              width="150"
+              height="65"
+              rx="10"
+              strokeWidth="2"
+              className={btnFill(6)}
+            />
+          )
+        )}
+
+        {(isPressed(7) ? ["rb", "rt"] : ["rt", "rb"]).map((id) =>
+          id === "rt" ? (
+            <rect
+              key="rt"
+              data-testid="btn-rt"
+              x="520"
+              y="0"
+              width="150"
+              height="65"
+              rx="10"
+              strokeWidth="2"
+              className={btnFill(7)}
+            />
+          ) : (
+            <rect
+              key="rb"
+              data-testid="btn-rb"
+              x="590"
+              y="15"
+              width="150"
+              height="45"
+              rx="10"
+              strokeWidth="2"
+              className={btnFill(5)}
+            />
+          )
+        )}
+
         {/* LHS mini circles */}
 
         <circle
@@ -384,6 +488,57 @@ const ControllerLayout = ({ className = "" }) => {
         >
           Axis 1
         </text>
+
+        {showLabels &&
+          LABEL_POSITIONS.map((l) => {
+            const textWidth = textWidthOf(l.text)
+
+            const rectX =
+              l.side === "left"
+                ? l.labelX - textWidth - LABEL_BOX_PADDING
+                : l.labelX
+            const textX = l.side === "left" ? l.labelX - 4 : l.labelX + 4
+            return (
+              <g key={l.text}>
+                <line
+                  x1={l.labelX}
+                  y1={l.labelY}
+                  x2={l.target[0]}
+                  y2={l.target[1]}
+
+                  strokeWidth="2"
+                  className="stroke-OffBlack/80 dark:stroke-OffWhite/80"
+                />
+
+                <circle
+                  cx={l.target[0]}
+                  cy={l.target[1]}
+                  r="5"
+                  className="fill-Red"
+                />
+
+                <rect
+                  x={rectX}
+                  y={l.labelY - 13}
+                  width={textWidth + LABEL_BOX_PADDING}
+                  height="26"
+                  rx="3"
+                  className="fill-black/70"
+                />
+
+                <text
+                  x={textX}
+                  y={l.labelY}
+
+                  textAnchor={l.side === "left" ? "end" : "start"}
+                  dominantBaseline="middle"
+                  className="text-[18px] font-mono  fill-white "
+                >
+                  {l.text}
+                </text>
+              </g>
+            )
+          })}
       </svg>
     </div>
   )

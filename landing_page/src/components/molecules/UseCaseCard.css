@@ -1,73 +1,73 @@
 .md-uccard {
-    position: relative;
-    border: 1px solid var(--line);
-    background: var(--panel);
-    padding: 24px 22px 26px;
-    display: flex;
-    flex-direction: column;
-    transition: 
-        transform 0.25s,
-        border-color 0.25s;
+  position: relative;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 24px 22px 26px;
+  display: flex;
+  flex-direction: column;
+  transition:
+    transform 0.25s,
+    border-color 0.25s;
 }
 .md-uccard:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 }
 .md-ucnum {
-    position: absolute;
-    top: 18px;
-    right: 20px;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--dim);
-    opacity: 0.75;
-    transition: color 0.25s;
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--dim);
+  opacity: 0.75;
+  transition: color 0.25s;
 }
 .md-uccard:hover .md-ucnum {
-    color: var(--red);
+  color: var(--red);
 }
 .md-ucicon {
-    width: 34px;
-    height: 34px;
-    color: var(--ink);
-    margin-bottom: 18px;
-    transition: 
-        color 0.25s,
-        transform 0.25s;
+  width: 34px;
+  height: 34px;
+  color: var(--ink);
+  margin-bottom: 18px;
+  transition:
+    color 0.25s,
+    transform 0.25s;
 }
 .md-uccard:hover .md-ucicon {
-    color: var(--red);
-    transform: translateY(-2px);
+  color: var(--red);
+  transform: translateY(-2px);
 }
 .md-uccard h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    padding-right: 30px;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  padding-right: 30px;
 }
 .md-uccard p {
-    margin: 0;
-    color: var(--dim);
-    font-size: 14.5px;
-    line-height: 1.55;
+  margin: 0;
+  color: var(--dim);
+  font-size: 14.5px;
+  line-height: 1.55;
 }
 .md-ucgo {
-    margin-top: 16px;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 10.5px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: var(--red);
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    align-self: flex-start;
+  margin-top: 16px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--red);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  align-self: flex-start;
 }
 .md-ucgo i {
-    font-style: normal;
-    transition: transform 0.22s;
+  font-style: normal;
+  transition: transform 0.22s;
 }
 .md-ucgo:hover i {
-    transform: translateX(4px);
+  transform: translateX(4px);
 }
