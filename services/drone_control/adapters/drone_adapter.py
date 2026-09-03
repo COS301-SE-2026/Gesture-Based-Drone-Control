@@ -210,7 +210,7 @@ class DroneAdapter(ABC):
 		"""
 		return False
 
-	async def start_video(self) -> bool:
+	async def start_video(self) -> bool: #NOSONAR
 		"""
 		used to start the camera stream on adapters with one
 		should be implemented idempotent so start on started stream just returns true
@@ -218,7 +218,7 @@ class DroneAdapter(ABC):
 		"""
 		return False
 
-	async def stop_video(self) -> None:
+	async def stop_video(self) -> None: #NOSONAR
 		"""
 		Stops producing frames
 		must be safe to call when video wasnt started
