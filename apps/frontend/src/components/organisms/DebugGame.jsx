@@ -1,8 +1,7 @@
-// apps/frontend/src/components/organisms/DebugGame.jsx
-
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 import { useGameCommands } from "@/hooks/useGameCommands"
-import testFont from "@/assets/games/testfont.ttf"
+import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
+import { GAME_COLORS } from "@/lib/gameTheme"
 
 /**
  * Basically just a square that moves
@@ -12,37 +11,18 @@ import testFont from "@/assets/games/testfont.ttf"
 
 export default function DebugGame() {
   const canvasRef = useRef(null)
-  const initialisedRef = useRef(false)
+  // const initialisedRef = useRef(false)
   const commandRef = useRef(null)
 
   useGameCommands((msg) => {
     commandRef.current?.(msg)
   })
 
-  useEffect(() => {
-    if (!canvasRef.current || initialisedRef.current) {
-      return
-    }
-    initialisedRef.current = true
-
-    import("kaplay").then(({ default: kaplay }) => {
-      // all games should roughly follow this to be the same size (idk how scaling factors in)
-      const k = kaplay({
-        canvas: canvasRef.current,
-        width: 1064,
-        height: 600,
-        stretch: true,
-        letterbox: true,
-        background: [10, 10, 10],
-        global: false,
-      })
-
-      k.loadFont("font", testFont)
-
-      // pretty much everything in this basic scene
-      k.scene("debug", () => {
+  useKaplayCanvas(canvasRef, (k) => {
+    k.scene("debug", () => {
         const SPEED = 200
         const BLOCK_SIZE = 50
+        const WALL = 4
 
         // player controlled square
         const player = k.add([
@@ -53,8 +33,6 @@ export default function DebugGame() {
           "player",
         ])
 
-        // border walls to lock the block in
-        const WALL = 4
         k.add([k.rect(k.width(), WALL), k.pos(0, 0), k.color(80, 80, 80)])
         k.add([
           k.rect(k.width(), WALL),
@@ -75,7 +53,7 @@ export default function DebugGame() {
         // placeholder labels for the log
         const LogLabels = Array.from({ length: MAX_LOG }, (_, i) =>
           k.add([
-            k.text("", { size: 50, font: "font" }),
+            k.text("", { size: 50, font: "mono" }),
             k.pos(12, 14 + i * 50),
             k.color(160, 160, 200),
             k.fixed(),
@@ -96,6 +74,7 @@ export default function DebugGame() {
 
         let vx = 0
         let vy = 0
+        let stopTimeout = null
 
         // map the incoming commands to a movement or log entry
         commandRef.current = (msg) => {
@@ -115,8 +94,8 @@ export default function DebugGame() {
 
           if (DISCRETE[command]) {
             ;[vx, vy] = DISCRETE[command]
-            // stop after a series of commands, timeout to trace properly
-            setTimeout(() => {
+            clearTimeout(stopTimeout)
+            stopTimeout = setTimeout(() => {
               vx = 0
               vy = 0
             }, 200)
@@ -125,6 +104,7 @@ export default function DebugGame() {
 
           // stop the block
           if (command === "HOVER" || command === "LAND") {
+            clearTimeout(stopTimeout)
             vx = 0
             vy = 0
             return
@@ -132,19 +112,20 @@ export default function DebugGame() {
 
           // make block flash white
           if (command === "TAKEOFF") {
-            player.color = k.rgb(255, 255, 255)
+            player.color = k.rgb(...GAME_COLORS.ink)
             setTimeout(() => {
-              player.color = k.rgb(239, 68, 68)
+              player.color = k.rgb(...GAME_COLORS.red)
             }, 300)
             return
           }
 
           if (command === "EMERGENCY_STOP") {
+            clearTimeout(stopTimeout)
             vx = 0
             vy = 0
-            player.color = k.rgb(255, 165, 0)
+            player.color = k.rgb(...GAME_COLORS.warning)
             setTimeout(() => {
-              player.color = k.rgb(239, 68, 68)
+              player.color = k.rgb(...GAME_COLORS.red)
             }, 500)
             return
           }
@@ -177,30 +158,26 @@ export default function DebugGame() {
         // TODO: also add keyboard controls for vibes
         // will do later am lazy
 
-        // title
         k.add([
-          k.text("DEBUG GAME", { size: 50, font: "font" }),
+          k.text("DEBUG GAME", { size: 50, font: "heading" }),
           k.anchor("topright"),
           k.pos(k.width() - 12, 12),
-          k.color(80, 80, 100),
+          k.color(...GAME_COLORS.red),
+          k.opacity(0.6),
           k.fixed(),
           k.z(100),
         ])
       })
+
       //just go straight to the literal only thing
       k.onLoad(() => k.go("debug"))
     })
 
-    return () => {
-      commandRef.current = null
-    }
-  }, [])
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="w-full rounded-xl"
-      style={{ aspectRatio: "16/9" }}
-    />
-  )
-}
+    return (
+      <canvas
+        ref={canvasRef}
+        className="w-full rounded-xl"
+        style={{ aspectRatio: "16/9" }}
+      />
+    )
+  }
