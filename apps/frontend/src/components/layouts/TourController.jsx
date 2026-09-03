@@ -11,11 +11,11 @@ const TourController = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [stepIndex, setStepIndex] = useState(0)
-  const [readyToShow, setReadyToShow] = useState(false)
 
-  useEffect(() => {
-    setStepIndex(0)
-  }, [tourKey])
+  const [readyStep, setReadyStep] = useState(-1)
+  const readyToShow = !!activeSteps && readyStep === stepIndex
+
+ 
 
   //so that the scroll lock can be avoided
   useEffect(() => {
@@ -49,7 +49,6 @@ const TourController = () => {
     }
 
     console.log("[tour] on correct route, polling for target", step.target)
-    setReadyToShow(false)
 
     let cancelled = false
     const maxWaitMs = 5000
@@ -65,7 +64,7 @@ const TourController = () => {
       if (found) {
         clearInterval(check)
         found.scrollIntoView({ behavior: "smooth", block: "center" })
-        setTimeout(() => setReadyToShow(true), 300)
+        setTimeout(() => setReadyStep(stepIndex), 300)
         return
       }
       if (waited >= maxWaitMs) {
@@ -106,7 +105,7 @@ const TourController = () => {
       return
     }
     if (type === "step:after" || type === EVENTS.TARGET_NOT_FOUND) {
-      setReadyToShow(false)
+      setReadyStep(-1)
       setStepIndex(index + (action === "prev" ? -1 : 1))
     }
   }

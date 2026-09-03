@@ -21,7 +21,7 @@ import TourController from "./TourController"
 const RootLayout = () => {
   // const { isDark } = useTheme()
   const location = useLocation()
-  const { startFullTour, hasSeenFullTour } = useTour()
+  const { startFullTour, hasSeenFullTour,tourKey } = useTour()
   const menuItems = [
     { id: "gestures", label: "Gestures", icon: Home, path: "/app/gestures" },
     {
@@ -85,7 +85,7 @@ const RootLayout = () => {
       <main className="flex-1 overflow-y-auto p-6">
         <Outlet />
       </main>
-      <TourController />
+      <TourController key={tourKey} />
     </div>
   )
 }
