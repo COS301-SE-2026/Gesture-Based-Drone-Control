@@ -1,11 +1,11 @@
-// apps/frontend/src/components/organisms/FlappyDroneGame.jsx
-
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 import droneSprite from "@/assets/games/flappy/drone.png"
 import background from "@/assets/games/flappy/background.jpg"
 import pipe from "@/assets/games/flappy/pipe.png"
-import testFont from "@/assets/games/testfont.ttf"
 import { useGameCommands } from "@/hooks/useGameCommands"
+import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
+import { GAME_COLORS } from "@/lib/gameTheme"
+
 
 /**
  * this page houses everything for the kaplay minigame
@@ -17,6 +17,11 @@ import { useGameCommands } from "@/hooks/useGameCommands"
  *
  * this is the first game we're adding so its gonna be a little
  * fuckass and overdocumented
+ */
+
+/**
+ * mini game is renderd inside a frame on the page, connects to the game
+ * websocket to accept drone inputs
  */
 
 // commands will map to actual actions in the game
@@ -31,7 +36,7 @@ const HOVER_COMMANDS = new Set(["MOVE_RIGHT", "MOVE_LEFT", "HOVER"])
 
 export default function FlappyDroneGame() {
   const canvasRef = useRef(null)
-  const initialisedRef = useRef(false)
+  // const initialisedRef = useRef(false)
 
   // these refs are exposed to the WS handler
   // they are set inside the kaplay scene so that they are always current
@@ -67,34 +72,15 @@ export default function FlappyDroneGame() {
     }
   })
 
-  useEffect(() => {
-    if (!canvasRef.current || initialisedRef.current) return
-    initialisedRef.current = true
+  useKaplayCanvas(canvasRef, (k) => {
+    k.loadSprite("drone", droneSprite)
+    k.loadSprite("backSprite", background)
+    k.loadSprite("pipeSprite", pipe)
+    
 
-    //load the library dynamically so site dont hang too long
-    import("kaplay").then(({ default: kaplay }) => {
-      // initialisation
-      const k = kaplay({
-        canvas: canvasRef.current,
-        // fix the game resolution. Change based on how we want the frontend to look
-        width: 1064,
-        height: 600,
-        stretch: true,
-        letterbox: true,
-        background: [10, 10, 10],
-        global: false,
-      })
+    k.setGravity(1)
 
-      //load assets
-      k.loadSprite("drone", droneSprite)
-      k.loadSprite("backSprite", background)
-      k.loadSprite("pipeSprite", pipe)
-
-      k.loadFont("font", testFont)
-
-      k.setGravity(1)
-
-      //main scene for gameplay
+    //main scene for gameplay
       k.scene("game", () => {
         const PIPE_OPEN = 180
         const PIPE_MIN = 60
@@ -123,6 +109,40 @@ export default function FlappyDroneGame() {
           k.pos(0, 0),
           k.scale(k.width() / 201, k.height() / 251),
           k.z(-1), //should be behind everything else
+        ])
+
+        //dark scrim so backgorund fits the pallete
+        k.add([
+          k.rect(k.width(), k.height()),
+          k.pos(0, 0),
+          k.color(...GAME_COLORS.bg),
+          k.opacity(0.35),
+          k.z(-1)
+        ])
+
+        //top HUD bar, styled like the app nav bar
+        k.add([
+          k.rect(k.width(), 56),
+          k.pos(0, 0),
+          k.color(...GAME_COLORS.surface),
+          k.opacity(0.55),
+          k.fixed(),
+          k.z(900)
+        ])
+        k.add([
+          k.rect(k.width(), 2),
+          k.pos(0, 56),
+          k.color(...GAME_COLORS.red),
+          k.opacity(0.7),
+          k.fixed(),
+          k.z(900)
+        ])
+        k.add([
+          k.text("SCORE", { size: 18, font: "heading" }),
+          k.pos(24, 14),
+          k.color(...GAME_COLORS.dim),
+          k.fixed(),
+          k.z(1000)
         ])
 
         // wire up the refs so that the WS handler can call them
@@ -164,7 +184,7 @@ export default function FlappyDroneGame() {
             k.pos(k.width(), posY),
             //k.rect(64, h),
             //k.color(10, 0, 33),
-            k.outline(4), //black outline on pixels
+            k.outline(4, k.rgb(...GAME_COLORS.redDeep)),
             k.area({ isSensor: true }), //collision
             k.move(k.LEFT, SPEED), //illusion of scrolling level
             k.offscreen({ destroy: true }), //it dont exist if its behind us
@@ -196,13 +216,16 @@ export default function FlappyDroneGame() {
 
         let score = 0
         const scoreLabel = k.add([
-          k.text("0", { size: 72, font: "font" }),
-          k.anchor("center"), // keep it in place
-          k.pos(k.width() / 2, 80), //top centered
+          k.text("0", { size: 72, font: "body" }),
+          // k.anchor("center"), // keep it in place
+          // k.pos(k.width() / 2, 80), //top centered
+          k.pos(24, 6),
+          k.color(...GAME_COLORS.ink),
           k.fixed(), //unaffected by camera
           k.z(1000), //big number because on top layer above all else
         ])
       })
+
       // the scene that shows when one crashes
       k.scene("lose", (score = 0) => {
         // clear all refs so laggy commands dont fire here
@@ -218,18 +241,49 @@ export default function FlappyDroneGame() {
           k.z(-1), //should be behind everything else
         ])
 
+        //dark panel overlay
         k.add([
-          k.text(`Score: ${score}`, { size: 82, font: "font" }),
-          k.anchor("center"),
+          k.rect(k.width(), k.height()),
+          k.pos(0, 0),
+          k.color(...GAME_COLORS.bg),
+          k.opacity(0.7),
+          k.z(0)
+        ])
+
+        //red glow behind score
+        k.add([
+          k.circle(140),
           k.pos(k.width() / 2, k.height() / 2 - 40),
-          k.color(20, 20, 20),
-        ])
-        k.add([
-          k.text("w or FLY UP to retry", { size: 38, font: "font" }),
           k.anchor("center"),
-          k.pos(k.width() / 2, k.height() / 2 + 40),
-          k.color(180, 180, 180),
+          k.color(...GAME_COLORS.redShadow),
+          k.opacity(0.25),
+          k.z(1)
         ])
+
+        k.add([
+          k.text("CRASHED", { size: 32, font: "heading" }),
+          k.anchor("center"),
+          k.pos(k.width() / 2, k.height() / 2 - 100),
+          k.color(...GAME_COLORS.red),
+          k.z(2)
+        ])
+
+        k.add([
+          k.text(`Score: ${score}`, { size: 82, font: "body" }),
+          k.anchor("center"),
+          k.pos(k.width() / 2, k.height() / 2 - 20),
+          k.color(...GAME_COLORS.ink),
+          k.z(2)
+        ])
+
+        k.add([
+          k.text("w or FLY UP to retry", { size: 24, font: "mono" }),
+          k.anchor("center"),
+          k.pos(k.width() / 2, k.height() / 2 + 60),
+          k.color(...GAME_COLORS.dim),
+          k.z(2)
+        ])
+
         // option to retry
         k.wait(0.2, () => {
           upRef.current = () => k.go("game")
@@ -238,16 +292,11 @@ export default function FlappyDroneGame() {
         })
       })
 
-      k.go("game")
-    })
+      //only enter game once assets load\
+      k.onLoad(() => k.go("game"))
+  })
 
-    return () => {
-      upRef.current = null
-      downRef.current = null
-      hoverRef.current = null
-      goLoseRef.current = null
-    }
-  }, [])
+ 
 
   return (
     <canvas
