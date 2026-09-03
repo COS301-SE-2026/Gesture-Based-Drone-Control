@@ -5,6 +5,9 @@ repo_url: https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control
 repo_name: COS301-SE-2026/Gesture-Based-Drone-Control
 edit_uri: edit/main/docs/
 
+not_in_nav: |
+  /nfr/MATRIX.md
+
 theme:
   name: material
   logo: assets/drone.svg
@@ -149,6 +152,7 @@ nav:
     - Git Conventions: GIT.md
     - CI/CD Pipeline: CICD.md
     - Testing Manual: testing/TESTING.md
+    - NFR Verification: nfr/NFR.md
 
   - Reference:
     - API Reference: api/API_REFERENCE.md
