@@ -20,6 +20,34 @@ import { useTelemetryAlerts } from "@/hooks/useTelemetryAlerts"
 const MS_TO_KMH = 3.6
 const MAX_HISTORY = 50
 
+const KEY_ACTION_LABELS = {
+  ArrowUp: "Move Forward",
+  ArrowDown: "Move Backward",
+  ArrowLeft: "Move Left",
+  ArrowRight: "Move Right",
+  w: "Increase Altitude",
+  s: "Decrease Altitude",
+  a: "Rotate Left",
+  d: "Rotate Right",
+  t: "Takeoff",
+  l: "Land",
+  " ": "Hover",
+  Spacebar: "Hover",
+  Escape: "Emergency Stop",
+}
+
+const KEY_DISPLAY_LABELS = {
+  " ": "Space",
+  Spacebar: "Space",
+  Escape: "Esc",
+}
+
+function describeKeyPress(key) {
+  const keyLabel = KEY_DISPLAY_LABELS[key] ?? key
+  const actionLabel = KEY_ACTION_LABELS[key]
+  return actionLabel ? `${keyLabel} - ${actionLabel}` : keyLabel
+}
+
 function fmt(value, digits = 0) {
   return typeof value === "number" ? value.toFixed(digits) : "--"
 }
@@ -60,7 +88,7 @@ const GestureControl = () => {
   )
 
   const handleKeyboardResp = (resp) => {
-    pushManualCommand(resp.key, "keyboard")
+    pushManualCommand(describeKeyPress(resp.key), "keyboard")
   }
 
   const commandHistory = useMemo(
@@ -307,7 +335,7 @@ const GestureControl = () => {
         </div>
       )}
       <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">
-        <Card variant="glass">
+        <Card variant="glass" data-tour="stats-card">
           <div className="flex items-center justify-between">
             <Label size="md" className="shrink-0">
               {" "}
@@ -363,59 +391,73 @@ const GestureControl = () => {
           </div>
         </Card>
 
-        <DroneModeCard
-          currentMode={droneMode}
-          onModeChange={handleModeChange}
-          onDisconnect={handleDisconnect}
-          className="w-72"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        {calibrated === false ? (
-          <GestureCalibration
-            key={calRunKey}
-            className="h-full"
-            onComplete={() => setCalibrated(true)}
-            onRestart={handleRecalibrate}
-          />
-        ) : (
-          <Card variant="glass" className="h-full flex flex-col">
-            <div className="flex flex-col gap-4 flex-1">
-              <div className="flex items-center justify-between">
-                <Label className="text-lg font-semibold">
-                  Gesture Detection
-                </Label>
-
-                {calibrated && (
-                  <button
-                    type="button"
-                    onClick={handleRecalibrate}
-                    className="text-xs text-dim hover:text-red underline underline-offset-2 transition-colors"
-                  >
-                    Recalibrate
-                  </button>
-                )}
-              </div>
-
-              <GestureCameraFeed className="flex-1" />
-            </div>
-          </Card>
-        )}
-        <div className="flex flex-col gap-6 h-full">
-          <GestureGuide
-            className="flex-1"
-            sendCommand={handleControlAction}
-            onKeyboardResp={handleKeyboardResp}
-          />
-          <DroneFeedPanel
-            droneMode={droneMode}
-            connectionStatus={connectionStatus}
+        <div data-tour="drone-mode-card">
+          <DroneModeCard
+            currentMode={droneMode}
+            onModeChange={handleModeChange}
+            onDisconnect={handleDisconnect}
+            className="w-72"
           />
         </div>
       </div>
 
-      <CommandHistory commands={commandHistory} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+        <div className="h-full" data-tour="gesture-camera">
+          {calibrated === false ? (
+            <GestureCalibration
+              key={calRunKey}
+              className="h-full"
+              onComplete={() => setCalibrated(true)}
+              onRestart={handleRecalibrate}
+            />
+          ) : (
+            <Card
+              variant="glass"
+              className="h-full flex flex-col"
+              data-tour="gesture-camera"
+            >
+              <div className="flex flex-col gap-4 flex-1">
+                <div className="flex items-center justify-between">
+                  <Label className="text-lg font-semibold">
+                    Gesture Detection
+                  </Label>
+
+                  {calibrated && (
+                    <button
+                      type="button"
+                      onClick={handleRecalibrate}
+                      className="text-xs text-dim hover:text-red underline underline-offset-2 transition-colors"
+                    >
+                      Recalibrate
+                    </button>
+                  )}
+                </div>
+
+                <GestureCameraFeed className="flex-1" />
+              </div>
+            </Card>
+          )}
+        </div>
+        <div className="flex flex-col gap-6 h-full">
+          <div className="flex-1" data-tour="gesture-guide">
+            <GestureGuide
+              className="h-full"
+              sendCommand={handleControlAction}
+              onKeyboardResp={handleKeyboardResp}
+            />
+          </div>
+          <div data-tour="sim-viewer">
+            <DroneFeedPanel
+              droneMode={droneMode}
+              connectionStatus={connectionStatus}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div data-tour="command-history">
+        <CommandHistory commands={commandHistory} />
+      </div>
     </div>
   )
 }
