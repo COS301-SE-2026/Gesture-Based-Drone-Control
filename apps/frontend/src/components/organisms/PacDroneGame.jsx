@@ -384,10 +384,10 @@ export default function PacDroneGame() {
         // so it can go through corridors neatly
         const snapToAxis = (entity, dir) => {
           if (dir.x !== 0) {
-            const row = Math.round((entity.pos.y - tile/2) / tile)
+            const row = Math.round((entity.pos.y - tile / 2) / tile)
             entity.pos.y = py(row)
           } else if (dir.y !== 0) {
-            const col = Math.round((entity.pos.x - tile/2) / tile)
+            const col = Math.round((entity.pos.x - tile / 2) / tile)
             entity.pos.x = px(col)
           }
         }
