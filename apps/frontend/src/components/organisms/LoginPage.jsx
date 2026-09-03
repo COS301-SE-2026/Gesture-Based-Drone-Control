@@ -2,18 +2,18 @@ import { useNavigate } from "react-router-dom"
 import AuthLayout from "../molecules/AuthLayout"
 import LoginForm from "../molecules/LoginForm"
 import { useForm } from "../../hooks/useForm"
-import {useAuth} from "../../context/AuthContext"
+import { useAuth } from "../../context/AuthContext"
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const{refreshUser} = useAuth()
+  const { refreshUser } = useAuth()
 
   const { formData, errors, isLoading, handleChange, handleSubmit } = useForm(
     { email: "", password: "", rememberMe: false },
-    async () =>{
+    async () => {
       await refreshUser()
       navigate("/")
-    } 
+    }
   )
   return (
     <AuthLayout

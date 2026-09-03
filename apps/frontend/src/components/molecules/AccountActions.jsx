@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom"
 import { Button } from "../atoms"
 import { API_BASE_URL } from "../../lib/api"
-import {useAuth} from "../../context/AuthContext"
+import { useAuth } from "../../context/AuthContext"
 
 const AccountActions = () => {
   const navigate = useNavigate()
-  const {clearUser} = useAuth()
+  const { clearUser } = useAuth()
 
   const handleLogout = async () => {
     try {

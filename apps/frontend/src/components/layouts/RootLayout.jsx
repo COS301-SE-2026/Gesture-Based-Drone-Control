@@ -10,11 +10,11 @@ import { Home, BarChart3, MapPin, Settings, HelpCircle } from "lucide-react"
 // import bgLight from "../../assets/Lightbackground.png"
 // import bgDark from "../../assets/darkbackground.png"
 // import { useTheme } from "../../context/ThemeContext"
-import {useAuth} from "../../context/AuthContext"
+import { useAuth } from "../../context/AuthContext"
 
 const RootLayout = () => {
   // const { isDark } = useTheme()
-  const {displayName} = useAuth()
+  const { displayName } = useAuth()
   const location = useLocation()
   const menuItems = [
     { id: "gestures", label: "Gestures", icon: Home, path: "/gestures" },
