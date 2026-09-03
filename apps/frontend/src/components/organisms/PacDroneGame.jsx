@@ -185,7 +185,7 @@ export default function PacDroneGame() {
           }),
           k.anchor("center"),
           k.pos(w / 2, h - 30),
-          k.Color(...col_wall),
+          k.color(...col_wall),
         ])
       })
 
@@ -384,10 +384,10 @@ export default function PacDroneGame() {
         // so it can go through corridors neatly
         const snapToAxis = (entity, dir) => {
           if (dir.x !== 0) {
-            const row = Math.round((entity.pos.y - tile / 2) / 2)
+            const row = Math.round((entity.pos.y / tile) / 2)
             entity.pos.y = py(row)
           } else if (dir.y !== 0) {
-            const col = Math.round((entity.pos.x - tile / 2) / 2)
+            const col = Math.round((entity.pos.x / tile) / 2)
             entity.pos.x = px(col)
           }
         }
