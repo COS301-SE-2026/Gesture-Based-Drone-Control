@@ -13,10 +13,10 @@ const CameraSettingsCard = ({ className = "" }) => {
         <div className="flex items-center justify-between gap-4">
           <div className="flex flex-col gap-1">
             <Label size="md">Camera</Label>
-            <p className="text-xs text-dim max-w-sm">
+            <p className="text-sm text-dim max-w-sm">
               Gesture control needs the camera. It is opened by the app rather
-              than the browser, only while a gesture or calibration screen is
-              open, and released a few seconds after you leave.
+              than the browser. Please enable it for camera access to the
+              gesture controls.
             </p>
           </div>
           <Toggle
@@ -25,14 +25,6 @@ const CameraSettingsCard = ({ className = "" }) => {
             aria-label="Camera"
           />
         </div>
-
-        <p className="text-xs text-dim">
-          Status:{" "}
-          <span className={enabled ? "text-success" : "text-ink"}>
-            {enabled ? "Enabled" : "Disabled"}
-          </span>
-          {!enabled && " - gesture control is unavailable while camera is off."}
-        </p>
       </div>
     </Card>
   )
