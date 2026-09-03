@@ -40,5 +40,40 @@ test.describe("Guided tour", () => {
         await expect(page.getByText("Session Summary")).toBeVisible({timeout:6000})
     })
 
+    test("Back returns to the previous step without changing route", async({page}) => {
+        await page.goto("/help")
+        await startTour(page)
+        await expect(page.getByText("Live stats")).toBeVisible({timeout:6000})
+
+        await next(page)
+        await expect(page.getByText("Drone Mode")).toBeVisible({timeout:6000})
+
+        await page.getByRole("button",{name:"Back"}).click()
+        await expect(page.getByText("Live stats")).toBeVisible()
+        await expect(page).toHaveURL(/\/gestures/)
+
+
+    })
+
+
+    test("Skip tour closes it and marks tour as fully seen (not per page keey)",async ({page}) => {
+        await page.goto("/help")
+        await startTour(page)
+        await expect(page.getByText("Live Stats")).toBeVisible({timeout:6000})
+
+        await page.getByText("Skip tour").click()
+        await expect(page.getByText("Live Stats")).not.toBeVisible()
+
+        const seenFull = await page.evaluate(() => localStorage.getItem("tour_seen_full"))
+        const seenGestures = await page.evaluate(() => localStorage.getItem("tour_seen_gestures"))
+        expect(seenFull).toBe("true")
+        expect(seenGestures).toBeNull()
+    })
+
+    test("does not auto start a tour already marked as seen",async({page}) => {
+        await page.addInitScript(() => localStorage.setItem("tour_seen_full", "true"))
+        await page.goto("/gestures")
+        await expect(page.getByText("Live Stats")).not.toBeVisible()
+    })
     
 })
