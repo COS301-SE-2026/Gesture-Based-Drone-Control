@@ -191,7 +191,7 @@ export default function PacDroneGame() {
       k.scene("game", (mazeIndex = 0) => {
         const maze = mazes[mazeIndex].map((row) => row.split("")) //render line by line
         let dotsLeft = 0
-        let scorre = 0
+        let score = 0
         let scared = false
         let scaredTimer = 0
 
@@ -269,8 +269,16 @@ export default function PacDroneGame() {
           }
         }
 
-        // TODO:
         // score labels
+        const scoreLbl = k.add([
+          k.text(`SCORE ${score}`, { size: 18 }), k.anchor("topleft"),
+          k.pos(8, 8), k.color(...col_player), k.fixed(), k.z(200),
+        ])
+        const statusLbl = k.add([
+          k.text("", { size: 15 }), k.anchor("topright"),
+          k.pos(w-8, 8), k.color(...col_power), k.fixed(), k.z(200),
+        ])
+
         // actual player
         // ghosts and ghost AI
         // controls
