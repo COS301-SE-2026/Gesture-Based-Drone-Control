@@ -288,7 +288,7 @@ async def _mjpeg_stream(adapter: DroneAdapter, box_w: int, box_h: int):
 					yield _mjpeg_part(jpeg)
 
 			if time.monotonic() - last_good > STALE_AFTER_S:
-				logger.warning('/drone/feed: stale after %.1s, closing stream')
+				logger.warning('/drone/feed: stale after 0.1s, closing stream')
 				return
 
 			await asyncio.sleep(interval)
