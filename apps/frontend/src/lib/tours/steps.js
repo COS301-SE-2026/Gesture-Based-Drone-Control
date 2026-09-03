@@ -1,7 +1,7 @@
 export const gesturesSteps =[
 
     {
-        route:"/gestures",
+        route:"/app/gestures",
         target:'[data-tour="stats-card"]',
         title:"Live Stats",
         content: "Battery, signal, speed, and alternative update here in real time once you are connected.",
@@ -9,7 +9,7 @@ export const gesturesSteps =[
 
 
     {
-        route:"/gestures",
+        route:"/app/gestures",
         target:'[data-tour="drone-mode-card"]',
         title:"Drone Mode",
         content:"Switch between DroneSim, Manual, and Autonomous - this decides which adapter you are connected to.",
@@ -18,7 +18,7 @@ export const gesturesSteps =[
 
 
     {
-        route:"/gestures",
+        route:"/app/gestures",
         target:'[data-tour="gesture-camera"]',
         title:"Gesture Detection",
         content:"Your hand is tracked here. If you have not caliberated yet, this card will walk you through it first.",
@@ -26,14 +26,14 @@ export const gesturesSteps =[
 
 
     {
-        route:"/gestures",
+        route:"/app/gestures",
         target:'[data-tour="gesture-guide"]',
         title:"Gesture Guide",
         content:"A reference for every gesture the system recognizes, plus manual command buttons.",
     },
 
     {
-        route:"/gestures",
+        route:"/app/gestures",
         target:'[data-tour="sim-viewer"]',
         title:"Sim Viewer",
         content:"A live feed simulation drone, it shows the connection status as well as the current mode.This does switch to the actual caera of the physical drone depending on the mode selected",
@@ -41,7 +41,7 @@ export const gesturesSteps =[
     },
 
     {
-        route:"/gestures",
+        route:"/app/gestures",
         target:'[data-tour="command-history"]',
         title:"Command History",
         content:"Every command executed this session , whether triggered by a gesture, keyboard input or an onscreen button will show up here "
@@ -56,7 +56,7 @@ export const gesturesSteps =[
 export const gpsSteps =[
 
     {
-        route: "/gps",
+        route: "/app/gps",
         target: '[data-tour="flight-path-map"]',
         title:"Flight Path",
         content:"Built live from telemetry as you fly - traces exactly where the drone has gone during the session.",
@@ -65,7 +65,7 @@ export const gpsSteps =[
 
 
     {
-        route: "/gps",
+        route: "/app/gps",
         target: '[data-tour="displacement-stats"]',
         title:"Displacement Stats",
         content:" Altitude, X/Y displacement, speed, and heading - the numbers behind the map.",
@@ -78,7 +78,7 @@ export const gpsSteps =[
 
 export const analyticsSteps=[
     {
-        route: "/analytics",
+        route: "/app/analytics",
         target: '[data-tour="analytics-summary"]',
         title:"Session Summary",
         content:"Total flights, your fastest speed and altitude reached this sesssion."
@@ -86,21 +86,21 @@ export const analyticsSteps=[
     },
 
     {
-        route: "/analytics",
+        route: "/app/analytics",
         target: '[data-tour="analytics-live-charts"]',
         title:"Live Charts",
         content:"Speed and battery health,updating in real time as telemetry comes in."
     },
 
     {
-        route: "/analytics",
+        route: "/app/analytics",
         target: '[data-tour="analytics-performance"]',
         title:"Flight History",
         content:"Duration of your most recent completed flights pulled from the database"
     },
 
     {
-        route: "/analytics",
+        route: "/app/analytics",
         target: '[data-tour="analytics-totals"]',
         title:"Overall Totals",
         content:"Distance flown, average flight duration and avergae speed across your sessions."

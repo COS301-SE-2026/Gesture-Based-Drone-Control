@@ -1,8 +1,8 @@
-import {test, expect} from "@playwright/test"
+import {test, expect, Page} from "@playwright/test"
 
-const startTour = (page) =>
+const startTour = (page:Page) =>
     page.getByRole("button",  {name:"Take the full tour"}).click()
-const next = (page) => page.getByRole("button", {name: /^Next/}).click()
+const next = (page:Page) => page.getByRole("button", {name: /^Next/}).click()
 
 test.describe("Guided tour", () => {
     test.beforeEach(async({page }) =>  {
@@ -10,15 +10,15 @@ test.describe("Guided tour", () => {
     })
 
     test("starts on help page jumps to gestures and shows the first step", async({page}) => {
-        await page.goto("/help")
+        await page.goto("/#/app/help")
         await startTour(page)
 
-        await expect(page).toHaveURL(/\/gestures/)
+        await expect(page).toHaveURL(/#\/app\/gestures/)
         await expect(page.getByText("Live Stats")).toBeVisible({timeout:6000})
     })
 
     test("Next advances through all 6 gestures steps then crosses to the ananlytics page", async ({page}) => {
-        await page.goto("/help")
+        await page.goto("/#/app/help")
         await startTour(page)
         await expect(page.getByText("Live stats")).toBeVisible({timeout:6000})
 
@@ -36,12 +36,12 @@ test.describe("Guided tour", () => {
         }
 
         await next(page)
-        await expect(page).toHaveURL(/\/analytics/)
+        await expect(page).toHaveURL(/#\/app\/analytics/)
         await expect(page.getByText("Session Summary")).toBeVisible({timeout:6000})
     })
 
     test("Back returns to the previous step without changing route", async({page}) => {
-        await page.goto("/help")
+        await page.goto("/#/app/help")
         await startTour(page)
         await expect(page.getByText("Live stats")).toBeVisible({timeout:6000})
 
@@ -50,14 +50,14 @@ test.describe("Guided tour", () => {
 
         await page.getByRole("button",{name:"Back"}).click()
         await expect(page.getByText("Live stats")).toBeVisible()
-        await expect(page).toHaveURL(/\/gestures/)
+        await expect(page).toHaveURL(/#\/app\/gestures/)
 
 
     })
 
 
     test("Skip tour closes it and marks tour as fully seen (not per page keey)",async ({page}) => {
-        await page.goto("/help")
+        await page.goto("/#/app/help")
         await startTour(page)
         await expect(page.getByText("Live Stats")).toBeVisible({timeout:6000})
 
@@ -72,8 +72,8 @@ test.describe("Guided tour", () => {
 
     test("does not auto start a tour already marked as seen",async({page}) => {
         await page.addInitScript(() => localStorage.setItem("tour_seen_full", "true"))
-        await page.goto("/gestures")
+        await page.goto("/#/app/gestures")
         await expect(page.getByText("Live Stats")).not.toBeVisible()
     })
-    
+
 })
