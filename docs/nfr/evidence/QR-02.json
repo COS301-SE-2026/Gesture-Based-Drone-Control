@@ -5,7 +5,7 @@
   "actual": 99.0,
   "target": ">= 95.0",
   "pass": true,
-  "recorded_at": "2026-09-03T20:35:53+00:00",
+  "recorded_at": "2026-09-03T20:40:01+00:00",
   "machine": "Darwin arm64, 8 cores",
   "engine": "ml",
   "per_gesture": {
