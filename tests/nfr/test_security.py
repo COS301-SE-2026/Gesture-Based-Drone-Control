@@ -16,7 +16,7 @@ def test_access_token_lifetime_bounded():
 
 	emit(
 		'QR-07',
-		'NFR4.1',
+		'NFR2.1',
 		'access-token lifetime (minutes)',
 		actual=minutes,
 		target=f' <= {MAX_LIFETIME_MINUTES}',

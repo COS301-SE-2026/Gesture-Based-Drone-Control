@@ -1,6 +1,7 @@
 """
-QR-04 / NFR2.4 -> every recognisable gesture maps to a defined drone command
-and low confidence gets rejected
+QR-04 / NFR3.2 -> every recognisable gesture maps to a defined drone command
+QR-05 / NFR3.2 -> two-hand combinations resolve to the expected command
+QR-06 / NFR3.2 -> low-confidence frames are rejected by the confidence gate
 """
 
 from __future__ import annotations
@@ -25,7 +26,7 @@ def test_single_hand_gestures_map_to_commands():
 
 	emit(
 		'QR-04',
-		'NFR2.4',
+		'NFR3.2',
 		'single-hand gestures resloving to command',
 		actual=f'{len(SINGLE_HAND_MAP) - len(unmapped)}/{len(SINGLE_HAND_MAP)}',
 		target='all mapped',
@@ -51,7 +52,7 @@ def test_two_hand_combinations_resolve():
 	total = len(ASYMMETRICAL_TWO_HAND_MAP) + len(TWO_HAND_MAP)
 	emit(
 		'QR-05',
-		'NFR2.4',
+		'NFR3.2',
 		'two-hand combinations resolving correctly',
 		actual=f'{total - len(failures)}/{total}',
 		target='all resolve',
@@ -65,12 +66,11 @@ def test_two_hand_combinations_resolve():
 def test_confidence_threshold_is_enforec():
 	emit(
 		'QR-06',
-		'NFR2.4',
+		'NFR3.2',
 		'minimum confidence threshold for command emission',
 		actual=MIN_CONFIDENCE,
 		target='>= 0.85',
 		passed=MIN_CONFIDENCE >= 0.85,
 	)
 
-
-assert MIN_CONFIDENCE >= 0.85, f'confidence gate too low at{MIN_CONFIDENCE}'
+	assert MIN_CONFIDENCE >= 0.85, f'confidence gate too low at{MIN_CONFIDENCE}'

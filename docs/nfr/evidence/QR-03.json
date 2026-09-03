@@ -5,7 +5,7 @@
   "actual": 0.003,
   "target": "< 50.0",
   "pass": true,
-  "recorded_at": "2026-09-03T15:49:45+00:00",
+  "recorded_at": "2026-09-03T17:56:07+00:00",
   "machine": "Darwin arm64, 8 cores",
   "frames": 5837,
   "mean_ms": 0.0028

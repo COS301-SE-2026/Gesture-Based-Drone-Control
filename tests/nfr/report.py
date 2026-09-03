@@ -17,28 +17,90 @@ OUTPUT = REPO_ROOT / 'docs' / 'nfr' / 'MATRIX.md'
 
 # id -> (SRS ref, quantified requirement, tactic, test)
 ROWS = {
-	'QR-01': ('NFR3.1', 'Gesture accuracy >= 95%', 'Rule-based recognizer', 'test_accuracy.py'),
-	'QR-02': ('NFR3.2', 'Every gesture >= 95%', 'Per-gesture geometry rules', 'test_accuracy.py'),
-	'QR-03': ('NFR1.1', 'p95 recognition < 50ms', 'Pure-geometry classifier', 'test_latency.py'),
+	# --- NFR1 Performance ---
+	'QR-03': ('NFR1.1', 'p95 latency <= 200 ms', 'Pure-geometry classifier', 'test_latency.py'),
+	'QR-18': (
+		'NFR1.2',
+		'Pipeline stays bounded under load',
+		'Drop-oldest frame queue',
+		'test_realtime_robustness.py',
+	),
+	# --- NFR2 Security ---
+	'QR-07': ('NFR2.1', 'Session token <= 30 min', 'Short-lived JWT', 'test_security.py'),
+	'QR-12': (
+		'NFR2.1',
+		'Invalid tokens rejected',
+		'JWT exp/aud/iss/sig checks',
+		'test_token_validation.py',
+	),
+	'QR-08': (
+		'NFR2.2',
+		'Password hash cost >= 12 rounds',
+		'Configurable bcrypt rounds',
+		'test_password_security.py',
+	),
+	'QR-09': (
+		'NFR2.2',
+		'Weak passwords rejected',
+		'Strength policy regexes',
+		'test_password_security.py',
+	),
+	'QR-10': (
+		'NFR2.2',
+		'Password hashes salted',
+		'bcrypt gensalt',
+		'test_password_security.py',
+	),
+	# --- NFR3 Reliability ---
+	'QR-01': ('NFR3.1', 'Gesture accuracy >= 95% (ML)', 'ML recognizer (MLP)', 'test_accuracy.py'),
+	'QR-02': (
+		'NFR3.1',
+		'Every gesture >= 95% (ML)',
+		'ML recognizer (MLP)',
+		'test_accuracy.py',
+	),
+	'QR-01-rule': (
+		'NFR3.1',
+		'Rule-based accuracy (informational)',
+		'Rule-based ceiling',
+		'test_accuracy.py',
+	),
+	'QR-06': (
+		'NFR3.2',
+		'Confidence gate >= 0.85',
+		'MIN_CONFIDENCE filter',
+		'test_command_mapping.py',
+	),
+	'QR-19': (
+		'NFR3.2',
+		'Single-frame noise suppressed',
+		'GestureStabilizer voting',
+		'test_realtime_robustness.py',
+	),
 	'QR-04': (
-		'NFR2.4',
+		'NFR3.2',
 		'All single-hand gestures mapped',
 		'SINGLE_HAND_MAP',
 		'test_command_mapping.py',
 	),
 	'QR-05': (
-		'NFR2.4',
+		'NFR3.2',
 		'All two-hand combos resolve',
 		'Two-hand maps + _resolve',
 		'test_command_mapping.py',
 	),
-	'QR-06': (
-		'NFR2.4',
-		'Confidence gate >= 0.85',
-		'MIN_CONFIDENCE filter',
-		'test_command_mapping.py',
+	'QR-13': (
+		'NFR3.3',
+		'E-stop always critical priority',
+		'Command priority elevation',
+		'test_safety.py',
 	),
-	'QR-07': ('NFR4.1', 'Token lifetime <= 30 min', 'Short-lived JWT', 'test_security.py'),
+	'QR-14': (
+		'NFR3.3',
+		'E-stop grounds the drone',
+		'Adapter emergency_stop',
+		'test_safety.py',
+	),
 }
 
 

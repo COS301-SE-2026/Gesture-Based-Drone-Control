@@ -1,10 +1,10 @@
 {
   "id": "QR-06",
-  "requirement": "NFR2.4",
+  "requirement": "NFR3.2",
   "metric": "minimum confidence threshold for command emission",
   "actual": 0.85,
   "target": ">= 0.85",
   "pass": true,
-  "recorded_at": "2026-09-03T15:49:45+00:00",
+  "recorded_at": "2026-09-03T17:56:07+00:00",
   "machine": "Darwin arm64, 8 cores"
 }

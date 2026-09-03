@@ -1,18 +1,19 @@
 {
   "id": "QR-02",
-  "requirement": "NFR3.2",
+  "requirement": "NFR3.1",
   "metric": "lowest per-gesture accuracy (%)",
-  "actual": 37.5,
+  "actual": 99.0,
   "target": ">= 95.0",
-  "pass": false,
-  "recorded_at": "2026-09-03T15:49:45+00:00",
+  "pass": true,
+  "recorded_at": "2026-09-03T17:56:07+00:00",
   "machine": "Darwin arm64, 8 cores",
+  "engine": "ml",
   "per_gesture": {
-    "FIST": 56.4,
-    "OPEN_PALM": 98.3,
-    "ONE_FINGER": 37.5,
-    "TWO_FINGERS": 52.3,
-    "THREE_FINGERS": 65.8,
-    "FOUR_FINGERS": 61.5
+    "FIST": 99.0,
+    "OPEN_PALM": 100.0,
+    "ONE_FINGER": 99.9,
+    "TWO_FINGERS": 99.5,
+    "THREE_FINGERS": 99.7,
+    "FOUR_FINGERS": 99.8
   }
 }

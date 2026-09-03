@@ -2,32 +2,33 @@
   "id": "QR-01",
   "requirement": "NFR3.1",
   "metric": "gesture classification accuracy (%)",
-  "actual": 55.9,
+  "actual": 99.71,
   "target": ">= 95.0",
-  "pass": false,
-  "recorded_at": "2026-09-03T15:49:44+00:00",
+  "pass": true,
+  "recorded_at": "2026-09-03T17:56:06+00:00",
   "machine": "Darwin arm64, 8 cores",
+  "engine": "ml",
   "samples": 5837,
   "top_confusions": [
     [
-      "ONE_FINGER->TWO_FINGERS",
-      942
-    ],
-    [
       "TWO_FINGERS->THREE_FINGERS",
-      553
-    ],
-    [
-      "THREE_FINGERS->FOUR_FINGERS",
-      398
-    ],
-    [
-      "FOUR_FINGERS->OPEN_PALM",
-      351
+      3
     ],
     [
       "FIST->ONE_FINGER",
-      177
+      2
+    ],
+    [
+      "TWO_FINGERS->ONE_FINGER",
+      2
+    ],
+    [
+      "THREE_FINGERS->TWO_FINGERS",
+      2
+    ],
+    [
+      "FIST->TWO_FINGERS",
+      1
     ]
   ]
 }
