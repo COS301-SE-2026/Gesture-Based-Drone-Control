@@ -64,7 +64,7 @@ def adapter(mock_tello):
 		return adapter
 
 @pytest.fixture
-def streaming_adapter(adaoter, fake_frame_read):
+def streaming_adapter(adapter, fake_frame_read):
 	adapter._connected = True
 	adapter._video_on = True
 	adapter._frame_read = fake_frame_read
@@ -437,6 +437,7 @@ async def test_start_video_is_idempotent(adapter, mock_tello):
 	mock_tello.streamon.assert_called_once()
 	mock_tello.get_frame_read.assert_called_once()
 
+
 async def test_start_video_not_connected(adapter, mock_tello):
 	adapter._connected = False
 
@@ -475,4 +476,50 @@ async def test_start_video_can_retry_after_failure(adapter, mock_tello, fake_fra
 	assert await adapter.start_video() is True
 	assert adapter._frame_read is fake_frame_read
 
-	
+async def test_stop_video_when_never_started(adapter, mock_tello):
+	await adapter.stop_video()
+
+	mock_tello.streamoff.assert_not_called()
+	assert adapter._frame_read is None
+	assert adapter._video_on is False
+
+async def test_stop_video_success(streaming_adapter, mock_tello, fake_frame_read):
+	streaming_adapter._last_frame_id = 12345
+
+	await streaming_adapter.stop_video()
+
+	fake_frame_read.stop.assert_called_once()
+	mock_tello.streamoff.assert_called_once()
+	assert streaming_adapter._frame_read is None
+	assert streaming_adapter._video_on is False
+	assert streaming_adapter._last_frame_id is None
+
+async def test_stop_video_reader_without_stop_method(adapter, mock_tello, fake_frame):
+	reader = MagicMock(spec=['frame'])
+	reader.frame = fake_frame
+	adapter._connected = True
+	adapter._video_on = True
+	adapter._frame_read = reader
+
+	await adapter.stop_video()
+
+	mock_tello.streamoff.assert_called_once()
+	assert adapter._frame_read is None	
+	assert adapter._video_on is False
+
+async def test_stop_video_streamoff_failure_still_resets_state(streaming_adapter, mock_tello):
+	mock_tello.streamoff.side_effect = Exception('streamoff failed')
+	streaming_adapter._last_frame_id = 12345
+
+	await streaming_adapter.stop_video()
+
+	assert streaming_adapter._frame_read is None
+	assert streaming_adapter._video_on is False
+	assert streaming_adapter._last_frame_id is None
+
+async def test_stop_video_is_idempotent(streaming_adapter, mock_tello):
+	await streaming_adapter.stop_video()
+	await streaming_adapter.stop_video()
+
+	mock_tello.streamoff.assert_called_once()
+
