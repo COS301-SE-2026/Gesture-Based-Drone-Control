@@ -519,7 +519,7 @@ export default function PacDroneGame() {
                 const reverse = { x: -g._dir.x, y: -g._dir.y }
                 const shuffled = [...GHOST_DIRS]
                   .filter((d) => !(d.x === reverse.x && d.y === reverse.y))
-                  .sort(() => Math.random() - 0.5)
+                  .sort(() => Math.random() - 0.5) // NOSONAR
 
                 // fall back to reverse if completely boxed in
                 const options = [...shuffled, reverse]
