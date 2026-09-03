@@ -1,10 +1,10 @@
 import PropTypes from "prop-types"
-import { BookOpen, PlayCircle,Compass,ArrowRightCircle } from "lucide-react"
-import { Card ,Button} from "../atoms"
+import { BookOpen, PlayCircle, Compass, ArrowRightCircle } from "lucide-react"
+import { Card, Button } from "../atoms"
 
 //molecule used on help page for top buttons
 
-export default function HelpResource({ onOpenManual, onOpenTut,onStartTour }) {
+export default function HelpResource({ onOpenManual, onOpenTut, onStartTour }) {
   return (
     <section className="grid gap-4 sm:grid-cols-3">
       <Card
@@ -72,5 +72,5 @@ HelpResource.propTypes = {
 HelpResource.defaultProps = {
   onOpenManual: undefined,
   onOpenTut: undefined,
-  onStartTour:undefined,
+  onStartTour: undefined,
 }

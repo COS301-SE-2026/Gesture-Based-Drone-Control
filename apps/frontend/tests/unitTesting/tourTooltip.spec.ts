@@ -16,7 +16,7 @@ test.describe("TourTooltip", () => {
         await expect(
             page.getByText(/Battery, signal, speed, and alt/i)
         ).toBeVisible()
-        await expect(page.getByText("Back")).not.toBeVisible()
+        await expect(page.getByRole("button",{name: "Back"})).not.toBeVisible()
         await expect(page.getByText("Next (1/12)")).toBeVisible()
     })
 
@@ -29,7 +29,7 @@ test.describe("TourTooltip", () => {
     test("Back appears after the first step and returns to the prior one", async ({page}) =>{
         await page.getByRole("button", {name:/^Next/}).click()
         await expect(page.getByText("Drone Mode")).toBeVisible({timeout:6000})
-        await page.getByRole("button", {name: "Back"}).click()
+        await page.getByRole("button",{name: "Back"}).click()
         await expect(page.getByText("Live Stats")).toBeVisible()
         await expect(page.getByText("Back")).not.toBeVisible()
 

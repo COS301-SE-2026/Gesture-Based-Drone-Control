@@ -7,9 +7,8 @@ import {
   Contactcard,
 } from "../molecules"
 import { useNavigate } from "react-router-dom"
-import{useTour} from"@/context/TourContext"
-import {fullTourSteps} from "@/lib/tours/steps"
-
+import { useTour } from "@/context/TourContext"
+import { fullTourSteps } from "@/lib/tours/steps"
 
 const MANUAL_BASE =
   "https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/MANUAL/"
@@ -124,7 +123,7 @@ const openManual = (sectionId) => {
 
 export default function Help() {
   const navigate = useNavigate()
-  const {startFullTour} = useTour()
+  const { startFullTour } = useTour()
 
   const handleStartTour = () => {
     startFullTour(fullTourSteps)
