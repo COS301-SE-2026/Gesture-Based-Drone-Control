@@ -12,7 +12,7 @@ export default function LoginPage() {
     { email: "", password: "", rememberMe: false },
     async () => {
       await refreshUser()
-      navigate("/")
+      navigate("/app")
     }
   )
   return (
