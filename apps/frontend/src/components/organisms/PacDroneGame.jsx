@@ -11,17 +11,17 @@ import { useGameCommands } from "@/hooks/useGameCommands"
  */
 const MAZE_A = [
   "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-  " ...................P................. ",
-  "W..WWW..W..WWW.W...WWW.WWW.WW.W.WWW.W.W",
-  "W..Wo..W.W.WWW.WWW..W..WoW.W.WW..oW...W",
+  " ..................................... ",
+  "W..WWW..W..WWW.W.P.WWW.WWW.WW.W.WWW.W.W",
+  "W..Wo..W.W.WWW.WWW..W..W W.W.WW..oW...W",
   "W..WWW.W.W.W.....W..W..WWW.W..W.WWW.W.W",
   "W.....................................W",
   "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W.W",
-  "W.W......W.....W.WG...W..W......W...W.W",
+  "W.W......W.....W.WGG..W..W......W...W.W",
   "W.W.WWWW.W.WWW.W.W.WW..W.W.......WoW..W",
-  " ...Wo..............GG...WWWWWW...W... ",
+  " ...Wo.............GGG...WWWWWW...W... ",
   "W.W.WWWW.W.WWW.W.W.WW..W.W.......W.W..W",
-  "W.W......W.....W.WG...W..W......W...W.W",
+  "W.W......W.....W.WGG..W..W......W...W.W",
   "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W.W",
   " ..................................... ",
   "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -384,10 +384,10 @@ export default function PacDroneGame() {
         // so it can go through corridors neatly
         const snapToAxis = (entity, dir) => {
           if (dir.x !== 0) {
-            const row = Math.round((entity.pos.y / tile) / 2)
+            const row = Math.round((entity.pos.y - tile/2) / tile)
             entity.pos.y = py(row)
           } else if (dir.y !== 0) {
-            const col = Math.round((entity.pos.x / tile) / 2)
+            const col = Math.round((entity.pos.x - tile/2) / tile)
             entity.pos.x = px(col)
           }
         }
@@ -605,7 +605,7 @@ export default function PacDroneGame() {
       // lose scene
       k.scene("lose", (score = 0, mazeIndex = 0) => {
         k.add([
-          k.text("WASTED", { size: 52 }),
+          k.text("YOU DIED", { size: 52 }),
           k.anchor("center"),
           k.pos(w / 2, h / 2 - 80),
           k.color(...col_ghost),
