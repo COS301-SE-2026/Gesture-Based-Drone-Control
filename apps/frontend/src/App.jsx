@@ -28,8 +28,9 @@ function App() {
           <DebugProvider>
             <CursorGlow />
             <CameraConsentProvider>
+              <AuthProvider>
+
               <Routes>
-                <AuthProvider>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/terms" element={<Terms />} />
@@ -43,8 +44,8 @@ function App() {
                   <Route path="tutorial" element={<Tutorial />} />
                   <Route path="test" element={<TestPage />} />
                 </Route>
-                </AuthProvider>
               </Routes>
+              </AuthProvider>
             </CameraConsentProvider>
           </DebugProvider>
         </CommandsProvider>

@@ -79,7 +79,7 @@ class AuthManager:
 
 		token_hash = token_service.hash_refresh_token(refresh_token)
 
-		stored_token = await refresh_token_manager.get_valid_by_hash(token_hash=token_hash)
+		stored_token = await refresh_token_manager.get_valid_by_hash(db=db, token_hash=token_hash)
 
 		if stored_token is None:
 			raise InvalidRefreshTokenError('Refresh token is invalid')
@@ -90,7 +90,7 @@ class AuthManager:
 		if stored_token.expires_at < datetime.now(timezone.utc):
 			raise InvalidRefreshTokenError('Refresh token is expired')
 
-		user = await user_manager.get_by_id(db=db, id=stored_token.id)
+		user = await user_manager.get_by_id(db=db, id=stored_token.user_id)
 
 		if user is None:
 			raise InvalidRefreshTokenError('User no longer exists')
@@ -144,6 +144,8 @@ class AuthManager:
 
 		if not user.is_active:
 			raise InvalidAccessTokenError('User account is inactive')
+
+		return user
 
 
 auth_manager = AuthManager()
