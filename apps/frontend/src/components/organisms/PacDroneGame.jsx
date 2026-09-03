@@ -45,6 +45,7 @@ const col_power = [255, 255, 25]
 const col_player = [255, 220, 0]
 const col_bg = [12, 12, 12]
 const col_ghost = [90, 5, 5]
+const col_scared = [12, 100, 12]
 
 export default function PacDroneGame() {
   const canvasRef = useRef(null)
@@ -312,46 +313,69 @@ export default function PacDroneGame() {
         // ghosts and ghost AI
         //ghosts will randomly pick a direction from here
         const GHOST_DIRS = [
-          {x:1, y:0}, {x:-1, y:0}, {x:0, y:1}, {x:0, y:-1}
+          { x: 1, y: 0 },
+          { x: -1, y: 0 },
+          { x: 0, y: 1 },
+          { x: 0, y: -1 },
         ]
 
         // spawn a ghost in each ghost spawn location
-        // then give it a random direction to go in 
-        const ghosts = (ghostSpawns.length ? ghostSpawns : [{col:1, row:11}])
-          .map(({col, row}, i) => {
-            const g = k.add([
-              k.rect(tile-8, tile-8), k.anchor("center"),
-              k.pos(px(col), py(row)),
-              k.color(...col_ghost), k.z(10), "ghost",
-            ])
-            g._col = col
-            g._row = row
-            g._dir = GHOST_DIRS[i%GHOST_DIRS.length]
-            g._speed = GHOST_SPEED * (1 + i * 0.1) //random variances in speed
-            return g
-          })
+        // then give it a random direction to go in
+        const ghosts = (
+          ghostSpawns.length ? ghostSpawns : [{ col: 1, row: 11 }]
+        ).map(({ col, row }, i) => {
+          const g = k.add([
+            k.rect(tile - 8, tile - 8),
+            k.anchor("center"),
+            k.pos(px(col), py(row)),
+            k.color(...col_ghost),
+            k.z(10),
+            "ghost",
+          ])
+          g._col = col
+          g._row = row
+          g._dir = GHOST_DIRS[i % GHOST_DIRS.length]
+          g._speed = GHOST_SPEED * (1 + i * 0.1) //random variances in speed
+          return g
+        })
 
         // controls
         // keyboard controls fallback
-        k.onKeyDown("arrowleft",  () => { pending = { x:-1, y: 0 } })
-        k.onKeyDown("arrowright", () => { pending = { x: 1, y: 0 } })
-        k.onKeyDown("arrowup",    () => { pending = { x: 0, y:-1 } })
-        k.onKeyDown("arrowdown",  () => { pending = { x: 0, y: 1 } })
-        k.onKeyDown("a",          () => { pending = { x:-1, y: 0 } })
-        k.onKeyDown("d",          () => { pending = { x: 1, y: 0 } })
-        k.onKeyDown("w",          () => { pending = { x: 0, y:-1 } })
-        k.onKeyDown("s",          () => { pending = { x: 0, y: 1 } })
-      
+        k.onKeyDown("arrowleft", () => {
+          pending = { x: -1, y: 0 }
+        })
+        k.onKeyDown("arrowright", () => {
+          pending = { x: 1, y: 0 }
+        })
+        k.onKeyDown("arrowup", () => {
+          pending = { x: 0, y: -1 }
+        })
+        k.onKeyDown("arrowdown", () => {
+          pending = { x: 0, y: 1 }
+        })
+        k.onKeyDown("a", () => {
+          pending = { x: -1, y: 0 }
+        })
+        k.onKeyDown("d", () => {
+          pending = { x: 1, y: 0 }
+        })
+        k.onKeyDown("w", () => {
+          pending = { x: 0, y: -1 }
+        })
+        k.onKeyDown("s", () => {
+          pending = { x: 0, y: 1 }
+        })
+
         //smooth movement
-          
+
         //how far is the entity from the center of its current tile?
         //when this is small enough we can count the entity as 'on' the tile
         const perpendicularOffset = (posX, posY, dir) => {
-          if (dir.x !== 0){
-            return Math.abs(posY - py(Math.round((posY-tile/2) / tile)))
+          if (dir.x !== 0) {
+            return Math.abs(posY - py(Math.round((posY - tile / 2) / tile)))
           }
-          if (dir.y !== 0){
-            return Math.abs(posX - px(Math.round((posX - tile/2) / tile)))
+          if (dir.y !== 0) {
+            return Math.abs(posX - px(Math.round((posX - tile / 2) / tile)))
           }
           return 0
         }
@@ -359,19 +383,18 @@ export default function PacDroneGame() {
         // Snap the entity onto the grid axis its on
         // so it can go through corridors neatly
         const snapToAxis = (entity, dir) => {
-          if (dir.x !== 0){
-            const row = Math.round((entity.pos.y - tile/2) / 2)
+          if (dir.x !== 0) {
+            const row = Math.round((entity.pos.y - tile / 2) / 2)
             entity.pos.y = py(row)
-          }
-          else if (dir.y !== 0) {
-            const col = Math.round((entity.pos.x - tile/2) /2)
+          } else if (dir.y !== 0) {
+            const col = Math.round((entity.pos.x - tile / 2) / 2)
             entity.pos.x = px(col)
           }
         }
 
         // get the current coordiantes as a tile from pixel positions
-        const tileCol = (x) => Math.round((x - tile/2) / tile)
-        const tileRow = (y) => Math.round((y = tile/2) / tile)
+        const tileCol = (x) => Math.round((x - tile / 2) / tile)
+        const tileRow = (y) => Math.round((y = tile / 2) / tile)
 
         //update positions
         k.onUpdate(() => {
@@ -379,9 +402,80 @@ export default function PacDroneGame() {
 
           // apply the pending direction
           const wd = dirRef.current
-          if (wd.x !== 0 || wd.y !== 0){
-            pending = {...wd}
+          if (wd.x !== 0 || wd.y !== 0) {
+            pending = { ...wd }
           }
+
+          //smooth player movement
+
+          {
+            // check if the player can be considered 'on the tile'
+            const offPerp = perpendicularOffset(player.pos.x, player.pos.y, facing)
+            const aligned = offPerp < ALIGN_THRESHOLD
+
+            if (aligned) {
+              // turn into the pending direction
+              const nc = tileCol(player.pos.x) + pending.x
+              const nr = tileRow(player.pos.y) + pending.y
+              const wc = (nc + cols) % cols
+              if (!isWall(maze, wc, nr)) {
+                facing = {...pending}
+                snapToAxis(player, facing)
+              }
+            }
+
+            //advance in the direction we're facing
+            const nc = tileCol(player.pos.x + facing.x * PLAYER_SPEED * dt)
+            const nr = tileRow(player.pos.y + facing.y * PLAYER_SPEED * dt)
+            const wc = (nc + cols) % cols
+
+            if (!isWall(maze, wc, nr)) {
+              player.pos.x += facing.x * PLAYER_SPEED * dt
+              player.pos.y += facing.y * PLAYER_SPEED * dt
+
+              //horizontal tunnel, wraparound to the other side
+              if (player.pos.x < 0){
+                player.pos.x += cols * tile
+              }
+              if (player.pos.x > cols*tile){
+                player.pos.x -= cols* tile
+              }
+            } else {
+              if (facing.x !== 0){
+                player.pos.x = px(tileCol(player.pos.x))
+              }
+              if (facing.y !== 0){
+                player.pos.y = py(tileRow(player.pos.y))
+              }
+            }
+
+            // update the logical position as well for dot collection and collission
+            playerCol = tileCol(player.pos.x)
+            playerRow = tileRow(player.pos.y)
+
+            // collect dots and pellets according to logical coordinate
+            k.get("dot").forEach((d) => {
+              if (d.col === playerCol && d.row === playerRow) {
+                k.destroy(d); //one time use
+                score += 10; 
+                dotsLeft--; //tracked for win condition
+                scoreLbl.text = `SCORE ${score}`
+              }
+            })
+            k.get("pellet").forEach((p) => {
+              if (p.col === playerCol && p.row === playerRow) {
+                k.destroy(p)
+                score += 50 //worth more points
+                dotsLeft--
+                scoreLbl.text = `SCORE ${score}`
+                scared = true // set the ghosts to be consumed
+                scaredTimer = 10
+                ghosts.forEach((g) => g.color = k.rgb(...col_scared))
+                statusLbl.text = "EAT THE GHOSTS!!!"
+              }
+            })
+          }
+          
         })
 
         // collission
