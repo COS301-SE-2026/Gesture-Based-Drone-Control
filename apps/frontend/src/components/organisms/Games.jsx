@@ -188,7 +188,7 @@ const Games = () => {
       <div className="flex gap-md items-start">
         <Card
           variant="glass"
-          className="w-[1064px] shrink-0 !p-0 overflow-hidden"
+          className="flex-1 !p-0 overflow-hidden"
         >
           {ActiveGame ? (
             <ActiveGame />
