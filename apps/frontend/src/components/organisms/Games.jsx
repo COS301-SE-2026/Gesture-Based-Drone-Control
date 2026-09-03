@@ -14,7 +14,54 @@ const GAMES = [
   { id: "debug", label: "Debug", component: DebugGame },
 ]
 
-const INPUT_ADAPTERS = ["keyboard", "gamepad", "gesture"]
+const INPUT_ADAPTERS = [
+  { id: "keyboard", label: "Keyboard" },
+  { id: "gamepad", label: "Gamepad" },
+  { id: "gesture", label: "Gesture" },
+]
+const STATUS_DOT = {
+  connected: "bg-[var(--red)] shadow-[0_0_8px_var(--glow)]",
+  connecting: "bg-[var(--red)] animate-glow-pulse",
+  failed: "bg-red-500",
+  disconnected: "bg-dim/40",
+}
+
+function StatusDot({ status }) {
+  return (
+    <span
+      className={`inline-block w-1.5 h-1.5 rounded-full ${
+        STATUS_DOT[status] ?? STATUS_DOT.disconnected
+      }`}
+    />
+  )
+}
+
+function Segmented({ options, value, onChange, disabled }) {
+  return (
+    <div
+      className={`inline-flex items-center gap-0.5 p-0.5 rounded-md bg-black/20 border border-glassBrd ${
+        disabled ? "opacity-40 pointer-events-none" : ""
+      }`}
+    >
+      {options.map((opt) => {
+        const active = opt.id === value
+        return (
+          <button
+            key={opt.id}
+            onClick={() => onChange(opt.id)}
+            className={`px-3 py-1 rounded-[6px] text-[11px] font-mono font-semibold uppercase tracking-wider transition-colors duration-200 ${
+              active
+                ? "bg-[var(--red)] text-white shadow-[0_0_10px_var(--glow)]"
+                : "text-dim hover:text-ink"
+            }`}
+          >
+            {opt.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 const Games = () => {
   const [gameActive, setGameActive] = useState(false)
@@ -75,82 +122,89 @@ const Games = () => {
   const ActiveGame = GAMES.find((g) => g.id === selectedGame)?.component ?? null
 
   return (
-    <div className="p-6 space-y-6">
-      {/* controls row */}
-      <div className="flex items-center gap-4 flex-wrap">
-        {/* game selector */}
-        <select
-          value={selectedGame}
-          onChange={(e) => setSelectedGame(e.target.value)}
-          disabled={gameActive}
-        >
-          {GAMES.map((g) => (
-            <option key={g.id} value={g.id}>
-              {g.label}
-            </option>
-          ))}
-        </select>
+    <div className="p-lg space-y-sm font-mono text-ink">
+      {/* toolbar*/}
+      <Card
+        variant="glass"
+        className="flex items-center gap-lg flex-wrap !p-sm"
+      >
+        <div className="flex flex-col gap-1.5">
+          <Label>Game</Label>
+          <Segmented
+            options={GAMES.map((g) => ({ id: g.id, label: g.label }))}
+            value={selectedGame}
+            onChange={setSelectedGame}
+            disabled={gameActive}
+          />
+        </div>
 
-        {/* input selector */}
-        <select
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          disabled={gameActive}
-        >
-          {INPUT_ADAPTERS.map((a) => (
-            <option key={a} value={a}>
-              {a}
-            </option>
-          ))}
-        </select>
+        <div className="w-px self-stretch bg-line" />
 
-        <button onClick={gameActive ? stop : start}>
+        <div className="flex flex-col gap-1.5">
+          <Label>Input</Label>
+          <Segmented
+            options={INPUT_ADAPTERS}
+            value={input}
+            onChange={setInput}
+            disabled={gameActive}
+          />
+        </div>
+
+        <div className="w-px self-stretch bg-line" />
+
+        <button
+          onClick={gameActive ? stop : start}
+          className={`self-end px-lg py-2 rounded-md font-display font-semibold text-sm uppercase tracking-wide transition-all duration-200 ${
+            gameActive
+              ? "bg-transparent border border-[var(--red)] text-[var(--red)] hover:bg-[var(--red)]/10"
+              : "bg-[var(--red)] text-white hover:shadow-[0_0_20px_var(--glow)]"
+          }`}
+        >
           {gameActive ? "Stop" : "Start"}
         </button>
 
-        {/* status indicators */}
-        <div className="flex items-center gap-2">
-          <span
-            className={`w-2 h-2 ${
-              status === "connected"
-                ? "bg-green-500"
-                : status === "connecting"
-                  ? "bg-yellow-500"
-                  : status === "failed"
-                    ? "bg-red-500"
-                    : "bg-Grey/40"
-            }`}
-          />
-          <span>game: {status}</span>
-        </div>
-
-        {gameActive && (
+        <div className="flex items-center gap-lg ml-auto self-end pb-1">
           <div className="flex items-center gap-2">
-            <span
-              className={`w-2 h-2  ${
-                inputConnected ? "bg-green-500" : "bg-Grey/40"
-              }`}
-            />
-            <span>input: {inputConnected ? "active" : "connecting..."}</span>
+            <StatusDot status={status} />
+            <Label> Game: {status}</Label>
           </div>
-        )}
 
-        {error && <span className="text-xs text-red-500">{error}</span>}
-      </div>
-
-      {/* game and camera are in the same row*/}
-      <div className="flex gap-6 items-start">
-        <div className="w-[1064px] shrink-0">
-          {ActiveGame && <ActiveGame />}
+          {gameActive && (
+            <div className="flex items-center gap-2">
+              <StatusDot status={inputConnected ? "connected" : "connecting"} />
+              <Label> Input: {inputConnected ? "active" : "connecting"}</Label>
+            </div>
+          )}
         </div>
+      </Card>
 
-        {/* camera feed thats only shown when the gestures adapter is selected */}
+      {error && (
+        <div className="text-xs font-mono text-[var(--red)] bg-[var(--red-shadow)] border border-[var(--red-deep)] rounded-md px-sm py-2">
+          {error}
+        </div>
+      )}
+
+      {/* main content */}
+      <div className="flex gap-md items-start">
+        <Card
+          variant="glass"
+          className="w-[1064px] shrink-0 !p-0 overflow-hidden"
+        >
+          {ActiveGame ? (
+            <ActiveGame />
+          ) : (
+            <div className="h-[400px] flex items-center justify-center">
+              <Label>No game selected</Label>
+            </div>
+          )}
+        </Card>
+
         {input === "gesture" && (
-          <Card variant="glass" className="flex-1">
-            <Label size="sm" className="mb-3">
+          <Card variant="glass" className="flex-1 flex flex-col">
+            <Label size="sm" className="mb-sm">
               Gesture Feed
             </Label>
-            <GestureCameraFeed className="flex-1" />
+            <GestureCameraFeed className="flex-1 rounded-md overflow-hidden" />
           </Card>
         )}
       </div>
