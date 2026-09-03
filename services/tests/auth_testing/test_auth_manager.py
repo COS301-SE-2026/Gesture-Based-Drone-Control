@@ -7,10 +7,12 @@ from services.auth.auth_manager import (
 	AccountCreationError,
 	AuthManager,
 	EmailAlreadyRegisteredError,
+	InvalidAccessTokenError,
 	InvalidCredentialsError,
 	InvalidRefreshTokenError,
 	SessionTokens,
 )
+from services.auth.token_service import TokenError
 
 
 @pytest.fixture
@@ -385,3 +387,47 @@ class TestCreateSession:
 			expires_at=result.refresh_expires_at,
 			token_hash='hashed_refresh_token',
 		)
+
+
+class TestGetUserFromAccessToken:
+	@patch('services.auth.auth_manager.user_manager.get_by_id', new_callable=AsyncMock)
+	@patch('services.auth.auth_manager.token_service.validate_access_token')
+	async def test_returns_user(self, mock_validate, mock_get_by_id, auth_manager, db, user):
+		user.is_active = True
+		mock_validate.return_value = Mock(user_id=user.id)
+		mock_get_by_id.return_value = user
+
+		result = await auth_manager.get_user_from_access_token(db=db, access_token='access-token')
+
+		assert result is user
+		mock_validate.assert_called_once_with('access-token')
+		mock_get_by_id.assert_awaited_once_with(db=db, id=user.id)
+
+	@patch('services.auth.auth_manager.user_manager.get_by_id', new_callable=AsyncMock)
+	@patch('services.auth.auth_manager.token_service.validate_access_token')
+	async def test_invalid_token(self, mock_validate, mock_get_by_id, auth_manager, db):
+		mock_validate.side_effect = TokenError('bad token')
+
+		with pytest.raises(InvalidAccessTokenError, match='Access token is not valid'):
+			await auth_manager.get_user_from_access_token(db=db, access_token='bad-token')
+
+		mock_get_by_id.assert_not_awaited()
+
+	@patch('services.auth.auth_manager.user_manager.get_by_id', new_callable=AsyncMock)
+	@patch('services.auth.auth_manager.token_service.validate_access_token')
+	async def test_user_no_longer_exists(self, mock_validate, mock_get_by_id, auth_manager, db):
+		mock_validate.return_value = Mock(user_id=1)
+		mock_get_by_id.return_value = None
+
+		with pytest.raises(InvalidAccessTokenError, match='User no longer exists'):
+			await auth_manager.get_user_from_access_token(db=db, access_token='access-token')
+
+	@patch('services.auth.auth_manager.user_manager.get_by_id', new_callable=AsyncMock)
+	@patch('services.auth.auth_manager.token_service.validate_access_token')
+	async def test_inactive_user(self, mock_validate, mock_get_by_id, auth_manager, db, user):
+		user.is_active = False
+		mock_validate.return_value = Mock(user_id=user.id)
+		mock_get_by_id.return_value = user
+
+		with pytest.raises(InvalidAccessTokenError, match='User account is inactive'):
+			await auth_manager.get_user_from_access_token(db=db, access_token='access-token')

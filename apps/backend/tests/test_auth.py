@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 from unittest.mock import ANY, AsyncMock, patch
 
 from fastapi import FastAPI
@@ -7,6 +8,7 @@ from fastapi.testclient import TestClient
 from apps.backend.app.api.auth import auth_manager, router
 from services.auth.auth_manager import (
 	EmailAlreadyRegisteredError,
+	InvalidAccessTokenError,
 	InvalidCredentialsError,
 	InvalidRefreshTokenError,
 	SessionTokens,
@@ -162,3 +164,43 @@ class TestLogoutEndpoint:
 
 		mock_clear_auth_cookies.asser_not_called()
 		client.cookies.delete('refresh_cookie')
+
+
+class TestMeEndpoint:
+	@patch.object(auth_manager, 'get_user_from_access_token', new_callable=AsyncMock)
+	def test_me_success(self, mock_get_user):
+		mock_get_user.return_value = SimpleNamespace(
+			email='test@example.com',
+			first_name='Jane',
+			last_name='Doe',
+			hashed_password='hashed-password',  # NOSONAR
+		)
+		client.cookies.set('access_cookie', 'access-token')
+
+		response = client.get('/auth/me')
+
+		assert response.status_code == 200
+		assert response.json() == {
+			'email': 'test@example.com',
+			'first_name': 'Jane',
+			'last_name': 'Doe',
+		}
+		mock_get_user.assert_awaited_once_with(db=ANY, access_token='access-token')
+		client.cookies.delete('access_cookie')
+
+	def test_me_without_cookie(self):
+		response = client.get('/auth/me')
+
+		assert response.status_code == 401
+		assert response.json() == {'detail': 'No access token provided'}
+
+	@patch.object(auth_manager, 'get_user_from_access_token', new_callable=AsyncMock)
+	def test_me_invalid_access_token(self, mock_get_user):
+		mock_get_user.side_effect = InvalidAccessTokenError('Access token is not valid')
+		client.cookies.set('access_cookie', 'bad-token')
+
+		response = client.get('/auth/me')
+
+		assert response.status_code == 401
+		assert response.json() == {'detail': 'Access token is not valid'}
+		client.cookies.delete('access_cookie')

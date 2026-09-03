@@ -1,0 +1,11 @@
+{
+  "id": "QR-12",
+  "requirement": "NFR2.1",
+  "metric": "invalid access tokens rejected",
+  "actual": "5/5",
+  "target": "all rejected",
+  "pass": true,
+  "recorded_at": "2026-09-03T18:20:56+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "failures": []
+}
