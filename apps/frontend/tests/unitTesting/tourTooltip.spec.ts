@@ -31,7 +31,7 @@ test.describe("TourTooltip", () => {
         await expect(page.getByText("Drone Mode")).toBeVisible({timeout:6000})
         await page.getByRole("button",{name: "Back"}).click()
         await expect(page.getByText("Live Stats")).toBeVisible()
-        await expect(page.getByText("Back")).not.toBeVisible()
+        await expect(page.getByRole("button",{name: "Back"})).not.toBeVisible()
 
     })
 
