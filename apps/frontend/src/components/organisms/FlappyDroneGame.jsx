@@ -84,6 +84,33 @@ export default function FlappyDroneGame() {
 
     k.setGravity(1)
 
+    k.scene("title", () => {
+      k.add([
+        k.sprite("backSprite", { width: k.width(), height: k.height() }),
+        k.pos(0, 0),
+        k.z(-1), //should be behind everything else
+      ])
+
+      k.add([
+        k.text("FLAPPY DRONE", { size: 85 }),
+        k.anchor("center"),
+        k.pos(k.width() / 2, k.height() / 2 - 120),
+        k.color(k.rgb(230, 230, 230)),
+      ])
+
+      // fallback controls
+      k.onKeyPress("enter", () => k.go("game"))
+
+      k.add([
+        k.text("Enter or FLY UP to start", {
+          size: 35,
+        }),
+        k.anchor("center"),
+        k.pos(k.width() / 2, k.height() - 30),
+        k.color(k.rgb(230, 230, 230)),
+      ])
+    })
+
     //main scene for gameplay
     k.scene("game", () => {
       const PIPE_OPEN = 180
@@ -328,7 +355,7 @@ export default function FlappyDroneGame() {
     })
 
     //only enter game once assets load\
-    k.onLoad(() => k.go("game"))
+    k.onLoad(() => k.go("title"))
   })
 
   return (
