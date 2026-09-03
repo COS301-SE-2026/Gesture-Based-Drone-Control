@@ -170,6 +170,7 @@ nav:
       - Input Adapter (ABC): services/input_adapter.md
       - Keyboard Adapter: services/keyboard_adapter.md
       - Dummy Input Adapter: services/dummy_input_adapter.md
+      - ML engine model: services/ML.md
 
   - Demo 1 Archive:
     - Overview: demo/demo_one_documentation/index.md
