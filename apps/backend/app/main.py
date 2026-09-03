@@ -46,7 +46,6 @@ async def lifespan(app: FastAPI):
 
 	app.state.app = AppState()
 	try:
-
 		yield
 	finally:
 		try:
@@ -59,7 +58,6 @@ async def lifespan(app: FastAPI):
 		except Exception:
 			logger.exception('Error in shutting down app state')
 
-		
 		await engine.dispose()
 		logger.info('Stopping API...')
 
