@@ -24,7 +24,7 @@ from dataclasses import asdict
 from typing import Annotated
 
 import cv2
-from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSocketDisconnect
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -206,9 +206,11 @@ MIN_DIM, MAX_DIM = 160, 1280
 
 
 @router.get('/feed')
-async def feed(state: Annotated[AppState, Depends(get_state)],
-			   w: Annotated[int, Query(ge=MIN_DIM, le=MAX_DIM)] = FRAME_W,
-			   h: Annotated[int, Query(ge=MIN_DIM, le=MAX_DIM)] = FRAME_H):
+async def feed(
+	state: Annotated[AppState, Depends(get_state)],
+	w: Annotated[int, Query(ge=MIN_DIM, le=MAX_DIM)] = FRAME_W,
+	h: Annotated[int, Query(ge=MIN_DIM, le=MAX_DIM)] = FRAME_H,
+):
 	if not state.is_connected or state.adapter is None:
 		raise HTTPException(status_code=409, detail='No drone connected')
 
@@ -238,7 +240,7 @@ async def feed(state: Annotated[AppState, Depends(get_state)],
 	)
 
 
-def _encode_jpeg(frame, width:int, height:int) -> bytes | None:
+def _encode_jpeg(frame, width: int, height: int) -> bytes | None:
 	"""
 	Downscale and Jpeg encode a BGR frame
 
@@ -257,7 +259,7 @@ def _mjpeg_part(jpeg: bytes) -> bytes:
 	)
 
 
-async def _mjpeg_stream(adapter: DroneAdapter, box_w:int, box_h:int):
+async def _mjpeg_stream(adapter: DroneAdapter, box_w: int, box_h: int):
 	"""
 	yields multipart jpeg parts until the client disconnects or the feed goes stale
 

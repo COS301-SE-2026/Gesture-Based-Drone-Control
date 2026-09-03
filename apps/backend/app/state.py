@@ -81,7 +81,7 @@ class AppState:
 		if self.telemetry_task and not self.telemetry_task.done():
 			self.telemetry_task.cancel()
 		self.telemetry_task = None
-		
+
 		if self.adapter is not None:
 			await self.adapter.disconnect()
 		self.adapter = None
