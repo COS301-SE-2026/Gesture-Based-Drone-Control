@@ -14,7 +14,7 @@ import {
 import { ThemeProvider } from "./context/ThemeProvider.jsx"
 import { TelemetryProvider } from "./context/TelemetryProvider.jsx"
 import { CommandsProvider } from "./context/CommandsProvider.jsx"
-import { TourProvider } from "./context/TourContext.jsx"
+import { TourProvider } from "./context/TourProvider.jsx"
 import TestPage from "@/components/testPageForAtoms/TestPage.jsx"
 import { DebugProvider } from "./context/DebugProvider.jsx"
 import CursorGlow from "./components/atoms/CursorGlow.jsx"

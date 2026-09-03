@@ -62,7 +62,7 @@ const RootLayout = () => {
       return
     }
     if (!hasSeenFullTour()) startFullTour(fullTourSteps)
-  }, [])
+  }, [hasSeenFullTour,startFullTour])
 
   return (
     <div className="flex h-screen overflow-hidden">
