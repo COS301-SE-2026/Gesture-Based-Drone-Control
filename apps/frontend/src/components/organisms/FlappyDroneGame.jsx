@@ -1,0 +1,368 @@
+import { useRef } from "react"
+import droneSprite from "@/assets/games/flappy/drone.png"
+import background from "@/assets/games/flappy/sky_cropped.png"
+import pipe from "@/assets/games/flappy/towerr.png"
+import pipeFlipped from "@/assets/games/flappy/towerr_flipped.png"
+import { useGameCommands } from "@/hooks/useGameCommands"
+import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
+import { GAME_COLORS } from "@/lib/gameTheme"
+
+/**
+ * this page houses everything for the kaplay minigame
+ * it will be rendered inside a frame on the minigames page
+ * and will (eventually) connect to a game websocket to
+ * allow it to interpret and accept input like a drone.
+ * for now it will just use keyboard inputs until the rest is
+ * built out and ready for integration
+ *
+ * this is the first game we're adding so its gonna be a little
+ * fuckass and overdocumented
+ */
+
+/**
+ * mini game is renderd inside a frame on the page, connects to the game
+ * websocket to accept drone inputs
+ */
+
+// commands will map to actual actions in the game
+const UP_COMMANDS = new Set(["MOVE_UP", "TAKEOFF", "MOVE_FORWARD", "ROTATE_CW"])
+const DOWN_COMMANDS = new Set([
+  "MOVE_DOWN",
+  "LAND",
+  "MOVE_BACKWARD",
+  "ROTATE_CCW",
+])
+const HOVER_COMMANDS = new Set(["MOVE_RIGHT", "MOVE_LEFT", "HOVER"])
+const TOWER_ASPECT = 941 / 1672
+const BUILDING_WIDTH = 64
+const BUILDING_HEIGHT = BUILDING_WIDTH / TOWER_ASPECT
+const BUILDING_FILL = [9, 15, 28]
+
+export default function FlappyDroneGame() {
+  const canvasRef = useRef(null)
+  // const initialisedRef = useRef(false)
+
+  // these refs are exposed to the WS handler
+  // they are set inside the kaplay scene so that they are always current
+  const upRef = useRef(null)
+  const downRef = useRef(null)
+  const hoverRef = useRef(null)
+  const goLoseRef = useRef(null)
+
+  // commands are recieved from the game WS and are mapped to kaplay actions
+  // check if input maps to an in game action and execute it
+  useGameCommands((msg) => {
+    const { command, left_y, right_y, rtrigger, ltrigger } = msg
+
+    if (UP_COMMANDS.has(command)) {
+      upRef.current?.()
+      return
+    }
+    if (DOWN_COMMANDS.has(command)) {
+      downRef.current?.()
+      return
+    }
+    if (HOVER_COMMANDS.has(command)) {
+      hoverRef.current?.()
+      return
+    }
+    // analog is basically vibes rn, only consider y components
+    if (command === "ANALOG") {
+      if (left_y < -0.3 || right_y < -0.3 || rtrigger > 0.3) {
+        upRef.current?.()
+      } else if (left_y > 0.3 || right_y > 0.3 || ltrigger > 0.3) {
+        downRef.current?.()
+      }
+    }
+  })
+
+  useKaplayCanvas(canvasRef, (k) => {
+    k.loadSprite("drone", droneSprite)
+    k.loadSprite("backSprite", background)
+    k.loadSprite("pipeSprite", pipe)
+    k.loadSprite("pipeSpriteFlipped", pipeFlipped)
+
+    k.setGravity(1)
+
+    k.scene("title", () => {
+      k.add([
+        k.sprite("backSprite", { width: k.width(), height: k.height() }),
+        k.pos(0, 0),
+        k.z(-1), //should be behind everything else
+      ])
+
+      k.add([
+        k.text("FLAPPY DRONE", { size: 85 }),
+        k.anchor("center"),
+        k.pos(k.width() / 2, k.height() / 2 - 120),
+        k.color(k.rgb(230, 230, 230)),
+      ])
+
+      // fallback controls
+      k.onKeyPress("enter", () => k.go("game"))
+
+      k.add([
+        k.text("Enter or FLY UP to start", {
+          size: 35,
+        }),
+        k.anchor("center"),
+        k.pos(k.width() / 2, k.height() - 30),
+        k.color(k.rgb(230, 230, 230)),
+      ])
+    })
+
+    //main scene for gameplay
+    k.scene("game", () => {
+      const PIPE_OPEN = 180
+      const PIPE_MIN = 60
+      const JUMP_FORCE = 150
+      const SPEED = 200
+      const CEILING = -250
+
+      // game object comprising of a bunch of components and tags
+      const player = k.add([
+        k.sprite("drone", {
+          width: 64,
+          height: 64,
+        }),
+        // position (x,y)
+        k.pos(k.width() / 8, k.height() / 2),
+        // enable collision checking
+        k.area({ isSensor: true }),
+        //it will respond to gravity
+        k.body(),
+        "player",
+      ])
+
+      // static background image
+      k.add([
+        k.sprite("backSprite", { width: k.width(), height: k.height() }),
+        k.pos(0, 0),
+        k.z(-1), //should be behind everything else
+      ])
+
+      //dark scrim so backgorund fits the pallete
+      k.add([
+        k.rect(k.width(), k.height()),
+        k.pos(0, 0),
+        k.color(...GAME_COLORS.bg),
+        k.opacity(0.35),
+        k.z(-1),
+      ])
+
+      k.add([
+        k.text("SCORE", { size: 18, font: "heading" }),
+        k.pos(24, 14),
+        k.color(...GAME_COLORS.dim),
+        k.fixed(),
+        k.z(1000),
+      ])
+
+      let score = 0
+      const scoreLabel = k.add([
+        k.text("0", { size: 72, font: "body" }),
+        k.anchor("center"), // keep it in place
+        k.pos(70, 80), //top centered
+        k.color(...GAME_COLORS.ink),
+        k.fixed(), //unaffected by camera
+        k.z(1000), //big number because on top layer above all else
+      ])
+
+      // wire up the refs so that the WS handler can call them
+      upRef.current = () => player.jump(JUMP_FORCE)
+      downRef.current = () => player.jump(-JUMP_FORCE)
+      hoverRef.current = () => player.jump(0.00001)
+      goLoseRef.current = () => k.go("lose", score)
+
+      // kill if player goes out of bounds
+      player.onUpdate(() => {
+        if (player.pos.y >= k.height() || player.pos.y <= CEILING) {
+          goLoseRef.current?.()
+        }
+      })
+
+      //controls here. will add handlers when integrated with backend stuffs
+      k.onKeyPress("w", () => player.jump(JUMP_FORCE))
+      k.onKeyPress("space", () => player.jump(0.00001))
+      k.onKeyPress("s", () => player.jump(-JUMP_FORCE))
+
+      // we want to spawn pipes around the center
+      // take prev pipe into consideration so its not impossible
+      let prevPipeH1 = k.center().y - PIPE_OPEN / 2
+
+      // recalled to dynamically create pipes within a random window
+      function spawnPipe() {
+        const PIPE_MAX = k.height() - PIPE_MIN - PIPE_OPEN
+        const low = Math.max(PIPE_MIN, prevPipeH1 - PIPE_OPEN * 1.2)
+        const high = Math.min(PIPE_MAX, prevPipeH1 + PIPE_OPEN * 1.2)
+        const h1 = (prevPipeH1 = k.rand(low, high))
+        const h2 = k.height() - h1 - PIPE_OPEN
+
+        // generic object template for pipes to follow
+        // const makePipe = (posY, h) => [
+        //   k.sprite("pipeSprite", {
+        //     width: 64,
+        //     height: h,
+        //   }),
+        //   k.pos(k.width(), posY),
+        //   //k.rect(64, h),
+        //   //k.color(10, 0, 33),
+        //   k.outline(4, k.rgb(...GAME_COLORS.redDeep)),
+        //   k.area({ isSensor: true }), //collision
+        //   k.move(k.LEFT, SPEED), //illusion of scrolling level
+        //   k.offscreen({ destroy: true }), //it dont exist if its behind us
+        //   "pipe", //easier to refer to later on with a tag
+        // ]
+
+        // //make a top pipe
+        // k.add(makePipe(0, h1), { passed: true })
+
+        // //make a bottom pipe
+        // k.add([...makePipe(h1 + PIPE_OPEN, h2), { passed: false }])
+
+        const makeBuilding = (posY, h, flipped) => {
+          const parent = k.add([
+            k.pos(k.width(), posY),
+            k.area({
+              isSensor: true,
+              shape: new k.Rect(k.vec2(0, 0), BUILDING_WIDTH, h),
+            }),
+            k.move(k.LEFT, SPEED),
+            k.offscreen({ destroy: true }),
+            "pipe",
+          ])
+
+          if (flipped) {
+            const fillerHeight = Math.max(0, h - BUILDING_HEIGHT)
+            parent.add([
+              k.rect(BUILDING_WIDTH, fillerHeight),
+              k.pos(0, 0),
+              k.color(...BUILDING_FILL),
+            ])
+            parent.add([
+              k.sprite("pipeSpriteFlipped", {
+                width: BUILDING_WIDTH,
+                height: BUILDING_HEIGHT,
+              }),
+              k.pos(0, fillerHeight),
+            ])
+          } else {
+            parent.add([
+              k.sprite("pipeSprite", {
+                width: BUILDING_WIDTH,
+                height: BUILDING_HEIGHT,
+              }),
+              k.pos(0, 0),
+            ])
+            const fillerHeight = Math.max(0, h - BUILDING_HEIGHT)
+            parent.add([
+              k.rect(BUILDING_WIDTH, fillerHeight),
+              k.pos(0, BUILDING_HEIGHT),
+              k.color(...BUILDING_FILL),
+            ])
+          }
+
+          return parent
+        }
+
+        const top = makeBuilding(0, h1, true)
+        top.passed = true
+
+        const bottom = makeBuilding(h1 + PIPE_OPEN, h2, false)
+        bottom.passed = false
+      }
+
+      // lose condition
+      player.onCollide("pipe", () => goLoseRef.current?.())
+
+      // the pipe is actually moving not the player
+      // so when the pipe passes the player, give them a point
+      k.onUpdate("pipe", (p) => {
+        if (p.pos.x + BUILDING_WIDTH <= player.pos.x && !p.passed) {
+          score++
+          scoreLabel.text = score.toString()
+          p.passed = true
+        }
+      })
+
+      // spawn pipe every second
+      k.loop(1.5, spawnPipe)
+    })
+
+    // the scene that shows when one crashes
+    k.scene("lose", (score = 0) => {
+      // clear all refs so laggy commands dont fire here
+      upRef.current = null
+      downRef.current = null
+      hoverRef.current = null
+      goLoseRef.current = null
+
+      k.add([
+        k.sprite("backSprite", { width: k.width(), height: k.height() }),
+        k.pos(0, 0),
+        k.z(-1), //should be behind everything else
+      ])
+
+      //dark panel overlay
+      k.add([
+        k.rect(k.width(), k.height()),
+        k.pos(0, 0),
+        k.color(...GAME_COLORS.bg),
+        k.opacity(0.7),
+        k.z(0),
+      ])
+
+      //red glow behind score
+      k.add([
+        k.circle(140),
+        k.pos(k.width() / 2, k.height() / 2 - 40),
+        k.anchor("center"),
+        k.color(...GAME_COLORS.redShadow),
+        k.opacity(0.25),
+        k.z(1),
+      ])
+
+      k.add([
+        k.text("CRASHED", { size: 32, font: "heading" }),
+        k.anchor("center"),
+        k.pos(k.width() / 2, k.height() / 2 - 100),
+        k.color(...GAME_COLORS.red),
+        k.z(2),
+      ])
+
+      k.add([
+        k.text(`Score: ${score}`, { size: 82, font: "body" }),
+        k.anchor("center"),
+        k.pos(k.width() / 2, k.height() / 2 - 20),
+        k.color(...GAME_COLORS.ink),
+        k.z(2),
+      ])
+
+      k.add([
+        k.text("w or FLY UP to retry", { size: 24, font: "mono" }),
+        k.anchor("center"),
+        k.pos(k.width() / 2, k.height() / 2 + 60),
+        k.color(...GAME_COLORS.dim),
+        k.z(2),
+      ])
+
+      // option to retry
+      k.wait(0.2, () => {
+        upRef.current = () => k.go("game")
+        k.onKeyPress("w", () => k.go("game"))
+        k.onMousePress(() => k.go("game"))
+      })
+    })
+
+    //only enter game once assets load\
+    k.onLoad(() => k.go("title"))
+  })
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="w-full rounded-xl"
+      style={{ aspectRatio: "16/9" }}
+    />
+  )
+}

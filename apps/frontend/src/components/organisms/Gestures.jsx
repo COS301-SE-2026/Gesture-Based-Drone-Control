@@ -249,6 +249,8 @@ const GestureControl = () => {
   //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
   useEffect(() => {
     if (lastResp?.ok && lastResp.command) {
+      // setStae has to be called in use effect here because lastResp is not in this component
+      //its basically coming from useCommands in the websocket, so that whenever there is a new response its added to the local log.
       pushManualCommand(lastResp.command, lastResp.source ?? "onscreen")
 
       if (lastResp.command === "EMERGENCY_STOP") {
