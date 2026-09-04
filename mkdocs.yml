@@ -5,6 +5,8 @@ repo_url: https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control
 repo_name: COS301-SE-2026/Gesture-Based-Drone-Control
 edit_uri: edit/main/docs/
 
+# MATRIX.md is a generated artefact embedded into nfr/NFR.md via a snippet,
+# not a standalone page. Keep it out of the nav without a warning.
 not_in_nav: |
   /nfr/MATRIX.md
 
@@ -156,6 +158,7 @@ nav:
 
   - Reference:
     - API Reference: api/API_REFERENCE.md
+    - Service Contracts: contracts/CONTRACTS.md
     - Frontend Components:
       - Atoms: frontend/atoms.md
       - Molecules: frontend/molecules.md
