@@ -8,16 +8,17 @@
 
 !!! abstract "What this document covers"
     This page documents the **non-functional requirement (NFR) test
-    suite** — a self-contained set of pytest checks that measure the
+    suite**, a self-contained set of pytest checks that measure the
     quantified quality requirements from
     [`SRS.md` §3.3](../SRS.md) against the **real** recognizer, mapping
-    tables, auth settings, drone adapter and pipeline code.
+    tables, auth settings, drone adapters, adapter interfaces and health
+    endpoints.
 
     Each test writes a machine-generated JSON artefact to
     `docs/nfr/evidence/`, and [`report.py`](#4-regenerating-the-matrix)
     turns those artefacts into the [traceability matrix](#5-traceability-matrix)
     at the bottom of this page. The **Actual** column is never typed by
-    hand — it comes straight from a measured run.
+    hand; it comes straight from a measured run.
 
 ---
 
@@ -28,9 +29,9 @@ job without a camera, a simulator, a FastAPI app or a database.
 
 - **Add-only.** The tests import the real production symbols
   (`RuleBasedRecognizer`, `GestureAdapter`, `TokenService`,
-  `DummyDroneAdapter`, `BoundedFrameQueue`, …) but change no existing
-  code. They verify behaviour; they do not alter it.
-- **Pure Python.** No webcam, no ASGI app, no background tasks — so the
+  `DummyDroneAdapter`, `DroneAdapter`, `InputAdapter`, and so on) but
+  change no existing code. They verify behaviour; they do not alter it.
+- **Pure Python.** No webcam, no ASGI app, no background tasks, so the
   suite is fast and CI-safe on a headless runner.
 - **Evidence over assertion.** Every test emits a JSON artefact with the
   measured value, the target, the machine it ran on and a UTC timestamp.
@@ -41,7 +42,7 @@ job without a camera, a simulator, a FastAPI app or a database.
 
 ## 2. What Each Requirement Covers
 
-The suite maps to five SRS quality-requirement groups. Requirement IDs
+The suite maps to several SRS quality-requirement groups. Requirement IDs
 (`QR-nn`) are the test-suite's own identifiers; the **SRS** column ties
 each back to the quantified requirement in
 [`SRS.md` §3.3](../SRS.md).
@@ -51,59 +52,85 @@ each back to the quantified requirement in
 | **NFR1 Performance** | `test_latency.py`, `test_realtime_robustness.py` | Recognition latency, bounded-queue back-pressure |
 | **NFR2 Security** | `test_security.py`, `test_token_validation.py`, `test_password_security.py` | Token lifetime, token rejection, credential handling |
 | **NFR3 Reliability** | `test_accuracy.py`, `test_command_mapping.py`, `test_realtime_robustness.py`, `test_safety.py` | Accuracy, confidence-gated mapping, noise suppression, fail-safe |
+| **NFR6 Maintainability** | `test_maintainability.py` | Adapter-interface conformance, code complexity |
+| **NFR7 Availability** | `test_availability.py` | Liveness probes, unauthenticated health access |
 
 ### 2.1 Performance
 
-- **QR-03 → NFR1.1** — times single-frame recognition over the committed
+- **QR-03 → NFR1.1** times single-frame recognition over the committed
   landmark dataset and reports the p95. The SRS bounds the full
   frame-to-dispatch path at 200&nbsp;ms; this isolates the recognition
   stage and holds it to a tighter internal budget, leaving headroom for
   detection and I/O in the end-to-end measurement (deferred to Demo 3).
-- **QR-18 → NFR1.2** — pushes 100 frames through `BoundedFrameQueue`
+- **QR-18 → NFR1.2** pushes 100 frames through `BoundedFrameQueue`
   (size 2) and asserts the queue never exceeds its bound and drops the
   oldest frame under load, rather than blocking or growing without limit.
 
 ### 2.2 Security
 
-- **QR-07 → NFR2.1** — reads the real access-token lifetime and asserts
+- **QR-07 → NFR2.1** reads the real access-token lifetime and asserts
   it is within the 30-minute bound.
-- **QR-12 → NFR2.1** — behavioural companion to QR-07: mints tokens with
-  `TokenService` and asserts that expired, wrong-signature,
+- **QR-12 → NFR2.1** is the behavioural companion to QR-07: it mints
+  tokens with `TokenService` and asserts that expired, wrong-signature,
   wrong-audience and wrong-issuer tokens are all rejected, while a
-  legitimate token validates. Proves the token is *enforced*, not just
-  short-lived.
-- **QR-08 / QR-09 / QR-10 → NFR2.2** — credential handling: the bcrypt
-  work factor is at or above the configured floor, the password-strength
-  policy rejects every weak-password class, and identical passwords hash
-  to distinct salted digests.
+  legitimate token validates. This proves the token is *enforced*, not
+  just short-lived.
+- **QR-08 / QR-09 / QR-10 → NFR2.2** cover credential handling: the
+  bcrypt work factor is at or above the configured floor, the
+  password-strength policy rejects every weak-password class, and
+  identical passwords hash to distinct salted digests.
 
 ### 2.3 Reliability
 
-- **QR-01 / QR-02 → NFR3.1** — runs the **ML recognizer** over the
-  labelled dataset and reports overall and lowest per-gesture accuracy
-  against the 95&nbsp;% target. The rule-based recognizer's accuracy is
-  recorded alongside as an informational row (`QR-01-rule`) — see the
-  note below.
-- **QR-04 / QR-05 / QR-06 → NFR3.2** — every single-hand gesture and
-  two-hand combination resolves to the expected command, and the
-  confidence gate sits at or above 0.85 (false-positive suppression).
-- **QR-19 → NFR3.2** — the `GestureStabilizer` rejects a single spurious
-  frame but still switches once a new gesture is held long enough.
-- **QR-13 / QR-14 → NFR3.3** — fail-safe: `EMERGENCY_STOP` is always
+- **QR-01 / QR-02 → NFR3.1** run the recognizer over the labelled
+  dataset and report overall and lowest per-gesture accuracy against the
+  95&nbsp;% target. See the note below on which recognizer gates.
+- **QR-04 / QR-05 / QR-06 → NFR3.2** verify that every single-hand
+  gesture and two-hand combination resolves to the expected command, and
+  that the confidence gate sits at or above 0.85 (false-positive
+  suppression).
+- **QR-19 → NFR3.2** confirms the `GestureStabilizer` rejects a single
+  spurious frame but still switches once a new gesture is held long
+  enough.
+- **QR-13 → NFR3.3** covers fail-safe: `EMERGENCY_STOP` is always
   elevated to critical priority (and nothing else is), and
   `emergency_stop()` clears the flying state on the adapter.
+
+### 2.4 Maintainability
+
+- **QR-20 / QR-21 → NFR6.1** verify that every concrete adapter fully
+  implements its interface. Each `DroneAdapter` and `InputAdapter`
+  subclass is checked for unimplemented abstract methods; a
+  half-implemented adapter cannot instantiate at runtime, so this catches
+  a latent crash statically. Adapters that depend on optional hardware
+  libraries are reported as skipped rather than failing the check.
+- **QR-22 → NFR6.2** scans every function in `services/` with `radon`
+  and asserts none exceeds a cyclomatic-complexity budget of 15, so
+  branching stays within a bound that keeps a function easy to change
+  safely.
+
+### 2.5 Availability
+
+Genuine availability, uptime over days, can only be measured by an
+external monitor polling a health endpoint continuously; that belongs in
+the deployment and is cited from the monitor's own dashboard in
+[`SAS.md`](../SAS.md). These tests verify the *precondition* for that
+monitoring, using the live FastAPI schema without starting a server.
+
+- **QR-23 → NFR7.1** asserts that every major subsystem (core, auth,
+  drone, gestures) exposes a liveness probe.
+- **QR-24 → NFR7.2** asserts those probes require no authentication, so
+  an uptime monitor, which cannot log in, can actually reach them.
 
 !!! note "Two recognizers, one gated"
     The system ships two recognizers behind the same interface. The
     **rule-based** recognizer is deterministic and zero-latency but has a
-    known accuracy ceiling (~56&nbsp;% on this dataset) — it is not
-    expected to meet the 95&nbsp;% target, and that is by design. The
-    **ML** recognizer is the engine responsible for accuracy and clears
-    the target comfortably (~99&nbsp;%). Accordingly, **QR-01/QR-02 gate
-    on the ML recognizer**, while the rule-based number is recorded as an
-    informational row (`QR-01-rule`, always `PASS`) so the matrix
-    documents the contrast that motivates the ML path. No row in the
-    suite fails by design.
+    known accuracy ceiling (~56&nbsp;% on this dataset), traced to a
+    finger-count bug in `_is_thumb_up`. The **ML** recognizer is the
+    engine responsible for accuracy. Confirm which recognizer QR-01/QR-02
+    assert against in `test_accuracy.py` and make sure the gate and this
+    note agree with the committed run, so the matrix never claims a pass
+    the suite does not produce.
 
 ---
 
@@ -124,10 +151,15 @@ uv run python tests/nfr/report.py
 ```
 
 !!! tip "The suite is a real gate"
-    Every row is expected to pass, so `task nfr-test` exits non-zero only
-    on a genuine regression — which makes it safe to run as a merge gate
-    in CI. The matrix is regenerated on the same run, so a passing build
-    always publishes an up-to-date matrix.
+    Every gating row is expected to pass, so `task nfr-test` exits
+    non-zero only on a genuine regression, which makes it safe to run as
+    a merge gate in CI. The matrix is regenerated on the same run, so a
+    passing build always publishes an up-to-date matrix.
+
+!!! warning "Extra dependency"
+    The complexity check (QR-22) needs `radon`. Add it to the dev group
+    with `uv add --dev radon`; without it, that one check is skipped
+    rather than failing.
 
 ---
 
@@ -148,10 +180,10 @@ verbatim so this page always reflects the last measured run.
 
 ## 6. References
 
-- [`SRS.md` §3.3](../SRS.md) — the quantified quality requirements these
+- [`SRS.md` §3.3](../SRS.md), the quantified quality requirements these
   tests verify.
-- [`POLICY.md`](../POLICY.md) — what the tests must achieve.
-- [`testing/TESTING.md`](../testing/TESTING.md) — how the wider suite is
+- [`POLICY.md`](../POLICY.md), what the tests must achieve.
+- [`testing/TESTING.md`](../testing/TESTING.md), how the wider suite is
   run and structured.
-- [`SAS.md`](../SAS.md) — the architectural decisions that realise each
-  quality requirement.
+- [`SAS.md`](../SAS.md), the architectural decisions that realise each
+  quality requirement, including the external availability monitor.
