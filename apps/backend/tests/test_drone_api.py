@@ -10,14 +10,16 @@ import math
 from unittest.mock import ANY, AsyncMock, MagicMock, patch
 from uuid import uuid4
 
+import numpy as np
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from apps.backend.app.api import drone as drone_api
 from apps.backend.app.api.drone import ConnectRequest, _build_adapter, _record_telemetry, router
 from apps.backend.app.dependencies import get_state
 from apps.backend.app.state import AppState
-from services.drone_control.adapters.drone_adapter import TelemetryData
+from services.drone_control.adapters.drone_adapter import CameraFrame, TelemetryData
 
 # helpers
 
@@ -665,3 +667,75 @@ async def test_disconnect_ends_active_flight():
 		client.post('/drone/disconnect')
 
 	end.assert_awaited_once()
+
+
+def camera_state(*, frame='default', start_video: bool = True) -> AppState:
+	state = connected_state('tello')
+	state.adapter.has_camera = True
+	state.adapter.start_video = AsyncMock(return_value=start_video)
+
+	if frame == 'default':
+		frame = np.zeros((720, 960, 3), dtype=np.uint8)
+
+	state.adapter.latest_frame = MagicMock(
+		return_value=CameraFrame(frame=frame, seq=1, width=960, height=720, source='mock')
+	)
+	return state
+
+
+def test_feed_requires_connection():
+	client = TestClient(make_app(AppState()))
+
+	response = client.get('/drone/feed')
+
+	assert response.status_code == 409
+	assert response.json()['detail'] == 'No drone connected'
+
+
+def test_feed_rejects_adapter_without_camera():
+	state = connected_state('dummy')
+	state.adapter.has_camera = False
+	client = TestClient(make_app(state))
+
+	response = client.get('/drone/feed')
+
+	assert response.status_code == 409
+	assert 'no camera' in response.json()['detail']
+
+
+def test_feed_when_start_video_fails():
+	state = camera_state(start_video=False)
+	client = TestClient(make_app(state))
+
+	response = client.get('/drone/feed')
+
+	assert response.status_code == 503
+	assert response.json()['detail'] == 'Could not start video stream'
+	state.adapter.start_video.assert_awaited_once()
+
+
+def test_feed_when_no_frames_arrice(monkeypatch):
+	monkeypatch.setattr(drone_api, 'STARTUP_TIMEOUT_S', -1.0)
+	client = TestClient(make_app(camera_state(frame=None)))
+
+	response = client.get('/drone/feed')
+
+	assert response.status_code == 503
+	assert response.json()['detail'] == 'Stream not producing frames'
+
+
+def test_feed_streams_mjpeg_parts(monkeypatch):
+	monkeypatch.setattr(drone_api, 'STALE_AFTER_S', 0.05)
+	state = camera_state()
+	client = TestClient(make_app(state))
+
+	with client.stream('GET', '/drone/feed') as response:
+		assert response.status_code == 200
+		assert response.headers['content-type'] == 'multipart/x-mixed-replace; boundary=frame'
+		assert response.headers['cache-control'] == 'no-store, no-cache, must-revalidate'
+		body = response.read()
+
+	assert body.startswith(b'--frame\r\n')
+	assert b'Content-Type: image/jpeg' in body
+	assert body.count(b'--frame\r\n') == 1
+	state.adapter.start_video.assert_awaited_once()

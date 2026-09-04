@@ -205,7 +205,13 @@ STALE_AFTER_S = 3.0
 MIN_DIM, MAX_DIM = 160, 1280
 
 
-@router.get('/feed')
+@router.get(
+	'/feed',
+	responses={
+		409: {'description': 'No drone connected, or the connected adapter has no camera'},
+		503: {'description': 'Video stream could not be started, or is not producing frames'},
+	},
+)
 async def feed(
 	state: Annotated[AppState, Depends(get_state)],
 	w: Annotated[int, Query(ge=MIN_DIM, le=MAX_DIM)] = FRAME_W,
@@ -282,7 +288,7 @@ async def _mjpeg_stream(adapter: DroneAdapter, box_w: int, box_h: int):
 					yield _mjpeg_part(jpeg)
 
 			if time.monotonic() - last_good > STALE_AFTER_S:
-				logger.warning('/drone/feed: stale after %.1s, closing stream')
+				logger.warning('/drone/feed: stale after 0.1s, closing stream')
 				return
 
 			await asyncio.sleep(interval)

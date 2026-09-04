@@ -578,7 +578,7 @@ def test_latest_frame_same_frame_does_not_bump_seq(streaming_adapter):
 	assert id(next_frame) != id(fake_frame)
 
 	first = streaming_adapter.latest_frame()
-	fake_frame_read.frame = next_frame
+	fake_frame_read.frame = next_frame  # NOSONAR
 	second = streaming_adapter.latest_frame()
 
 	assert first.seq == 1

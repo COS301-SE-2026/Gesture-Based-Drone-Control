@@ -55,9 +55,13 @@ function signalBackend(signal) {
 
   try {
     if (process.platform === "win32") {
-      execFileSync("taskkill", ["/pid", String(pid), "/T", "/F"], {
-        stdio: "ignore",
-      })
+      execFileSync(
+        "taskkill",
+        ["/pid", String(pid), "/T", "/F"], //NOSONAR
+        {
+          stdio: "ignore",
+        }
+      )
     } else {
       // negative pid targets the whole process group. the backend is spawned
       // detached so it leads its own group, which covers both the pyinstaller
