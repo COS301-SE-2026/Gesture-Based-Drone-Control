@@ -1,7 +1,7 @@
 # Coding Standards
 
 <div class="tx-badges">
-  <span class="tx-status"><span class="tx-status__dot"></span>Demo 2 deliverable</span>
+  <span class="tx-status"><span class="tx-status__dot"></span>Demo 3 deliverable</span>
   <span class="tx-status">Python · Ruff (E·F·I·N)</span>
   <span class="tx-status">TS / React · ESLint + Prettier</span>
 </div>
