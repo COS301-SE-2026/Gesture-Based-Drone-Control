@@ -1,0 +1,3981 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Real-time gesture-to-flight-command pipeline using MediaPipe Hands, rule-based + TFLite recognition, FastAPI WebSocket backend, and a React/TypeScript telemetry dashboard.">
+      
+      
+      
+        <link rel="canonical" href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/PLAN/">
+      
+      
+        <link rel="prev" href="../MANUAL/">
+      
+      
+        <link rel="next" href="../GIT/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/reticle.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Project Plan - Gesture-Based Drone Control</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../css/timeago.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#project-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Gesture-Based Drone Control" class="md-header__button md-logo" aria-label="Gesture-Based Drone Control" data-md-component="logo">
+      
+  <img src="../assets/drone.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Gesture-Based Drone Control
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Project Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    COS301-SE-2026/Gesture-Based-Drone-Control
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../SRS/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Demo 3 Deliverables
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../GIT/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/API_REFERENCE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../demo/demo_one_documentation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Demo 1 Archive
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Gesture-Based Drone Control" class="md-nav__button md-logo" aria-label="Gesture-Based Drone Control" data-md-component="logo">
+      
+  <img src="../assets/drone.svg" alt="logo">
+
+    </a>
+    Gesture-Based Drone Control
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    COS301-SE-2026/Gesture-Based-Drone-Control
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demo 3 Deliverables
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Demo 3 Deliverables
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SRS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Requirements (SRS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SAS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Architecture (SAS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BRAND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brand & Design System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../POLICY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANUAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Methodology
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Methodology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-why-agile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Why Agile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-why-scrum-on-top-of-agile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Why Scrum on top of Agile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-scrum-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Scrum values
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-scrum-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Scrum Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Scrum Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-ceremonies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Ceremonies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Artifacts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-meeting-cadence-and-minute-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Meeting cadence and minute-logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-definition-of-ready-definition-of-done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Definition of Ready &amp; Definition of Done
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-product-backlog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Product Backlog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Product Backlog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-demo-2-5-use-case-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Demo 2 — 5-use-case coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-epics-user-stories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Epics &amp; User Stories
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Epics &amp; User Stories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-epic-gesture-recognition-pbi-05-pbi-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Epic — Gesture Recognition (PBI-05, PBI-06)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-epic-command-translation-pbi-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Epic — Command Translation (PBI-06)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-epic-real-drone-adapter-pbi-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Epic — Real-Drone Adapter (PBI-07)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-epic-safety-layer-pbi-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Epic — Safety Layer (PBI-08)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-epic-dashboard-live-view-replay-pbi-09-pbi-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Epic — Dashboard Live View &amp; Replay (PBI-09, PBI-10)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-demo-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Demo Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Demo Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-demo-1-foundations-delivered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Demo 1 — Foundations &nbsp;Delivered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-demo-2-recognition-real-drone-safety-replay-in-flight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Demo 2 — Recognition, Real Drone, Safety, Replay &nbsp;In flight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-demos-3-4-to-be-planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Demos 3 &amp; 4 &nbsp;To be planned
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-burndown-velocity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Burndown &amp; Velocity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Burndown &amp; Velocity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-sprint-burndown-demo-2-sprint-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Sprint burndown (Demo 2 sprint, current)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-velocity-story-points-per-sprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Velocity (story points per sprint)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-blockers-mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Blockers &amp; Mitigations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-buzzword-reference-gbdcs-specific" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Buzzword Reference (GBDCS-specific)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Conventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CICD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nfr/NFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NFR Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contracts/CONTRACTS.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Service Contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/atoms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atoms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/organisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Organisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Services & Adapters
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Services & Adapters
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/command/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Drone Adapter (ABC)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/project_airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/dummy_drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input Adapter (ABC)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/keyboard_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboard Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/dummy_input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/ML/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML engine model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../demo/demo_one_documentation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demo 1 Archive
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Demo 1 Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/SRS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SRS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/DESIGN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design & Wireframes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plan & Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/GIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Conventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/CICD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/demo/Deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/api/API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/testing/TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_10" id="__nav_5_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/atoms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atoms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/organisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Organisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_11" id="__nav_5_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Services
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Services
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/command/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/dummy_drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/dummy_input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/keyboard_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboard Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/project_airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Methodology
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Methodology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-why-agile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Why Agile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-why-scrum-on-top-of-agile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Why Scrum on top of Agile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-scrum-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Scrum values
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-scrum-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Scrum Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Scrum Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-ceremonies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Ceremonies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Artifacts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-meeting-cadence-and-minute-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Meeting cadence and minute-logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-definition-of-ready-definition-of-done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Definition of Ready &amp; Definition of Done
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-product-backlog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Product Backlog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Product Backlog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-demo-2-5-use-case-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Demo 2 — 5-use-case coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-epics-user-stories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Epics &amp; User Stories
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Epics &amp; User Stories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-epic-gesture-recognition-pbi-05-pbi-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Epic — Gesture Recognition (PBI-05, PBI-06)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-epic-command-translation-pbi-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Epic — Command Translation (PBI-06)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-epic-real-drone-adapter-pbi-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Epic — Real-Drone Adapter (PBI-07)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-epic-safety-layer-pbi-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Epic — Safety Layer (PBI-08)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-epic-dashboard-live-view-replay-pbi-09-pbi-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Epic — Dashboard Live View &amp; Replay (PBI-09, PBI-10)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-demo-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Demo Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Demo Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-demo-1-foundations-delivered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Demo 1 — Foundations &nbsp;Delivered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-demo-2-recognition-real-drone-safety-replay-in-flight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Demo 2 — Recognition, Real Drone, Safety, Replay &nbsp;In flight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-demos-3-4-to-be-planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Demos 3 &amp; 4 &nbsp;To be planned
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-burndown-velocity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Burndown &amp; Velocity
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Burndown &amp; Velocity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-sprint-burndown-demo-2-sprint-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Sprint burndown (Demo 2 sprint, current)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-velocity-story-points-per-sprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Velocity (story points per sprint)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-blockers-mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Blockers &amp; Mitigations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-buzzword-reference-gbdcs-specific" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Buzzword Reference (GBDCS-specific)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href=".." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../SRS/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Demo 3 Deliverables
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/edit/main/docs/PLAN.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/raw/main/docs/PLAN.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="project-plan">Project Plan<a class="headerlink" href="#project-plan" title="Permanent link">&para;</a></h1>
+<div class="tx-badges">
+  <span class="tx-status"><span class="tx-status__dot"></span>Demo 3 sprint in flight</span>
+  <span class="tx-status">Methodology · Agile (Scrum)</span>
+  <span class="tx-status">Sprint cadence · 2 weeks</span>
+</div>
+
+<div class="admonition abstract">
+<p class="admonition-title">Document overview</p>
+<p>This document captures <em>how</em> the Gesture-Based Drone Control System
+(GBDCS) is being delivered. It is built around <strong>Agile</strong> as the
+methodology and <strong>Scrum</strong> as the framework.</p>
+<p>The plan is the bridge between <a href="../SRS/"><abbr title="Software Requirements Specification">SRS</abbr></a> (<em>what</em> we are
+building), <a href="../SAS/"><abbr title="Software Architecture Specification. the companion document defining architectural and technological decisions">SAS</abbr></a> (<em>how</em> it is structured), and <a href="../BRAND/">BRAND</a>
+(<em>what it looks like</em>) — it answers <em>when</em> and <em>in what order</em>.</p>
+</div>
+<hr />
+<h2 id="1-methodology">1. Methodology<a class="headerlink" href="#1-methodology" title="Permanent link">&para;</a></h2>
+<h3 id="11-why-agile">1.1 Why Agile<a class="headerlink" href="#11-why-agile" title="Permanent link">&para;</a></h3>
+<p>The team adopts <strong>Agile</strong> because the problem is volatile: gesture
+recognition accuracy, drone-<abbr title="Software Development Kit">SDK</abbr> behaviour, and operator expectations
+cannot be fully specified up front and will be discovered iteratively.
+The four values of the <strong>Agile Manifesto</strong> are adopted verbatim — the
+team values the items on the left more than the items on the right.</p>
+<table>
+<thead>
+<tr>
+<th>We value</th>
+<th>… over</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Individuals and interactions</td>
+<td>Processes and tools</td>
+</tr>
+<tr>
+<td>Working software</td>
+<td>Comprehensive documentation</td>
+</tr>
+<tr>
+<td>Customer collaboration</td>
+<td>Contract negotiation</td>
+</tr>
+<tr>
+<td>Responding to change</td>
+<td>Following a plan</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-why-scrum-on-top-of-agile">1.2 Why Scrum on top of Agile<a class="headerlink" href="#12-why-scrum-on-top-of-agile" title="Permanent link">&para;</a></h3>
+<p>Within Agile, the team uses <strong>Scrum</strong> as the operating framework — fixed
+roles, fixed ceremonies, two-week time-boxes — because the project has
+hard, externally-imposed milestones (the four COS 301 demos) that benefit
+from short, predictable iterations.</p>
+<h3 id="13-scrum-values">1.3 Scrum values<a class="headerlink" href="#13-scrum-values" title="Permanent link">&para;</a></h3>
+<p>The five Scrum values guide every decision the framework itself does
+not cover:</p>
+<div class="tx-grid tx-grid--3">
+<div class="tx-card">
+<p><strong>Commitment.</strong> The team personally commits to the goals of each sprint and to the demo it leads to.</p>
+</div>
+<div class="tx-card">
+<p><strong>Focus.</strong> Each sprint locks scope. Mid-sprint additions go to the backlog, never to the sprint board.</p>
+</div>
+<div class="tx-card">
+<p><strong>Openness.</strong> Blockers, doubts, and unknowns are surfaced in standup the day they appear.</p>
+</div>
+<div class="tx-card">
+<p><strong>Respect.</strong> Every team member is treated as capable and independent. No silent rewrites of someone else's work.</p>
+</div>
+<div class="tx-card">
+<p><strong>Courage.</strong> The team raises hard problems early, including telling the mentor when a target will slip.</p>
+</div>
+</div>
+<hr />
+<h2 id="2-scrum-setup">2. Scrum Setup<a class="headerlink" href="#2-scrum-setup" title="Permanent link">&para;</a></h2>
+<h3 id="21-roles">2.1 Roles<a class="headerlink" href="#21-roles" title="Permanent link">&para;</a></h3>
+<p>The team's role assignments. Role boundaries are intentionally
+permeable — every dev contributes across the stack and to testing.</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Member</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Product Owner</strong></td>
+<td><em>Rotates demo-to-demo; primary contact with the EPI-USE mentor</em></td>
+<td>Owns the backlog and priorities; agrees Definition of Done with the team.</td>
+</tr>
+<tr>
+<td><strong>Scrum Master + Dev</strong></td>
+<td>Ayush Beekum</td>
+<td>Strongest integration / cross-cutting experience; removes impediments and coaches the team on the process.</td>
+</tr>
+<tr>
+<td><strong>Dev Team — Frontend lead</strong></td>
+<td>Chinmayi Santhosh</td>
+<td>UI engineering and React / Tailwind background.</td>
+</tr>
+<tr>
+<td><strong>Dev Team — Frontend + QA</strong></td>
+<td>Diya Narotam</td>
+<td>UI / UX, <abbr title="Progressive Web App. a web application installable and runnable like a native application">PWA</abbr>, Playwright / Jest / Vitest experience.</td>
+</tr>
+<tr>
+<td><strong>Dev Team — DevOps &amp; Infrastructure</strong></td>
+<td>Jaitin Moodally</td>
+<td>Homelab / multi-OS / low-level background; owns the <abbr title="Continuous Integration">CI</abbr>/<abbr title="Continuous Deployment">CD</abbr> pipeline, containerisation, and deployment.</td>
+</tr>
+<tr>
+<td><strong>Dev Team — <abbr title="Computer Vision">CV</abbr> &amp; <abbr title="Machine Learning">ML</abbr></strong></td>
+<td>Shavir Vallabh</td>
+<td>TechTeam at UP, <abbr title="Machine Learning">ML</abbr> and <abbr title="High-Performance Computing">HPC</abbr> experience; owns the <abbr title="Computer Vision">CV</abbr> pipeline, recogniser strategies, and drone-adapter integration.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-ceremonies">2.2 Ceremonies<a class="headerlink" href="#22-ceremonies" title="Permanent link">&para;</a></h3>
+<p>The team runs the full Scrum ceremony set on a two-week cadence. In
+addition to the in-sprint ceremonies, the team meets at least <strong>twice
+weekly</strong> for the COS 301-mandated stand-ups (see §2.4).</p>
+<pre class="mermaid"><code>flowchart LR
+    P[Sprint Planning&lt;br/&gt;~2&amp;nbsp;hrs · Mon&amp;nbsp;Wk1] --&gt; S1[Stand-ups&lt;br/&gt;15&amp;nbsp;min · ≥&amp;nbsp;2× / week]
+    S1 --&gt; BR[Backlog Refinement&lt;br/&gt;~1&amp;nbsp;hr · Wed&amp;nbsp;Wk1]
+    BR --&gt; S2[Stand-ups&lt;br/&gt;continue]
+    S2 --&gt; SR[Sprint Review&lt;br/&gt;~45&amp;nbsp;min · Fri&amp;nbsp;Wk2]
+    SR --&gt; RETRO[Retrospective&lt;br/&gt;~45&amp;nbsp;min · Fri&amp;nbsp;Wk2]
+    RETRO -.-&gt;|next sprint| P</code></pre>
+<p><em>Figure 2.1 — The two-week Scrum cadence applied to GBDCS.</em></p>
+<table>
+<thead>
+<tr>
+<th>Ceremony</th>
+<th>Length</th>
+<th>Cadence</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sprint Planning</td>
+<td>~2 hrs</td>
+<td>Monday, Week 1</td>
+<td>Agree the sprint goal and pull stories from the product backlog into the sprint backlog.</td>
+</tr>
+<tr>
+<td>Stand-up</td>
+<td>15 min</td>
+<td>At least twice weekly</td>
+<td>"Yesterday / today / blockers." Minutes logged in the Group Discussion on ClickUP (see §2.4).</td>
+</tr>
+<tr>
+<td>Backlog Refinement</td>
+<td>~1 hr</td>
+<td>Wednesday, Week 1</td>
+<td>Clarify, size, and split upcoming PBIs before the next planning session.</td>
+</tr>
+<tr>
+<td>Mentor Meeting (lecturer)</td>
+<td>~30 min</td>
+<td>Every second week</td>
+<td>Alignment on documentation, scope, and team-dynamics issues.</td>
+</tr>
+<tr>
+<td>Sprint Review</td>
+<td>~45 min</td>
+<td>Friday, Week 2</td>
+<td>Demo the increment to the EPI-USE and academic mentors.</td>
+</tr>
+<tr>
+<td>Retrospective</td>
+<td>~45 min</td>
+<td>Friday, Week 2</td>
+<td>What worked, what didn't, what we commit to changing next sprint.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-artifacts">2.3 Artifacts<a class="headerlink" href="#23-artifacts" title="Permanent link">&para;</a></h3>
+<p>Three Scrum artifacts are maintained.</p>
+<ul>
+<li><strong>Product Backlog</strong> — the master list of every PBI for GBDCS
+  (see <a href="#4-product-backlog">§4</a>). Lives in the GitHub Project board.</li>
+<li><strong>Sprint Backlog</strong> — the PBIs the team has pulled into the current
+  sprint. Tracked as GitHub Issues.</li>
+<li><strong>Burndown Chart</strong> — the open story-point total per day of the sprint
+  (see <a href="#7-burndown--velocity">§7</a>).</li>
+</ul>
+<h3 id="24-meeting-cadence-and-minute-logging">2.4 Meeting cadence and minute-logging<a class="headerlink" href="#24-meeting-cadence-and-minute-logging" title="Permanent link">&para;</a></h3>
+<p>The COS 301 Demo 2 brief requires the team to maintain a documented
+meeting cadence. The team complies as follows.</p>
+<table>
+<thead>
+<tr>
+<th>Cadence</th>
+<th>What</th>
+<th>Where logged</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>At least twice weekly</strong></td>
+<td>Stand-up (15 min). "Yesterday / today / blockers" per member.</td>
+<td>Group Discussion on ClickUP for the current demo, with <strong>date, time, and attendees</strong>.</td>
+</tr>
+<tr>
+<td><strong>Every second week</strong></td>
+<td>Lecturer-mentor meeting. Documentation alignment, scope, team dynamics.</td>
+<td>Group Discussion on ClickUP, with <strong>date, time, and attendees</strong>.</td>
+</tr>
+<tr>
+<td><strong>As needed</strong></td>
+<td>Industry-mentor check-in with EPI-USE.</td>
+<td>Group Discussion on ClickUP, with <strong>date, time, and attendees</strong>.</td>
+</tr>
+</tbody>
+</table>
+<p>An assigned team member is responsible for posting the minutes after every
+meeting. Missing minutes affect the team and individual marks per the
+Demo 2 brief; they are not optional.</p>
+<hr />
+<h2 id="3-definition-of-ready-definition-of-done">3. Definition of Ready &amp; Definition of Done<a class="headerlink" href="#3-definition-of-ready-definition-of-done" title="Permanent link">&para;</a></h2>
+<p>The Definition of Done is <em>agreed between the team and the PO,
+realistic, within the team's control, short (5–8 items), well
+understood, and visible</em>. Both DoR and DoD are pinned to the GitHub
+Project board.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Definition of Ready (DoR)</label><label for="__tabbed_1_2">Definition of Done (DoD)</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>A backlog item is <em>Ready</em> to be pulled into a sprint when:</p>
+<ol>
+<li>It is written in the user-story format (As a … I want … so that …).</li>
+<li>It cites at least one requirement ID from the <a href="../SRS/"><abbr title="Software Requirements Specification">SRS</abbr></a>.</li>
+<li>It has at least one Given / When / Then acceptance criterion.</li>
+<li>It has been sized by the team (story-point estimate agreed).</li>
+<li>Its dependencies on other PBIs are listed.</li>
+<li>The team agrees it is small enough to complete inside one sprint
+   (INVEST — <em>Small</em>).</li>
+</ol>
+</div>
+<div class="tabbed-block">
+<p>A backlog item is <em>Done</em> when:</p>
+<ol>
+<li>All acceptance criteria pass (manual + automated).</li>
+<li>Unit tests cover the new code at ≥ 80 % line coverage
+   (per <code>R10.2</code>).</li>
+<li>Code has been reviewed and merged into <code>dev</code> via a pull request
+   conforming to <a href="../GIT/"><code>GIT.md</code></a>.</li>
+<li><abbr title="Continuous Integration">CI</abbr> is green on the merge commit (lint, type-check, test).</li>
+<li>The documentation site has been updated for any user-facing change.</li>
+</ol>
+</div>
+</div>
+</div>
+<hr />
+<h2 id="4-product-backlog">4. Product Backlog<a class="headerlink" href="#4-product-backlog" title="Permanent link">&para;</a></h2>
+<p>The product backlog is the flat, prioritised list of every PBI for the
+system. PBIs are derived directly from the <abbr title="Software Requirements Specification">SRS</abbr> — each maps to one or
+more <code>R</code> identifiers and to one or more use cases.</p>
+<p>| # | PBI | Use case | First targeted demo |
+| --- | --- | --- | --- | --- |
+| PBI-01 | Hand tracking pipeline | UC-1 | Demo 1 |
+| PBI-02 | Telemetry dashboard | UC-2 | Demo 1 |
+| PBI-03 | AirSim simulator adapter | UC-3 | Demo 1 |
+| PBI-04 | Base features (login, themes, form validation) | Base Case | Demo 1 |
+| PBI-05 | Rule-based gesture recognition | UC-1 | Demo 2 |
+| PBI-06 | Gesture → command translation | UC-1 | Demo 2 |
+| PBI-07 | Real-drone adapter  | UC-1 | Demo 3 |
+| PBI-08 | Safety layer (idle, link loss, low battery, emergency stop) | UC-1, UC-2 | Demo 3 |
+| PBI-09 | Gesture overlay on dashboard feed | UC-1 | Demo 2 |
+| PBI-10 | Command + telemetry persistence + replay | UC-5 | Demo 2 |</p>
+<p>PBIs targeted at Demo 3 and Demo 4 will be added to the backlog as the
+team approaches them. Per the Scrum value of <strong>Focus</strong>, the team is
+not pre-planning work beyond the next demo.</p>
+<h3 id="41-demo-2-5-use-case-coverage">4.1 Demo 2 — 5-use-case coverage<a class="headerlink" href="#41-demo-2-5-use-case-coverage" title="Permanent link">&para;</a></h3>
+<p>The Demo 2 brief requires <em>five fully integrated use cases</em>. The
+mapping below shows how the active backlog satisfies that requirement.
+All five are existing use cases from <a href="../SRS/#4-use-cases"><code>SRS.md</code> §4</a>,
+brought to production-quality "no mocks, full integration, unit and
+<abbr title="End-to-End">E2E</abbr> testing" status for Demo 2.</p>
+<p>| Use case | New for Demo 2? |
+| --- | --- | --- |
+| UC-8 — Gesture Calibration | New (users calibrate before flying the drone) |
+| UC-7 — User Tutorial | New (user help and tutorial page) |
+| UC-4 — Different controller adapters | New (accessbility options for different ways to control the drone) |
+| UC-6 — GPS tracker | New (tracks the drones movements and displays it on a graph with telemtetry data live) |
+| UC-5 —True telemetry data live tracked | New |</p>
+<hr />
+<h2 id="5-epics-user-stories">5. Epics &amp; User Stories<a class="headerlink" href="#5-epics-user-stories" title="Permanent link">&para;</a></h2>
+<p>The active backlog  is broken down into epics,
+then into user stories using the standard <em>"As a … I want … so that …"</em>
+template with Given / When / Then acceptance criteria.</p>
+<h3 id="51-epic-gesture-recognition-pbi-05-pbi-06">5.1 Epic — Gesture Recognition (PBI-05, PBI-06)<a class="headerlink" href="#51-epic-gesture-recognition-pbi-05-pbi-06" title="Permanent link">&para;</a></h3>
+<div class="admonition example">
+<p class="admonition-title">US-1 — Recognise the <em>Open Palm</em> gesture</p>
+<p><strong>Story.</strong>
+<em>As an operator, I want the system to recognise an open-palm gesture
+so that I can command the drone to hover.</em></p>
+<p><strong>Value:</strong> 40 &middot; <strong>Size:</strong> Medium &middot; <strong>Maps to:</strong> <code>R3.2.2</code>, <code>R4.1</code></p>
+<p><strong>Acceptance criteria.</strong></p>
+<ul>
+<li><strong>Given</strong> the operator holds an open palm in view of the camera
+  for ≥ 250 ms,
+  <strong>when</strong> the pipeline classifies the frame,
+  <strong>then</strong> the recognised gesture shall be <code>OPEN_PALM</code>.</li>
+<li><strong>Given</strong> the operator holds an ambiguous hand shape,
+  <strong>when</strong> the classifier cannot meet the confidence threshold,
+  <strong>then</strong> no command shall be issued (<code>R3.2.3</code>).</li>
+<li><strong>Given</strong> the lighting is below 200 lux,
+  <strong>when</strong> the operator holds an open palm,
+  <strong>then</strong> the dashboard shall surface a "low-light" warning
+  (<code>R11.3</code>).</li>
+</ul>
+</div>
+<div class="admonition example">
+<p class="admonition-title">US-2 — Recognise directional pointer gestures</p>
+<p><strong>Story.</strong>
+<em>As an operator, I want the system to distinguish pointer-left from
+pointer-right so that I can steer the drone horizontally.</em></p>
+<p><strong>Value:</strong> 30 &middot; <strong>Size:</strong> Medium &middot; <strong>Maps to:</strong> <code>R3.2.2</code>, <code>R4.1</code></p>
+<p><strong>Acceptance criteria.</strong></p>
+<ul>
+<li><strong>Given</strong> the operator points the index finger left,
+  <strong>when</strong> the pipeline classifies the frame,
+  <strong>then</strong> the recognised gesture shall be <code>POINTER_LEFT</code>.</li>
+<li><strong>Given</strong> the operator points the index finger right,
+  <strong>then</strong> the recognised gesture shall be <code>POINTER_RIGHT</code>.</li>
+<li><strong>Given</strong> the operator holds a fist (no extended finger),
+  <strong>then</strong> neither pointer gesture shall be reported.</li>
+</ul>
+</div>
+<h3 id="52-epic-command-translation-pbi-06">5.2 Epic — Command Translation (PBI-06)<a class="headerlink" href="#52-epic-command-translation-pbi-06" title="Permanent link">&para;</a></h3>
+<div class="admonition example">
+<p class="admonition-title">US-3 — Dispatch commands within latency budget</p>
+<p><strong>Story.</strong>
+<em>As an operator, I want my recognised gesture to translate into a
+drone command within 200 ms so that the drone feels responsive.</em></p>
+<p><strong>Value:</strong> 40 &middot; <strong>Size:</strong> Medium &middot; <strong>Maps to:</strong> <code>R4.3</code>, <code>R7.1</code></p>
+<p><strong>Acceptance criteria.</strong></p>
+<ul>
+<li><strong>Given</strong> a gesture is recognised at time <code>t</code>,
+  <strong>when</strong> the command translator dispatches the command,
+  <strong>then</strong> the dispatch shall occur at <code>t + ≤ 200 ms</code> at the
+  95<sup>th</sup> percentile.</li>
+<li><strong>Given</strong> a gesture maps to the same command as the previous frame,
+  <strong>when</strong> the translator runs,
+  <strong>then</strong> a duplicate command shall not be re-dispatched.</li>
+</ul>
+</div>
+<h3 id="53-epic-real-drone-adapter-pbi-07">5.3 Epic — Real-Drone Adapter (PBI-07)<a class="headerlink" href="#53-epic-real-drone-adapter-pbi-07" title="Permanent link">&para;</a></h3>
+<div class="admonition example">
+<p class="admonition-title">US-4 — Plug a real drone in behind the existing interface</p>
+<p><strong>Story.</strong>
+<em>As a maintainer, I want the real-drone adapter to satisfy the same
+<code>DroneAdapter</code> interface as the simulator adapter so that the rest
+of the system requires no changes.</em></p>
+<p><strong>Value:</strong> 50 &middot; <strong>Size:</strong> Large &middot; <strong>Maps to:</strong> <code>R2.2</code></p>
+<p><strong>Acceptance criteria.</strong></p>
+<ul>
+<li><strong>Given</strong> the active adapter is switched from <code>airsim</code> to
+  <code>tello</code> via the environment variable,
+  <strong>when</strong> the system is launched,
+  <strong>then</strong> the pipeline shall connect to the physical drone with no
+  change to any non-adapter source file.</li>
+<li><strong>Given</strong> the physical drone is unreachable,
+  <strong>when</strong> the adapter attempts to connect,
+  <strong>then</strong> an error shall be surfaced on the dashboard and take-off
+  shall be refused (<code>R6.2.2</code>, <code>R11.3</code>).</li>
+</ul>
+</div>
+<h3 id="54-epic-safety-layer-pbi-08">5.4 Epic — Safety Layer (PBI-08)<a class="headerlink" href="#54-epic-safety-layer-pbi-08" title="Permanent link">&para;</a></h3>
+<div class="admonition example">
+<p class="admonition-title">US-5 — Hover on idle</p>
+<p><strong>Story.</strong>
+<em>As an operator, I want the drone to hover whenever I stop gesturing
+so that it never drifts on its own.</em></p>
+<p><strong>Value:</strong> 50 &middot; <strong>Size:</strong> Small &middot; <strong>Maps to:</strong> <code>R6.1.1</code></p>
+<p><strong>Acceptance criteria.</strong></p>
+<ul>
+<li><strong>Given</strong> the drone is airborne,
+  <strong>when</strong> no gesture is detected for more than 3 s,
+  <strong>then</strong> the system shall issue <code>HOVER</code>.</li>
+<li><strong>Given</strong> the system has issued <code>HOVER</code> for idle,
+  <strong>when</strong> the dashboard receives the event,
+  <strong>then</strong> an <em>"Idle — hovering"</em> indicator shall be shown
+  (<code>R6.1.2</code>).</li>
+</ul>
+</div>
+<div class="admonition example">
+<p class="admonition-title">US-6 — Auto-land on low battery</p>
+<p><strong>Story.</strong>
+<em>As an operator, I want the drone to land itself when the battery
+drops below 15 % so that I do not have to react to it.</em></p>
+<p><strong>Value:</strong> 50 &middot; <strong>Size:</strong> Small &middot; <strong>Maps to:</strong> <code>R6.2.1</code></p>
+<p><strong>Acceptance criteria.</strong></p>
+<ul>
+<li><strong>Given</strong> the drone reports battery &lt; 15 %,
+  <strong>when</strong> the telemetry frame is received,
+  <strong>then</strong> an auto-land sequence shall be initiated and a critical
+  alert raised on the dashboard (<code>R1.2.1</code>).</li>
+</ul>
+</div>
+<div class="admonition example">
+<p class="admonition-title">US-7 — Heartbeat / link-loss hover</p>
+<p><strong>Story.</strong>
+<em>As an operator, I want the drone to hover automatically if the
+link drops so that it does not fly off uncontrolled.</em></p>
+<p><strong>Value:</strong> 40 &middot; <strong>Size:</strong> Small &middot; <strong>Maps to:</strong> <code>R5.2.1</code>, <code>R5.2.2</code></p>
+<p><strong>Acceptance criteria.</strong></p>
+<ul>
+<li><strong>Given</strong> the drone adapter has sent no telemetry for &gt; 2 s,
+  <strong>when</strong> the heartbeat check runs,
+  <strong>then</strong> the system shall command <code>HOVER</code> and surface a banner
+  alert.</li>
+</ul>
+</div>
+<h3 id="55-epic-dashboard-live-view-replay-pbi-09-pbi-10">5.5 Epic — Dashboard Live View &amp; Replay (PBI-09, PBI-10)<a class="headerlink" href="#55-epic-dashboard-live-view-replay-pbi-09-pbi-10" title="Permanent link">&para;</a></h3>
+<div class="admonition example">
+<p class="admonition-title">US-8 — Live gesture overlay</p>
+<p><strong>Story.</strong>
+<em>As an operator, I want to see the <abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> skeleton drawn on the
+live feed so that I can tell whether the system is tracking my hand
+correctly.</em></p>
+<p><strong>Value:</strong> 20 &middot; <strong>Size:</strong> Small &middot; <strong>Maps to:</strong> <code>R1.1.1</code></p>
+<p><strong>Acceptance criteria.</strong></p>
+<ul>
+<li><strong>Given</strong> the operator's hand is in frame,
+  <strong>when</strong> the dashboard renders the feed,
+  <strong>then</strong> the 21 landmark points and their connecting bones shall
+  be drawn at no less than 24 <abbr title="Frames Per Second">FPS</abbr>.</li>
+</ul>
+</div>
+<div class="admonition example">
+<p class="admonition-title">US-9 — Persist a session for replay</p>
+<p><strong>Story.</strong>
+<em>As a reviewer, I want every command and telemetry frame to be
+logged so that I can replay a session afterwards.</em></p>
+<p><strong>Value:</strong> 25 &middot; <strong>Size:</strong> Medium &middot; <strong>Maps to:</strong> <code>R6.3</code></p>
+<p><strong>Acceptance criteria.</strong></p>
+<ul>
+<li><strong>Given</strong> a session is active,
+  <strong>when</strong> any command or telemetry frame is produced,
+  <strong>then</strong> it shall be written to SQLite with an ISO-8601
+  timestamp.</li>
+<li><strong>Given</strong> a recorded session exists,
+  <strong>when</strong> the reviewer triggers replay,
+  <strong>then</strong> the dashboard shall reconstruct the original gesture and
+  telemetry stream at original cadence (UC-5).</li>
+</ul>
+</div>
+<hr />
+<h2 id="6-demo-plan">6. Demo Plan<a class="headerlink" href="#6-demo-plan" title="Permanent link">&para;</a></h2>
+<h3 id="61-demo-1-foundations-delivered">6.1 Demo 1 — Foundations &nbsp;<small>Delivered</small><a class="headerlink" href="#61-demo-1-foundations-delivered" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>Demonstrate the system skeleton: tracking + telemetry + simulator adapter + base features.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PBIs delivered</strong></td>
+<td>PBI-01, PBI-02, PBI-03, PBI-04</td>
+</tr>
+<tr>
+<td><strong>Requirements satisfied</strong></td>
+<td><code>R3.1.*</code>, <code>R3.2.1</code>, <code>R1.1.3</code>, <code>R5.1.2</code>, <code>R2.2</code>, <code>R16.*</code></td>
+</tr>
+<tr>
+<td><strong>Outcome</strong></td>
+<td>Hand tracking, dashboard telemetry, AirSim adapter, and login / theme / validation features were demonstrated. Mentor feedback called out documentation formatting — addressed in this round of rewrites.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-demo-2-recognition-real-drone-safety-replay-in-flight">6.2 Demo 2 — Recognition, Real Drone, Safety, Replay &nbsp;<small>In flight</small><a class="headerlink" href="#62-demo-2-recognition-real-drone-safety-replay-in-flight" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>Close the loop: recognise gestures, send commands to a real drone through the existing adapter interface, arm the safety layer, and demonstrate session replay — all five use cases fully integrated, no mocks.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sprint goal</strong></td>
+<td>A live gesture demo on real hardware with the failsafes proven on stage, plus replay of the demo run from the dashboard.</td>
+</tr>
+<tr>
+<td><strong>PBIs in scope</strong></td>
+<td>PBI-05, PBI-06, PBI-07, PBI-08, PBI-09, PBI-10</td>
+</tr>
+<tr>
+<td><strong>Use cases brought to integration</strong></td>
+<td>UC-1, UC-2, UC-3, UC-4, UC-5</td>
+</tr>
+<tr>
+<td><strong>Requirements newly satisfied</strong></td>
+<td><code>R3.2.2</code>, <code>R3.2.3</code>, <code>R4.*</code>, <code>R5.*</code>, <code>R6.*</code>, <code>R1.1.1</code>, <code>R1.1.2</code>, <code>R1.2.*</code>, <code>R8.1</code>, <code>R8.3</code></td>
+</tr>
+<tr>
+<td><strong>Demo-level Definition of Done</strong></td>
+<td>Drone takes off, executes at least four distinct commands from gestures, hovers on idle, hovers on link loss, lands on low battery, and the session is reviewable in replay — all on a live, publicly-accessible deployment per the <abbr title="Software Architecture Specification. the companion document defining architectural and technological decisions">SAS</abbr> deployment section.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-demos-3-4-to-be-planned">6.3 Demos 3 &amp; 4 &nbsp;<small>To be planned</small><a class="headerlink" href="#63-demos-3-4-to-be-planned" title="Permanent link">&para;</a></h3>
+<p>Per the Scrum value of <strong>Focus</strong>, the team is not pre-planning these.
+Backlog refinement at the end of the Demo 2 sprint will surface the
+Demo 3 PBIs from the <abbr title="Software Requirements Specification">SRS</abbr> requirements that are not yet satisfied —
+chiefly the <code>R7.*</code> performance bar, the <code>R9.*</code> reliability bar, and
+the <code>R11.*</code> usability targets. Demo 4 will be planned at the close of
+Demo 3 in the same way.</p>
+<hr />
+<h2 id="7-burndown-velocity">7. Burndown &amp; Velocity<a class="headerlink" href="#7-burndown-velocity" title="Permanent link">&para;</a></h2>
+<p>Two charts are tracked across the project.</p>
+<h3 id="71-sprint-burndown-demo-2-sprint-current">7.1 Sprint burndown (Demo 2 sprint, current)<a class="headerlink" href="#71-sprint-burndown-demo-2-sprint-current" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>xychart-beta
+    title "Demo 2 sprint — burndown"
+    x-axis ["D1","D2","D3","D4","D5","D6","D7","D8","D9","D10"]
+    y-axis "Open story points" 0 --&gt; 50
+    line [50, 45, 45, 40, 36, 30, 26, 20, 12, 0]</code></pre>
+<p><em>Figure 7.1 — Burndown for the current Demo 2 sprint. The straight line
+from 50 → 0 over 10 working days is the ideal trajectory; the team's
+actual line is plotted against it. Updated daily at stand-up.</em></p>
+<h3 id="72-velocity-story-points-per-sprint">7.2 Velocity (story points per sprint)<a class="headerlink" href="#72-velocity-story-points-per-sprint" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>xychart-beta
+    title "Velocity per sprint"
+    x-axis ["Sprint 1&lt;br/&gt;(Demo 1)","Sprint 2&lt;br/&gt;(Demo 2 wk 1-2)"]
+    y-axis "Story points delivered" 0 --&gt; 60
+    bar [42, 0]</code></pre>
+<p><em>Figure 7.2 — Velocity after Sprint 1 (Demo 1). Sprint 2 closes at the
+end of the current cadence; the bar will be filled at the sprint review.
+Velocity will guide commitment in subsequent sprints — the team will not
+pull more story points into a sprint than the rolling average.</em></p>
+<div class="admonition note">
+<p class="admonition-title">Live updates</p>
+<p>These charts are illustrative snapshots committed to the repo. The
+live burndown and velocity for each sprint are tracked on the
+GitHub Project board and updated at every stand-up and sprint
+review.</p>
+</div>
+<hr />
+<h2 id="8-blockers-mitigations">8. Blockers &amp; Mitigations<a class="headerlink" href="#8-blockers-mitigations" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Blocker</th>
+<th>Status</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1</td>
+<td>Real-drone <abbr title="Software Development Kit">SDK</abbr> behaviour (xFly / Tello) differs from AirSim</td>
+<td>Tracking</td>
+<td>Adapter parity tests; vendor support thread open; <code>DummyDroneAdapter</code> covers offline development.</td>
+</tr>
+<tr>
+<td>B2</td>
+<td>Telemetry-format divergence between AirSim and physical drone</td>
+<td>Tracking</td>
+<td>Shared <code>TelemetryFrame</code> schema in <code>packages/contracts</code>; per-adapter translators map vendor payloads to the schema.</td>
+</tr>
+<tr>
+<td>B3</td>
+<td>Latency variability under load</td>
+<td>Tracking</td>
+<td>Bounded-queue pipeline (see <a href="../SAS/#21-architectural-patterns"><abbr title="Software Architecture Specification. the companion document defining architectural and technological decisions">SAS</abbr> §2.1</a>); CPU profile in <abbr title="Continuous Integration">CI</abbr>; latency harness planned for Demo 3.</td>
+</tr>
+<tr>
+<td>B4</td>
+<td>Cloud-deployment provisioning not yet complete</td>
+<td>Tracking</td>
+<td>Render account being wired up during the Demo 2 sprint; local Docker-Compose path covers all dev and integration testing in the interim (see <a href="../SAS/#53-reproducible-deployment"><abbr title="Software Architecture Specification. the companion document defining architectural and technological decisions">SAS</abbr> §5.3</a>).</td>
+</tr>
+<tr>
+<td>B5</td>
+<td>Time-zone overlap for joint mentor reviews</td>
+<td>Resolved</td>
+<td>Sprint Review scheduled in a window that suits both mentors.</td>
+</tr>
+</tbody>
+</table>
+<p>The Scrum Master logs every new impediment in the project board as it
+surfaces in stand-up.</p>
+<hr />
+<h2 id="9-buzzword-reference-gbdcs-specific">9. Buzzword Reference (GBDCS-specific)<a class="headerlink" href="#9-buzzword-reference-gbdcs-specific" title="Permanent link">&para;</a></h2>
+<p>A short reference of the terms used in this document, mapped to how
+they apply on GBDCS.</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+<th>What it looks like on GBDCS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PBI</strong></td>
+<td>Product Backlog Item</td>
+<td>A row in <a href="#4-product-backlog">§4</a>.</td>
+</tr>
+<tr>
+<td><strong>Epic</strong></td>
+<td>A large PBI broken into smaller stories</td>
+<td>Each subsection of <a href="#5-epics--user-stories">§5</a>.</td>
+</tr>
+<tr>
+<td><strong>User Story</strong></td>
+<td>"As a … I want … so that …"</td>
+<td>The <code>!!! example</code> blocks in §5.</td>
+</tr>
+<tr>
+<td><strong>AC</strong></td>
+<td>Given / When / Then conditions</td>
+<td>The bullets inside each user story.</td>
+</tr>
+<tr>
+<td><strong>DoR / DoD</strong></td>
+<td>Definition of Ready / Definition of Done</td>
+<td><a href="#3-definition-of-ready--definition-of-done">§3</a>.</td>
+</tr>
+<tr>
+<td><strong>Sprint</strong></td>
+<td>Fixed 2-week time-box</td>
+<td>The cadence in <a href="#22-ceremonies">§2.2</a>.</td>
+</tr>
+<tr>
+<td><strong>Velocity</strong></td>
+<td>Story points completed per sprint</td>
+<td><a href="#72-velocity-story-points-per-sprint">§7.2</a>.</td>
+</tr>
+<tr>
+<td><strong>Story Points</strong></td>
+<td>Relative effort estimate</td>
+<td>The "Size" field on each user story (Small / Medium / Large).</td>
+</tr>
+<tr>
+<td><strong>Impediment</strong></td>
+<td>Anything blocking team progress</td>
+<td>An entry in <a href="#8-blockers--mitigations">§8</a>.</td>
+</tr>
+<tr>
+<td><strong>MVP</strong></td>
+<td>Smallest thing that delivers real value</td>
+<td>Demo 1 — hand tracking + telemetry + simulator.</td>
+</tr>
+<tr>
+<td><strong>INVEST</strong></td>
+<td>Independent · Negotiable · Valuable · Estimable · Small · Testable</td>
+<td>Each story in §5 is checked against this before becoming Ready.</td>
+</tr>
+</tbody>
+</table>
+<!-- Global abbreviations. auto-appended to every page via mkdocs.yml snippets config -->
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="September 3, 2026 19:46:01 UTC"><span class="timeago" datetime="2026-09-03T19:46:01+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="September 3, 2026 19:46:01 UTC">2026-09-03</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="April 28, 2026 18:21:50 UTC"><span class="timeago" datetime="2026-04-28T18:21:50+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="April 28, 2026 18:21:50 UTC">2026-04-28</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../MANUAL/" class="md-footer__link md-footer__link--prev" aria-label="Previous: User Manual">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                User Manual
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../GIT/" class="md-footer__link md-footer__link--next" aria-label="Next: Git Conventions">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Git Conventions
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 Codex Merchants &mdash; COS 301 Software Engineering &middot; University of Pretoria &middot; EPI-USE Labs
+
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" target="_blank" rel="noopener" title="GitHub Repository" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="mailto:codexmerchants@gmail.com" target="_blank" rel="noopener" title="Team Email" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4l208 156a48 48 0 0 0 57.6 0l208-156c12.1-9.1 19.2-23.3 19.2-38.4 0-26.5-21.5-48-48-48zM0 196v188c0 35.3 28.7 64 64 64h384c35.3 0 64-28.7 64-64V196L313.6 344.8c-34.1 25.6-81.1 25.6-115.2 0z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "search.highlight", "search.suggest", "search.share", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../js/timeago.min.js"></script>
+      
+        <script src="../js/timeago_mkdocs_material.js"></script>
+      
+        <script src="../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>

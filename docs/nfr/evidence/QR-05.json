@@ -1,0 +1,11 @@
+{
+  "id": "QR-05",
+  "requirement": "NFR3.2",
+  "metric": "two-hand combinations resolving correctly",
+  "actual": "9/9",
+  "target": "all resolve",
+  "pass": true,
+  "recorded_at": "2026-09-03T20:40:02+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "failures": []
+}

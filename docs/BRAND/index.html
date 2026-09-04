@@ -1,0 +1,4974 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Real-time gesture-to-flight-command pipeline using MediaPipe Hands, rule-based + TFLite recognition, FastAPI WebSocket backend, and a React/TypeScript telemetry dashboard.">
+      
+      
+      
+        <link rel="canonical" href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/BRAND/">
+      
+      
+        <link rel="prev" href="../SAS/">
+      
+      
+        <link rel="next" href="../CODING/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/reticle.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Brand & Design System - Gesture-Based Drone Control</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../css/timeago.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#brand-design-system" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Gesture-Based Drone Control" class="md-header__button md-logo" aria-label="Gesture-Based Drone Control" data-md-component="logo">
+      
+  <img src="../assets/drone.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Gesture-Based Drone Control
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Brand & Design System
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    COS301-SE-2026/Gesture-Based-Drone-Control
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../SRS/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Demo 3 Deliverables
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../GIT/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/API_REFERENCE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../demo/demo_one_documentation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Demo 1 Archive
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Gesture-Based Drone Control" class="md-nav__button md-logo" aria-label="Gesture-Based Drone Control" data-md-component="logo">
+      
+  <img src="../assets/drone.svg" alt="logo">
+
+    </a>
+    Gesture-Based Drone Control
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    COS301-SE-2026/Gesture-Based-Drone-Control
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demo 3 Deliverables
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Demo 3 Deliverables
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SRS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Requirements (SRS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SAS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Architecture (SAS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brand & Design System
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brand & Design System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-brand-story" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Brand Story
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-colour-palette" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Colour Palette
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Colour Palette">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-core-palette" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Core palette
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-glass-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Glass tokens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-semantic-palette" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Semantic palette
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-wcag-22-contrast-ratios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 WCAG 2.2 contrast ratios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-usage-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Usage rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-typography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Typography
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Typography">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-families" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Families
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-typographic-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Typographic scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-weights-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Weights used
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-logo-iconography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Logo &amp; Iconography
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Logo &amp; Iconography">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-logo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Logo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1 Logo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#411-minimum-size-clear-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.1 Minimum size &amp; clear space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#412-forbidden-treatments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.2 Forbidden treatments
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-iconography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Iconography
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-design-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Design Tokens
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Design Tokens">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-colour-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Colour tokens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-spacing-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Spacing scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-radius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Radius
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-shadow-glass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Shadow &amp; glass
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-motion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Motion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#56-breakpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 Breakpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#57-backdrop-blur" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.7 Backdrop blur
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-component-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Component Library
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Component Library">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-button" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Button
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-input-text-email-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Input (text, email, password)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-select-dropdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Select / Dropdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-modal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Modal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-toast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Toast
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-card-md-card-md-node-md-mode-md-dlcard-md-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Card (.md-card, .md-node, .md-mode, .md-dlcard, .md-screen)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#67-gesture-indicator-domain-specific" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.7 Gesture Indicator (domain-specific)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#68-telemetry-pill-panel-md-telemetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.8 Telemetry Pill / Panel (.md-telemetry)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#69-chips-commands-mode-toggles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.9 Chips, commands, mode toggles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#610-navigation-sidebar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.10 Navigation &amp; Sidebar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#611-faq-list-md-faqlist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.11 FAQ list (.md-faqlist)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-layout-spacing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Layout &amp; Spacing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Layout &amp; Spacing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Grid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-responsive-behaviour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Responsive behaviour
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-spacing-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Spacing rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-accessibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Accessibility
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Accessibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-keyboard-navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Keyboard navigation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-focus-indicator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Focus indicator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-screen-readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Screen readers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-motion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Motion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-colour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 Colour
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-voice-tone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Voice &amp; Tone
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-wireframes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Wireframes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../POLICY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANUAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Conventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CICD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nfr/NFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NFR Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contracts/CONTRACTS.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Service Contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/atoms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atoms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/organisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Organisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Services & Adapters
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Services & Adapters
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/command/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Drone Adapter (ABC)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/project_airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/dummy_drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input Adapter (ABC)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/keyboard_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboard Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/dummy_input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/ML/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML engine model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../demo/demo_one_documentation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demo 1 Archive
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Demo 1 Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/SRS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SRS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/DESIGN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design & Wireframes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plan & Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/GIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Conventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/CICD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/demo/Deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/api/API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/testing/TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_10" id="__nav_5_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/atoms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atoms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/organisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Organisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_11" id="__nav_5_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Services
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Services
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/command/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/dummy_drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/dummy_input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/keyboard_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboard Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/project_airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-brand-story" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Brand Story
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-colour-palette" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Colour Palette
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Colour Palette">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-core-palette" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Core palette
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-glass-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Glass tokens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-semantic-palette" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Semantic palette
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-wcag-22-contrast-ratios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 WCAG 2.2 contrast ratios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-usage-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Usage rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-typography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Typography
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Typography">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-families" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Families
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-typographic-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Typographic scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-weights-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Weights used
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-logo-iconography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Logo &amp; Iconography
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Logo &amp; Iconography">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-logo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Logo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1 Logo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#411-minimum-size-clear-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.1 Minimum size &amp; clear space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#412-forbidden-treatments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.2 Forbidden treatments
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-iconography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Iconography
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-design-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Design Tokens
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Design Tokens">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-colour-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Colour tokens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-spacing-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Spacing scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-radius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Radius
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-shadow-glass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Shadow &amp; glass
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-motion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Motion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#56-breakpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 Breakpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#57-backdrop-blur" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.7 Backdrop blur
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-component-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Component Library
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Component Library">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-button" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Button
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-input-text-email-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Input (text, email, password)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-select-dropdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Select / Dropdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-modal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Modal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-toast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Toast
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-card-md-card-md-node-md-mode-md-dlcard-md-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Card (.md-card, .md-node, .md-mode, .md-dlcard, .md-screen)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#67-gesture-indicator-domain-specific" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.7 Gesture Indicator (domain-specific)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#68-telemetry-pill-panel-md-telemetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.8 Telemetry Pill / Panel (.md-telemetry)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#69-chips-commands-mode-toggles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.9 Chips, commands, mode toggles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#610-navigation-sidebar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.10 Navigation &amp; Sidebar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#611-faq-list-md-faqlist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.11 FAQ list (.md-faqlist)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-layout-spacing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Layout &amp; Spacing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Layout &amp; Spacing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Grid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-responsive-behaviour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Responsive behaviour
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-spacing-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Spacing rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-accessibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Accessibility
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Accessibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-keyboard-navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Keyboard navigation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-focus-indicator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Focus indicator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-screen-readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Screen readers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-motion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Motion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-colour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 Colour
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-voice-tone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Voice &amp; Tone
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-wireframes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Wireframes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href=".." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../SRS/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Demo 3 Deliverables
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/edit/main/docs/BRAND.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/raw/main/docs/BRAND.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="brand-design-system">Brand &amp; Design System<a class="headerlink" href="#brand-design-system" title="Permanent link">&para;</a></h1>
+<div class="tx-badges">
+  <span class="tx-status"><span class="tx-status__dot"></span>Demo 3 — v2.1</span>
+  <span class="tx-status">Accessibility · WCAG 2.2 AA target</span>
+  <span class="tx-status">Tokens · canonical in this document</span>
+</div>
+
+<div class="admonition abstract">
+<p class="admonition-title">What this document covers</p>
+<p>The Brand &amp; Design System for the <strong>Gesture-Based Drone Control
+System (GBDCS)</strong>. By Demo 2 the system has progressed from
+wireframes to a working implementation, and the visual language
+has matured accordingly. This document is both a <strong>brand guide</strong>
+(palette, logo, voice) and a <strong>design system</strong> (tokens,
+components, layout, accessibility). It is served as a
+first-class page on the project documentation site and is the
+canonical source for visual decisions across the implementation.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Demo-2 alignment</p>
+<p>Several deliverable expectations from the Demo 2 brief land
+on this document. Items still in flight at the time of writing
+are tagged. They include the standalone
+deployed style-guide page alongside the production app, the
+additional logo variants beyond the primary mark, and the
+self-hosting of the font payload.</p>
+</div>
+<hr />
+<h2 id="1-brand-story">1. Brand Story<a class="headerlink" href="#1-brand-story" title="Permanent link">&para;</a></h2>
+<p>GBDCS sits at the intersection of accessibility and aviation: it lets
+anyone fly a drone with the wave of a hand. The brand has to land in
+that intersection — <strong>disciplined enough to be trusted around real
+flight hardware, approachable enough to feel like the first thing a
+new operator wants to try</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Brand pillar</th>
+<th>Translation into design</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Accessible by default</strong></td>
+<td>High-contrast palette anchored on red against off-black; sans-serif typography at generous body sizes; WCAG 2.2 AA on every surface.</td>
+</tr>
+<tr>
+<td><strong>Real-time and alive</strong></td>
+<td>Motion is used to confirm system liveness — pulses on the gesture indicator, fade-in on telemetry frames — never as decoration.</td>
+</tr>
+<tr>
+<td><strong>Confident, not flashy</strong></td>
+<td>Single dominant colour (red), minimal gradients, no drop shadows on the logo, no extraneous chrome.</td>
+</tr>
+<tr>
+<td><strong>Operator-first</strong></td>
+<td>Information density tuned for a pilot who is also gesturing — large hit targets, peripheral-vision-friendly alert colours, no modals interrupting flight.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-colour-palette">2. Colour Palette<a class="headerlink" href="#2-colour-palette" title="Permanent link">&para;</a></h2>
+<p>The palette is anchored on a red core (the action colour), an
+off-black surface in dark mode, off-white surface in light mode and a translucent "glass" layer used across cards, panels and navigation.. Accent semantic
+colours are added only for <strong>success</strong>, <strong>warning</strong>, <strong>info</strong> and <strong>error</strong>
+states.</p>
+<h3 id="21-core-palette">2.1 Core palette<a class="headerlink" href="#21-core-palette" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Token</th>
+<th>Dark (default)</th>
+<th>Light (<code>data-theme="light"</code>)</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Background</td>
+<td><code>--bg</code></td>
+<td><code>#0B090A</code></td>
+<td><code>#F5F3F4</code></td>
+<td>Page background.</td>
+</tr>
+<tr>
+<td>Surface</td>
+<td><code>--surface</code></td>
+<td><code>#161A1D</code></td>
+<td><code>#FFFFFF</code></td>
+<td>Raised, non-glass surfaces.</td>
+</tr>
+<tr>
+<td>Ink (text)</td>
+<td><code>--ink</code></td>
+<td><code>#F5F3F4</code></td>
+<td><code>#0B090A</code></td>
+<td>Primary text.</td>
+</tr>
+<tr>
+<td>Muted</td>
+<td><code>--dim</code></td>
+<td><code>#B1A7A6</code></td>
+<td><code>rgba(11,9,10,0.55)</code></td>
+<td>Captions, placeholders, secondary text.</td>
+</tr>
+<tr>
+<td>Hairline</td>
+<td><code>--line</code></td>
+<td><code>rgba(211,211,211,0.14)</code></td>
+<td><code>rgba(11,9,10,0.14)</code></td>
+<td>Dividers, FAQ list rules.</td>
+</tr>
+<tr>
+<td>Primary</td>
+<td><code>--red</code></td>
+<td><code>#E5383B</code></td>
+<td><code>#BA181B</code></td>
+<td>Primary buttons, links, active states, brand accent.</td>
+</tr>
+<tr>
+<td>Primary (deep)</td>
+<td><code>--red-deep</code></td>
+<td><code>#BA181B</code></td>
+<td><code>#A4161A</code></td>
+<td>Gradient partner for <code>--red</code> on primary buttons/CTAs.</td>
+</tr>
+<tr>
+<td>Primary (shadow)</td>
+<td><code>--red-shadow</code></td>
+<td><code>#660708</code></td>
+<td><code>#E5383B</code></td>
+<td>Third stop in red-family gradients and pressed shadows.</td>
+</tr>
+<tr>
+<td>Glow</td>
+<td><code>--glow</code></td>
+<td><code>rgba(229,56,59,0.8)</code></td>
+<td><code>rgba(186,24,27,0.45)</code></td>
+<td>Ambient glow on status dots and CTA shadows.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-glass-tokens">2.2 Glass tokens<a class="headerlink" href="#22-glass-tokens" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Dark (default)</th>
+<th>Light</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--panel</code></td>
+<td><code>rgba(22,26,29,0.55)</code></td>
+<td><code>rgba(255,255,255,0.6)</code></td>
+<td>Solid-ish fallback panel colour.</td>
+</tr>
+<tr>
+<td><code>--nav</code></td>
+<td><code>rgba(11,9,10,0.72)</code></td>
+<td><code>rgba(245,243,244,0.78)</code></td>
+<td>Nav / sidebar backing layer.</td>
+</tr>
+<tr>
+<td><code>--glass</code></td>
+<td><code>rgba(255,255,255,0.06)</code></td>
+<td><code>rgba(255,255,255,0.55)</code></td>
+<td>Glass gradient stop 1.</td>
+</tr>
+<tr>
+<td><code>--glass-2</code></td>
+<td><code>rgba(255,255,255,0.015)</code></td>
+<td><code>rgba(255,255,255,0.22)</code></td>
+<td>Glass gradient stop 2.</td>
+</tr>
+<tr>
+<td><code>--glass-brd</code></td>
+<td><code>rgba(255,255,255,0.13)</code></td>
+<td><code>rgba(11,9,10,0.1)</code></td>
+<td>Glass border colour.</td>
+</tr>
+<tr>
+<td><code>--glass-hi</code></td>
+<td><code>rgba(255,255,255,0.1)</code></td>
+<td><code>rgba(255,255,255,0.9)</code></td>
+<td>Inset top highlight on glass surfaces.</td>
+</tr>
+<tr>
+<td><code>--glass-shadow</code></td>
+<td><code>0 12px 40px rgba(0,0,0,0.45)</code></td>
+<td><code>0 10px 30px rgba(11,9,10,0.1)</code></td>
+<td>Drop shadow under glass surfaces.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>How colours are referenced in code:</strong> Colours live as 
+CSS custom properties on <code>.md-root</code>, overridden under
+<code>.md-root[data-theme="light"]</code>. Dark is the default theme
+and light mode is opted into by setting <code>data-theme="light"</code> on the root element. there are no build-time Tailwind config for this layer, values are runtime CSS variables.</p>
+</blockquote>
+<h3 id="22-semantic-palette">2.2 Semantic palette<a class="headerlink" href="#22-semantic-palette" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Token</th>
+<th>HEX</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Success</td>
+<td><code>#1B7F3A</code></td>
+<td>Confirmation toasts, telemetry "OK" pill, take-off complete.</td>
+<td></td>
+</tr>
+<tr>
+<td>Warning</td>
+<td><code>#C77700</code></td>
+<td>Battery 15–25 %, link flapping, soft failsafe.</td>
+<td></td>
+</tr>
+<tr>
+<td>Error</td>
+<td><code>#A4161A</code></td>
+<td>Critical alerts, validation errors, emergency-stop activation. (Re-uses primary red on purpose — failure is a system-level state.)</td>
+<td></td>
+</tr>
+<tr>
+<td>Info</td>
+<td><code>#1F6FB3</code></td>
+<td>Tutorial overlays, help menu highlights.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-wcag-22-contrast-ratios">2.3 WCAG 2.2 contrast ratios<a class="headerlink" href="#23-wcag-22-contrast-ratios" title="Permanent link">&para;</a></h3>
+<p>All foreground / background pairings used in the production UI are
+designed to meet WCAG 2.2 AA at a minimum, with AAA achieved for body
+text on both themes. The values below are the design-time ratios; an
+automated audit (§8.6) verifies them per build.</p>
+<table>
+<thead>
+<tr>
+<th>Foreground</th>
+<th>Background</th>
+<th>Ratio</th>
+<th>Level</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--ink</code> <code>#F5F3F4</code></td>
+<td><code>--bg</code> <code>#0B090A</code></td>
+<td><strong>~18.0 : 1</strong></td>
+<td>AAA</td>
+<td>Body text, dark mode.</td>
+</tr>
+<tr>
+<td><code>--ink</code> <code>#0B090A</code></td>
+<td><code>--bg</code> <code>#F5F3F4</code></td>
+<td><strong>~18.0 : 1</strong></td>
+<td>AAA</td>
+<td>Body text, light mode.</td>
+</tr>
+<tr>
+<td><code>--red</code> <code>#E5383B</code></td>
+<td><code>--bg</code> <code>#0B090A</code></td>
+<td><strong>~4.7 : 1</strong></td>
+<td>AA</td>
+<td>Links, active states, dark mode.</td>
+</tr>
+<tr>
+<td><code>--red</code> <code>#BA181B</code></td>
+<td><code>--bg</code> <code>#F5F3F4</code></td>
+<td><strong>~5.9 : 1</strong></td>
+<td>AA</td>
+<td>Links, active states, light mode.</td>
+</tr>
+<tr>
+<td><code>--dim</code> <code>#B1A7A6</code></td>
+<td><code>--bg</code> <code>#0B090A</code></td>
+<td><strong>~8.5 : 1</strong></td>
+<td>AAA</td>
+<td>Captions, placeholders, dark mode.</td>
+</tr>
+<tr>
+<td><code>--dim</code> (blended)</td>
+<td><code>--bg</code> <code>#F5F3F4</code></td>
+<td><strong>~4.3 : 1</strong></td>
+<td>AA — large text / UI only</td>
+<td>Captions, placeholders, light mode.</td>
+</tr>
+<tr>
+<td><code>#FFFFFF</code> label</td>
+<td><code>--red-deep</code> <code>#BA181B</code> (dark)</td>
+<td><strong>~6.5 : 1</strong></td>
+<td>AAA</td>
+<td>Primary button labels, dark mode.</td>
+</tr>
+<tr>
+<td><code>#FFFFFF</code> label</td>
+<td><code>--red-deep</code> <code>#A4161A</code> (light)</td>
+<td><strong>~7.8 : 1</strong></td>
+<td>AAA</td>
+<td>Primary button labels, light mode.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Open item:</strong> <code>--dim</code> on the light mode background sits just under
+the AA threshold for normal body text (~4.3:1 against the 4.5:1
+bar). Its fine for large text, captions set at 14px+/500 weight,
+and UI chrome (3:1 bar), but should not be used for small
+long-form body copy in light mode until bumped - same category of
+issue as the muted-grey flag in the previous palette.</p>
+</blockquote>
+<h3 id="24-usage-rules">2.4 Usage rules<a class="headerlink" href="#24-usage-rules" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Red is the action colour.</strong> Reserve it for primary buttons,
+  links, and active states. Don't use it for decoration.</li>
+<li><strong><code>--bg</code> is the base surface; glass sits above it.</strong>
+  Never place glass-on-glass without a visible gap.</li>
+<li><strong>Muted (<code>--dim</code>) carries hierarchy.</strong> Captions, placeholders, and
+  disabled states use it; avoid using it for primary body text in
+  light mode.</li>
+<li><strong>Semantic colours are reserved for state.</strong> A green pill always
+  means "OK"; an amber pill always means "warning". Never use them
+  for emphasis.</li>
+<li><strong>The spotlight glow is a hover-only affordance</strong>, not a static
+  decodation. It should only render while the cursor is over the element.</li>
+</ul>
+<hr />
+<h2 id="3-typography">3. Typography<a class="headerlink" href="#3-typography" title="Permanent link">&para;</a></h2>
+<p>The system uses a two-family stack for UI, a dedicated display for headings,
+and a monospace for numbers, telemetry readouts, and
+code blocks.</p>
+<h3 id="31-families">3.1 Families<a class="headerlink" href="#31-families" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Family</th>
+<th>Fallback stack</th>
+<th>Source</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Display / headings (<code>h1</code>–<code>h3</code>)</td>
+<td><strong>Chakra Petch</strong> (weights 400–700)</td>
+<td><code>"Space Grotesk", sans-serif</code></td>
+<td>Google Fonts (self-hosting <em>planned</em>)</td>
+<td>SIL Open Font Licence 1.1</td>
+</tr>
+<tr>
+<td>UI / body</td>
+<td><strong>Space Grotesk</strong> (weights 400–600)</td>
+<td><code>system-ui, sans-serif</code></td>
+<td>Google Fonts (self-hosting <em>planned</em>)</td>
+<td>SIL OFL 1.1</td>
+</tr>
+<tr>
+<td>Monospace</td>
+<td><strong>JetBrains Mono</strong> (weights 400–500)</td>
+<td><code>ui-monospace, Consolas, monospace</code></td>
+<td>Google Fonts (self-hosting <em>planned</em>)</td>
+<td>Apache 2.0</td>
+</tr>
+</tbody>
+</table>
+<p>Self-hosting (rather than the Google Fonts CDN) is planned 
+and aligns with the <abbr title="Software Requirements Specification">SRS</abbr> <code>R8.2</code> posture — no runtime
+telemetry to external services. Until that lands, the fonts are
+loaded via <a class="magiclink magiclink-github magiclink-mention" href="https://github.com/import" title="GitHub User: import">@import</a> at build time.</p>
+<h3 id="32-typographic-scale">3.2 Typographic scale<a class="headerlink" href="#32-typographic-scale" title="Permanent link">&para;</a></h3>
+<p>A modular scale at ratio 1.2 anchored on 16 px body.</p>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Size</th>
+<th>Line height</th>
+<th>Weight</th>
+<th>Letter spacing</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>h1</code>/<code>h2</code> (section)</td>
+<td><code>clamp(1.9rem, 4.4vw, 3.4rem)</code></td>
+<td>1.05</td>
+<td>600</td>
+<td>normal</td>
+<td>Page titles, section headings.</td>
+</tr>
+<tr>
+<td><code>h3</code></td>
+<td>20 px / 1.25 rem</td>
+<td>1.05</td>
+<td>600</td>
+<td>normal</td>
+<td>Card titles.</td>
+</tr>
+<tr>
+<td>Eyebrow</td>
+<td>11 px</td>
+<td>1.2</td>
+<td>500</td>
+<td>0.28em</td>
+<td>Kicker label above a headline, mono, red.</td>
+</tr>
+<tr>
+<td>Body (<code>p</code>)</td>
+<td>15 px / 0.95 rem</td>
+<td>1.6</td>
+<td>400</td>
+<td>normal</td>
+<td>Default paragraph text.</td>
+</tr>
+<tr>
+<td>small</td>
+<td>14 px / 0.85 rem</td>
+<td>–</td>
+<td>400</td>
+<td>normal</td>
+<td>Secondary / helper paragraph text.</td>
+</tr>
+<tr>
+<td>Code / mono</td>
+<td>12–14 px</td>
+<td>–</td>
+<td>400–500</td>
+<td>normal</td>
+<td>Telemetry numbers, command tags, code.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>All <code>h1</code>–<code>h3</code> elements share the Chakra Petch family and a tight 1.05 line-height
+ as set in <code>index.css</code>. Meaning headings can run large, so the tighter leading keeps
+ multi-line headings from feeling loose.</p>
+</blockquote>
+<h3 id="33-weights-used">3.3 Weights used<a class="headerlink" href="#33-weights-used" title="Permanent link">&para;</a></h3>
+<p>400 (regular), 500 (medium), 600 (semibold), 700 (bold). The team
+does not ship 300, 800, or 900 — they would tempt overuse of
+decorative weights and increase the font payload.</p>
+<hr />
+<h2 id="4-logo-iconography">4. Logo &amp; Iconography<a class="headerlink" href="#4-logo-iconography" title="Permanent link">&para;</a></h2>
+<h3 id="41-logo">4.1 Logo<a class="headerlink" href="#41-logo" title="Permanent link">&para;</a></h3>
+<p>The Codex Merchants logo currently ships in one form.</p>
+<table>
+<thead>
+<tr>
+<th>Form</th>
+<th>File</th>
+<th>Use</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full (colour)</td>
+<td><code>assets/codex_merchants_logo.png</code></td>
+<td>Default. README, docs site header, landing-page hero.</td>
+<td>Available</td>
+</tr>
+<tr>
+<td>Monogram</td>
+<td><code>assets/codex_merchants_mark.png</code></td>
+<td>Tight spaces — favicon, browser tab, app icon, ≤ 32 px usage.</td>
+<td>Available</td>
+</tr>
+<tr>
+<td>Monochrome</td>
+<td><code>assets/codex_merchants_mono.png</code></td>
+<td>Print, single-colour contexts.</td>
+<td>Available</td>
+</tr>
+<tr>
+<td>Inverse</td>
+<td><code>assets/codex_merchants_inverse.png</code></td>
+<td>On red brand surfaces only.</td>
+<td>Available</td>
+</tr>
+</tbody>
+</table>
+<h4 id="411-minimum-size-clear-space">4.1.1 Minimum size &amp; clear space<a class="headerlink" href="#411-minimum-size-clear-space" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Full logo: minimum <strong>120 px wide</strong> on screen.</li>
+<li>Monogram (once published): minimum <strong>24 px wide</strong>.</li>
+<li>Clear space around the logo: at least the height of the monogram
+  on all four sides. Other elements may not enter this zone.</li>
+</ul>
+<h4 id="412-forbidden-treatments">4.1.2 Forbidden treatments<a class="headerlink" href="#412-forbidden-treatments" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Stretching or skewing the logo to fit a frame.</li>
+<li>Recolouring outside of the four documented forms.</li>
+<li>Applying drop shadows, glows, or strokes.</li>
+<li>Placing the logo on a busy photograph without a solid backing.</li>
+<li>Rotating the logo at any angle other than 0°.</li>
+</ul>
+<h3 id="42-iconography">4.2 Iconography<a class="headerlink" href="#42-iconography" title="Permanent link">&para;</a></h3>
+<p>The system uses <strong><a href="https://lucide.dev/">Lucide</a></strong> as the single icon
+library (MIT-licensed).</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default stroke width</td>
+<td><code>1.75 px</code> (Lucide default is 2 px; we run lighter for visual harmony with Inter).</td>
+</tr>
+<tr>
+<td>Default size</td>
+<td><code>20 × 20 px</code> inline; <code>24 × 24 px</code> standalone in buttons; <code>32 × 32 px</code> for empty-state illustrations.</td>
+</tr>
+<tr>
+<td>Colour</td>
+<td><code>currentColor</code> — icons inherit the surrounding text colour.</td>
+</tr>
+<tr>
+<td>Accessibility</td>
+<td>Standalone icon buttons must carry an <code>aria-label</code>. Decorative icons must have <code>aria-hidden="true"</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Custom illustrations (e.g. the hand-gesture vocabulary card) are
+drawn in the same 1.75 px stroke, <code>--ink</code> on <code>--bg</code>, to sit
+naturally next to Lucide icons and glass surfaces.</p>
+<hr />
+<h2 id="5-design-tokens">5. Design Tokens<a class="headerlink" href="#5-design-tokens" title="Permanent link">&para;</a></h2>
+<p>Tokens are the single source of truth for visual properties. The implementation lives in <code>tailwind.config.js</code> — this document reflects those values exactly. Drift between the guide and the code is treated as a bug.</p>
+<h3 id="51-colour-tokens">5.1 Colour tokens<a class="headerlink" href="#51-colour-tokens" title="Permanent link">&para;</a></h3>
+<p>See §2 for values and dark/light pairs.</p>
+<h3 id="52-spacing-scale">5.2 Spacing scale<a class="headerlink" href="#52-spacing-scale" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Value</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>xs</code></td>
+<td>0.5 rem (8 px)</td>
+<td>Tight grouping; icon to label.</td>
+</tr>
+<tr>
+<td><code>sm</code></td>
+<td>1 rem (16 px)</td>
+<td>Form-field internal padding, list-item gap.</td>
+</tr>
+<tr>
+<td><code>md</code></td>
+<td>1.5 rem (24 px)</td>
+<td>Card padding, section gap.</td>
+</tr>
+<tr>
+<td><code>lg</code></td>
+<td>2 rem (32 px)</td>
+<td>Major section divider.</td>
+</tr>
+<tr>
+<td><code>xl</code></td>
+<td>3 rem (48 px)</td>
+<td>Landing-page section padding, hero padding.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-radius">5.3 Radius<a class="headerlink" href="#53-radius" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Value</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sm</code></td>
+<td>8 px</td>
+<td><code>.md-cmd</code>, <code>.md-dlext</code>, <code>.md-modechip</code>, <code>.md-sbtheme</code>.</td>
+</tr>
+<tr>
+<td><code>md</code></td>
+<td>12 px</td>
+<td><code>.md-sbtab</code> (left corners only).</td>
+</tr>
+<tr>
+<td><code>lg</code></td>
+<td>14 px</td>
+<td><code>.md-telemetry</code>.</td>
+</tr>
+<tr>
+<td><code>xl</code></td>
+<td>16 px</td>
+<td><code>.md-panel</code>, <code>.md-card</code>, <code>.md-node</code>, <code>.md-mode</code>, <code>.md-dlcard</code>, <code>.md-screen</code>.</td>
+</tr>
+<tr>
+<td><code>2xl</code></td>
+<td>20 px</td>
+<td><code>.md-sidebar</code> (left corners only).</td>
+</tr>
+<tr>
+<td><code>pill</code></td>
+<td>999 px</td>
+<td><code>.md-chips li</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Radius values are component-specific under the glass system rather
+than a flat numeric scale. see §6 for which toke applies where.</p>
+<h3 id="54-shadow-glass">5.4 Shadow &amp; glass<a class="headerlink" href="#54-shadow-glass" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Value</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--glass-shadow</code> (dark)</td>
+<td><code>0 12px 40px rgba(0,0,0,0.45)</code></td>
+<td>Drop shadow under every glass surface.</td>
+</tr>
+<tr>
+<td><code>--glass-shadow</code> (light)</td>
+<td><code>0 10px 30px rgba(11,9,10,0.1)</code></td>
+<td>Same, light mode.</td>
+</tr>
+<tr>
+<td>Inset highlight</td>
+<td><code>inset 0 1px 0 var(--glass-hi)</code></td>
+<td>Paired with the drop shadow on all glass surfaces — reads as a frosted top edge.</td>
+</tr>
+<tr>
+<td>Hover glow</td>
+<td><code>0 0 24px rgba(229,56,59,0.16)</code></td>
+<td>Added to the shadow stack on <code>.md-card</code>/<code>.md-node</code>/<code>.md-mode</code>/<code>.md-dlcard</code>/<code>.md-screen</code> hover, alongside a border colour shift to <code>--red</code>.</td>
+</tr>
+<tr>
+<td>Backdrop blur</td>
+<td><code>10px</code>–<code>26px</code> + <code>saturate(140–150%)</code></td>
+<td>Scales with surface size — see §6 component table.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="55-motion">5.5 Motion<a class="headerlink" href="#55-motion" title="Permanent link">&para;</a></h3>
+<p>Motion is functional, not decorative.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Behaviour</th>
+<th>Duration</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.md-ltr</code> (<code>md-rise</code> keyframes)</td>
+<td>Rises 0.55em, blur(8px) → 0, fades in</td>
+<td>0.8 s, <code>cubic-bezier(0.2,0.75,0.25,1)</code></td>
+<td>Hero eyebrow / headline entrance on load.</td>
+</tr>
+<tr>
+<td><code>.md-reveal</code> / <code>.md-reveal.md-in</code></td>
+<td>Translate 28px → 0 + fade, staggerable via <code>--rd</code></td>
+<td>0.8 s</td>
+<td>Scroll-triggered section reveals.</td>
+</tr>
+<tr>
+<td><code>md-pulse</code> (keyframes)</td>
+<td>Opacity 0.35 ↔ 1</td>
+<td>2 s (paired usage)</td>
+<td>Live-status pulsing, gesture indicator heartbeat.</td>
+</tr>
+<tr>
+<td><code>.md-magnet</code></td>
+<td>Transform shift toward cursor (values set via JS)</td>
+<td>0.22 s, cubic-bezier ease-out</td>
+<td>"Magnetic" hover on buttons/icons.</td>
+</tr>
+<tr>
+<td><code>animate-spin</code></td>
+<td>Loading spinner</td>
+<td>1 s linear</td>
+<td>Loading state on primary buttons.</td>
+</tr>
+</tbody>
+</table>
+<p>All motion respects <code>prefers-reduced-motion: reduce</code> — animations and transitions are
+disabled outright (not just shortened), and <code>.md-reveal</code>/<code>.md-ltr</code> snap directly to 
+their resting, visible, untransformed state.</p>
+<p>All motion respects <code>prefers-reduced-motion: reduce</code> — animations
+collapse to a 0 ms duration when the user has requested reduced
+motion. The gesture pulse on the dashboard fades to a static badge
+in this mode.</p>
+<div class="language-css highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">@</span><span class="k">media</span><span class="w"> </span><span class="o">(</span><span class="nt">prefers-reduced-motion</span><span class="o">:</span><span class="w"> </span><span class="nt">reduce</span><span class="o">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="p">.</span><span class="nc">md-root</span><span class="w"> </span><span class="o">*,</span><span class="w"> </span><span class="p">.</span><span class="nc">md-root</span><span class="w"> </span><span class="o">*</span><span class="p">::</span><span class="nd">before</span><span class="o">,</span><span class="w"> </span><span class="p">.</span><span class="nc">md-root</span><span class="w"> </span><span class="o">*</span><span class="p">::</span><span class="nd">after</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="k">animation</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="w"> </span><span class="cp">!important</span><span class="p">;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="k">transition</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="w"> </span><span class="cp">!important</span><span class="p">;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="p">.</span><span class="nc">md-reveal</span><span class="o">,</span><span class="w"> </span><span class="p">.</span><span class="nc">md-ltr</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="k">opacity</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="cp">!important</span><span class="p">;</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="k">transform</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="w"> </span><span class="cp">!important</span><span class="p">;</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="k">filter</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="w"> </span><span class="cp">!important</span><span class="p">;</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="56-breakpoints">5.6 Breakpoints<a class="headerlink" href="#56-breakpoints" title="Permanent link">&para;</a></h3>
+<p>Tailwind defaults are in use (no custom breakpoints defined in <code>tailwind.config.js</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Value</th>
+<th>Target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sm:</code></td>
+<td>640 px</td>
+<td>Mobile landscape, small tablets.</td>
+</tr>
+<tr>
+<td><code>md:</code></td>
+<td>768 px</td>
+<td>Tablets.</td>
+</tr>
+<tr>
+<td><code>lg:</code></td>
+<td>1024 px</td>
+<td>Laptops; the dashboard's primary target.</td>
+</tr>
+<tr>
+<td><code>xl:</code></td>
+<td>1280 px</td>
+<td>Desktop.</td>
+</tr>
+<tr>
+<td><code>2xl:</code></td>
+<td>1536 px</td>
+<td>Operator workstation, large monitors.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="57-backdrop-blur">5.7 Backdrop blur<a class="headerlink" href="#57-backdrop-blur" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Value</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>xs</code></td>
+<td>10 px + saturate(140%)</td>
+<td>Small controls — <code>.md-toggle</code>, <code>.md-btn.md-ghost</code>, <code>.md-sbtheme</code>, <code>.md-chips li</code>, <code>.md-cmd</code>, <code>.md-dlext</code>, <code>.md-modechip</code>.</td>
+</tr>
+<tr>
+<td><code>sm</code></td>
+<td>14 px + saturate(150%)</td>
+<td><code>.md-sbtab</code>.</td>
+</tr>
+<tr>
+<td><code>md</code></td>
+<td>18 px + saturate(150%)</td>
+<td><code>.md-panel</code>, <code>.md-card</code>, <code>.md-node</code>, <code>.md-mode</code>, <code>.md-dlcard</code>, <code>.md-screen</code>, <code>.md-faqlist</code>, <code>.md-telemetry</code>.</td>
+</tr>
+<tr>
+<td><code>lg</code></td>
+<td>20 px + saturate(150%)</td>
+<td><code>.md-nav</code>.</td>
+</tr>
+<tr>
+<td><code>xl</code></td>
+<td>26 px + saturate(150%)</td>
+<td><code>.md-sidebar</code>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-component-library">6. Component Library<a class="headerlink" href="#6-component-library" title="Permanent link">&para;</a></h2>
+<p>Visual specifications for every component used in the production
+system. </p>
+<h3 id="61-button">6.1 Button<a class="headerlink" href="#61-button" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Background</th>
+<th>Text</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primary (<code>.md-btn.md-primary</code>)</td>
+<td><code>linear-gradient(145deg, var(--red), var(--red-deep))</code></td>
+<td><code>#fff</code></td>
+<td>The main action on a screen. Exactly one per view.</td>
+</tr>
+<tr>
+<td>Ghost (<code>.md-btn.md-ghost</code>)</td>
+<td>Glass gradient (<code>--glass</code>/<code>--glass-2</code>), 10 px blur</td>
+<td><code>var(--ink)</code></td>
+<td>Secondary / tertiary action next to a primary.</td>
+</tr>
+<tr>
+<td>Danger</td>
+<td>Same as Primary</td>
+<td><code>#fff</code></td>
+<td>Destructive action (emergency stop, delete session). Distinguish via icon and label, not colour, since it re-uses the primary red.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sizes.</strong> sm (32 px height), md (40 px, default), lg (48 px,
+landing-page CTAs).</p>
+<p><strong>States.</strong></p>
+<ul>
+<li>Default — as above.</li>
+<li>Hover (ghost/glass buttons) — border shifts to <code>--red</code>.</li>
+<li>Focus — solid <code>2px solid var(--red)</code> outline, <code>3px</code> offset (see §8.2).</li>
+<li>Active — primary gradient darkens toward <code>--red-shadow</code>.</li>
+<li>Disabled — <code>opacity: 0.5</code>; <code>cursor: not-allowed</code>; no hover effect.</li>
+<li>Loading — replace label with a 16 px spinner (<code>animate-spin</code>); button width preserved; click events suppressed.</li>
+</ul>
+<h3 id="62-input-text-email-password">6.2 Input (text, email, password)<a class="headerlink" href="#62-input-text-email-password" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Height</td>
+<td>40 px</td>
+</tr>
+<tr>
+<td>Padding</td>
+<td>0.75 rem horizontal</td>
+</tr>
+<tr>
+<td>Border</td>
+<td><code>1px solid var(--glass-brd)</code></td>
+</tr>
+<tr>
+<td>Background</td>
+<td>Glass gradient (<code>--glass</code>/<code>--glass-2</code>)</td>
+</tr>
+<tr>
+<td>Focus ring</td>
+<td><code>2px solid var(--red)</code>, 3px offset (matches §8.2/§6.1)</td>
+</tr>
+<tr>
+<td>Error border</td>
+<td><code>--red</code>; helper text below in <code>--red</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-select-dropdown">6.3 Select / Dropdown<a class="headerlink" href="#63-select-dropdown" title="Permanent link">&para;</a></h3>
+<p>Same shape as the Input. Caret is a Lucide <code>chevron-down</code> at 16 px,
+<code>currentColor</code>. Open state shows a panel with a standard glass shadow
+and <code>16px</code> radius.</p>
+<h3 id="64-modal">6.4 Modal<a class="headerlink" href="#64-modal" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Width</td>
+<td>up to 560 px</td>
+</tr>
+<tr>
+<td>Backdrop</td>
+<td><code>var(--bg)</code> at reduced opacity + blur</td>
+</tr>
+<tr>
+<td>Surface</td>
+<td>Glass gradient at <code>18px</code> blur, <code>16px</code> radius</td>
+</tr>
+<tr>
+<td>Shadow</td>
+<td><code>var(--glass-shadow)</code> + inset top highlight</td>
+</tr>
+<tr>
+<td>Open duration</td>
+<td><code>.md-reveal</code> transition (respects <code>prefers-reduced-motion</code>)</td>
+</tr>
+<tr>
+<td>Escape key</td>
+<td>Closes the modal; focus returns to the trigger.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="65-toast">6.5 Toast<a class="headerlink" href="#65-toast" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Surface</th>
+<th>Border</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Success</td>
+<td><code>bg-green-600/12</code></td>
+<td><code>border border-green-600</code></td>
+</tr>
+<tr>
+<td>Warning</td>
+<td><code>bg-yellow-600/12</code></td>
+<td><code>border border-yellow-600</code></td>
+</tr>
+<tr>
+<td>Error</td>
+<td><code>bg-Red/12</code></td>
+<td><code>border border-Red</code></td>
+</tr>
+<tr>
+<td>Info</td>
+<td><code>bg-blue-600/12</code></td>
+<td><code>border border-blue-600</code></td>
+</tr>
+</tbody>
+</table>
+<p>Toasts auto-dismiss after 5 s (warning) or 8 s (error). Critical
+alerts (link loss, battery &lt; 15 %) <strong>do not auto-dismiss</strong> — they
+remain until acknowledged per <code>R1.2.2</code>.</p>
+<h3 id="66-card-md-card-md-node-md-mode-md-dlcard-md-screen">6.6 Card (<code>.md-card</code>, <code>.md-node</code>, <code>.md-mode</code>, <code>.md-dlcard</code>, <code>.md-screen</code>)<a class="headerlink" href="#66-card-md-card-md-node-md-mode-md-dlcard-md-screen" title="Permanent link">&para;</a></h3>
+<p><code>16px</code> radius, glass gradient at <code>18px</code> blur, <code>var(--glass-shadow)</code> +
+inset top highlight at rest. On hover: border shifts to <code>--red</code> and
+the shadow gains a <code>24px</code> red glow. <code>.md-spot</code> variants additionally
+render a <code>260px</code> radial spotlight that follows the cursor
+(<code>--sx</code>/<code>--sy</code> set via <code>mousemove</code>), tinted <code>rgba(229,56,59,0.14)</code>
+dark / <code>rgba(186,24,27,0.1)</code> light.</p>
+<h3 id="67-gesture-indicator-domain-specific">6.7 Gesture Indicator (domain-specific)<a class="headerlink" href="#67-gesture-indicator-domain-specific" title="Permanent link">&para;</a></h3>
+<p>A 96 × 96 px circular badge in the top-right of the dashboard,
+filled with <code>--red</code> when a gesture is locked. Pulses via
+<code>md-pulse</code> when the gesture changes; static in
+<code>prefers-reduced-motion</code>. The current gesture name and its mapped
+command sit immediately below, in JetBrains Mono.</p>
+<h3 id="68-telemetry-pill-panel-md-telemetry">6.8 Telemetry Pill / Panel (<code>.md-telemetry</code>)<a class="headerlink" href="#68-telemetry-pill-panel-md-telemetry" title="Permanent link">&para;</a></h3>
+<p>Glass surface, <code>14px</code> radius, <code>12px 16px</code> padding. Values render in
+JetBrains Mono; label in <code>--dim</code>, value colour matches the semantic
+state (<code>--Success</code>/<code>--Warning</code>/<code>--red</code>/<code>--ink</code>).</p>
+<h3 id="69-chips-commands-mode-toggles">6.9 Chips, commands, mode toggles<a class="headerlink" href="#69-chips-commands-mode-toggles" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Radius</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.md-chips li</code></td>
+<td>999 px (pill)</td>
+<td>Quick-action tags (e.g. "Take off", "Land").</td>
+</tr>
+<tr>
+<td><code>.md-cmd</code></td>
+<td>8 px</td>
+<td>Gesture → command mapping tags, mono type.</td>
+</tr>
+<tr>
+<td><code>.md-dlext</code></td>
+<td>8 px</td>
+<td>File-extension badges on download cards.</td>
+</tr>
+<tr>
+<td><code>.md-modechip</code></td>
+<td>8 px</td>
+<td>Flight-mode selector chips; active state border → <code>--red</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="610-navigation-sidebar">6.10 Navigation &amp; Sidebar<a class="headerlink" href="#610-navigation-sidebar" title="Permanent link">&para;</a></h3>
+<p><code>.md-nav</code> is a glass bar at <code>20px</code> blur. <code>.md-sidebar</code> is a glass
+panel at <code>26px</code> blur with rounded left corners (<code>20px</code>) and a
+left border; <code>.md-sbtab</code> is its collapsed-state tab, <code>12px</code>
+left-rounded, border colour shifting to <code>--red</code> on hover.</p>
+<h3 id="611-faq-list-md-faqlist">6.11 FAQ list (<code>.md-faqlist</code>)<a class="headerlink" href="#611-faq-list-md-faqlist" title="Permanent link">&para;</a></h3>
+<p>Glass panel, top border in <code>--line</code>, <code>4px 24px</code> padding; each
+<code>.faq-item</code> gets its own bottom hairline except the last.</p>
+<hr />
+<h2 id="7-layout-spacing">7. Layout &amp; Spacing<a class="headerlink" href="#7-layout-spacing" title="Permanent link">&para;</a></h2>
+<h3 id="71-grid">7.1 Grid<a class="headerlink" href="#71-grid" title="Permanent link">&para;</a></h3>
+<p>Tailwind's built-in 12-column grid with a <code>gap-md</code> (1.5 rem / 24 px) gutter on screens &gt;= <code>md:</code>and <code>gap-sm</code> ( 1rem / 16 px) below.</p>
+<h3 id="72-responsive-behaviour">7.2 Responsive behaviour<a class="headerlink" href="#72-responsive-behaviour" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Surface</th>
+<th><code>&lt; md:</code> (768 px)</th>
+<th><code>&gt;= md:</code></th>
+<th><code>&gt;= lg:</code> (1024 px)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Landing page</td>
+<td>single column, hero stacks vertically</td>
+<td>two-column feature grid</td>
+<td>three-column feature grid</td>
+</tr>
+<tr>
+<td>Dashboard</td>
+<td>video feed stacks above telemetry; gesture indicator floats top-right</td>
+<td>side-by-side video and telemetry</td>
+<td>full layout: feed + overlay + telemetry + replay timeline</td>
+</tr>
+<tr>
+<td>Replay view</td>
+<td>session list collapses behind a drawer</td>
+<td>session list as left sidebar</td>
+<td>session list + waveform + telemetry chart</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73-spacing-rules">7.3 Spacing rules<a class="headerlink" href="#73-spacing-rules" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Inside a card: padding is <code>p-sm</code> (1 rem); gap between elements is
+  <code>gap-xs</code>(1.5 rem).</li>
+<li>Between cards in a grid: gap is <code>gap-md</code> (1.5 rem).</li>
+<li>Page-level horizontal padding: <code>px-sm</code> on mobile, <code>px-lg</code>
+  on tablet, <code>px-xl</code> on desktop.</li>
+<li>Glass panels need slightly more breathing room than flat cards do</li>
+<li>the blur reads as "heavier", so keep at least <code>gap-md</code> between
+adjacent glass surfaces to avoid the borders visually merging.</li>
+</ul>
+<hr />
+<h2 id="8-accessibility">8. Accessibility<a class="headerlink" href="#8-accessibility" title="Permanent link">&para;</a></h2>
+<p>GBDCS targets <strong>WCAG 2.2 AA</strong> as the minimum on every surface.
+AAA is achieved for body-text contrast on both themes (§2.4).</p>
+<h3 id="81-keyboard-navigation">8.1 Keyboard navigation<a class="headerlink" href="#81-keyboard-navigation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Every interactive element is reachable by <code>Tab</code> in document order.</li>
+<li>Modals trap focus; <code>Esc</code> closes them and returns focus to the
+  trigger.</li>
+<li>The emergency-stop button has a global keybinding (<code>Ctrl+.</code>) so
+  it never depends on focus state.</li>
+</ul>
+<h3 id="82-focus-indicator">8.2 Focus indicator<a class="headerlink" href="#82-focus-indicator" title="Permanent link">&para;</a></h3>
+<p><code>.md-root a:focus-visible, .md-root button:focus-visible</code> receive a
+<strong>solid <code>2px</code> outline in <code>--red</code>, offset <code>3px</code></strong>;
+chosen because a soft box-shadow ring can
+be hard to see against a translucent glass background. The outline
+is <strong>never</strong> suppressed without an equivalent visual replacement.</p>
+<h3 id="83-screen-readers">8.3 Screen readers<a class="headerlink" href="#83-screen-readers" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Every <code>aria-label</code> is human-readable, not a token name.</li>
+<li>The live gesture indicator carries <code>aria-live="polite"</code> so a
+  screen reader announces gesture changes without interrupting.</li>
+<li>The critical-alert region carries <code>aria-live="assertive"</code>.</li>
+<li>All form fields have associated <code>&lt;label&gt;</code> elements; placeholders
+  are <em>not</em> used as labels.</li>
+</ul>
+<h3 id="84-motion">8.4 Motion<a class="headerlink" href="#84-motion" title="Permanent link">&para;</a></h3>
+<p>The system honours <code>prefers-reduced-motion: reduce</code>. All animations
+defined in §5.5 collapse to 0 ms; the gesture pulse becomes a static
+badge.</p>
+<h3 id="85-colour">8.5 Colour<a class="headerlink" href="#85-colour" title="Permanent link">&para;</a></h3>
+<p>No information is conveyed by colour alone. Alerts also carry an
+icon and a text label; telemetry pills carry a text value alongside
+the colour. The <code>--dim</code> contrast caveat in §2.4 applies here too -&gt;
+don't rely on muted text alone to carry meaning in light mode.</p>
+<hr />
+<h2 id="9-voice-tone">9. Voice &amp; Tone<a class="headerlink" href="#9-voice-tone" title="Permanent link">&para;</a></h2>
+<p>GBDCS speaks to pilots. The voice is <strong>calm, direct, and specific</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Surface</th>
+<th>Tone</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Button labels</td>
+<td>Imperative verb, ≤ 3 words.</td>
+<td><em>"Take off"</em>, <em>"End session"</em>, <em>"Stop now"</em>.</td>
+</tr>
+<tr>
+<td>Empty states</td>
+<td>Friendly, action-oriented.</td>
+<td><em>"No sessions yet — start a flight to see your history here."</em></td>
+</tr>
+<tr>
+<td>Success messages</td>
+<td>Quiet confirmation.</td>
+<td><em>"Drone connected."</em> (Avoid: <em>"Successfully connected to drone!"</em> — too loud for an operational surface.)</td>
+</tr>
+<tr>
+<td>Errors</td>
+<td>Cause first, then suggestion.</td>
+<td><em>"Camera not detected. Connect a webcam or check your browser permissions."</em> (cause + suggestion, per <code>R11.3</code>.)</td>
+</tr>
+<tr>
+<td>Critical alerts</td>
+<td>Telegraphic, urgent, never alarmist.</td>
+<td><em>"Link lost. Hovering until link returns."</em></td>
+</tr>
+</tbody>
+</table>
+<p>Tone is <strong>never jokey</strong> in the operational paths. The Help menu and
+landing page may be warmer, but the dashboard itself stays
+professional — an operator in flight does not want a system that's
+trying to be funny.</p>
+<hr />
+<h2 id="11-wireframes">11. Wireframes<a class="headerlink" href="#11-wireframes" title="Permanent link">&para;</a></h2>
+<p>The two operator-facing surfaces. Both realise the requirements
+cited in their captions.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Login Page</label><label for="__tabbed_1_2">Signup Page</label><label for="__tabbed_1_3">Gesture Dashboard</label><label for="__tabbed_1_4">Analytics Page</label><label for="__tabbed_1_5">Tutorial Page</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><img alt="Login Page Light and dark" src="../assets/WF-Login.png" /></p>
+<p><em>Figure 11.1 - Operator Authentication (UC-4, R16.1.3).Left panel with brand imagery; right form with email, password, remember me toggle and a sign up link.</em></p>
+</div>
+<div class="tabbed-block">
+<p><img alt="Signup Page Light and Dark" src="../assets/WF-Signup.png" /></p>
+<p><em>Figure 11.2 - New user registration (R16.1.1, R16.1.2).Mirrors login layout with additional fields: first name, last name , date of birth, password,password confirmation , terms acceptance.</em></p>
+</div>
+<div class="tabbed-block">
+<p><img alt="Gesture Dashboard Light and Dark" src="../assets/WF-GestureDashboard.png" /></p>
+<p><em>Figure 11.3 - Live gesture control and telemetry (UC-1,R1.1.1-R1.1.3).Left sidebar with menu ;centre live video feed with hand-landmark overlay; right panels for gesture detection, command history, control guide, and status indicators.</em></p>
+</div>
+<div class="tabbed-block">
+<p><img alt="Analytics Light and Dark" src="../assets/WF-Analytics.png" /></p>
+<p><em>Figure 11.4 - Telemetry history and flight metrics (UC-2, R1.1.3). Key stats (flight time , avg speed, max altitude) at top; flight movements and battery health charts; performance metrices bar chart; summary pills for total distance, average duration and flight count.</em></p>
+</div>
+<div class="tabbed-block">
+<p><img alt="Tutorial Light and Dark" src="../assets/WF-Tutorial.png" /></p>
+<p><em>Figure 11.5 - User Tutorial (UC-7).central to left shows the live camera feed where users can try out the gestures that are shown in gif formats on the central to right side of the screen.Collapsible sections for tutorial videos and frequently asked questions are below it</em></p>
+</div>
+</div>
+</div>
+<!-- Global abbreviations. auto-appended to every page via mkdocs.yml snippets config -->
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="September 3, 2026 19:46:01 UTC"><span class="timeago" datetime="2026-09-03T19:46:01+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="September 3, 2026 19:46:01 UTC">2026-09-03</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 26, 2026 11:40:49 UTC"><span class="timeago" datetime="2026-05-26T11:40:49+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 26, 2026 11:40:49 UTC">2026-05-26</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../SAS/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Software Architecture (SAS)">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Software Architecture (SAS)
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../CODING/" class="md-footer__link md-footer__link--next" aria-label="Next: Coding Standards">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Coding Standards
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 Codex Merchants &mdash; COS 301 Software Engineering &middot; University of Pretoria &middot; EPI-USE Labs
+
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" target="_blank" rel="noopener" title="GitHub Repository" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="mailto:codexmerchants@gmail.com" target="_blank" rel="noopener" title="Team Email" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4l208 156a48 48 0 0 0 57.6 0l208-156c12.1-9.1 19.2-23.3 19.2-38.4 0-26.5-21.5-48-48-48zM0 196v188c0 35.3 28.7 64 64 64h384c35.3 0 64-28.7 64-64V196L313.6 344.8c-34.1 25.6-81.1 25.6-115.2 0z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "search.highlight", "search.suggest", "search.share", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../js/timeago.min.js"></script>
+      
+        <script src="../js/timeago_mkdocs_material.js"></script>
+      
+        <script src="../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>

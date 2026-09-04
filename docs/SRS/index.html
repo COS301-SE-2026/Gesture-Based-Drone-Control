@@ -1,0 +1,5365 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Real-time gesture-to-flight-command pipeline using MediaPipe Hands, rule-based + TFLite recognition, FastAPI WebSocket backend, and a React/TypeScript telemetry dashboard.">
+      
+      
+      
+        <link rel="canonical" href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../SAS/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/reticle.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Software Requirements (SRS) - Gesture-Based Drone Control</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../css/timeago.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#software-requirements-specification" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Gesture-Based Drone Control" class="md-header__button md-logo" aria-label="Gesture-Based Drone Control" data-md-component="logo">
+      
+  <img src="../assets/drone.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Gesture-Based Drone Control
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Software Requirements (SRS)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    COS301-SE-2026/Gesture-Based-Drone-Control
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Demo 3 Deliverables
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../GIT/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/API_REFERENCE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../demo/demo_one_documentation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Demo 1 Archive
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Gesture-Based Drone Control" class="md-nav__button md-logo" aria-label="Gesture-Based Drone Control" data-md-component="logo">
+      
+  <img src="../assets/drone.svg" alt="logo">
+
+    </a>
+    Gesture-Based Drone Control
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    COS301-SE-2026/Gesture-Based-Drone-Control
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demo 3 Deliverables
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Demo 3 Deliverables
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Requirements (SRS)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Requirements (SRS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Purpose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-definitions-acronyms-and-abbreviations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Definitions, Acronyms, and Abbreviations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-overall-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Overall Description
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Overall Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-product-perspective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Product Perspective
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1 Product Perspective">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#211-system-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.1 System Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#212-user-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.2 User Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#213-hardware-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.3 Hardware Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#214-software-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.4 Software Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#215-communications-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.5 Communications Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#216-memory-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.6 Memory Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#217-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.7 Operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#218-site-adaptation-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.8 Site-Adaptation Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-product-functions-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Product Functions (Summary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-user-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 User Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-assumptions-and-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Assumptions and Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-specific-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Specific Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Specific Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-external-interface-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 External Interface Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1 External Interface Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#r1-user-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R1: User Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r2-hardware-software-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R2: Hardware &amp; Software Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-user-stories-user-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2 User Stories / User Characteristics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1.2 User Stories / User Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3121-user-classea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2.1 User Classea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3122-u1-novice-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2.2 U1 - Novice Operator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3123-u2-experienced-operator-demonstrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2.3 U2 - Experienced Operator / Demonstrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3124-u3-assistive-needs-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2.4 U3 - Assistive-Needs Operator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-functional-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Functional Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2 Functional Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#r3-camera-capture-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R3: Camera Capture &amp; Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r4-gesture-command-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R4: Gesture-Command Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r5-drone-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R5: Drone Communication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r6-failsafes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R6: Failsafes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r7-alternative-input-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R7: Alternative Input Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r8-user-authentication-and-preference-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R8: User Authentication and Preference Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r9-tutorial-and-assist-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R9: Tutorial and Assist Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r10-telemetry-data-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R10: Telemetry Data Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-non-functional-quality-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Non-Functional (Quality) Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 Non-Functional (Quality) Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nfr1-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR1: Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nfr2-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR2: Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nfr3-reliability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR3: Reliability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nfr4-maintainability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR4: Maintainability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nfr5-usability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR5: Usability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-other-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Other Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4 Other Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#or1-process-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OR1: Process &amp; Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Use Cases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Use Cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-use-case-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Use-Case Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-uc-1-hand-tracking-gesture-recognition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 UC-1 - Hand Tracking &amp; Gesture Recognition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-uc-2-statistics-dashboard-and-telemetry-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 UC-2 - Statistics Dashboard and Telemetry Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-uc-3-drone-simulator-controls-and-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 UC-3 - Drone Simulator Controls and Adapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-uc-4-controller-based-drone-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 UC-4 - Controller-Based Drone Control.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-uc-5-real-telemetry-logging-and-analytics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 UC-5 - Real Telemetry Logging and Analytics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#47-uc-6-gps-like-path-visualisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.7 UC-6 - GPS like Path Visualisation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#48-uc-7-interactive-user-tutorial-and-assist-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.8 UC-7 - Interactive User Tutorial and Assist Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-uc-8-pre-flight-gesture-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 UC-8 - Pre-Flight Gesture Calibration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-domain-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Domain Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-requirements-elicitation-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A - Requirements Elicitation Methodology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-requirements-traceability-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B - Requirements Traceability Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-c-revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix C - Revision History
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SAS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Architecture (SAS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BRAND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brand & Design System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../POLICY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANUAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Conventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CICD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nfr/NFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NFR Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contracts/CONTRACTS.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Service Contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/atoms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atoms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/organisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Organisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Services & Adapters
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Services & Adapters
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/command/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Drone Adapter (ABC)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/project_airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/dummy_drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input Adapter (ABC)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/keyboard_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboard Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/dummy_input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/ML/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML engine model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../demo/demo_one_documentation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demo 1 Archive
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Demo 1 Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/SRS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SRS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/DESIGN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design & Wireframes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plan & Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/GIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Conventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/CICD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/demo/Deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/api/API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/testing/TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_10" id="__nav_5_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/atoms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atoms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/organisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Organisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/frontend/routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_11" id="__nav_5_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Services
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Services
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/command/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/dummy_drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/dummy_input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/keyboard_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboard Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo/demo_one_documentation/services/project_airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Purpose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-definitions-acronyms-and-abbreviations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Definitions, Acronyms, and Abbreviations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-overall-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Overall Description
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Overall Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-product-perspective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Product Perspective
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1 Product Perspective">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#211-system-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.1 System Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#212-user-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.2 User Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#213-hardware-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.3 Hardware Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#214-software-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.4 Software Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#215-communications-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.5 Communications Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#216-memory-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.6 Memory Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#217-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.7 Operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#218-site-adaptation-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.8 Site-Adaptation Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-product-functions-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Product Functions (Summary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-user-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 User Characteristics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-assumptions-and-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Assumptions and Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-specific-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Specific Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Specific Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-external-interface-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 External Interface Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1 External Interface Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#r1-user-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R1: User Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r2-hardware-software-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R2: Hardware &amp; Software Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-user-stories-user-characteristics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2 User Stories / User Characteristics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1.2 User Stories / User Characteristics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3121-user-classea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2.1 User Classea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3122-u1-novice-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2.2 U1 - Novice Operator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3123-u2-experienced-operator-demonstrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2.3 U2 - Experienced Operator / Demonstrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3124-u3-assistive-needs-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2.4 U3 - Assistive-Needs Operator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-functional-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Functional Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2 Functional Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#r3-camera-capture-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R3: Camera Capture &amp; Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r4-gesture-command-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R4: Gesture-Command Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r5-drone-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R5: Drone Communication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r6-failsafes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R6: Failsafes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r7-alternative-input-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R7: Alternative Input Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r8-user-authentication-and-preference-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R8: User Authentication and Preference Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r9-tutorial-and-assist-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R9: Tutorial and Assist Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#r10-telemetry-data-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R10: Telemetry Data Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-non-functional-quality-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Non-Functional (Quality) Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 Non-Functional (Quality) Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nfr1-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR1: Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nfr2-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR2: Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nfr3-reliability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR3: Reliability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nfr4-maintainability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR4: Maintainability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nfr5-usability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR5: Usability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-other-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Other Requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4 Other Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#or1-process-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OR1: Process &amp; Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Use Cases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Use Cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-use-case-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Use-Case Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-uc-1-hand-tracking-gesture-recognition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 UC-1 - Hand Tracking &amp; Gesture Recognition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-uc-2-statistics-dashboard-and-telemetry-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 UC-2 - Statistics Dashboard and Telemetry Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-uc-3-drone-simulator-controls-and-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 UC-3 - Drone Simulator Controls and Adapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-uc-4-controller-based-drone-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 UC-4 - Controller-Based Drone Control.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-uc-5-real-telemetry-logging-and-analytics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 UC-5 - Real Telemetry Logging and Analytics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#47-uc-6-gps-like-path-visualisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.7 UC-6 - GPS like Path Visualisation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#48-uc-7-interactive-user-tutorial-and-assist-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.8 UC-7 - Interactive User Tutorial and Assist Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-uc-8-pre-flight-gesture-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 UC-8 - Pre-Flight Gesture Calibration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-domain-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Domain Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-requirements-elicitation-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A - Requirements Elicitation Methodology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-requirements-traceability-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B - Requirements Traceability Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-c-revision-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix C - Revision History
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href=".." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Demo 3 Deliverables
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/edit/main/docs/SRS.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/raw/main/docs/SRS.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="software-requirements-specification">Software Requirements Specification<a class="headerlink" href="#software-requirements-specification" title="Permanent link">&para;</a></h1>
+<h2 id="1-introduction">1. Introduction<a class="headerlink" href="#1-introduction" title="Permanent link">&para;</a></h2>
+<h3 id="11-purpose">1.1 Purpose<a class="headerlink" href="#11-purpose" title="Permanent link">&para;</a></h3>
+<p>This <abbr title="Software Requirements Specification">SRS</abbr> specifies the <strong>Gesture-Based Drone Control (<abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr>)</strong> system, a real-time pipeline 
+utilising computer vision that translates hand gestures into unmanned aerial vehicle (<abbr title="Unmanned Aerial Vehicle">UAV</abbr>)
+flight commands. It is the authoritative reference for:</p>
+<ul>
+<li>The <strong>development team</strong> at Codex Merchants, for implementation and verification.</li>
+<li>The <strong>Project owner and mentor(s)</strong>, EPI-USE Labs, as the acceptance baseline.</li>
+<li>The <strong>academic mentors</strong> (COS 301 staff), for evaluation.</li>
+</ul>
+<h3 id="12-scope">1.2 Scope<a class="headerlink" href="#12-scope" title="Permanent link">&para;</a></h3>
+<p><strong>Product name.</strong> Gesture-Based Drone Control (hereafter <strong><abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr></strong>).</p>
+<p><strong>What the product will do.</strong> <abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr> captures a live camera feed, detects 21-point hand
+landmarks using <abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr>, classifies the resulting gestures via a rule-based engine
+(with an optional <abbr title="TensorFlow Lite. on-device ML inference">TFLite</abbr>-based recognizer as a strategy alternative), translates the
+recognised gestures into flight commands, and dispatches those commands to a drone or
+drone simulator through an adapter abstraction. A web dashboard provides live telemetry,
+gesture-overlay video, and command auditing.</p>
+<p><strong>What the product will <em>not</em> do.</strong></p>
+<ul>
+<li>It will not perform autonomous mission planning (e.g. waypoint flight, GPS
+  route-following).</li>
+<li>It will not perform computer-vision tasks beyond hand-landmark detection
+  (no face recognition, object tracking, or scene understanding).</li>
+<li>It will not control multiple drones simultaneously in v1.</li>
+<li>It will not operate in beyond-visual-line-of-sight (BVLOS) conditions.</li>
+</ul>
+<p><strong>Benefits.</strong> Removal of the physical controller barrier improves accessibility for
+novices and users with limited fine-motor capability, and creates a natural
+human-computer interaction model suitable for educational, demonstration, and
+experiential settings.</p>
+<h3 id="13-definitions-acronyms-and-abbreviations">1.3 Definitions, Acronyms, and Abbreviations<a class="headerlink" href="#13-definitions-acronyms-and-abbreviations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr></strong></td>
+<td>Gesture-Based Drone Control system - the product specified by this <abbr title="Software Requirements Specification">SRS</abbr>.</td>
+</tr>
+<tr>
+<td><strong><abbr title="Unmanned Aerial Vehicle">UAV</abbr></strong></td>
+<td>Unmanned Aerial Vehicle. Our drone in this case.</td>
+</tr>
+<tr>
+<td><strong><abbr title="Ground Control Station the host machine running the recognition pipeline">GCS</abbr></strong></td>
+<td>Ground Control Station - the host machine running the recognition pipeline.</td>
+</tr>
+<tr>
+<td><strong><abbr title="Frames Per Second">FPS</abbr></strong></td>
+<td>Frames Per Second.</td>
+</tr>
+<tr>
+<td><strong><abbr title="Computer Vision">CV</abbr></strong></td>
+<td>Computer Vision.</td>
+</tr>
+<tr>
+<td><strong><abbr title="Open Source Computer Vision Library. used for camera frame capture and preprocessing">OpenCV</abbr></strong></td>
+<td>Open-source Computer Vision library. Used for camera frame capture and preprocessing.</td>
+</tr>
+<tr>
+<td><strong><abbr title="USB Video Class. The standard protocol used by USB-connected cameras, enabling plug-and-play use with OpenCV">UVC</abbr></strong></td>
+<td><abbr title="Universal Serial Bus. the physical interface used to connect cameras and HID peripherals to the GCS">USB</abbr> Video Class. The standard protocol used by <abbr title="Universal Serial Bus. the physical interface used to connect cameras and HID peripherals to the GCS">USB</abbr>-connected cameras, enabling plug-and-play use with <abbr title="Open Source Computer Vision Library. used for camera frame capture and preprocessing">OpenCV</abbr></td>
+</tr>
+<tr>
+<td><strong><abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr></strong></td>
+<td>Google's framework for real-time hand-landmark detection.</td>
+</tr>
+<tr>
+<td><strong><abbr title="Human Interface Device. any hardware input peripheral such as a keyboard, gamepad, or camera">HID</abbr></strong></td>
+<td>Human Interface Device. Any hardware input peripheral, such as a keyboard, gamepad, or camera.</td>
+</tr>
+<tr>
+<td><strong>Latency</strong></td>
+<td>End-to-end delay from each step in the pipeline, i.e. gesture recognition to command dispatch.</td>
+</tr>
+<tr>
+<td><strong><abbr title="Machine Learning">ML</abbr></strong></td>
+<td>Machine Learning.</td>
+</tr>
+<tr>
+<td><strong><abbr title="TensorFlow Lite. on-device ML inference">TFLite</abbr></strong></td>
+<td>TensorFlow Lite - lightweight on-device <abbr title="Machine Learning">ML</abbr> inference runtime.</td>
+</tr>
+<tr>
+<td><strong><abbr title="Software Development Kit">SDK</abbr></strong></td>
+<td>Software Development Kit.</td>
+</tr>
+<tr>
+<td><strong><abbr title="Application Programming Interface">API</abbr></strong></td>
+<td>Application Programming Interface.</td>
+</tr>
+<tr>
+<td><strong><abbr title="WebSocket. used for real-time communications such as gesture and telemetry streaming">WS</abbr></strong></td>
+<td>WebSocket, used for real-time communications such as gesture streaming</td>
+</tr>
+<tr>
+<td><strong><abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr></strong></td>
+<td>Representational State Transfer, endpoints used for config, logs, system faults</td>
+</tr>
+<tr>
+<td><strong>Failsafe</strong></td>
+<td>A predefined safe-state behaviour triggered automatically on fault.</td>
+</tr>
+<tr>
+<td><strong>Adapters</strong></td>
+<td>A two-way adapter is implemented to decouple input methods and <abbr title="Unmanned Aerial Vehicle">UAV</abbr> options.</td>
+</tr>
+<tr>
+<td><strong><abbr title="Project AirSim. Microsoft's Unreal Engine 5 based drone simulator, successor to legacy AirSim">PAS</abbr></strong></td>
+<td>Project AirSim. Microsoft's Unreal Engine 5 based drone sim, the successor to legacy AirSim.</td>
+</tr>
+<tr>
+<td><strong><abbr title="AirSim. Microsoft's legacy Unreal Engine 4 based drone simulator">AS</abbr></strong></td>
+<td>AirSim.  Microsoft's legacy Unreal Engine 4 based drone simulator.</td>
+</tr>
+<tr>
+<td><strong><abbr title="Python bindings for the NNG (Nanomsg Next Generation) messaging library, used by the Project AirSim Python client">pynng</abbr></strong></td>
+<td>Python bindings for the NNG (Nanomsg Next Generation) messaging library. Used by <abbr title="Project AirSim. Microsoft's Unreal Engine 5 based drone simulator, successor to legacy AirSim">PAS</abbr>'s Python client.</td>
+</tr>
+</tbody>
+</table>
+<p>A site-wide list of abbreviations is auto-appended on every page via
+<code>docs/includes/abbreviations.md</code>.</p>
+<h3 id="14-references">1.4 References<a class="headerlink" href="#14-references" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Kung, D. C. <em>Software Engineering</em> (2<sup>nd</sup> ed.). McGraw-Hill, 2024.
+   Chapters 3-5 and 7 (System Engineering, Requirements Elicitation,
+   Domain Modeling, Use Cases). Architectural content (Ch. 6) is now
+   covered by <a href="../SAS/"><code>SAS.md</code></a>.</li>
+<li><a href="../SAS/"><code>SAS.md</code></a> - Software Architecture Specification (the
+   architectural, technological, and deployment counterpart to this
+   document).</li>
+<li><a href="../BRAND/"><code>BRAND.md</code></a> - Brand &amp; Design System (the visual and UX
+   counterpart to this document).</li>
+<li>COS 301 lecture material - <em>System Engineering &amp; Software
+   Requirements Elicitation.</em> University of Pretoria, 2026.</li>
+<li>EPI-USE Labs. <em>Gesture-Based Drone Control - Project Brief</em> (tender
+   document, 2026).</li>
+<li>Codex Merchants. <em>Tender Response &amp; Proposed Architecture</em>
+   <a href="../reports/tender.pdf"><code>docs/reports/tender.pdf</code></a>.</li>
+<li><abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> Hands documentation -
+   <a href="https://google.github.io/mediapipe/solutions/hands">google.github.io/mediapipe/solutions/hands</a>.</li>
+<li>xFly <abbr title="Software Development Kit">SDK</abbr> / DJI Tello <abbr title="Software Development Kit">SDK</abbr> product documentation.</li>
+<li>Microsoft AirSim - <a href="https://microsoft.github.io/AirSim">microsoft.github.io/AirSim</a>.</li>
+</ol>
+<h3 id="15-overview">1.5 Overview<a class="headerlink" href="#15-overview" title="Permanent link">&para;</a></h3>
+<p>The remainder of this document is organised as follows.</p>
+<ul>
+<li><strong>Section 2 - Overall Description.</strong> Product perspective, interfaces, operating
+  environment, user characteristics, assumptions, and dependencies.</li>
+<li><strong>Section 3 - Specific Requirements.</strong> External-interface, functional, and
+  quality-attribute requirements, plus base features and process requirements,
+  numbered using the hierarchical <code>R&lt;i&gt;.&lt;j&gt;.&lt;k&gt;</code> scheme. Architectural and
+  technological decisions that realise these requirements live in
+  <a href="../SAS/"><code>SAS.md</code></a>.</li>
+<li><strong>Section 4 - Use Cases.</strong> Use-case diagram and full use-case descriptions
+  for the primary operational scenarios.</li>
+<li><strong>Section 5 - Domain Model.</strong> The analysis-level domain model that
+  anchors the design.</li>
+<li><strong>Appendices.</strong> Requirements-elicitation methodology, traceability matrix,
+  and revision history.</li>
+</ul>
+<hr />
+<h2 id="2-overall-description">2. Overall Description<a class="headerlink" href="#2-overall-description" title="Permanent link">&para;</a></h2>
+<h3 id="21-product-perspective">2.1 Product Perspective<a class="headerlink" href="#21-product-perspective" title="Permanent link">&para;</a></h3>
+<p><abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr> is a <strong>self-contained, ground-based application</strong> that interfaces with a
+detachable <abbr title="Unmanned Aerial Vehicle">UAV</abbr> (real or simulated) and a single human operator via a camera and a
+dashboard. It is structured into six tiers, applying a <strong>top-down,
+divide-and-conquer decomposition</strong> so that each tier is functionally cohesive and
+loosely coupled.</p>
+<pre class="mermaid"><code>flowchart LR
+    A[Tier 1&lt;br/&gt;Hardware Input] --&gt; B[Tier 2&lt;br/&gt;CV &amp;amp; Gesture Pipeline]
+    B --&gt; C[Tier 3&lt;br/&gt;Backend API]
+    C --&gt; D[Tier 4&lt;br/&gt;Frontend Dashboard]
+    C --&gt; E[Tier 5&lt;br/&gt;Application Deployment]
+    E --&gt; F[Tier 6&lt;br/&gt;DevOps &amp;amp; Docs]</code></pre>
+<p><em>Figure 2.1 - Six-tier logical decomposition of <abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr>. The corresponding
+architectural-style choices for each tier are documented in
+<a href="../SAS/#2-architectural-requirements"><code>SAS.md</code> Section 2</a>.</em></p>
+<h4 id="211-system-interfaces">2.1.1 System Interfaces<a class="headerlink" href="#211-system-interfaces" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Direction</th>
+<th>Protocol</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Camera -&gt; Processing Pipeline</td>
+<td>In</td>
+<td><abbr title="Open Source Computer Vision Library. used for camera frame capture and preprocessing">OpenCV</abbr> <code>VideoCapture</code> (<abbr title="Universal Serial Bus. the physical interface used to connect cameras and HID peripherals to the GCS">USB</abbr> / built-in)</td>
+<td>Raw video frames at ≥30 <abbr title="Frames Per Second">FPS</abbr>.</td>
+</tr>
+<tr>
+<td>Processing Pipeline -&gt; Backend</td>
+<td>In-process</td>
+<td>Python async queue</td>
+<td>Recognised-gesture events.</td>
+</tr>
+<tr>
+<td>Backend &lt;-&gt; Frontend</td>
+<td>Bidirectional</td>
+<td>WebSocket (<abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr>)</td>
+<td>Live gestures, telemetry, control.</td>
+</tr>
+<tr>
+<td>Backend &lt;-&gt; Drone Adapter</td>
+<td>Bidirectional</td>
+<td>xFly <abbr title="Software Development Kit">SDK</abbr> / Tello <abbr title="Software Development Kit">SDK</abbr> / AirSim <abbr title="Remote Procedure Call. a protocol allowing a program to execute procedures on a remote system as if they were local">RPC</abbr></td>
+<td>Command dispatch and telemetry.</td>
+</tr>
+<tr>
+<td>Backend &lt;-&gt; Storage</td>
+<td>Out</td>
+<td>SQLite (file)</td>
+<td>Gesture log, telemetry history.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="212-user-interfaces">2.1.2 User Interfaces<a class="headerlink" href="#212-user-interfaces" title="Permanent link">&para;</a></h4>
+<p>A single-page web dashboard, served by the backend, and either hosted externally, or packaged via Electron
+(desktop) / <abbr title="Progressive Web App. a web application installable and runnable like a native application">PWA</abbr> + Capacitor (mobile), provides:</p>
+<ul>
+<li>A live video feed with hand-landmark overlay.</li>
+<li>A current-gesture indicator and the command it maps to.</li>
+<li>Telemetry panels (altitude, battery, signal, flight mode).</li>
+<li>Critical-event alerts (low battery, signal loss, failsafe).</li>
+</ul>
+<p>Final visual specifications, component states, and wireframes are documented
+in <a href="../BRAND/"><code>BRAND.md</code></a>.</p>
+<h4 id="213-hardware-interfaces">2.1.3 Hardware Interfaces<a class="headerlink" href="#213-hardware-interfaces" title="Permanent link">&para;</a></h4>
+<ul>
+<li>A standard webcam or built-in laptop camera (≥720p, ≥30 <abbr title="Frames Per Second">FPS</abbr>).</li>
+<li>A supported <abbr title="Unmanned Aerial Vehicle">UAV</abbr> (initially an XFly drone ) <strong>or</strong> a machine running AirSim or <abbr title="Project AirSim. Microsoft's Unreal Engine 5 based drone simulator, successor to legacy AirSim">PAS</abbr>.</li>
+</ul>
+<h4 id="214-software-interfaces">2.1.4 Software Interfaces<a class="headerlink" href="#214-software-interfaces" title="Permanent link">&para;</a></h4>
+<p>The runtime software stack and the rationale for each choice are documented
+in <a href="../SAS/#3-technology-requirements"><code>SAS.md</code> Section 3: Technology Requirements</a>.
+A summary of the major versions is provided here for context:</p>
+<table>
+<thead>
+<tr>
+<th>Software</th>
+<th>Version</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td>3.11.x</td>
+<td><abbr title="Computer Vision">CV</abbr> / <abbr title="Machine Learning">ML</abbr> / backend runtime.</td>
+</tr>
+<tr>
+<td><abbr title="Python async web framework used for the WebSocket backend">FastAPI</abbr></td>
+<td>0.110+</td>
+<td><abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr> + WebSocket backend.</td>
+</tr>
+<tr>
+<td><abbr title="Open Source Computer Vision Library. used for camera frame capture and preprocessing">OpenCV</abbr></td>
+<td>4.8+</td>
+<td>Frame capture and pre-processing.</td>
+</tr>
+<tr>
+<td><abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> Hands</td>
+<td>0.10+</td>
+<td>Landmark detection.</td>
+</tr>
+<tr>
+<td>TensorFlow Lite</td>
+<td>2.x</td>
+<td>Optional <abbr title="Machine Learning">ML</abbr> gesture classifier.</td>
+</tr>
+<tr>
+<td>React + TypeScript</td>
+<td>18 / 5.x</td>
+<td>Frontend dashboard.</td>
+</tr>
+<tr>
+<td>Project AirSim</td>
+<td>latest</td>
+<td>Primary drone simulator.</td>
+</tr>
+<tr>
+<td>AirSim</td>
+<td>latest</td>
+<td>Secondary drone simulator.</td>
+</tr>
+<tr>
+<td>xFly Tello <abbr title="Software Development Kit">SDK</abbr></td>
+<td>latest</td>
+<td>Physical-drone interface.</td>
+</tr>
+<tr>
+<td>Capacitor</td>
+<td>latest</td>
+<td>Mobile packaging.</td>
+</tr>
+<tr>
+<td>Electron</td>
+<td>latest</td>
+<td>Desktop packaging.</td>
+</tr>
+<tr>
+<td>SQLite</td>
+<td>3.x</td>
+<td>Local persistence.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="215-communications-interfaces">2.1.5 Communications Interfaces<a class="headerlink" href="#215-communications-interfaces" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>WebSockets</strong> for live gesture / telemetry streams between
+  backend and frontend.</li>
+<li><strong>HTTP/1.1 + <abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr> endpoints</strong> for configuration, history queries, and authentication.</li>
+<li><strong>Vendor <abbr title="Software Development Kit">SDK</abbr> transports</strong> (<abbr title="User Datagram Protocol. a connectionless transport used by drone SDKs for low-latency command transmission">UDP</abbr> for Tello, <abbr title="Remote Procedure Call. a protocol allowing a program to execute procedures on a remote system as if they were local">RPC</abbr> for AirSim) hidden behind the
+  <code>DroneAdapter</code> abstraction.</li>
+</ul>
+<h4 id="216-memory-constraints">2.1.6 Memory Constraints<a class="headerlink" href="#216-memory-constraints" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Target footprint on the <abbr title="Ground Control Station the host machine running the recognition pipeline">GCS</abbr>: ≤ 1 GB RAM at steady state. This excludes the footprint of drone simulations, which are computationally expensive by nature.</li>
+<li>SQLite log volume capped at 250 MB before automatic rotation.</li>
+</ul>
+<h4 id="217-operations">2.1.7 Operations<a class="headerlink" href="#217-operations" title="Permanent link">&para;</a></h4>
+<p><abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr> operates in multiple modes:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Live mode</label><label for="__tabbed_1_2">Replay mode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Operator stands in front of the camera, system runs the full
+capture -&gt; recognition -&gt; command pipeline against a connected drone or
+simulator. Telemetry streams continuously to the dashboard.</p>
+</div>
+<div class="tabbed-block">
+<p>The dashboard replays a logged session from SQLite, including the
+recognised-gesture stream and the resulting telemetry. No drone is
+required.</p>
+</div>
+</div>
+</div>
+<h4 id="218-site-adaptation-requirements">2.1.8 Site-Adaptation Requirements<a class="headerlink" href="#218-site-adaptation-requirements" title="Permanent link">&para;</a></h4>
+<p>The system requires no on-site adaptation beyond:</p>
+<ul>
+<li>Selecting the active drone adapter (<code>pas</code> / <code>airsim</code> / <code>xfly</code>) via an on screen prompt.</li>
+<li>Configuring the camera index if multiple cameras are connected.</li>
+</ul>
+<h3 id="22-product-functions-summary">2.2 Product Functions (Summary)<a class="headerlink" href="#22-product-functions-summary" title="Permanent link">&para;</a></h3>
+<p>At a high level, <abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr> shall:</p>
+<ol>
+<li>Capture and pre-process a live video stream from a camera.</li>
+<li>Detect and track hand landmarks in real time.</li>
+<li>Classify hand pose into one of a fixed gesture vocabulary.</li>
+<li>Translate gestures into drone commands via a deterministic mapping.</li>
+<li>Dispatch commands through a pluggable drone adapter (xfly / pas / as).</li>
+<li>Stream gestures, commands, and telemetry to a live dashboard.</li>
+<li>Persist gesture and telemetry logs for review and replay.</li>
+<li>
+<p>Enforce safety failsafes (hover, auto-land, idle detection, takeoff lockout).</p>
+</li>
+<li>
+<p>For the sake of broader accessibility, this core loop is supplemented by the option for multiple input methods, such as keyboard controls or on-screen buttons. These behave similarly, using the same command interface as the main loop.</p>
+</li>
+</ol>
+<h3 id="23-user-characteristics">2.3 User Characteristics<a class="headerlink" href="#23-user-characteristics" title="Permanent link">&para;</a></h3>
+<p><abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr> is operated by a single human at a time. Three user roles are
+recognised:</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Description</th>
+<th>Primary use cases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Operator</strong></td>
+<td>The person standing in front of the camera issuing gestures. Assumed to be of average physical ability with at least one hand in clear view, indoors with adequate lighting. No prior pilot training is required.</td>
+<td>UC-1, UC-2, UC-3, UC-4</td>
+</tr>
+<tr>
+<td><strong>Demonstrator</strong></td>
+<td>A team member or evaluator presenting the system. Familiar with the gesture vocabulary and the dashboard.</td>
+<td>UC-1, UC-2, UC-3, UC-5</td>
+</tr>
+<tr>
+<td><strong>Reviewer</strong></td>
+<td>A mentor, evaluator, or stakeholder reviewing recorded sessions through the replay view. Does not interact with the live pipeline.</td>
+<td>UC2, UC-5</td>
+</tr>
+</tbody>
+</table>
+<h3 id="24-assumptions-and-dependencies">2.4 Assumptions and Dependencies<a class="headerlink" href="#24-assumptions-and-dependencies" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>A1.</strong> The operator has at least one hand visible to the camera.</li>
+<li><strong>A2.</strong> All operations are done indoors, with consistent lighting.</li>
+<li><strong>A3.</strong> The host machine has a working webcam accessible via <abbr title="Open Source Computer Vision Library. used for camera frame capture and preprocessing">OpenCV</abbr>.</li>
+<li><strong>A4.</strong> A drone simulator (<abbr title="Project AirSim. Microsoft's Unreal Engine 5 based drone simulator, successor to legacy AirSim">PAS</abbr>) or a compatible physical drone is
+  available at runtime.</li>
+</ul>
+<hr />
+<h2 id="3-specific-requirements">3. Specific Requirements<a class="headerlink" href="#3-specific-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="31-external-interface-requirements">3.1 External Interface Requirements<a class="headerlink" href="#31-external-interface-requirements" title="Permanent link">&para;</a></h3>
+<h4 id="r1-user-interface">R1: User Interface<a class="headerlink" href="#r1-user-interface" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>R1.1:</strong> The system shall provide a live operator dashboard.<ul>
+<li><strong>R1.1.1:</strong> The dashboard shall display the live camera feed with the
+  <abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> hand-landmark skeleton overlaid, at no less than 24 <abbr title="Frames Per Second">FPS</abbr>.</li>
+<li><strong>R1.1.2:</strong> The dashboard shall display the currently recognised
+  gesture and the command it is mapped to, visible without scrolling.</li>
+<li><strong>R1.1.3:</strong> The dashboard shall display drone telemetry - altitude,
+  battery percentage, flight mode, and link status - in a single
+  panel.</li>
+</ul>
+</li>
+<li><strong>R1.2:</strong> The system shall present critical alerts.<ul>
+<li><strong>R1.2.1:</strong> Critical events (low battery, signal loss, failsafe
+  activation) shall raise both a visual indicator and an audible cue.</li>
+<li><strong>R1.2.2:</strong> Each alert shall remain visible until acknowledged by the
+  operator or until the underlying condition clears.</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>The majority of this functional requirement is handled in use case 2. The data processing &amp; aggregation component of the system will be responsible for the majority of the alerts <strong>(R1.2)</strong>, and the <abbr title="Computer Vision">CV</abbr> pipeline is responsible for the dashboard elements <strong>(R1.1)</strong></p>
+</blockquote>
+<h4 id="r2-hardware-software-interfaces">R2: Hardware &amp; Software Interfaces<a class="headerlink" href="#r2-hardware-software-interfaces" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>R2.1:</strong> The system shall accept video input from any <abbr title="Open Source Computer Vision Library. used for camera frame capture and preprocessing">OpenCV</abbr>-compatible
+  camera device (<abbr title="Universal Serial Bus. the physical interface used to connect cameras and HID peripherals to the GCS">USB</abbr> <abbr title="USB Video Class. The standard protocol used by USB-connected cameras, enabling plug-and-play use with OpenCV">UVC</abbr> or built-in).</li>
+<li><strong>R2.2:</strong> The system shall dispatch commands to a <abbr title="Unmanned Aerial Vehicle">UAV</abbr> through an
+  implementation of the <code>DroneAdapter</code> interface. The interface contract is
+  defined in <a href="../SAS/#4-api-contracts"><code>SAS.md</code> Section 4 <abbr title="Application Programming Interface">API</abbr> Contracts</a>.</li>
+<li><strong>R2.3:</strong> The system shall expose a WebSocket endpoint at <code>/ws/live</code>
+  carrying <abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr>-encoded <code>GestureEvent</code> and <code>TelemetryFrame</code> messages.</li>
+<li><strong>R2.4:</strong> The system shall expose <abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr> endpoints under <code>/api/v1</code> for
+  configuration, session history, and replay control. Full schema is given
+  in <a href="../SAS/#4-api-contracts"><code>SAS.md</code> Section 4 <abbr title="Application Programming Interface">API</abbr> Contracts</a>.</li>
+</ul>
+<blockquote>
+<p>These requirements are delegated equally between the <abbr title="Computer Vision">CV</abbr> Pipeline and Adapter subsystems.</p>
+</blockquote>
+<h3 id="312-user-stories-user-characteristics">3.1.2 User Stories / User Characteristics<a class="headerlink" href="#312-user-stories-user-characteristics" title="Permanent link">&para;</a></h3>
+<p>This sections enumerates every intented user of <abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr>, descibes how each one use the system, and expresses their needs as user stories. </p>
+<h4 id="3121-user-classea">3.1.2.1 User Classea<a class="headerlink" href="#3121-user-classea" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>User class</th>
+<th>Who they are</th>
+<th>Technical expertise</th>
+<th>Frequency of Use</th>
+<th>Privilege level</th>
+<th>Primary use cases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>U1</strong></td>
+<td><strong>Novice Operator</strong></td>
+<td>A first-time user with no pilot training and no prior exposure to the geesture vocabulary. The archetypal end user; the accessibility case that motivates the product.</td>
+<td>None assumed, can operate a browser.</td>
+<td>Once or twice in a single sitting.</td>
+<td>Authenticated user. full flight control, gated by calibration and Assist Mode.</td>
+<td>UC-1, UC-2, UC-7, UC-8</td>
+</tr>
+<tr>
+<td><strong>U2</strong></td>
+<td><strong>Experienced Operator / Demonstrator</strong></td>
+<td>A team member, mentor or evaluator presenting <abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr>. Knows the gesture vocabulary, the dashboard layout, and the failure modes.</td>
+<td>High. Undertands the pipeline and can intepret raw telemetry.</td>
+<td>Frequent - every demo, integration test, and tuning session.</td>
+<td>Authenticated user. Full flight control, may disable Assist Mode, may hot-swap adapters and input sources.</td>
+<td>UC-1, UC-2, UC-3, UC-4, UC-5, UC-6, UC-8</td>
+</tr>
+<tr>
+<td><strong>UC3</strong></td>
+<td><strong>Assistive-Needs Operator</strong></td>
+<td>An operaotr with limited fine-motor capability, a single usable hand, or an injury that makes a physical twin-stick controller impractical. Explicitly named as a beneficiary in sECTION 1.2.</td>
+<td>Low to moderate.</td>
+<td>Occasional.</td>
+<td>Authenticated user. Full flight control via whichever input source suits them.</td>
+<td>UC-1, UC-3, UC-4, UC-7, UC-8</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>U1-U3 are the priamry actors</strong> - they are the "Operator" actor in 
+Figure 4.1, split here by capability and experience because those 2 
+attributes drive genuinely different requirements (<code>R9</code> Tutorial and 
+Assist Mode extists for U1; <code>R7</code> Alternative Input Control exist for U3;
+<code>R2.2</code> runtime adapter swapping exists for U2).</p>
+</blockquote>
+<h4 id="3122-u1-novice-operator">3.1.2.2 U1 - Novice Operator<a class="headerlink" href="#3122-u1-novice-operator" title="Permanent link">&para;</a></h4>
+<p><strong>How the system is used.</strong> The novice opens the dashboard, registers or logs in, and is offered the tutorial on first login with a pop-up. After completing the tutorial or skipping it, they must complete (or skip) the pre-flight gesture calibration, then can choose to fly a simulated drone sim or head on straight to flying their real drone. They have no reference of the gesture or vocabulary and learn based on the UI in front of them, the dahsboard will inform the user on what input they are making and what the drone will do.</p>
+<ul>
+<li><strong>US-N-01</strong> - As a novice operator, I want a guided tutorial to start 
+  automatically the first time I log in, so that i do not have to work out the system by trial and error on a live drone.
+  <em>Use case</em> UC-7</li>
+<li><strong>US-N-02</strong> - As a novice operator, I want the dashbaord to show me the 
+  gesture it currently recognises and the command that gestures maps to, so that I can learn the vocabulary by watching my own hand. 
+  <em>Use case</em> UC-1</li>
+<li><strong>US-N-03</strong> - As a novice operator, I want the system to check that my 
+  gestures are being read reliably before it lets me fly, so that I do not crash the drone because of bad lighting or a bad camera angle.
+  <em>Use case</em> UC-8</li>
+<li><strong>US-N-04</strong> - As a novice operator, I want to review the live telemetry of my 
+  drone after a short flight, seeing if my connection strength and battery levels are still fine so the drone doesnt crash.
+  <em>Use case</em> UC-2 UC-5</li>
+<li><strong>US-N-05</strong> - As a novice operator, I want to get a feel on the different c
+  controls in a virtual environment before I test it out with my real drone.
+  <em>Use case</em> UC-3 UC-4</li>
+</ul>
+<h4 id="3123-u2-experienced-operator-demonstrator">3.1.2.3 U2 - Experienced Operator / Demonstrator<a class="headerlink" href="#3123-u2-experienced-operator-demonstrator" title="Permanent link">&para;</a></h4>
+<p><strong>How the system is used.</strong> The demonstrator runs <abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr> in front of an audience (demo 2) or against a real drone (demo &frac34;). They need the system to look and feel responsive, to expose enough telemetry to narrate what is happening, and to let them switch between sim and hardware, and between gesture, keyboard, and gamepad input, without resarting anything. When something breaks mid-demo they need the failure to be visible and contained.</p>
+<ul>
+<li><strong>US-D-01</strong> - As a demonstrator, I want gesture-to-command latency to be 
+  imperceptible, so that the audience sees the drone react to my hand rather than to a delay
+  <em>Use case</em> UC-1, UC-3, UC-4</li>
+<li><strong>US-D-02</strong> - As a demonstrator, I want link loss and low battery to be clearly
+  seen on the UI while flying the drone so while i am controlling it i can also see whether i need to stop flying or not because of connection or battery level.
+  <em>Use case</em> UC-2, UC-5</li>
+<li><strong>US-D-03</strong> - As a demonstrator, I want have a visualisation of the path im 
+  taking while flying and receive related analytics while operating with the drone sim.
+  <em>Use case</em> UC-6</li>
+</ul>
+<h4 id="3124-u3-assistive-needs-operator">3.1.2.4 U3 - Assistive-Needs Operator<a class="headerlink" href="#3124-u3-assistive-needs-operator" title="Permanent link">&para;</a></h4>
+<p><strong>How the system is used.</strong> This operator flies using whichever input path matches their capability. If one hand is usable, the gesture pipeline works unchanged. If sustained fine-motor precision is the barrier, they select the keyboard or gamepad input and get an identical command vocabulary and identical safety behaviour, because every input source funnels through the same <code>Command</code> object and the same <code>DroneAdapter</code>.</p>
+<ul>
+<li><strong>US-A-01</strong> - As an operator with one usable hand, I want single-hand gestures
+  to be sufficient for full control, so that i am not excluded by the input method.
+  <em>Use case</em> UC-1</li>
+<li><strong>US-A-02</strong> - As an operator using an alternative input source, I want exactly 
+  the same commands and failsafes as a gesture operator, so that no capability is traded away for accessibility.
+  <em>Use case</em> UC-3, UC-4</li>
+<li><strong>US-A-03</strong> - As an operator who cannot hold a console controller, i want 
+  keyboard or gamepad control as a first-class alternative, so that I can fly using discrete key presses.
+  <em>Use case</em> UC-4, UC-3</li>
+</ul>
+<h3 id="32-functional-requirements">3.2 Functional Requirements<a class="headerlink" href="#32-functional-requirements" title="Permanent link">&para;</a></h3>
+<h4 id="r3-camera-capture-detection">R3: Camera Capture &amp; Detection<a class="headerlink" href="#r3-camera-capture-detection" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>R3.1:</strong> The system shall capture video for gesture recognition.<ul>
+<li><strong>R3.1.1:</strong> The pipeline shall capture frames at a minimum of 30 <abbr title="Frames Per Second">FPS</abbr>.</li>
+<li><strong>R3.1.2:</strong> The pipeline shall preprocess each frame (resize, colour
+  conversion) before landmark detection.</li>
+</ul>
+</li>
+<li><strong>R3.2:</strong> The system shall detect and classify hand gestures.<ul>
+<li><strong>R3.2.1:</strong> The pipeline shall detect and track 21 hand landmarks in
+  real time using <abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> Hands.</li>
+<li><strong>R3.2.2:</strong> The pipeline shall recognise a fixed vocabulary of at
+  least six gestures: Open Palm, Fist, Thumb Up, Thumb Down,
+  Pointer-Left, Pointer-Right.</li>
+<li><strong>R3.2.3:</strong> The pipeline shall reject unrecognised or ambiguous
+  gestures and shall not produce a command in such cases.</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>This entire requirement remains the responsibility of the <abbr title="Computer Vision">CV</abbr> pipeline, and is accomplished using <abbr title="Open Source Computer Vision Library. used for camera frame capture and preprocessing">OpenCV</abbr> for preprocessing <strong>(R3.1)</strong>, in conjunction with <abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> Hands <strong>(R3.2)</strong>.</p>
+</blockquote>
+<h4 id="r4-gesture-command-mapping">R4: Gesture-Command Mapping<a class="headerlink" href="#r4-gesture-command-mapping" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>R4.1:</strong> The system shall map each recognised gesture to exactly one
+  drone command via a deterministic mapping table, defined in the Gesture class.</li>
+<li><strong>R4.2:</strong> The mapping table shall be configurable without code changes
+  (e.g. via a <abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr> or <abbr title="YAML Ain't Markup Language. a human-readable format used for gesture mapping configuration files">YAML</abbr> profile file).</li>
+<li><strong>R4.3:</strong> The system shall dispatch a command to the active drone
+  adapter within 200 ms of the gesture being recognised
+  (see also <code>NFR1.1</code>).</li>
+<li><strong>R4.4:</strong> All control inputs, regardless of the source, shall be encapsulated in a common object containing the command's type, a source identifier, and any optional payloads before dispatch.</li>
+</ul>
+<blockquote>
+<p>This forms part of th <abbr title="Computer Vision">CV</abbr> pipeline, and is done by interpreting key landmarks on the users' hand. <strong>R4.3-R4.4</strong> represents the handoff to the <abbr title="Human Interface Device. any hardware input peripheral such as a keyboard, gamepad, or camera">HID</abbr> to Drone adapters subsystem.</p>
+</blockquote>
+<h4 id="r5-drone-communication">R5: Drone Communication<a class="headerlink" href="#r5-drone-communication" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>R5.1:</strong> The system shall maintain bidirectional communication with the
+  active drone adapter.<ul>
+<li><strong>R5.1.1:</strong> The system shall ingest telemetry frames from the drone
+  adapter at a minimum rate of 5 Hz.</li>
+<li><strong>R5.1.2:</strong> The system shall forward telemetry frames to the
+  dashboard via the WebSocket endpoint.</li>
+</ul>
+</li>
+<li><strong>R5.2:</strong> The system shall detect and respond to link loss.<ul>
+<li><strong>R5.2.1:</strong> If the heartbeat to the drone adapter is missed for more
+  than 2 seconds, the system shall command <code>HOVER</code>.</li>
+<li><strong>R5.2.2:</strong> Link-loss events shall be surfaced as a banner alert on
+  the dashboard.</li>
+</ul>
+</li>
+<li><strong>R5.3:</strong> All drone adapters must return normalised telemetry data of the same shape, containing at minimum altitude, speed, battery percentage, heading direction, and flight state.</li>
+</ul>
+<blockquote>
+<p>This is handled entirely by the adapters subsystem. Each supported drone, i.e. every concrete DroneAdapter, implements these features.</p>
+</blockquote>
+<h4 id="r6-failsafes">R6: Failsafes<a class="headerlink" href="#r6-failsafes" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>R6.1:</strong> The system shall hold a safe state in the absence of input.<ul>
+<li><strong>R6.1.1:</strong> If no gesture is detected for more than 3 seconds, the
+  system shall command <code>HOVER</code>.</li>
+<li><strong>R6.1.2:</strong> While in <code>HOVER</code> for idle, the dashboard shall display an
+  "Idle - hovering" indicator.</li>
+</ul>
+</li>
+<li><strong>R6.2:</strong> The system shall protect against critical failure modes.<ul>
+<li><strong>R6.2.1:</strong> When reported battery falls below 15 %, the system shall
+  initiate an auto-land sequence.</li>
+<li><strong>R6.2.2:</strong> The system shall reject any take-off command issued
+  before the gesture-recognition pipeline reports a valid connection.</li>
+<li><strong>R6.2.3:</strong> The dashboard shall expose an emergency-stop control
+  that commands an immediate landing.</li>
+<li><strong>R6.2.4:</strong> An emergency-landing or other safety-critical operations must override all pending operations of a lower level of importance.</li>
+</ul>
+</li>
+<li><strong>R6.3:</strong> The system shall log every issued command and significant
+  system event (start, stop, failsafe trip, error) with a
+  timestamp in SQLite, as well as to a debug console.</li>
+</ul>
+<blockquote>
+<p>Failsafes are included in all parts of the interaction loop. Most notably in the main points of interaction of the system, camera capture, and drone interaction. Logs are created at every step of the process.</p>
+</blockquote>
+<h4 id="r7-alternative-input-control">R7: Alternative Input Control<a class="headerlink" href="#r7-alternative-input-control" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>R7.1:</strong> The system shall accept multiple supplementary input sources.<ul>
+<li><strong>R7.1.1:</strong> The system shall accept keyboard input as a control source, mapping key presses to drone commands via a fixed binding table.</li>
+<li><strong>R7.1.2:</strong> The system shall accept gamepad input as a control source, allowing for analog control rather than discrete, digital input</li>
+<li><strong>R7.1.3:</strong> Input sources must be switchable seamlessly at runtime, via a simple button press on the dashboard. This needs to be quick and responsive.</li>
+<li><strong>R7.1.4</strong> Details of the currently selected input source must be clearly visible, including a controls legend, as well as real-time indications of any connection issues</li>
+</ul>
+</li>
+<li><strong>R7.2:</strong> The system must implement each supported input source to be fully compatible and consistent with every supported drone implementation.</li>
+</ul>
+<blockquote>
+<p>This is handled entirely in the adapter subsystem. Each input method is guarunteed to behave the same with every drone via the DroneAdapter interface. InputAdapters allow each input device to behave identically.</p>
+</blockquote>
+<h4 id="r8-user-authentication-and-preference-management">R8: User Authentication and Preference Management<a class="headerlink" href="#r8-user-authentication-and-preference-management" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>R8.1:</strong> The system shall provide user registration and authentication.<ul>
+<li><strong>R8.1.1:</strong> A new user can register an account with an email address and a password</li>
+<li><strong>R8.1.2:</strong> Passwords shall be validated against a minimum length / strength policy and stored using a cryptographic hashing function and salted.</li>
+<li><strong>R8.1.3:</strong> Returning users shall be able to authenticate using their email address and password.</li>
+<li><strong>R8.1.4:</strong> On logout, the WebSocket connection should be closed, and the dashboard should return the user to the login screen.</li>
+</ul>
+</li>
+<li><strong>R8.2:</strong> The system shall store user preferences.<ul>
+<li><strong>R8.2.1:</strong> Settings chosen by the user, such as theme (light/dark), and any other customization options, should be saved and loaded upon login</li>
+<li><strong>R8.2.2:</strong> Stored settings may be modified at runtime, with any changes taking effect without any page reload</li>
+<li><strong>R8.2.3:</strong> If a stored preference is unable to be fetched, a default value should be used in its place.</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>This is handled by its own subsystem, specifically for user management. </p>
+</blockquote>
+<h4 id="r9-tutorial-and-assist-mode">R9: Tutorial and Assist Mode<a class="headerlink" href="#r9-tutorial-and-assist-mode" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>R9.1</strong> The system shall provide an interactive tutorial.<ul>
+<li><strong>R9.1.1</strong> The tutorial must be accessible from the dashboard or triggered on first login.</li>
+<li><strong>R9.1.2</strong> The system shall retrieve tutorial steps from the backend through a <abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr> endpoint.</li>
+<li><strong>R9.1.3</strong> Each tutorial step shall define an instruction payload and a completion condition.</li>
+<li><strong>R9.1.4</strong> the system shall enforce sequential progression.</li>
+<li><strong>R9.1.5</strong> The frontend shall render tutorial content using overlays, highlighting, and animations to guide user actions.</li>
+<li><strong>R9.1.6</strong> The tutorial may be revisited or restarted at any time.</li>
+</ul>
+</li>
+<li><strong>R9.2</strong> The system must provide an 'assist mode' for safety<ul>
+<li><strong>R9.2.1</strong> Assist Mode needs to modify drone behaviour during tutorial sessions.</li>
+<li><strong>R9.2.2</strong> Assist Mode must be toggleable at will during normal drone operation.</li>
+<li><strong>R9.2.3</strong> Max altitude, speed, and sensitivity contraints must be enforced by assist mode.</li>
+<li><strong>R9.2.4</strong> The frontend shall clearly indicate Assist Mode status in the dashboard UI</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>This is once again its own subsystem, that when in use, acts as a 'filter' for the general <abbr title="Computer Vision">CV</abbr> pipeline.
+This tutorial subsystem is not standalone, but rather interfaces heavily with the rest of the system, similar to training wheels.</p>
+</blockquote>
+<h3 id="r10-telemetry-data-management">R10: Telemetry Data Management<a class="headerlink" href="#r10-telemetry-data-management" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>R10.1</strong> The system shall ingest telemetry frames from the drone adapter.<ul>
+<li><strong>R10.1.1</strong> The system shall normalize incoming telemetry data to the standard schema (altitude, speed, displacement, battery, heading, flight state).</li>
+<li><strong>R10.1.2</strong> The system shall reject malformed telemetry frames and log a warning.</li>
+</ul>
+</li>
+<li><strong>R10.2</strong> The system shall forward telemetry to all connected dashboard clients via WebSockets.<ul>
+<li><strong>R10.2.1</strong> Each telemtry frame shall include a UTC timestamp and be sent as structured <abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr>.</li>
+<li><strong>R10.2.2</strong> Telemetry forwarding shall continue regardless of gesture recognition status.</li>
+</ul>
+</li>
+<li><strong>R10.3</strong> The system shall log telemetry data to SQLite at every frame for diagnostic purposes.<ul>
+<li><strong>R10.3.1</strong> Telemetry logs older than 30 days shall be pruned.</li>
+<li><strong>R10.3.2</strong> The system shall expose a <abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr> endpoint for retrieving historical telemetry data.</li>
+</ul>
+</li>
+<li><strong>R10.4</strong> The system shall detect and alert on telemetry anomalies.<ul>
+<li><strong>R10.4.1</strong> Battery below 30% shall trigger a dashboard warning notification.</li>
+<li><strong>R10.4.2</strong> No telemetry received for more than 2 seconds will surface a "No Data" banner alert.</li>
+</ul>
+</li>
+<li><strong>R10.5</strong> The dashboard shall display real-time telemetry visualisation.<ul>
+<li><strong>R10.5.1</strong> Current altitude, battery level, speed, heading, x/y displacement and flight state shall be displayed</li>
+<li><strong>R10.5.2</strong> All displays shall update at the same rate that telemetry is received </li>
+</ul>
+</li>
+<li><strong>R10.6</strong> The system shall provide GPS like tracking using displacement for path visualisation.<ul>
+<li><strong>R10.6.1</strong> The GPS page on the dashboard will render a live grid map using Leaflet (without tiles), displayinga marker representing the drones current position.</li>
+<li><strong>R10.6.2</strong> The system shall convert received positional data (x, y, altitude_m) into map coordinates, with a base reference coordinate defining the session origin.</li>
+<li><strong>R10.6.3</strong> The system shall draw and maintain a path histroy on the map, representing the drone's movement trajectory over time.</li>
+<li><strong>R10.6.4</strong> The map shall display a heading direction with an orientation indicator on the drone marker.</li>
+</ul>
+</li>
+</ul>
+<h3 id="33-non-functional-quality-requirements">3.3 Non-Functional (Quality) Requirements<a class="headerlink" href="#33-non-functional-quality-requirements" title="Permanent link">&para;</a></h3>
+<p>The Demo 3 brief targets <em>five</em> quantified quality requirements. The five
+chosen for <abbr title="Gesture-Based Drone Control the product specified by the SRS">GBDC</abbr> are the attributes that materially constrain the
+architecture; the architectural decisions that realise each are tabulated
+in <a href="../SAS/#25-mapping-quality-requirements-to-architectural-decisions"><code>SAS.md</code> Section 2.5</a>.</p>
+<h4 id="nfr1-performance">NFR1: Performance<a class="headerlink" href="#nfr1-performance" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>NFR1.1:</strong> End-to-end gesture-to-command latency shall not exceed
+  <strong>200 ms at the 95<sup>th</sup> percentile</strong>, measured from frame timestamp to
+  command dispatch, under nominal load on the reference machine (4-core
+  x86_64, 8 GB RAM, integrated GPU, a lower end laptop running Windows).</li>
+<li><strong>NFR1.2:</strong> The pipeline shall sustain <strong>≥ 30 <abbr title="Frames Per Second">FPS</abbr></strong> while keeping CPU
+  usage <strong>≤ 70 %</strong> on the reference machine.</li>
+<li><strong>NFR1.3:</strong> The dashboard shall render incoming WebSocket frames at
+  <strong>≥ 24 <abbr title="Frames Per Second">FPS</abbr></strong> with no dropped frames over a 10-minute steady-state run.</li>
+</ul>
+<h4 id="nfr2-security">NFR2: Security<a class="headerlink" href="#nfr2-security" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>NFR2.1:</strong> The WebSocket endpoint shall require a short-lived
+  (<strong>≤ 30-minute</strong>) session token issued via the <abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr> login endpoint.</li>
+<li><strong>NFR2.2:</strong> All credentials and connection strings shall be loaded from
+  environment variables or the host's secrets manager; <strong>zero secrets</strong>
+  shall be committed to the repository. This is done in our <abbr title="Continuous Integration">CI</abbr> pipeline.</li>
+<li><strong>NFR2.3:</strong> Every <abbr title="Application Programming Interface">API</abbr> endpoint shall validate its input payload against
+  a <abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr> schema and reject malformed requests with <code>400 Bad Request</code>;
+  <strong>100 %</strong> of endpoints shall be covered by schema validation.</li>
+</ul>
+<h4 id="nfr3-reliability">NFR3: Reliability<a class="headerlink" href="#nfr3-reliability" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>NFR3.1:</strong> Under adequate indoor lighting, gesture-classification accuracy shall
+  be <strong>≥ 95 %</strong> measured against a labelled test set of at least 300
+  samples.</li>
+<li><strong>NFR3.2:</strong> False-positive command rate (a command issued from a
+  non-deliberate gesture) shall not exceed <strong>1 %</strong> over the same test set.</li>
+<li><strong>NFR3.3:</strong> A crash in the recognition pipeline shall not crash the
+  backend; the system shall enter failsafe-hover and surface an error to
+  the dashboard within <strong>≤ 1 second</strong>.</li>
+</ul>
+<h4 id="nfr4-maintainability">NFR4: Maintainability<a class="headerlink" href="#nfr4-maintainability" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>NFR4.1:</strong> The codebase shall be partitioned into the modules listed in
+  <a href="../SAS/#24-architectural-diagram"><code>SAS.md</code> Section 2.4</a>; no module shall
+  import from a sibling outside its declared interface (enforced by a
+  static-import check in <abbr title="Continuous Integration">CI</abbr>).</li>
+<li><strong>NFR4.2:</strong> Each module shall maintain <strong>≥ 80 % line coverage</strong> in its
+  unit test suite. <abbr title="Continuous Integration">CI</abbr> shall fail any <abbr title="Pull Request">PR</abbr> that drops coverage below this
+  threshold.</li>
+<li><strong>NFR4.3:</strong> A bug fix or small feature shall be deployable from a green
+  <abbr title="Pull Request">PR</abbr> to the production environment within <strong>≤ 30 minutes</strong> end-to-end
+  (merge -&gt; <abbr title="Continuous Integration">CI</abbr> -&gt; deploy).</li>
+</ul>
+<h4 id="nfr5-usability">NFR5: Usability<a class="headerlink" href="#nfr5-usability" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>NFR5.1:</strong> A first-time operator shall be able to complete the basic
+  flight sequence (take-off, hover, move, land) within <strong>≤ 5 minutes</strong>
+  of opening the system, given access to the in-product tutorial.</li>
+<li><strong>NFR5.2:</strong> The system shall achieve <strong>≥ 85 % user satisfaction</strong> in
+  end-of-demo usability testing with at least five external
+  participants.</li>
+<li><strong>NFR5.3:</strong> Every user-visible error shall describe the cause and
+  suggest a corrective action; <strong>100 %</strong> of error states shall meet
+  this rule in a quarterly UX audit.</li>
+</ul>
+<h3 id="34-other-requirements">3.4 Other Requirements<a class="headerlink" href="#34-other-requirements" title="Permanent link">&para;</a></h3>
+<h4 id="or1-process-documentation">OR1: Process &amp; Documentation<a class="headerlink" href="#or1-process-documentation" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>OR1.1:</strong> All project documentation shall be authored in Markdown and
+  rendered by MkDocs Material to GitHub Pages, deployed automatically on
+  push to <code>main</code> and <code>dev</code>.</li>
+</ul>
+<hr />
+<h2 id="4-use-cases">4. Use Cases<a class="headerlink" href="#4-use-cases" title="Permanent link">&para;</a></h2>
+<p>The use cases derived from the functional requirements are modelled below.
+Each follows the standard use-case template: scope, actors,
+preconditions, main flow, alternative flows, post-conditions. Requirement
+IDs are cited inline so the mapping back to Section 3 is unambiguous.</p>
+<h3 id="41-use-case-diagram">4.1 Use-Case Diagram<a class="headerlink" href="#41-use-case-diagram" title="Permanent link">&para;</a></h3>
+<p><img alt="Use-Case Diagram" src="../diagrams/UseCaseDiagramV3.0.svg" /></p>
+<p><em>Figure 4.1 - Primary use cases and actors.</em></p>
+<h3 id="42-uc-1-hand-tracking-gesture-recognition">4.2 UC-1 - Hand Tracking &amp; Gesture Recognition<a class="headerlink" href="#42-uc-1-hand-tracking-gesture-recognition" title="Permanent link">&para;</a></h3>
+<p>This use case represents the core entrypoint for the system and the basis of the Computer Vision pipeline. Gesture detection must be reliable and have low latency, as all downstream drone commands depend entirely on the output of this stage.</p>
+<p><strong>Actors.</strong> Operator (primary)</p>
+<p><strong>Preconditions.</strong></p>
+<ul>
+<li>The system is launched and the drone adapter is connected.</li>
+<li>The drone adapter reports healthy telemetry data.</li>
+</ul>
+<p><strong>Main flow.</strong></p>
+<ol>
+<li>The Operator positions their hand in view of the camera.</li>
+<li><abbr title="Open Source Computer Vision Library. used for camera frame capture and preprocessing">OpenCV</abbr> captures the live video and preprocesses each frame; adjusting contrast, colours, and saturation to improve detection
+    (<code>R3.1.1</code>, <code>R3.1.2</code>).</li>
+<li>Each preprocessed frame is passed to <abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> Hands, which detects and tracks the hand landmarks in real time (<code>R3.2.1</code>).</li>
+<li>The landmark array is passed to a rule-based gesture recogniser, which classifies the hand position against a fixed ruleset to determine a confidence level for the current action (<code>R3.2.2</code>).</li>
+<li>The recognised gesture, confidence score, and timestamp are emitted to the dashboard via a WebSocket endpoint (<code>R2.3</code>).</li>
+<li>The landmark skeleton and the aforementioned info points are rendered as an overlay on the live camera feed on the dashboard (<code>R1.1.1</code>, <code>R1.1.2</code>).</li>
+</ol>
+<p><strong>Post-conditions.</strong> A drone command has been dispatched, and the details of the gesture is visible on the dashboard. All events are logged with a timestamp (<code>R6.3</code>).</p>
+<p><strong>Alternative flows.</strong></p>
+<ul>
+<li><em>A1 - Unrecognised or ambiguous gesture.</em> If the classifier cannot confidently classify the hand pose (<code>R3.2.3</code>), no command is issued,
+the landmark overlay continues to be rendered, and the gesture indicator displays an unknown state. The last issued command remains in effect.</li>
+</ul>
+<h3 id="43-uc-2-statistics-dashboard-and-telemetry-logging">4.3 UC-2 - Statistics Dashboard and Telemetry Logging<a class="headerlink" href="#43-uc-2-statistics-dashboard-and-telemetry-logging" title="Permanent link">&para;</a></h3>
+<p>This use case validates the full data pipeline from backend to frontend and serves as the primary visual centrepiece for system demonstrations.
+The charts and visualisations produced here are central to validating full integration once a physical drone is involved.</p>
+<p><strong>Actors.</strong> Operator (priamry).</p>
+<p><strong>Preconditions.</strong></p>
+<ul>
+<li>The system is launched and the drone adapter is connected.</li>
+<li>The drone adapter reports healthy telemetry data.</li>
+<li>The operator has an active browser session open on the dashboard.</li>
+</ul>
+<p><strong>Main flow.</strong></p>
+<ol>
+<li>The drone adapter begins producing telemetry at a fixed polling interval, covering altitude, speed, heading, battery percentage, and signal strength (<code>R2.1</code>).</li>
+<li>The backend telemetry emitter packages each reading into a timestamped payload and broadcasts it to all connected clients over a WebSocket endpoint (<code>R2.3</code>).</li>
+<li>The dashboard receives the WebSocket stream and updates the live altitude and speed line charts in real time (<code>R1.2.1</code>).</li>
+<li>The battery and signal strength gauge components update on each received payload (<code>R1.2.2</code>).</li>
+<li>On session end, the backend aggregates the telemetry rows for that session and writes a summary record to the flight log table (<code>R6.2</code>).</li>
+<li>The operator may request a flight summary at any time via a <abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr> endpoint, which returns the aggregated statistics for the current or prior session (<code>R2.2</code>).</li>
+</ol>
+<p><strong>Post-conditions.</strong> All telemetry readings for the session are stored in the telemetry log table. 
+A flight summary record exists in the flight log table. 
+The dashboard reflects the final known state of all live components.
+All events are logged with a timestamp (<code>R6.3</code>).</p>
+<h3 id="44-uc-3-drone-simulator-controls-and-adapter">4.4 UC-3 - Drone Simulator Controls and Adapter<a class="headerlink" href="#44-uc-3-drone-simulator-controls-and-adapter" title="Permanent link">&para;</a></h3>
+<p>This use case establishes the two-way adapter pattern that all future drone integrations, including real hardware, will follow. Correctness here means that swapping in a physical drone later requires a configuration change rather than an architectural one.</p>
+<p><strong>Actors.</strong> Operator (primary)</p>
+<p><strong>Preconditions.</strong></p>
+<ul>
+<li>A simulator or real drone is available.</li>
+<li>A DroneAdapter is running to establish a connection to the drone.</li>
+<li>The dashboard is open in the operator's browser.</li>
+<li>The backend is running and ready to accept inputs.</li>
+</ul>
+<p><strong>Main flow.</strong></p>
+<ol>
+<li>On startup, the backend instantiates the configured concrete DroneAdapter (<code>R4.1</code>).</li>
+<li>The adapter calls <code>connect()</code>, establishing a connection to the AirSim <abbr title="Remote Procedure Call. a protocol allowing a program to execute procedures on a remote system as if they were local">RPC</abbr> endpoint and enabling <abbr title="Application Programming Interface">API</abbr> control of the <abbr title="Unmanned Aerial Vehicle">UAV</abbr> (<code>R4.2</code>).</li>
+<li>The dashboard polls the simulator status indicator, which reflects the active adapter name, connection state, and telemetry. (<code>R1.3.1</code>).</li>
+<li>A recognised event is received, and this is delegated to the correct InputAdapter to package into a Command (<code>R3.3.1</code>, <code>R7.1</code>).</li>
+<li>The adapter translates the method call into the appropriate <abbr title="Application Programming Interface">API</abbr>/<abbr title="Software Development Kit">SDK</abbr> call and dispatches it to the simulator (<code>R4.3</code>).</li>
+<li>The simulator executes the command and the drone state updates accordingly.</li>
+<li>The adapter asynchronously retrieves updated telemetry via <code>get_telemetry()</code> and returns it to the telemetry pipeline for broadcasting and persistence (<code>R2.1</code>).</li>
+</ol>
+<p><strong>Post-conditions.</strong> The drone has responded to the issued command. Updated telemetry reflects the new state. The dashboard status indicator shows the adapter as connected. All commands and state transitions are logged with a timestamp (<code>R6.3</code>).</p>
+<p><strong>Alternative flows.</strong></p>
+<ul>
+<li><em>A1 - Simulator unreachable on connect.</em> If <code>connect()</code> fails to reach the drone instance,
+the adapter returns a failed connection status without raising an unhandled exception.
+The dashboard status indicator reflects the disconnected state. No commands are dispatched until a successful connection is established.
+The user may repeat the process.</li>
+<li><em>A2 - Command issued while adapter is disconnected.</em> If a gesture event triggers a command translation while the adapter is not connected, the Command is logged as dropped and no further action is taken. Nothing is sent to the simulator</li>
+<li><em>A3 - Adapter swap at runtime.</em> If the active adapter is changed while the system is running,
+the previous adapter calls <code>disconnect()</code> to release <abbr title="Application Programming Interface">API</abbr> control before the new adapter is initialised and connected.
+The status indicator updates to reflect the new adapter. In-flight commands from the previous adapter are not forwarded to the replacement.
+This process should take a couple seconds at most.</li>
+</ul>
+<h3 id="45-uc-4-controller-based-drone-control">4.5 UC-4 - Controller-Based Drone Control.<a class="headerlink" href="#45-uc-4-controller-based-drone-control" title="Permanent link">&para;</a></h3>
+<p>This use case provides an alternative control mechanism to gesture recognition by allowing an operator to fly the drone using a gamepad.
+The controller input path uses the same Command abstraction and DroneAdapter pipeline as all other input methods,
+ensuring that new control mechanisms can be added without modifying the drone-control subsystem.
+This is its own use case due to the intricacies of analog controls, making this a much more complex input method than most.</p>
+<p><strong>Actors.</strong> Operator (primary)</p>
+<p><strong>Preconditions.</strong></p>
+<ul>
+<li>A supported controller is connected to the operator's device, either via bluetooth or <abbr title="Universal Serial Bus. the physical interface used to connect cameras and HID peripherals to the GCS">USB</abbr>.</li>
+<li>The dashboard is open in the operator's browser and is fully up and running</li>
+<li>The DroneAdapter is connected to a simulator or a physical drone</li>
+<li>The <code>Controller</code> input method is selected on the dashboard.</li>
+</ul>
+<p><strong>Main flow.</strong></p>
+<ol>
+<li>The operator connects a controller to the host device.</li>
+<li>The dashboard detects the controller and displays the current controller status (<code>R7.2.1</code>).</li>
+<li>A high-frequency polling service continuously samples the controller state, via WebSockets (<code>R7.2.2</code>).</li>
+<li>Raw controller readings are normalised, 
+applying deadzone filtering and sensitivity adjustments to analog inputs (<code>R7.2.3</code>).</li>
+<li>The processed controller state is transmitted to the backend through a dedicated WebSocket endpoint (<code>R2.3</code>, <code>R7.2.4</code>).</li>
+<li>The ControllerInputAdapter receives the controller payload and converts it into one or more Command objects using the shared command vocabulary (<code>R7.1</code>).</li>
+<li>Use case 3 is invoked. The resulting Command objects are forwarded to the active DroneAdapter (<code>R2.2</code>).</li>
+<li>The dashboard updates the controller visualisation component to reflect 
+the current stick positions, button states, and generated commands (<code>R1.1</code>, <code>R7.2.5</code>).</li>
+</ol>
+<p><strong>Post-conditions.</strong></p>
+<p>The drone has responded to the issued controller commands. The dashboard displays the current controller state and updated telemetry.
+All controller inputs and resulting commands are logged with timestamps (<code>R6.3</code>).</p>
+<p><strong>Alternative flows.</strong></p>
+<ul>
+<li><em>A1 - Controller disconnected during operation.</em> If the controller becomes unavailable while a session is active,
+the polling service reports the disconnect, no further controller commands are created,
+and the dashboard displays a controller-disconnected warning.
+The drone remains in its last valid state until another command source becomes active.</li>
+<li><em>A2 - Invalid controller payload.</em> If the backend receives malformed controller data,
+the payload is rejected by backend validation (<code>NFR2.3</code>). No command is generated and the error is logged.</li>
+<li><em>A3 - Analog input inside deadzone.</em> If an analog stick remains within the configured deadzone (<code>R7.2.3</code>),
+no movement command is generated and the drone maintains its current state.</li>
+</ul>
+<h3 id="46-uc-5-real-telemetry-logging-and-analytics">4.6 UC-5 - Real Telemetry Logging and Analytics<a class="headerlink" href="#46-uc-5-real-telemetry-logging-and-analytics" title="Permanent link">&para;</a></h3>
+<p>This use case enables the collection, storage, and analysis of telemetry data originating from physical drones. Telemetry is continuously streamed from the active drone connection, persisted for historical analysis, and aggregated into user-specific statistics that provide operational insights across multiple flights. The focus of this use case is on the physical drone, which does not provide a built-in way to collect telemetry data.</p>
+<p><strong>Actors.</strong> Operator (primary), Physical Drone (supporting)</p>
+<p><strong>Preconditions.</strong></p>
+<ul>
+<li>The physical drone is powered on and connected through a supported DroneAdapter.</li>
+<li>The telemetry subsystem is operational.</li>
+<li>A valid database for storage is available.</li>
+</ul>
+<p><strong>Main flow.</strong></p>
+<ol>
+<li>The operator establishes a connection to a physical drone through the dashboard (<code>R8.1</code>).</li>
+<li>The DroneAdapter begins receiving live telemetry from the drone <abbr title="Software Development Kit">SDK</abbr> (<code>R8.2</code>).</li>
+<li>Telemetry measurements are streamed to the dashboard for real-time display (<code>R2.1</code>).</li>
+<li>The system continuously aggregates telemetry data during  the flight session (<code>R8.5</code>).</li>
+<li>The operator performs one or more flight operations.</li>
+<li>The telemetry subsystem updates aggregate statistics as new data arrives (<code>R8.5</code>).</li>
+<li>When the flight session ends, the system finalises and stores a flight summary (<code>R8.6</code>).</li>
+<li>The operator views historical flight records and personal performance statistics through the dashboard (<code>R8.7</code>).</li>
+</ol>
+<p><strong>Post-conditions.</strong></p>
+<ul>
+<li>Telemetry data has been stored for the completed flight session.</li>
+<li>A flight summary has been generated.</li>
+<li>User-specific aggregate statistics have been updated.</li>
+</ul>
+<p><strong>Alternative flows.</strong></p>
+<ul>
+<li>
+<p><em>A1 - Packet loss.</em> If telemetry packets are lost, the system ignores the loss up to a specified threshold,
+                      since polling happens at such a high rate (<code>R8.8</code>).</p>
+</li>
+<li>
+<p><em>A2 - Database unavailable.</em> If telemetry cannot be persisted, the system continues displaying live telemetry while logging storage failures.
+                                      The operator is notified of the issue (<code>R8.9</code>).</p>
+</li>
+<li>
+<p><em>A3 - Drone disconnects unexpectedly.</em> If communication with the drone is lost during flight, telemetry collection stops and the session is logged as incomplete (<code>R8.10</code>).</p>
+</li>
+<li>
+<p><em>A4 - Invalid telemetry received.</em> If malformed telemetry data is received from the drone <abbr title="Software Development Kit">SDK</abbr>, 
+the packet is discarded and an error is logged. Normal collection continues for subsequent valid packets (<code>NFR2.3</code>).</p>
+</li>
+</ul>
+<h3 id="47-uc-6-gps-like-path-visualisation">4.7 UC-6 - GPS like Path Visualisation<a class="headerlink" href="#47-uc-6-gps-like-path-visualisation" title="Permanent link">&para;</a></h3>
+<p>This use case provides a visualisation layer for drone movement by converting
+telemetry-derived positional data into a mapped trajectory.
+The system supports displacement mapping via Leaflet to render real-time drone movement as a marker on the map, with a historical path showing the drone's flight trajectory.</p>
+<p><strong>Actors.</strong> Operator (primary)</p>
+<p><strong>Preconditions.</strong>
+- The system is running and telemetry is being received from a DroneAdapter.
+- A base reference coordinate (a global origin) is defined for the session.
+- The dashboard is connected to the websocket endpoint for receiving telemetry updates.</p>
+<p><strong>Main flow.</strong></p>
+<ol>
+<li>The drone executes movement commands via the active DroneAdapter.</li>
+<li>The backend returns a positional change <code>(x, y, z)</code> as part of telemetry output.</li>
+<li>The backend normalizes the positional update and converts the x, y values into map compatible coordinates relative to the session origin.</li>
+<li>The frontend converts received x, y values into coordinates that fit on the grid.</li>
+<li>The visualisation layer (Leaflet) updates a live marker representing the drone’s position and direction.</li>
+<li>A path history is optionally drawn to represent movement over time.</li>
+<li>The heading direction is displayed via an orientation indicator on the drone marker with its cardinal direction.</li>
+</ol>
+<p><strong>Post-conditions.</strong></p>
+<ul>
+<li>A live visual representation of drone movement is displayed on the dashboard.</li>
+<li>A historical flight path is maintained and displayed, tracking x, y and altitude dimentions to be displayed.</li>
+<li>positional history is retained for the duration of the session.</li>
+<li>On session end or logout, the positional history is cleared.</li>
+</ul>
+<h3 id="48-uc-7-interactive-user-tutorial-and-assist-mode">4.8 UC-7 - Interactive User Tutorial and Assist Mode<a class="headerlink" href="#48-uc-7-interactive-user-tutorial-and-assist-mode" title="Permanent link">&para;</a></h3>
+<p>This use case provides a guided onboarding experience for new operators.
+The system presents an interactive tutorial that teaches users how to use the dashboard, connect to a drone, understand telemetry,
+and execute flight commands safely.
+During the tutorial, an optional Assist Mode can be enabled to reduce flight risk by limiting drone performance and providing additional stabilisation between commands.</p>
+<p><strong>Actors.</strong> Operator (primary)</p>
+<p><strong>Preconditions.</strong></p>
+<ul>
+<li>The operator is authenticated.</li>
+<li>The dashboard is accessible.</li>
+<li>A DroneAdapter is available and connected.</li>
+</ul>
+<p><strong>Main flow.</strong></p>
+<ol>
+<li>The operator selects the "Start Tutorial" option from the dashboard, or
+accepts the tutorial prompt when creating a new account. (<code>R9.1.1</code>)</li>
+<li>The system retrieves the ordered list of tutorial steps from the backend. (<code>R9.1.2</code>, <code>R9.1.3</code>)</li>
+<li>The dashboard displays a tutorial overlay explaining the current objective. (<code>R9.1.6</code>)</li>
+<li>The tutorial guides the operator through basic dashboard functionality, including telemetry displays and drone status indicators. (<code>R9.1.3</code>, <code>R9.1.4</code>)</li>
+<li>When the completion condition is satisfied, the frontend notifies the backend via a <abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr> endpoint. (<code>R9.1.5</code>)</li>
+<li>The backend updates tutorial progression state and returns the next step in sequence.</li>
+<li>The tutorial continues iteratively until all steps are completed, covering:</li>
+<li>Dashbrad navigation</li>
+<li>Telemetry interpretation</li>
+<li>Drone connection</li>
+<li>Command execution</li>
+<li>The system optionally enables <strong>Assist Mode</strong> when required by the tutorial flow or user selection.</li>
+<li>If the system detects that the user is struggling to progress (e.g. repeated invalid actions or inactivity beyond a threshold),
+contextual hints are displayed to guide the user. (<code>R9.1.7</code>)</li>
+<li>Upon completion of all tutorial steps, the system displays a completion screen summarising progress. (<code>R9.1.8</code>)</li>
+</ol>
+<p><strong>Post-conditions.</strong></p>
+<ul>
+<li>The user has completed the full onboarding sequence.</li>
+<li>The operator is capable of basic drone control and hopefully won't crash the drone.</li>
+</ul>
+<p><strong>Alternative flows.</strong></p>
+<ul>
+<li><em>A1 - Tutorial resumed after interruption.</em> If the user exits the tutorial mid-sequence,
+progress is persisted. On return, the system resumes from the last incomplete step (<code>R9.1.4</code>).</li>
+<li><em>A2 - Completion condition not met.</em>  If a step condition is not satisfied,
+the system remains on the current step and provides additional contextual hints (<code>R9.1.7</code>).</li>
+</ul>
+<h3 id="46-uc-8-pre-flight-gesture-calibration">4.6 UC-8 - Pre-Flight Gesture Calibration<a class="headerlink" href="#46-uc-8-pre-flight-gesture-calibration" title="Permanent link">&para;</a></h3>
+<p>This use case provides a pre-flight calibration feature that tunes and validates gesture
+regognition performance before live drone control. The system evaluates the operators gestures,
+evaluates confidence, and produces a pass/fail based on the results. This is intended as a main 
+safety feature by preventing input acceptance in sub-optimal conditions, and also aims to increase
+the accuracy of the system by optimizing preprocessing functions.</p>
+<p><strong>Actors.</strong> Operator (primary)</p>
+<p><strong>Preconditions.</strong></p>
+<ul>
+<li>The operator is authenticated (<code>R8.1</code>).</li>
+<li>The camera pipeline is active and streaming frames (<code>R3.1</code>).</li>
+<li>No active flight commands are being executed, we're in an idle state.</li>
+</ul>
+<p><strong>Main flow.</strong></p>
+<ol>
+<li>The operator initiates calibration via the dashboard, or is prompted before their flight.
+The frontend issues a request to start calibration.</li>
+<li>The backend activates calibration mode via a <abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr> endpoint.</li>
+<li>The system transitions the <abbr title="Computer Vision">CV</abbr> pipeline into calibration mode, prompting the user to perform a predefined sequence of gestures.</li>
+<li>For each gesture performed, the <abbr title="Computer Vision">CV</abbr> pipeline records confidence per frame.</li>
+<li>An aggregated confidence score is derived.</li>
+<li>The system determines whether or not the results are satisfactory, returning a pass or fail.</li>
+</ol>
+<p><strong>Post-Conditions.</strong></p>
+<ul>
+<li>Calibration results are stored for the current session.</li>
+<li>Gesture recognition thresholds or preprocessing parameters may be adjusted based on results.</li>
+<li>The system is either given the all clear to fly, or blocked from entering flight until recalibration.</li>
+</ul>
+<p><strong>Alternative flows.</strong></p>
+<ul>
+<li><em>A1 - Poor lighting or occlusion detected.</em> the system requests recalibration or environmental adjustment before continuing (<code>R3.2.1</code>, <code>NFR3.1</code>).</li>
+<li><em>A2 - Gesture not recognised during calibration.</em> It is marked as failed and the operator is prompted to retry that specific gesture.</li>
+<li><em>A33 - Calibration failure.</em> If enough gestures fail, the user is blocked from flying the drone until
+recalibration is completed successfully.</li>
+</ul>
+<hr />
+<h2 id="5-domain-model">5. Domain Model<a class="headerlink" href="#5-domain-model" title="Permanent link">&para;</a></h2>
+<p>The analysis-level domain model captures the conceptual vocabulary of the
+problem and is the input to the design class diagram in
+<a href="../SAS/#24-architectural-diagram"><code>SAS.md</code> Section 2.4</a>.</p>
+<p><img alt="Domain Model" src="../diagrams/Domain%20Model%20v2.1.drawio.png" /></p>
+<p><em>Figure 5.1 - Analysis-level domain model.</em></p>
+<hr />
+<h2 id="appendix-a-requirements-elicitation-methodology">Appendix A - Requirements Elicitation Methodology<a class="headerlink" href="#appendix-a-requirements-elicitation-methodology" title="Permanent link">&para;</a></h2>
+<p>The requirements in this document were elicited following the five-step
+process. Following Demo 1, the team is now enforcing this process
+strictly for every subsequent demo.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:5"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">1. Collecting information</label><label for="__tabbed_2_2">2. Constructing analysis models</label><label for="__tabbed_2_3">3. Deriving requirements</label><label for="__tabbed_2_4">4. Feasibility study</label><label for="__tabbed_2_5">5. Reviewing the specification</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Sources of information used:</p>
+<ul>
+<li><strong>Customer presentation</strong> - EPI-USE Labs project brief and
+  kickoff meeting.</li>
+<li><strong>Literature survey</strong> - <abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> Hands documentation, AirSim
+  and drone <abbr title="Software Development Kit">SDK</abbr> documentation, prior gesture-control research.</li>
+<li><strong>Stakeholder survey</strong> - bi-monthly meetings with our capstone
+  mentor.</li>
+<li><strong>Standups</strong> - Frequent meetings between members of the team.</li>
+<li><strong>User stories</strong> - drafted by the team from the perspective of
+  operator, demonstrator, and reviewer roles.</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p>More descriptive diagrams will be provided through the continuous
+development of the project:</p>
+<ul>
+<li><strong>Use-case diagram</strong> - Figure 4.1, captures actor-system
+  interaction.</li>
+<li><strong>Domain model</strong> - Figure 5.1, captures the conceptual
+  vocabulary of the application.</li>
+<li><strong>Architecture diagram</strong> - see
+  <a href="../SAS/#24-architectural-diagram"><code>SAS.md</code> Section 2.4</a>.</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p>Capabilities are derived from the user stories, business goals, and
+analysis models, then phrased as "The system shall …" statements in
+Section 3.</p>
+</div>
+<div class="tabbed-block">
+<p>Technical feasibility was validated through the <code>sandbox/</code> proof of
+concepts (interactive control, stdin control, AirSim trials),
+which demonstrated end-to-end command flow before commitment.</p>
+</div>
+<div class="tabbed-block">
+<p>This <abbr title="Software Requirements Specification">SRS</abbr> is reviewed by the company mentor and capstone mentor
+frequently:</p>
+<ul>
+<li>The development team (technical review - completeness, internal
+  consistency).</li>
+<li>The academic mentor (expert review).</li>
+<li>The industry mentor (customer review).</li>
+</ul>
+</div>
+</div>
+</div>
+<hr />
+<h2 id="appendix-b-requirements-traceability-matrix">Appendix B - Requirements Traceability Matrix<a class="headerlink" href="#appendix-b-requirements-traceability-matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Description</th>
+<th>Use Case(s)</th>
+<th>Verified By</th>
+<th>Target Demo</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1.*</td>
+<td>Dashboard UI (video feed, telemetry, alerts)</td>
+<td>UC-1, UC-2, UC-3, UC-4, UC-7</td>
+<td>Playwright <abbr title="End-to-End">E2E</abbr> + UI tests</td>
+<td>Demo 3</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>R2.1-R2.4</td>
+<td>System interfaces (camera, <abbr title="WebSocket. used for real-time communications such as gesture and telemetry streaming">WS</abbr>, <abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr>, adapters)</td>
+<td>UC-2, UC-3, UC-4, UC-5, UC-8</td>
+<td>Integration + contract tests</td>
+<td>Demo 3</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>R3.1-R3.2</td>
+<td><abbr title="Computer Vision">CV</abbr> pipeline (capture + gesture recognition)</td>
+<td>UC-1, UC-8</td>
+<td><abbr title="Computer Vision">CV</abbr> unit + pipeline tests</td>
+<td>Demo 1</td>
+<td>Delivered</td>
+</tr>
+<tr>
+<td>R4.1-R4.4</td>
+<td>Gesture → command mapping</td>
+<td>UC-1, UC-3, UC-4</td>
+<td>Command mapping tests</td>
+<td>Demo 3</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>R5.1-R5.3</td>
+<td>Drone communication + telemetry ingestion</td>
+<td>UC-2, UC-3, UC-5, UC-6</td>
+<td>Adapter integration tests</td>
+<td>Demo 3</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>R6.1-R6.3</td>
+<td>Failsafes + logging system</td>
+<td>UC-1, UC-3, UC-5, UC-8</td>
+<td>Fault injection + logging tests</td>
+<td>Demo 3</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>R7.1-R7.2</td>
+<td>Alternative input systems (keyboard/gamepad)</td>
+<td>UC-4</td>
+<td>Input adapter tests</td>
+<td>Demo 3</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>R8.1-R8.2</td>
+<td>Authentication + preference management</td>
+<td>UC-5, UC-7, UC-8</td>
+<td>Auth + security tests</td>
+<td>Demo 3</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>R9.1-R9.2</td>
+<td>Tutorial + Assist Mode subsystem</td>
+<td>UC-7</td>
+<td>End-to-end tutorial flow tests</td>
+<td>Demo 3</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>NFR1.*</td>
+<td>Performance (latency, <abbr title="Frames Per Second">FPS</abbr>, throughput)</td>
+<td><abbr title="Computer Vision">CV</abbr> pipeline, backend, frontend</td>
+<td>Load testing + profiling</td>
+<td>Demo 3</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>NFR2.*</td>
+<td>Security (auth, validation, secrets handling)</td>
+<td>Backend, auth service</td>
+<td>Security + <abbr title="Continuous Integration">CI</abbr> tests</td>
+<td>Demo 3</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>NFR3.*</td>
+<td>Reliability (accuracy, robustness, fault tolerance)</td>
+<td><abbr title="Computer Vision">CV</abbr> pipeline, adapters</td>
+<td>Dataset evaluation + fault tests</td>
+<td>Demo 3</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>NFR4.*</td>
+<td>Maintainability (modularity, <abbr title="Continuous Integration">CI</abbr> coverage)</td>
+<td>Entire system</td>
+<td><abbr title="Continuous Integration">CI</abbr> coverage + static analysis</td>
+<td>Continuous</td>
+<td>Active</td>
+</tr>
+<tr>
+<td>NFR5.*</td>
+<td>Usability (onboarding, tutorial completion)</td>
+<td>UC-7, dashboard</td>
+<td>UX testing</td>
+<td>Demo 3</td>
+<td>Planned</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-c-revision-history">Appendix C - Revision History<a class="headerlink" href="#appendix-c-revision-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Author</th>
+<th>Summary of changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0</td>
+<td>Demo 1</td>
+<td>Codex Merchants</td>
+<td>Initial <abbr title="Software Requirements Specification">SRS</abbr> - full set of functional, performance, reliability, security, maintainability, portability, usability requirements; embedded architectural-style and design-pattern constraints under <code>NFR2</code>.</td>
+</tr>
+<tr>
+<td><strong>2.0</strong></td>
+<td><strong>Late May</strong></td>
+<td><strong>Ayush</strong></td>
+<td><strong>Architectural content extracted to <a href="../SAS/"><code>SAS.md</code></a>.</strong> Removed the former <code>NFR2</code> <em>Design Constraints</em> block (architectural-style choice and Adapter / Strategy / Observer pattern constraints) - these are now architectural decisions in <code>SAS.md Section 2</code>. Renumbered <code>NFR2</code> to <em>Security</em> and consolidated the quality requirements to <strong>five quantified NFRs</strong> (Performance <code>NFR1</code>, Security <code>NFR2</code>, Reliability <code>NFR3</code>, Maintainability <code>NFR4</code>, Usability <code>NFR5</code>) per the Demo 2 brief. Added UC-4 (Authenticate Operator Session) and UC-5 (Replay a Recorded Session) to reach five fully integrated use cases. Replaced all <code>DESIGN.md</code> cross-references with the equivalent <code>SAS.md</code> and <code>BRAND.md</code> pointers (<code>DESIGN.md</code> was retired). Added Section 2.3 User Characteristics. Brand and wireframe content moved to <a href="../BRAND/"><code>BRAND.md</code></a>.</td>
+</tr>
+<tr>
+<td><strong>2.1</strong></td>
+<td><strong>25 June</strong></td>
+<td><strong>Shavir</strong></td>
+<td>Complete refactor, with a focus on diagrams, requirements, and use cases to line up with Demo 2 goals.</td>
+</tr>
+</tbody>
+</table>
+<!-- Global abbreviations. auto-appended to every page via mkdocs.yml snippets config -->
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="September 4, 2026 01:30:22 UTC"><span class="timeago" datetime="2026-09-04T01:30:22+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="September 4, 2026 01:30:22 UTC">2026-09-04</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="April 28, 2026 18:21:50 UTC"><span class="timeago" datetime="2026-04-28T18:21:50+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="April 28, 2026 18:21:50 UTC">2026-04-28</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Home
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../SAS/" class="md-footer__link md-footer__link--next" aria-label="Next: Software Architecture (SAS)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Software Architecture (SAS)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 Codex Merchants &mdash; COS 301 Software Engineering &middot; University of Pretoria &middot; EPI-USE Labs
+
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" target="_blank" rel="noopener" title="GitHub Repository" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="mailto:codexmerchants@gmail.com" target="_blank" rel="noopener" title="Team Email" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4l208 156a48 48 0 0 0 57.6 0l208-156c12.1-9.1 19.2-23.3 19.2-38.4 0-26.5-21.5-48-48-48zM0 196v188c0 35.3 28.7 64 64 64h384c35.3 0 64-28.7 64-64V196L313.6 344.8c-34.1 25.6-81.1 25.6-115.2 0z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "search.highlight", "search.suggest", "search.share", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../js/timeago.min.js"></script>
+      
+        <script src="../js/timeago_mkdocs_material.js"></script>
+      
+        <script src="../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>
