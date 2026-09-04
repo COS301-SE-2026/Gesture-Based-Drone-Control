@@ -49,7 +49,9 @@ tasks:
           --collect-all asyncpg \
           --collect-all keyboard \
           --collect-all tornado \
+          --collect-all sklearn \
           --add-data "vendors/sim_config:vendors/sim_config" \
+          --add-data "services/cv_pipeline/gestures/recognizers/models:services/cv_pipeline/gestures/recognizers/models" \
           --hidden-import cv2 \
           --hidden-import services \
           --hidden-import jwt.algorithms \

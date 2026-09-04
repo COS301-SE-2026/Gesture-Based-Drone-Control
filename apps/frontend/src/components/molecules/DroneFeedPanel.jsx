@@ -40,11 +40,11 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
             </div>
           )}
 
-          {isConnected && !loaded && (
+          {/* {isConnected && !loaded && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/30">
               <div className="w-10 h-10 rounded-full border-2 border-glassBrd border-t-red animate-spin" />
             </div>
-          )}
+          )} */}
 
           {isConnected && isSim && (
             <iframe
@@ -64,7 +64,7 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
               alt="drone live feed"
               onLoad={() => setLoaded(true)}
               className={`w-full h-full object-cover transition-opacity duration-500 ${
-                loaded ? "opacity-100" : "opacity-0"
+                loaded ? "opacity-100" : "opacity-100" //NOSONAR
               }`}
             />
           )}
@@ -86,7 +86,7 @@ DroneFeedPanel.propTypes = {
 DroneFeedPanel.defaultProps = {
   connectionStatus: "disconnected",
   droneSimUrl: "http and port for dronesim",
-  hardwareFeedUrl: "http://localhost:3001/api/drone/feed",
+  hardwareFeedUrl: "http://localhost:3001/api/drone/feed?w=1200&h=480",
 }
 
 export default DroneFeedPanel

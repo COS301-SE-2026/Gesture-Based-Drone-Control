@@ -1,6 +1,7 @@
 import math
 from unittest.mock import MagicMock, patch
 
+import numpy as np
 import pytest
 
 with patch.dict(
@@ -10,17 +11,30 @@ with patch.dict(
 	},
 ):
 	from services.commands.command import AnalogInput, CommandType
-	from services.drone_control.adapters.drone_adapter import TelemetryData
+	from services.drone_control.adapters.drone_adapter import CameraFrame, TelemetryData
 	from services.drone_control.adapters.tello_adapter import TelloAdapter
 
 
 @pytest.fixture
-def mock_tello():
+def fake_frame():
+	return np.zeros((720, 960, 3), dtype=np.uint8)
+
+
+@pytest.fixture
+def fake_frame_read(fake_frame):
+	reader = MagicMock()
+	reader.frame = fake_frame
+	reader.stop = MagicMock()
+	return reader
+
+
+@pytest.fixture
+def mock_tello(fake_frame_read):
 	"""Create a mock Tello instance."""
 	tello = MagicMock()
 	tello.connect = MagicMock()
 	tello.streamon = MagicMock()
-	tello.get_frame_read = MagicMock(return_value=MagicMock())
+	tello.get_frame_read = MagicMock(return_value=fake_frame_read)
 	tello.land = MagicMock()
 	tello.streamoff = MagicMock()
 	tello.end = MagicMock()
@@ -53,14 +67,24 @@ def adapter(mock_tello):
 		return adapter
 
 
+@pytest.fixture
+def streaming_adapter(adapter, fake_frame_read):
+	adapter._connected = True
+	adapter._video_on = True
+	adapter._frame_read = fake_frame_read
+	return adapter
+
+
 @pytest.mark.asyncio
 async def test_connect_success(adapter, mock_tello):
 	result = await adapter.connect()
 	assert result is True
 	mock_tello.connect.assert_called_once()
-	# mock_tello.streamon.assert_called_once()
-	# mock_tello.get_frame_read.assert_called_once()
+	mock_tello.streamon.assert_not_called()
+	mock_tello.get_frame_read.assert_not_called()
 	assert adapter._connected is True
+	assert adapter._video_on is False
+	assert adapter._frame_read is None
 
 
 @pytest.mark.asyncio
@@ -78,7 +102,7 @@ async def test_disconnect(adapter, mock_tello):
 	adapter._is_flying = True
 	await adapter.disconnect()
 	mock_tello.land.assert_called_once()
-	# mock_tello.streamoff.assert_called_once()
+	mock_tello.streamoff.assert_not_called()
 	mock_tello.end.assert_called_once()
 	assert adapter._connected is False
 
@@ -393,3 +417,193 @@ def test_assert_flying(adapter):
 	adapter._is_flying = False
 	with pytest.raises(RuntimeError, match='Tello Drone is not flying.'):
 		adapter._assert_flying()
+
+
+def test_has_camera_is_true(adapter):
+	assert adapter.has_camera is True
+
+
+async def test_start_video_success(adapter, mock_tello, fake_frame_read):
+	adapter._connected = True
+
+	result = await adapter.start_video()
+
+	assert result is True
+	mock_tello.streamon.assert_called_once()
+	mock_tello.get_frame_read.assert_called_once()
+	assert adapter._video_on is True
+	assert adapter._frame_read is fake_frame_read
+
+
+async def test_start_video_is_idempotent(adapter, mock_tello):
+	adapter._connected = True
+
+	assert await adapter.start_video() is True
+	assert await adapter.start_video() is True
+
+	mock_tello.streamon.assert_called_once()
+	mock_tello.get_frame_read.assert_called_once()
+
+
+async def test_start_video_not_connected(adapter, mock_tello):
+	adapter._connected = False
+
+	with pytest.raises(RuntimeError, match='Tello Drone is not connected.'):
+		await adapter.start_video()
+	mock_tello.streamon.assert_not_called()
+
+
+async def test_start_video_streamon_fails(adapter, mock_tello):
+	adapter._connected = True
+	mock_tello.streamon.side_effect = Exception('streamon failed')
+
+	result = await adapter.start_video()
+
+	assert result is False
+	mock_tello.get_frame_read.assert_not_called()
+	assert adapter._video_on is False
+	assert adapter._frame_read is None
+
+
+async def test_start_video_get_frame_read_fails(adapter, mock_tello):
+	adapter._connected = True
+	mock_tello.get_frame_read.side_effect = Exception('no reader')
+
+	result = await adapter.start_video()
+
+	assert result is False
+	mock_tello.streamon.assert_called_once()
+	assert adapter._video_on is False
+	assert adapter._frame_read is None
+
+
+async def test_start_video_can_retry_after_failure(adapter, mock_tello, fake_frame_read):
+	adapter._connected = True
+	mock_tello.streamon.side_effect = Exception('streamon failed')
+	assert await adapter.start_video() is False
+
+	mock_tello.streamon.side_effect = None
+	assert await adapter.start_video() is True
+	assert adapter._frame_read is fake_frame_read
+
+
+async def test_stop_video_when_never_started(adapter, mock_tello):
+	await adapter.stop_video()
+
+	mock_tello.streamoff.assert_not_called()
+	assert adapter._frame_read is None
+	assert adapter._video_on is False
+
+
+async def test_stop_video_success(streaming_adapter, mock_tello, fake_frame_read):
+	streaming_adapter._last_frame_id = 12345
+
+	await streaming_adapter.stop_video()
+
+	fake_frame_read.stop.assert_called_once()
+	mock_tello.streamoff.assert_called_once()
+	assert streaming_adapter._frame_read is None
+	assert streaming_adapter._video_on is False
+	assert streaming_adapter._last_frame_id is None
+
+
+async def test_stop_video_reader_without_stop_method(adapter, mock_tello, fake_frame):
+	reader = MagicMock(spec=['frame'])
+	reader.frame = fake_frame
+	adapter._connected = True
+	adapter._video_on = True
+	adapter._frame_read = reader
+
+	await adapter.stop_video()
+
+	mock_tello.streamoff.assert_called_once()
+	assert adapter._frame_read is None
+	assert adapter._video_on is False
+
+
+async def test_stop_video_streamoff_failure_still_resets_state(streaming_adapter, mock_tello):
+	mock_tello.streamoff.side_effect = Exception('streamoff failed')
+	streaming_adapter._last_frame_id = 12345
+
+	await streaming_adapter.stop_video()
+
+	assert streaming_adapter._frame_read is None
+	assert streaming_adapter._video_on is False
+	assert streaming_adapter._last_frame_id is None
+
+
+async def test_stop_video_is_idempotent(streaming_adapter, mock_tello):
+	await streaming_adapter.stop_video()
+	await streaming_adapter.stop_video()
+
+	mock_tello.streamoff.assert_called_once()
+
+
+def test_latest_frame_without_reader(adapter):
+	adapter._frame_read = None
+
+	shot = adapter.latest_frame()
+
+	assert isinstance(shot, CameraFrame)
+	assert shot.frame is None
+	assert shot.seq == 0
+	assert shot.width == 0
+	assert shot.height == 0
+	assert shot.source == 'tello'
+
+
+def test_latest_frame_reader_has_no_frame_yet(streaming_adapter, fake_frame_read):
+	fake_frame_read.frame = None
+	streaming_adapter._frame_seq = 7
+
+	shot = streaming_adapter.latest_frame()
+
+	assert shot.frame is None
+	assert shot.seq == 7
+	assert shot.source == 'tello'
+
+
+def test_latest_frame_returns_frame_and_dimensions(streaming_adapter, fake_frame):
+	shot = streaming_adapter.latest_frame()
+
+	assert shot.frame is fake_frame
+	assert shot.width == 960
+	assert shot.height == 720
+	assert shot.seq == 1
+	assert shot.source == 'tello'
+
+
+def test_latest_frame_same_frame_does_not_bump_seq(streaming_adapter):
+	next_frame = np.ones((480, 640, 3), dtype=np.uint8)
+	assert id(next_frame) != id(fake_frame)
+
+	first = streaming_adapter.latest_frame()
+	fake_frame_read.frame = next_frame  # NOSONAR
+	second = streaming_adapter.latest_frame()
+
+	assert first.seq == 1
+	assert second.seq == 1
+
+
+async def test_disconnect_stops_active_video(streaming_adapter, mock_tello, fake_frame_read):
+	streaming_adapter._is_flying = True
+	await streaming_adapter.disconnect()
+
+	mock_tello.land.assert_called_once()
+	fake_frame_read.stop.assert_called_once()
+	mock_tello.streamoff.assert_called_once()
+	mock_tello.end.assert_called_once()
+	assert streaming_adapter._video_on is False
+	assert streaming_adapter._frame_read is None
+	assert streaming_adapter._connected is False
+
+
+async def test_disconnect_stops_video_even_when_land_fails(streaming_adapter, mock_tello):
+	streaming_adapter._is_flying = True
+	mock_tello.land.side_effect = Exception('land failed')
+
+	await streaming_adapter.disconnect()
+
+	mock_tello.streamoff.assert_called_once()
+	mock_tello.end.assert_called_once()
+	assert streaming_adapter._video_on is False

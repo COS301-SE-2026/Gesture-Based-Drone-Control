@@ -19,10 +19,13 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from dataclasses import asdict
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
+import cv2
+from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSocketDisconnect
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.websockets import WebSocketState
@@ -191,6 +194,108 @@ async def status(state: Annotated[AppState, Depends(get_state)]):
 		'adapter': state.adapter_name,
 		'telemetry': asdict(telemetry),
 	}
+
+
+BOUNDARY = 'frame'
+TARGET_FPS = 20
+JPEG_QUALITY = 70
+FRAME_W, FRAME_H = 640, 480
+STARTUP_TIMEOUT_S = 5.0
+STALE_AFTER_S = 3.0
+MIN_DIM, MAX_DIM = 160, 1280
+
+
+@router.get(
+	'/feed',
+	responses={
+		409: {'description': 'No drone connected, or the connected adapter has no camera'},
+		503: {'description': 'Video stream could not be started, or is not producing frames'},
+	},
+)
+async def feed(
+	state: Annotated[AppState, Depends(get_state)],
+	w: Annotated[int, Query(ge=MIN_DIM, le=MAX_DIM)] = FRAME_W,
+	h: Annotated[int, Query(ge=MIN_DIM, le=MAX_DIM)] = FRAME_H,
+):
+	if not state.is_connected or state.adapter is None:
+		raise HTTPException(status_code=409, detail='No drone connected')
+
+	adapter = state.adapter
+
+	if not adapter.has_camera:
+		raise HTTPException(status_code=409, detail=f'{state.adapter_name} adapter has no camera')
+
+	# lazy start for the camera
+	if not await adapter.start_video():
+		raise HTTPException(status_code=503, detail='Could not start video stream')
+
+	deadline = time.monotonic() + STARTUP_TIMEOUT_S
+	while adapter.latest_frame().frame is None:
+		if time.monotonic() > deadline:
+			raise HTTPException(status_code=503, detail='Stream not producing frames')
+		await asyncio.sleep(0.1)
+
+	return StreamingResponse(
+		_mjpeg_stream(adapter, w, h),
+		media_type=f'multipart/x-mixed-replace; boundary={BOUNDARY}',
+		headers={
+			'Cache-Control': 'no-store, no-cache, must-revalidate',
+			'Pragma': 'no-cache',
+			'X-Accel-Buffering': 'no',
+		},
+	)
+
+
+def _encode_jpeg(frame, width: int, height: int) -> bytes | None:
+	"""
+	Downscale and Jpeg encode a BGR frame
+
+	called via asyncio.to_thread - at target fps
+	"""
+	small = cv2.resize(frame, (width, height), interpolation=cv2.INTER_AREA)
+	ok, buf = cv2.imencode('.jpg', small, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
+	return buf.tobytes() if ok else None
+
+
+def _mjpeg_part(jpeg: bytes) -> bytes:
+	return (
+		b'--' + BOUNDARY.encode() + b'\r\n'
+		b'Content-Type: image/jpeg\r\n'
+		b'Content-Length: ' + str(len(jpeg)).encode() + b'\r\n\r\n' + jpeg + b'\r\n'
+	)
+
+
+async def _mjpeg_stream(adapter: DroneAdapter, box_w: int, box_h: int):
+	"""
+	yields multipart jpeg parts until the client disconnects or the feed goes stale
+
+	skips encoding of duplicate frames
+	"""
+
+	interval = 1.0 / TARGET_FPS
+	last_seq = -1
+	last_good = time.monotonic()
+
+	try:
+		while True:
+			shot = adapter.latest_frame()
+
+			if shot.frame is not None and shot.seq != last_seq:
+				last_seq = shot.seq
+				jpeg = await asyncio.to_thread(_encode_jpeg, shot.frame, box_w, box_h)
+				if jpeg is not None:
+					last_good = time.monotonic()
+					yield _mjpeg_part(jpeg)
+
+			if time.monotonic() - last_good > STALE_AFTER_S:
+				logger.warning('/drone/feed: stale after 0.1s, closing stream')
+				return
+
+			await asyncio.sleep(interval)
+
+	except asyncio.CancelledError:
+		logger.info('/drone/feedL client disconnected')
+		raise
 
 
 # WebSockets endpoints
