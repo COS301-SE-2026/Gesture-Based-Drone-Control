@@ -56,8 +56,8 @@ function signalBackend(signal) {
   try {
     if (process.platform === "win32") {
       execFileSync(
-        "taskkill",
-        ["/pid", String(pid), "/T", "/F"], //NOSONAR
+        "taskkill",//NOSONAR
+        ["/pid", String(pid), "/T", "/F"], 
         {
           stdio: "ignore",
         }
