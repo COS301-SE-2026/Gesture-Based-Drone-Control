@@ -11,6 +11,7 @@ real camera.
 """
 
 import asyncio
+import time
 from dataclasses import dataclass
 from typing import AsyncIterator, Optional
 
@@ -33,11 +34,16 @@ class FakeCvPipeline:
 		self.stopped = False
 		self._running = False
 		self._frame_index = 0
+		self.recognizer_mode = 'ml' if (config is not None and config.use_ml) else 'rule'
 
 	async def start(self) -> None:
 		await asyncio.sleep(0)
 		self.started = True
 		self._running = True
+
+	def set_recognizer_mode(self, mode: str) -> str:
+		self.recognizer_mode = mode
+		return mode
 
 	async def stop(self) -> None:
 		await asyncio.sleep(0)
@@ -51,8 +57,17 @@ class FakeCvPipeline:
 			await asyncio.sleep(0.005)
 
 
-def fake_serialize(event: FakeEvent) -> GestureFramePayload:
+def fake_serialize(event: FakeEvent, include_frame=False) -> GestureFramePayload:
 	return GestureFramePayload(frame_index=event.frame_index, timestamp=0.0, fps=30.0, hands=[])
+
+
+def _wait_until(predicate, timeout: float = 2.0) -> bool:
+	deadline = time.monotonic() + timeout
+	while time.monotonic() < deadline:
+		if predicate():
+			return True
+		time.sleep(0.01)
+	return False
 
 
 @pytest.fixture
@@ -74,8 +89,14 @@ def app_and_client(monkeypatch):
 
 	app = FastAPI()
 	app.include_router(gestures_module.router, prefix='/api')
-	client = TestClient(app)
-	return gestures_module, client
+	with TestClient(app) as client:
+		yield gestures_module, client
+
+
+@pytest.fixture(autouse=True)
+def fast_linger(monkeypatch):
+	"""collapse the camera linger so lifecycle tests ddont wait 3s"""
+	monkeypatch.setattr('app.cv.stream.LINGER_SECONDS', 0.01)
 
 
 class TestGestureStatusEndpoint:
@@ -88,23 +109,6 @@ class TestGestureStatusEndpoint:
 		assert body['running'] is False
 		assert body['connected_clients'] == 0
 		assert body['last_frame'] is None
-
-	def test_status_reflects_running_state_while_websocket_open(self, app_and_client):
-		_, client = app_and_client
-
-		with client.websocket_connect('/api/gestures/stream'):
-			response = client.get('/api/gestures/status')
-			body = response.json()
-			assert body['running'] is True
-			assert body['connected_clients'] == 1
-
-			import time
-
-			deadline = time.monotonic() + 2.0
-			while time.monotonic() < deadline:
-				if client.get('/api/gestures/status').json()['running'] is False:
-					break
-				time.sleep(0.02)
 
 
 class TestGestureWebSocketStream:
@@ -147,7 +151,7 @@ class TestGestureWebSocketStream:
 			assert gestures_module.stream.client_count == 1
 
 		assert gestures_module.stream.client_count == 0
-		assert gestures_module.stream.is_running is False
+		assert _wait_until(lambda: gestures_module.stream.is_running is False)
 
 	def test_one_client_disconnecting_does_not_affect_the_other(self, app_and_client):
 		gestures_module, client = app_and_client

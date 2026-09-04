@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom"
 import { Button } from "../atoms"
 import { API_BASE_URL } from "../../lib/api"
+import { useAuth } from "../../context/AuthContext"
 
 const AccountActions = () => {
   const navigate = useNavigate()
+  const { clearUser } = useAuth()
 
   const handleLogout = async () => {
     try {
@@ -19,12 +21,13 @@ const AccountActions = () => {
     } catch (err) {
       console.warn("Logout request could not reach the server:", err)
     } finally {
+      clearUser()
       navigate("/login")
     }
   }
 
   return (
-    <div className="flex gap-2 mt-2 pt-2 border-t border-Grey/20">
+    <div className="flex gap-2 mt-2 pt-2 border-t border-dim">
       <Button variant="secondary" onClick={() => navigate("/login")}>
         Switch Profile
       </Button>

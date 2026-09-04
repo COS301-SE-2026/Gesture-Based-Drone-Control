@@ -494,7 +494,7 @@ This sections enumerates every intented user of GBDC, descibes how each one use 
 
 ### 3.3 Non-Functional (Quality) Requirements
 
-The Demo 2 brief targets *five* quantified quality requirements. The five
+The Demo 3 brief targets *five* quantified quality requirements. The five
 chosen for GBDC are the attributes that materially constrain the
 architecture; the architectural decisions that realise each are tabulated
 in [`SAS.md` Section 2.5](SAS.md#25-mapping-quality-requirements-to-architectural-decisions).
@@ -576,7 +576,7 @@ IDs are cited inline so the mapping back to Section 3 is unambiguous.
 
 ### 4.1 Use-Case Diagram
 
-![Use-Case Diagram](diagrams/use_case_revision.drawio.svg)
+![Use-Case Diagram](diagrams/UseCaseDiagramV3.0.svg)
 
 *Figure 4.1 - Primary use cases and actors.*
 
@@ -948,17 +948,17 @@ strictly for every subsequent demo.
 
 | Requirement | Description | Use Case(s) | Verified By | Target Demo | Status |
 | --- | --- | --- | --- | --- | --- |
-| R1.* | Dashboard UI (video feed, telemetry, alerts) | UC-1, UC-2, UC-3, UC-4, UC-7 | Playwright E2E + UI tests | Demo 2 | In progress |
-| R2.1-R2.4 | System interfaces (camera, WS, REST, adapters) | UC-2, UC-3, UC-4, UC-5, UC-8 | Integration + contract tests | Demo 2 | In progress |
+| R1.* | Dashboard UI (video feed, telemetry, alerts) | UC-1, UC-2, UC-3, UC-4, UC-7 | Playwright E2E + UI tests | Demo 3 | Done |
+| R2.1-R2.4 | System interfaces (camera, WS, REST, adapters) | UC-2, UC-3, UC-4, UC-5, UC-8 | Integration + contract tests | Demo 3 | Done |
 | R3.1-R3.2 | CV pipeline (capture + gesture recognition) | UC-1, UC-8 | CV unit + pipeline tests | Demo 1 | Delivered |
-| R4.1-R4.4 | Gesture → command mapping | UC-1, UC-3, UC-4 | Command mapping tests | Demo 2 | In progress |
-| R5.1-R5.3 | Drone communication + telemetry ingestion | UC-2, UC-3, UC-5, UC-6 | Adapter integration tests | Demo 2 | In progress |
-| R6.1-R6.3 | Failsafes + logging system | UC-1, UC-3, UC-5, UC-8 | Fault injection + logging tests | Demo 2 | In progress |
-| R7.1-R7.2 | Alternative input systems (keyboard/gamepad) | UC-4 | Input adapter tests | Demo 2 | In progress |
-| R8.1-R8.2 | Authentication + preference management | UC-5, UC-7, UC-8 | Auth + security tests | Demo 2 | In progress |
-| R9.1-R9.2 | Tutorial + Assist Mode subsystem | UC-7 | End-to-end tutorial flow tests | Demo 2 | In progress |
+| R4.1-R4.4 | Gesture → command mapping | UC-1, UC-3, UC-4 | Command mapping tests | Demo 3 | Done |
+| R5.1-R5.3 | Drone communication + telemetry ingestion | UC-2, UC-3, UC-5, UC-6 | Adapter integration tests | Demo 3 | Done |
+| R6.1-R6.3 | Failsafes + logging system | UC-1, UC-3, UC-5, UC-8 | Fault injection + logging tests | Demo 3 | Done |
+| R7.1-R7.2 | Alternative input systems (keyboard/gamepad) | UC-4 | Input adapter tests | Demo 3 | Done |
+| R8.1-R8.2 | Authentication + preference management | UC-5, UC-7, UC-8 | Auth + security tests | Demo 3 | Done |
+| R9.1-R9.2 | Tutorial + Assist Mode subsystem | UC-7 | End-to-end tutorial flow tests | Demo 3 | Done |
 | NFR1.* | Performance (latency, FPS, throughput) | CV pipeline, backend, frontend | Load testing + profiling | Demo 3 | Planned |
-| NFR2.* | Security (auth, validation, secrets handling) | Backend, auth service | Security + CI tests | Demo 2 | In progress |
+| NFR2.* | Security (auth, validation, secrets handling) | Backend, auth service | Security + CI tests | Demo 3 | Done |
 | NFR3.* | Reliability (accuracy, robustness, fault tolerance) | CV pipeline, adapters | Dataset evaluation + fault tests | Demo 3 | Planned |
 | NFR4.* | Maintainability (modularity, CI coverage) | Entire system | CI coverage + static analysis | Continuous | Active |
 | NFR5.* | Usability (onboarding, tutorial completion) | UC-7, dashboard | UX testing | Demo 3 | Planned |

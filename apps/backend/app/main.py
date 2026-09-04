@@ -20,6 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import router
 from app.api.auth import router as auth_router
+from app.api.gestures import stream as gesture_stream
 from app.state import AppState
 from services.database_manager.database import Base, engine
 from services.database_manager.models.drones import Drone
@@ -44,8 +45,21 @@ async def lifespan(app: FastAPI):
 		await conn.run_sync(Base.metadata.create_all)
 
 	app.state.app = AppState()
-	yield
-	logger.info('Stopping API...')
+	try:
+		yield
+	finally:
+		try:
+			await gesture_stream.shutdown()
+		except Exception:
+			logger.exception('Error in shutting down gesture stream')
+
+		try:
+			await app.state.app.shutdown()
+		except Exception:
+			logger.exception('Error in shutting down app state')
+
+		await engine.dispose()
+		logger.info('Stopping API...')
 
 
 app = FastAPI(
@@ -74,4 +88,8 @@ app.include_router(router)
 if __name__ == '__main__':
 	import uvicorn
 
-	uvicorn.run(app, host='127.0.0.1', port=3001)
+	# timeout_graceful_shutdown caps how long uvicorn waits for open connections
+	# before running lifespan shutdown. without it a wedged /stream websocket blocks
+	# the drain forever, so gesture_stream.shutdown() never runs and the webcam is
+	# never released. must stay under electron's BACKEND_KILL_DEADLINE_MS
+	uvicorn.run(app, host='127.0.0.1', port=3001, timeout_graceful_shutdown=3)

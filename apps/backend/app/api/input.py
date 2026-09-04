@@ -10,12 +10,16 @@ REST:
 
 WebSockets:
 	input/ws/keyboard - keyboard input listener
+	input/ws/gamepad - gamepad state listener
+	input/ws/gesture/status - adapter status snapshots (debug)
+	input/ws/gesture/events - one message per gesture CHANGE, for command history
 
 """
 
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 from typing import Annotated
 
@@ -24,6 +28,7 @@ from pydantic import BaseModel
 
 from apps.backend.app.dependencies import get_state
 from apps.backend.app.state import AppState
+from services.input.gesture_events import gesture_events
 from services.input.sources.input_adapter import InputAdapter
 
 logger = logging.getLogger(__name__)
@@ -103,7 +108,11 @@ async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, De
 	"""
 	if state.input is not None:
 		logger.info(f'input/connect: replacing existing input adapter {state.input_name}')
+		previous = state.input
 		state.input_reset()
+
+		if hasattr(previous, 'stop'):
+			await previous.stop()
 
 	try:
 		adapter = _build_input_adapter(body)
@@ -156,6 +165,15 @@ async def input_status(state: Annotated[AppState, Depends(get_state)]):
 		return {'connected': False, 'adapter': 'None connected'}
 
 	return {'connected': True, 'adapter': state.input_name}
+
+
+@router.get('/gesture/events')
+async def gesture_event_history():
+	"""
+	REST fallback for the gesutre history, oldest first
+	Same payloads the WebScoket below pushes
+	"""
+	return {'events': gesture_events.history()}
 
 
 # gonna need more of this in demo 3 I feel. testing it here
@@ -297,3 +315,75 @@ async def gesture_status(websocket: WebSocket, state: Annotated[AppState, Depend
 
 	except Exception as ex:
 		logger.exception('input/ws/gesture/status: error - %s', ex)
+
+
+async def _send_gesture_events(websocket: WebSocket, queue: asyncio.Queue) -> None:
+	"""Backfill recent history, then push each new transition as it happens"""
+	await websocket.send_json({'type': 'gesture_event_history', 'events': gesture_events.history()})
+	while True:
+		event = await queue.get()
+		await websocket.send_json(event)
+
+
+async def _watch_for_disconnect(websocket: WebSocket) -> None:
+	"""
+	This is a server push stream, so nothing useful arrives from the client
+	We still have to read from the socket to notice a dsiconnect while sender task
+	is parked on queue.get()
+	"""
+	with contextlib.suppress(Exception):
+		while True:
+			await websocket.receive()
+
+
+@router.websocket('/ws/gesture/events')
+async def gesture_event_stream(websocket: WebSocket) -> None:
+	"""
+	One JSON message per gesture -> command transition
+
+	Holding gesture doesnt repeat here
+
+	On connect:
+		{"type": "gesture_event_history"m "events": [...oldest first...]}
+
+	Then, per change:
+		{
+			"type": "gesture_event",
+			"id": 12,
+			"commands": "MOVE_UP",
+			"hands": {'RIGHT", "ONE_FINGER"},
+			"confidence": 0.94,
+			"source": "gesture",
+			"timestamp": 1719831600.123
+		}
+
+	source is 'gesture' for a recognised, or 'gesture-idling' for the safety hover
+	the adapter fires after idle_timeout_s with no input
+	"""
+	await websocket.accept()
+	queue = await gesture_events.subscribe()
+	logger.info(
+		'input/ws/gesture/events: clients connected (total = %d)', gesture_events.subscriber_count
+	)
+
+	try:
+		sender = asyncio.create_task(
+			_send_gesture_events(websocket, queue), name='gesture-events-send'
+		)
+		watcher = asyncio.create_task(_watch_for_disconnect(websocket), name='gesture-events-match')
+		done, pending = await asyncio.wait({sender, watcher}, return_when=asyncio.FIRST_COMPLETED)
+
+		for task in pending:
+			task.cancel()
+			with contextlib.suppress(asyncio.CancelledError):
+				await task
+		for task in done:
+			with contextlib.suppress(Exception):
+				task.result()
+
+	except WebSocketDisconnect:
+		logger.info('input/ws/gesture/events: client disconnected')
+	except Exception as ex:
+		logger.exception('input/ws/gesture/events: error -%s', ex)
+	finally:
+		await gesture_events.unsubscribe(queue)

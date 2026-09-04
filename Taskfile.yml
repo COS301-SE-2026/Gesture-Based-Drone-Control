@@ -25,7 +25,7 @@ tasks:
 
   backend-dev:
     cmds:
-      - uv run --no-sync uvicorn app.main:app --port {{.BACKENDPORT}} --app-dir apps/backend --reload --reload-dir apps/backend/app --reload-dir services
+      - uv run --no-sync uvicorn app.main:app --port {{.BACKENDPORT}} --app-dir apps/backend 
     env:
       PYTHONPATH: "{{.ROOT_DIR}}"
 
@@ -49,7 +49,9 @@ tasks:
           --collect-all asyncpg \
           --collect-all keyboard \
           --collect-all tornado \
+          --collect-all sklearn \
           --add-data "vendors/sim_config:vendors/sim_config" \
+          --add-data "services/cv_pipeline/gestures/recognizers/models:services/cv_pipeline/gestures/recognizers/models" \
           --hidden-import cv2 \
           --hidden-import services \
           --hidden-import jwt.algorithms \
@@ -102,17 +104,29 @@ tasks:
     cmds:
       - uv run pytest tests --cov --cov-report=term-missing
 
+  contracts:
+    desc: Validates API service contracts
+    cmds: 
+      - uv run python packages/api-contracts/validate_contracts.py
+
   e2e-test:
     desc: Runs End to End Tests
     dir: "{{.FRONTEND_DIR}}"
     cmds:
       - yarn e2e-test
 
+  nfr-test:
+    desc: Runs NFR tests and regenerates docs/nfr/Matrix.md
+    cmds:
+      - cmd: uv run pytest tests/nfr -q
+      - uv run python tests/nfr/report.py
+
   lint:
     desc: Runs lint checks
     deps:
       - backend-lint
       - frontend-lint
+      - contracts
 
   backend-lint:
     cmds:

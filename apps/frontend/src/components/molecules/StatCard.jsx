@@ -10,7 +10,7 @@ export default function StatCard({
   label,
   value,
   unit,
-  color = "text-OffBlack",
+  color = "text-ink",
   className = "",
 }) {
   return (
@@ -24,9 +24,7 @@ export default function StatCard({
         )}
 
         {/*label*/}
-        <p className="text-xs text-OffBlack uppercase tracking-wider">
-          {label}
-        </p>
+        <p className="text-xs text-ink uppercase tracking-wider">{label}</p>
 
         {/* value and unit*/}
         <MetricValue value={value} unit={unit} size="md" />
@@ -47,6 +45,6 @@ StatCard.propTypes = {
 StatCard.defaultProps = {
   icon: undefined,
   unit: undefined,
-  color: "text-OffBlack",
+  color: "text-ink",
   className: "",
 }

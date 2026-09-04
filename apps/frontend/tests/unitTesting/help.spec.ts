@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Help Page', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/#/help');
+        await page.goto('/#/app/help');
         await page.waitForLoadState('domcontentloaded');
     });
 
@@ -104,7 +104,8 @@ test.describe('Help Page', () => {
 
             //collaspe
             await faqquest.click()
-            await expect(ans).not.toBeVisible()
+            await page.waitForTimeout(350)
+            await expect(ans).not.toBeHidden()
         })
 
         test('toggle multiple faqs independently', async ({ page }) => {

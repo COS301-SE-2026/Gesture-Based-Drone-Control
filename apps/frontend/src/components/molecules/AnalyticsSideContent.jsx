@@ -1,9 +1,17 @@
 import { Card } from "../atoms"
+import { useState, useEffect } from "react"
 import AccountActions from "./AccountActions"
 import { useTelemetry } from "@/context/TelemetryContext"
 
 export const AnalyticsSideContent = () => {
   const { telemetry } = useTelemetry()
+
+  const [now, setNow] = useState(() => new Date())
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
 
   const getMode = () => {
     if (!telemetry) return "No data"
@@ -24,29 +32,17 @@ export const AnalyticsSideContent = () => {
   const mode = getMode()
 
   return (
-    <>
-      <h2 className="text-lg font-bold text-Red dark:text-Red mb-2">
-        Telemetry Analytics
-      </h2>
-
-      <Card variant="glass">
-        <div className="flex flex-col gap-3">
-          <div>
-            <p className="text-sm text-OffBlack dark:text-OffWhite">
-              Current Use Mode
-            </p>
-            <p className="text-lg text-OffBlack font-bold dark:text-OffWhite">
-              {mode}
-            </p>
-            <p className="text-xs text-DarkGrey">
-              {telemetry ? new Date().toLocaleTimeString() : "No data"}
-            </p>
-          </div>
-
-          <AccountActions />
+    <Card variant="glass">
+      <div className="flex flex-col gap-3">
+        <div>
+          <p className="text-sm text-ink">Current Use Mode</p>
+          <p className="text-lg text-ink font-bold">{mode}</p>
+          <p className="text-xs text-dim">{now.toLocaleTimeString()}</p>
         </div>
-      </Card>
-    </>
+
+        <AccountActions />
+      </div>
+    </Card>
   )
 }
 

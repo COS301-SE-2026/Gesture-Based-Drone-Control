@@ -16,8 +16,15 @@ import threading
 from dataclasses import dataclass, field
 from typing import AsyncIterator, Optional
 
-from services.cv_pipeline.camera.camera_feed import CameraConfig, CameraFeed, CapturedFrame
+from services.cv_pipeline.camera.camera_feed import (
+	CameraConfig,
+	CameraError,
+	CameraFeed,
+	CapturedFrame,
+)
 from services.cv_pipeline.gestures.gesture_engine import GestureEngine, GestureEngineResult
+from services.cv_pipeline.gestures.recognizers.ml_based import MLBasedRecognizer
+from services.cv_pipeline.gestures.recognizers.rule_based import RuleBasedRecognizer
 from services.cv_pipeline.hand_detection.mediapipe_detector import (
 	DetectorConfig,
 	HandDetectionPipeline,
@@ -28,6 +35,8 @@ from services.cv_pipeline.hand_detection.mediapipe_detector import (
 from services.cv_pipeline.processing.async_queue import BoundedFrameQueue
 
 logger = logging.getLogger(__name__)
+
+RECOGNIZER_MODES = ('rule', 'ml')
 
 
 # pipeline config
@@ -41,6 +50,8 @@ class PipelineConfig:
 	camera: CameraConfig = field(default_factory=CameraConfig)
 	detector: DetectorConfig = field(default_factory=DetectorConfig)
 	queue_size: int = 2
+	# swap in the ML recognizer (needs a trained gesture_mlp.joblib)
+	use_ml: bool = False
 
 
 class FpsMeter:
@@ -161,6 +172,9 @@ class CvPipeline:
 		self._fps_meter = FpsMeter()
 		self._motion = MotionTracker()
 
+		self._ml_recognizer: Optional[MLBasedRecognizer] = None
+		self._recognizer_mode = 'ml' if self._config.use_ml else 'rule'
+
 	# lifecycle
 	async def start(self) -> None:
 		# open camera and detector and spawn capture thread and kick off consumer task
@@ -184,6 +198,7 @@ class CvPipeline:
 		self._detector = HandDetectionPipeline(self._config.detector)
 		self._detector.open()
 		self._engine = GestureEngine()
+		self.set_recognizer_mode(self._recognizer_mode)
 
 		# cam thread reads frames and pushes them onto frame queues
 		self._stop_event.clear()
@@ -274,6 +289,49 @@ class CvPipeline:
 				# loop around to recheck self._running -> lets stop() unstick
 				continue
 
+	@property
+	def recognizer_mode(self) -> str:
+		return self._recognizer_mode
+
+	def set_recognizer_mode(self, mode: str) -> str:
+		"""
+		Swaps the recognizer live. Returns the mode actually in effect, which differs
+		from the requested one when ml is asked for but the trained
+		model is missing, so the caller can tell the user what happened
+		"""
+		if mode not in RECOGNIZER_MODES:
+			raise ValueError(
+				f'unknown recognizer mode {mode!r}, expected one of {RECOGNIZER_MODES}'
+			)
+
+		recognizer = None
+		if mode == 'ml':
+			recognizer = self._get_ml_recognizer()
+			if recognizer is None:
+				logger.warning('ML model unavailable, staying on rule-based')
+				mode = 'rule'
+
+		if recognizer is None:
+			recognizer = RuleBasedRecognizer()
+
+		if self._engine is not None:
+			self._engine.set_recognizer(recognizer)
+			# stale votes would leak across swap
+			self._engine.reset_stabilizer()
+
+		self._recognizer_mode = mode
+		return mode
+
+	def _get_ml_recognizer(self) -> Optional[MLBasedRecognizer]:
+		"""Load once and cache, joblib.load is too slow to repeat per swap"""
+		if self._ml_recognizer is None:
+			try:
+				self._ml_recognizer = MLBasedRecognizer()
+			except FileNotFoundError:
+				logger.warning('No training model found (gesture_mlp.joblib)')
+				return None
+		return self._ml_recognizer
+
 	def _camera_loop(self, loop: asyncio.AbstractEventLoop) -> None:
 		"""
 		Runs in background thread
@@ -285,7 +343,13 @@ class CvPipeline:
 
 		consecutive_failures = 0
 		while not self._stop_event.is_set():
-			frame = self._camera.capture_image()
+			try:
+				frame = self._camera.capture_image()
+			except CameraError:
+				logger.exception('camera died, stopping capture loop')
+				self._running = False
+				break
+
 			if frame is None:
 				consecutive_failures += 1
 				# no frame available -> backoff
@@ -340,10 +404,6 @@ class CvPipeline:
 					fps=fps,
 					hand_metrics=metrics,
 				)
-				# 		await self._event_queue.put(event)
-				# except asyncio.CancelledError:
-				# 	logger.debug('Consumer task cancelled')
-				# 	raise
 				if self._event_queue.full():
 					try:
 						self._event_queue.get_nowait()
@@ -363,7 +423,7 @@ if __name__ == '__main__':
 	logging.basicConfig(level=logging.INFO)
 
 	async def main() -> None:
-		async with CvPipeline() as pipe:
+		async with CvPipeline(PipelineConfig(use_ml=True)) as pipe:
 			async for event in pipe.events():
 				# draw the hand skeleton from the landmarks we already detected
 				annotated = draw_landmarks(event.frame.bgr_frame, event.detection)
@@ -385,7 +445,7 @@ if __name__ == '__main__':
 				y = 60
 				for gr in event.engine_result.hand_gestures:
 					m = metrics_by_hand.get(gr.handedness)
-					conf = m.confidence * 100 if m else 0.0
+					conf = gr.confidence * 100
 					speed = m.speed if m else 0.0
 					text = f'{gr.handedness.name}: {gr.gesture.name}  {conf:.0f}%  spd={speed:.2f}'
 					cv2.putText(

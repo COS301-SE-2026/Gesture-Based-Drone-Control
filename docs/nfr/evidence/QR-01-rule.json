@@ -1,0 +1,20 @@
+{
+  "id": "QR-01-rule",
+  "requirement": "NFR3.1",
+  "metric": "rule-based accuracy, informational (%)",
+  "actual": 55.9,
+  "target": "informational (ML is the gated engine)",
+  "pass": true,
+  "recorded_at": "2026-09-03T20:40:02+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "engine": "rule",
+  "lowest_per_gesture": 37.5,
+  "per_gesture": {
+    "FIST": 56.4,
+    "OPEN_PALM": 98.3,
+    "ONE_FINGER": 37.5,
+    "TWO_FINGERS": 52.3,
+    "THREE_FINGERS": 65.8,
+    "FOUR_FINGERS": 61.5
+  }
+}

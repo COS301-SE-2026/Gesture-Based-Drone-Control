@@ -14,46 +14,6 @@ import {
 import { useTelemetry } from "@/context/TelemetryContext"
 import { useEffect, useRef, useState } from "react"
 
-// const Analytics = () => {
-//   // Mock flight data for charts
-//   const flightTelemetryData = [
-//     { time: "0min", value: 10 },
-//     { time: "5min", value: 30 },
-//     { time: "10min", value: 50 },
-//     { time: "15min", value: 45 },
-//     { time: "20min", value: 35 },
-//     { time: "21min", value: 0 },
-//   ]
-
-//   const batteryHealthData = [
-//     { time: "0min", health: 100 },
-//     { time: "5min", health: 92 },
-//     { time: "10min", health: 85 },
-//     { time: "15min", health: 75 },
-//     { time: "20min", health: 65 },
-//     { time: "21min", health: 60 },
-//   ]
-
-//   const performanceData = [
-//     { flight: "Flight 1", duration: 21 },
-//     { flight: "Flight 2", duration: 18 },
-//     { flight: "Flight 3", duration: 25 },
-//     { flight: "Flight 4", duration: 19 },
-//     { flight: "Flight 5", duration: 22 },
-//     { flight: "Flight 6", duration: 20 },
-//     { flight: "Flight 7", duration: 23 },
-//     { flight: "Flight 8", duration: 21 },
-//   ]
-
-//   const metrics = {
-//     flightTime: 21,
-//     avgSpeed: 8.2,
-//     maxAltitude: 53,
-//     totalDistance: 3.5,
-//     avgFlightDuration: 7,
-//     totalFlights: 14,
-//   }
-
 const MAX_LIVE_POINTS = 10
 //might change this depending
 const MS_TO_KMH = 3.6
@@ -199,18 +159,16 @@ const Analytics = () => {
 
   return (
     <div className="space-y-6">
-      {loadError && <p className="text-red-500 text-sm">{loadError}</p>}
+      {loadError && <p className="text-error text-sm">{loadError}</p>}
       {/* top metric cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4" data-tour="analytics-summary">
         {/* flight time card */}
         <Card variant="glass">
           <div className="flex flex-col gap-3">
-            <Clock className="w-6 h-6 text-Red" />
-            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
-              Total Flights
-            </p>
+            <Clock className="w-6 h-6 text-red" />
+            <p className="text-xs text-dim uppercase">Total Flights</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
+              <span className="text-2xl font-bold text-ink">
                 {metrics.totalFlights}
               </span>
             </div>
@@ -220,15 +178,13 @@ const Analytics = () => {
         {/* avg speed */}
         <Card variant="glass">
           <div className="flex flex-col gap-3">
-            <Gauge className="w-6 h-6 text-Red" />
-            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
-              Max Speed (session)
-            </p>
+            <Gauge className="w-6 h-6 text-red" />
+            <p className="text-xs text-dim uppercase">Max Speed (session)</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
+              <span className="text-2xl font-bold text-ink">
                 {metrics.maxSpeed}
               </span>
-              <span className="text-sm text-DarkGrey">km/h</span>
+              <span className="text-sm text-dim">km/h</span>
             </div>
           </div>
         </Card>
@@ -236,15 +192,13 @@ const Analytics = () => {
         {/* max altitude */}
         <Card variant="glass">
           <div className="flex flex-col gap-3">
-            <Mountain className="w-6 h-6 text-Red" />
-            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
-              Max Altitude (session)
-            </p>
+            <Mountain className="w-6 h-6 text-red" />
+            <p className="text-xs text-dim uppercase">Max Altitude (session)</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
+              <span className="text-2xl font-bold text-ink">
                 {metrics.maxAltitude}
               </span>
-              <span className="text-sm text-DarkGrey">m</span>
+              <span className="text-sm text-dim">m</span>
             </div>
           </div>
         </Card>
@@ -252,26 +206,26 @@ const Analytics = () => {
 
       {/* the two charts go here */}
       {/* these should be live now, driven by telem websocket */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6" data-tour="analytics-live-charts">
         {/* flight telemetry */}
         <Card variant="glass">
           <div className="flex flex-col gap-4">
-            <h3 className="text-md font-semibold text-OffBlack dark:text-OffWhite">
+            <h3 className="text-md font-semibold text-ink">
               Live Speed (this session)
             </h3>
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={flightTelemetryData}>
-                <CartesianGrid stroke="#D3D3D3" opacity={0.1} />
+                <CartesianGrid stroke="var(--line)" opacity={0.1} />
                 <XAxis
                   dataKey="time"
-                  stroke="#B1A7A6"
+                  stroke="var(--dim)"
                   style={{ fontSize: "12px" }}
                 />
-                <YAxis stroke="#B1A7A6" style={{ fontSize: "12px" }} />
+                <YAxis stroke="var(--dim)" style={{ fontSize: "12px" }} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#D3D3D3",
-                    border: "1px solid #B1A7A6",
+                    backgroundColor: "var(--panel)",
+                    border: "1px solid var(--line)",
                     borderRadius: "6px",
                     fontSize: "12px",
                   }}
@@ -280,7 +234,7 @@ const Analytics = () => {
                 <Line
                   type="monotone"
                   dataKey="value"
-                  stroke="#A4161A"
+                  stroke="var(--red)"
                   dot={false}
                   strokeWidth={2}
                 />
@@ -292,22 +246,22 @@ const Analytics = () => {
         {/* battery health */}
         <Card variant="glass">
           <div className="flex flex-col gap-4">
-            <h3 className="text-md font-semibold text-OffBlack dark:text-OffWhite">
+            <h3 className="text-md font-semibold text-ink">
               Battery Health (this session)
             </h3>
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={batteryHealthData}>
-                <CartesianGrid stroke="#D3D3D3" opacity={0.1} />
+                <CartesianGrid stroke="var(--line)" opacity={0.1} />
                 <XAxis
                   dataKey="time"
-                  stroke="#B1A7A6"
+                  stroke="var(--dim)"
                   style={{ fontSize: "12px" }}
                 />
-                <YAxis stroke="#B1A7A6" style={{ fontSize: "12px" }} />
+                <YAxis stroke="var(--dim)" style={{ fontSize: "12px" }} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#D3D3D3",
-                    border: "1px solid #161A1D",
+                    backgroundColor: "var(--panel)",
+                    border: "1px solid var(--line)",
                     borderRadius: "6px",
                     fontSize: "12px",
                   }}
@@ -316,7 +270,7 @@ const Analytics = () => {
                 <Line
                   type="monotone"
                   dataKey="health"
-                  stroke="#A4161A"
+                  stroke="var(--red)"
                   dot={false}
                   strokeWidth={2}
                 />
@@ -328,36 +282,40 @@ const Analytics = () => {
 
       {/* bar graph here */}
       {/* this graph is from the db */}
-      <Card variant="glass">
+      <Card variant="glass" data-tour="analytics-performance">
         <div className="flex flex-col gap-4">
-          <h3 className="text-md font-semibold text-OffBlack dark:text-OffWhite">
+          <h3 className="text-md font-semibold text-ink">
             Performance Metrics (recent flights)
           </h3>
           {performanceData.length === 0 ? (
-            <p className="text-md text-DarkGrey">
+            <p className="text-md text-dim">
               No completed flights recorded yet. Connect a drone to log a flight
               now
             </p>
           ) : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={performanceData}>
-                <CartesianGrid stroke="#D3D3D3" opacity={0.1} />
+                <CartesianGrid stroke="var(--line)" opacity={0.1} />
                 <XAxis
                   dataKey="flight"
-                  stroke="#B1A7A6"
+                  stroke="var(--dim)"
                   style={{ fontSize: "12px" }}
                 />
-                <YAxis stroke="#B1A7A6" style={{ fontSize: "12px" }} />
+                <YAxis stroke="var(--dim)" style={{ fontSize: "12px" }} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#D3D3D3",
-                    border: "1px solid #161A1D",
+                    backgroundColor: "var(--panel)",
+                    border: "1px solid var(--line)",
                     borderRadius: "6px",
                     fontSize: "12px",
                   }}
                   formatter={(value) => [`${value} min`, "Duration"]}
                 />
-                <Bar dataKey="duration" fill="#A4161A" radius={[8, 8, 0, 0]} />
+                <Bar
+                  dataKey="duration"
+                  fill="var(--red)"
+                  radius={[8, 8, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -365,18 +323,16 @@ const Analytics = () => {
       </Card>
 
       {/* bottom stats part -> same as above */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4" data-tour="analytics-totals">
         {/* Total distance */}
         <Card variant="glass">
           <div className="text-center">
-            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
-              Total Distance
-            </p>
+            <p className="text-xs text-dim uppercase">Total Distance</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
+              <span className="text-2xl font-bold text-ink">
                 {metrics.totalDistance}
               </span>
-              <span className="text-sm text-DarkGrey">km</span>
+              <span className="text-sm text-dim">km</span>
             </div>
           </div>
         </Card>
@@ -384,14 +340,14 @@ const Analytics = () => {
         {/* avg flight timee */}
         <Card variant="glass">
           <div className="text-center">
-            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
+            <p className="text-xs text-dim uppercase">
               Average Flight Duration
             </p>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
+              <span className="text-2xl font-bold text-ink">
                 {metrics.avgFlightDuration}
               </span>
-              <span className="text-sm text-DarkGrey">mins</span>
+              <span className="text-sm text-dim">mins</span>
             </div>
           </div>
         </Card>
@@ -399,14 +355,12 @@ const Analytics = () => {
         {/* total flights */}
         <Card variant="glass">
           <div className="text-center">
-            <p className="text-xs text-OffBlack dark:text-DarkGrey uppercase">
-              Average speed
-            </p>
+            <p className="text-xs text-dim uppercase">Average speed</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-OffBlack dark:text-OffWhite">
+              <span className="text-2xl font-bold text-ink">
                 {metrics.avgSpeed}
               </span>
-              <span className="text-sm text-DarkGrey">m/s</span>
+              <span className="text-sm text-dim">m/s</span>
             </div>
           </div>
         </Card>

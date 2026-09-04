@@ -17,6 +17,7 @@
 [![Site](https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/docs.yml?style=for-the-badge&logo=readthedocs&logoColor=F5F3F4&label=SITE&color=A4161A&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/docs.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/COS301-SE-2026/Gesture-Based-Drone-Control?style=for-the-badge&logo=codecov&logoColor=F5F3F4&label=COVERAGE&color=BA181B&labelColor=161A1D)](https://codecov.io/gh/COS301-SE-2026/Gesture-Based-Drone-Control)
 [![Issues](https://img.shields.io/github/issues/COS301-SE-2026/Gesture-Based-Drone-Control?style=for-the-badge&logo=github&logoColor=F5F3F4&label=ISSUES&color=E5383B&labelColor=161A1D)](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/issues)
+[![Uptime](https://img.shields.io/uptimerobot/ratio/m803907992-915bf49f0aeef3452154e8b3?style=for-the-badge&logo=uptimerobot&logoColor=F5F3F4&color=A4161A&labelColor=161A1D)](https://uptimerobot.com)
 
 <br/>
 
@@ -87,6 +88,9 @@
   </tr>
   <tr>
     <td align="center">08</td><td><b>Testing Manual</b></td><td>How to run the suites and what they cover</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/testing/TESTING/">Testing</a></td>
+  </tr>
+  <tr>
+    <td align="center">8a</td><td><b>NFR Verification</b></td><td>Evidence-backed non-functional requirement tests and traceability matrix</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/nfr/NFR/">NFR</a></td>
   </tr>
   <tr>
     <td align="center">09</td><td><b>API Reference</b></td><td>REST and WebSocket contracts, schemas, examples</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/api/API_REFERENCE/">API</a></td>

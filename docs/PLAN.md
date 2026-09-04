@@ -1,7 +1,7 @@
 # Project Plan
 
 <div class="tx-badges">
-  <span class="tx-status"><span class="tx-status__dot"></span>Demo 2 sprint in flight</span>
+  <span class="tx-status"><span class="tx-status__dot"></span>Demo 3 sprint in flight</span>
   <span class="tx-status">Methodology · Agile (Scrum)</span>
   <span class="tx-status">Sprint cadence · 2 weeks</span>
 </div>

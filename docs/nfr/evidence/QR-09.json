@@ -1,0 +1,12 @@
+{
+  "id": "QR-09",
+  "requirement": "NFR2.2",
+  "metric": "weak password rejected by strength policy",
+  "actual": "5/5",
+  "target": "all rejected",
+  "pass": true,
+  "recorded_at": "2026-09-03T20:40:03+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "leaked": [],
+  "strong_password_accepted": true
+}

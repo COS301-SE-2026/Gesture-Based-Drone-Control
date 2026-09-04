@@ -37,3 +37,9 @@ class LoginRequest(BaseModel):
 
 class RefreshRequest(BaseModel):
 	refresh_token: str
+
+
+class UserResponse(BaseModel):
+	email: EmailStr
+	first_name: str | None
+	last_name: str | None

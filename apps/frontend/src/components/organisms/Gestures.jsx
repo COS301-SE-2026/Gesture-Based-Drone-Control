@@ -1,18 +1,52 @@
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import {
   CommandHistory,
   GestureGuide,
   DroneModeCard,
   GestureCameraFeed,
   GestureCalibration,
+  DroneFeedPanel,
+  TelemetryAlerts,
 } from "../molecules"
 import { Card, Label } from "../atoms"
 import { Battery, Mountain, Wifi, Gauge } from "lucide-react"
 import { useTelemetry } from "@/context/TelemetryContext"
 import { useCommands } from "@/context/CommandsContext"
+import { useDebug } from "@/context/DebugContext"
 import { fetchCalibrationStatus } from "@/hooks/useCalibrationStream"
+import { useGestureCommandLog } from "@/hooks/useGestureCommandLog"
+import { useTelemetryAlerts } from "@/hooks/useTelemetryAlerts"
 
 const MS_TO_KMH = 3.6
+const MAX_HISTORY = 50
+
+const KEY_ACTION_LABELS = {
+  ArrowUp: "Move Forward",
+  ArrowDown: "Move Backward",
+  ArrowLeft: "Move Left",
+  ArrowRight: "Move Right",
+  w: "Increase Altitude",
+  s: "Decrease Altitude",
+  a: "Rotate Left",
+  d: "Rotate Right",
+  t: "Takeoff",
+  l: "Land",
+  " ": "Hover",
+  Spacebar: "Hover",
+  Escape: "Emergency Stop",
+}
+
+const KEY_DISPLAY_LABELS = {
+  " ": "Space",
+  Spacebar: "Space",
+  Escape: "Esc",
+}
+
+function describeKeyPress(key) {
+  const keyLabel = KEY_DISPLAY_LABELS[key] ?? key
+  const actionLabel = KEY_ACTION_LABELS[key]
+  return actionLabel ? `${keyLabel} - ${actionLabel}` : keyLabel
+}
 
 function fmt(value, digits = 0) {
   return typeof value === "number" ? value.toFixed(digits) : "--"
@@ -23,12 +57,28 @@ function calibrationLabel(calibrated) {
   return calibrated ? "calibrated" : "required"
 }
 
-//TODO: this is still mocked for now
 const GestureControl = () => {
   const [commands, setCommands] = useState([])
+  const manualIdRef = useRef(0)
 
   const { telemetry, status } = useTelemetry()
   const { sendCommand, status: commandStatus, lastResp } = useCommands()
+
+  // one entry per gesture change, straight from gesture adapter
+  const { entries: gestureCommands } = useGestureCommandLog()
+
+  const pushManualCommand = useCallback((action, source) => {
+    manualIdRef.current += 1
+    const at = Date.now()
+    const entry = {
+      id: `manual-${manualIdRef.current}`,
+      action,
+      timestamp: new Date(at).toLocaleTimeString("en-ZA", { hour12: false }),
+      at,
+      source,
+    }
+    setCommands((prev) => [entry, ...prev].slice(0, MAX_HISTORY))
+  }, [])
 
   const handleControlAction = useCallback(
     (command) => {
@@ -38,11 +88,16 @@ const GestureControl = () => {
   )
 
   const handleKeyboardResp = (resp) => {
-    const timestamp = new Date().toLocaleTimeString("en-ZA", { hour12: false })
-    setCommands((prev) =>
-      [{ action: resp.key, timestamp }, ...prev].slice(0, 50)
-    )
+    pushManualCommand(describeKeyPress(resp.key), "keyboard")
   }
+
+  const commandHistory = useMemo(
+    () =>
+      [...gestureCommands, ...commands]
+        .sort((a, b) => (b.at ?? 0) - (a.at ?? 0))
+        .slice(0, MAX_HISTORY),
+    [gestureCommands, commands]
+  )
 
   // //mock data for drone status
   // const droneMetrics = {
@@ -52,10 +107,22 @@ const GestureControl = () => {
   //   signal: 71,
   // }
 
-  const [droneMode, setDroneMode] = useState("DroneSim")
+  const [droneMode, setDroneMode] = useState("None")
   const [isConnecting, setIsConnecting] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState("disconnected")
   const [connectionError, setConnectionError] = useState("")
+  const [eventAlerts, setEventAlerts] = useState([])
+
+  //added this so emergency stop is persistant but other alerts are trigger based and persist for a time period
+  const pushEventAlert = useCallback((alert) => {
+    setEventAlerts((prev) =>
+      prev.some((a) => a.key === alert.key) ? prev : [...prev, alert]
+    )
+  }, [])
+
+  const dismissEventAlert = useCallback((key) => {
+    setEventAlerts((prev) => prev.filter((a) => a.key !== key))
+  }, [])
 
   //calibration gate for camera card
   // null = still checking, false = calibration UI, true = normal detection feed
@@ -78,8 +145,18 @@ const GestureControl = () => {
     setCalibrated(false)
   }
 
-  //hardware isnt wired for now so we dont want to show the stale sim data
-  const displayTelem = droneMode === "Hardware" ? null : telemetry
+  const isHardwareMode = droneMode === "Hardware" || droneMode === "Tello"
+  const displayTelem = droneMode === "None" ? null : telemetry
+  const hardwareTelem = isHardwareMode ? telemetry : null
+  const signalValue = hardwareTelem?.extra?.signal
+  const { alerts: TelemetryThresholdAlerts, dismiss: dismissTelemetryAlert } =
+    useTelemetryAlerts(hardwareTelem)
+  const allAlerts = [...eventAlerts, ...TelemetryThresholdAlerts]
+
+  const handleDismissAlert = (key) => {
+    dismissEventAlert(key)
+    dismissTelemetryAlert(key)
+  }
 
   //auto connect to airsim when the component is mounted
 
@@ -103,6 +180,11 @@ const GestureControl = () => {
         requestBody = {
           ...requestBody,
           vehicle_name: "Drone-1",
+        }
+      } else if (adapterType === "tello") {
+        requestBody = {
+          ...requestBody,
+          vehicle_name: "Tello-1",
         }
       }
       //add xfly adapter later here
@@ -150,6 +232,8 @@ const GestureControl = () => {
       await connectToDrone("projectairsim")
     } else if (mode === "Manual" || mode === "Autonomous") {
       await connectToDrone("dummy")
+    } else if (mode === "Tello" || mode === "Hardware") {
+      await connectToDrone("tello")
     }
   }
   //add hardware mode when drone works
@@ -159,74 +243,101 @@ const GestureControl = () => {
   useEffect(() => {
     if (hasConnected.current) return
     hasConnected.current = true
-    connectToDrone("dummy")
+    //connectToDrone("dummy")
   }, [])
 
   //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
   useEffect(() => {
     if (lastResp?.ok && lastResp.command) {
-      const timestamp = new Date().toLocaleTimeString("en-ZA", {
-        hour12: false,
-      })
       // setStae has to be called in use effect here because lastResp is not in this component
       //its basically coming from useCommands in the websocket, so that whenever there is a new response its added to the local log.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setCommands((prev) =>
-        [{ action: lastResp.command, timestamp }, ...prev].slice(0, 50)
-      )
+      pushManualCommand(lastResp.command, lastResp.source ?? "onscreen")
+
+      if (lastResp.command === "EMERGENCY_STOP") {
+        setTimeout(() => {
+          pushEventAlert({
+            key: `emergency-stop-${Date.now()}`,
+            id: "emergency-stop",
+            severity: "error",
+            title: "Emergency Stop Activated",
+            message:
+              "All motors stopping immediately. Confirm the drone is safe before resuming",
+          })
+        }, 0)
+      }
     }
-  }, [lastResp])
+  }, [lastResp, pushManualCommand, pushEventAlert])
+
+  const { debugMode } = useDebug()
+
+  const handleDisconnect = async () => {
+    try {
+      await fetch("http://localhost:3001/api/drone/disconnection", {
+        method: "POST",
+      })
+      console.log("disconnected from current adapter")
+    } catch (error) {
+      console.warn("error disconnecting:", error)
+    } finally {
+      setDroneMode("None")
+      setConnectionStatus("disconnected")
+      setConnectionError("")
+    }
+  }
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center gap-4 text-sm">
-        <span className="text-DarkGrey">Drone status:</span>
-        <span
-          className={`font-semibold ${
-            connectionStatus === "connected"
-              ? "text-green-500"
-              : connectionStatus === "failed"
-                ? "text-red-500"
-                : "text-yellow-500"
-          }`}
-        >
-          {isConnecting ? "connecting..." : connectionStatus}
-        </span>
-        {connectionError && (
-          <span className="text-red-500 text-xs">{connectionError}</span>
-        )}
-        <span className="text-DarkGrey">Telemetry:</span>
-        <span
-          className={`font-semibold ${
-            status === "open" ? "text-green-500" : "text-yellow-500"
-          }`}
-        >
-          {status}
-        </span>
-        <span className="text-DarkGrey">Commands:</span>
-        <span
-          className={`font-semibold ${
-            commandStatus === "open" ? "text-green-500" : "text-yellow-500"
-          }`}
-        >
-          {commandStatus}
-        </span>
-        <span className="text-DarkGrey">Mode:</span>
-        <span className="font-semibold text-blue-500">{droneMode}</span>
-        {lastResp?.error && (
-          <span className="text-semibold text-blue-500">{lastResp.error}</span>
-        )}
-        <span className="text-DarkGrey">Calibration:</span>
-        <span
-          className={`font-semibold ${
-            calibrated ? "text-green-500" : "text-yellow-500"
-          }`}
-        >
-          {calibrationLabel}
-        </span>
-      </div>
+      <TelemetryAlerts alerts={allAlerts} onDismiss={handleDismissAlert} />
+      {debugMode && (
+        <div className="flex items-center gap-4 text-sm">
+          <span className="text-dim">Drone status:</span>
+          <span
+            className={`font-semibold ${
+              connectionStatus === "connected"
+                ? "text-success"
+                : connectionStatus === "failed"
+                  ? "text-error"
+                  : "text-warning"
+            }`}
+          >
+            {isConnecting ? "connecting..." : connectionStatus}
+          </span>
+          {connectionError && (
+            <span className="text-error text-xs">{connectionError}</span>
+          )}
+          <span className="text-dim">Telemetry:</span>
+          <span
+            className={`font-semibold ${
+              status === "open" ? "text-success" : "text-warning"
+            }`}
+          >
+            {status}
+          </span>
+          <span className="text-dim">Commands:</span>
+          <span
+            className={`font-semibold ${
+              commandStatus === "open" ? "text-success" : "text-warning"
+            }`}
+          >
+            {commandStatus}
+          </span>
+          <span className="text-dim">Mode:</span>
+          <span className="font-semibold text-info">{droneMode}</span>
+          {lastResp?.error && (
+            <span className="text-semibold text-info">{lastResp.error}</span>
+          )}
+          <span className="text-dim">Calibration:</span>
+          <span
+            className={`font-semibold ${
+              calibrated ? "text-success" : "text-warning"
+            }`}
+          >
+            {calibrationLabel(calibrated)}
+          </span>
+        </div>
+      )}
       <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">
-        <Card variant="glass">
+        <Card variant="glass" data-tour="stats-card">
           <div className="flex items-center justify-between">
             <Label size="md" className="shrink-0">
               {" "}
@@ -235,37 +346,30 @@ const GestureControl = () => {
           </div>
           <div className="flex items-center justify-between gap-4 flex-wrap h-full">
             <div className="flex items-center gap-3">
-              <Battery className="w-6 h-6 text-Red" />
+              <Battery className="w-6 h-6 text-red" />
               <div>
-                <p className=" text-xs text-OffBlack dark:text-Grey uppercase">
-                  Battery
-                </p>
-                <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
+                <p className=" text-xs text-ink uppercase">Battery</p>
+                <p className="text-lg font-bold text-ink">
                   {fmt(displayTelem?.battery_pct)}%
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <Wifi className="w-6 h-6 text-Red" />
+              <Wifi className="w-6 h-6 text-red" />
               <div>
-                <p className=" text-xs text-OffBlack dark:text-Grey uppercase">
-                  Signal
-                </p>
-                <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
-                  {/* TODO: this is still mocked for now - theres no signl_pct field on the telem return yet */}
-                  100%
+                <p className=" text-xs text-ink uppercase">Signal</p>
+                <p className="text-lg font-bold text-ink">
+                  {typeof signalValue === "number" ? `${signalValue}%` : "--%"}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <Gauge className="w-6 h-6 text-Red" />
+              <Gauge className="w-6 h-6 text-red" />
               <div>
-                <p className=" text-xs text-OffBlack dark:text-Grey uppercase">
-                  Speed
-                </p>
-                <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
+                <p className=" text-xs text-ink uppercase">Speed</p>
+                <p className="text-lg font-bold text-ink">
                   {fmt(
                     typeof displayTelem?.speed_ms === "number"
                       ? displayTelem.speed_ms * MS_TO_KMH
@@ -278,12 +382,10 @@ const GestureControl = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <Mountain className="w-6 h-6 text-Red" />
+              <Mountain className="w-6 h-6 text-red" />
               <div>
-                <p className=" text-xs text-OffBlack dark:text-Grey uppercase">
-                  Altitude
-                </p>
-                <p className="text-lg font-bold text-OffBlack dark:text-OffWhite">
+                <p className=" text-xs text-ink uppercase">Altitude</p>
+                <p className="text-lg font-bold text-ink">
                   {fmt(displayTelem?.altitude_m, 1)}m
                 </p>
               </div>
@@ -291,52 +393,73 @@ const GestureControl = () => {
           </div>
         </Card>
 
-        <DroneModeCard
-          currentMode={droneMode}
-          onModeChange={handleModeChange}
-          className="w-72"
-        />
+        <div data-tour="drone-mode-card">
+          <DroneModeCard
+            currentMode={droneMode}
+            onModeChange={handleModeChange}
+            onDisconnect={handleDisconnect}
+            className="w-72"
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        {calibrated === false ? (
-          <GestureCalibration
-            key={calRunKey}
-            className="h-full"
-            onComplete={() => setCalibrated(true)}
-            onRestart={handleRecalibrate}
-          />
-        ) : (
-          <Card variant="glass" className="h-full flex flex-col">
-            <div className="flex flex-col gap-4 flex-1">
-              <div className="flex items-center justify-between">
-                <Label className="text-lg font-semibold">
-                  Gesture Detection
-                </Label>
-                {calibrated && (
-                  <button
-                    type="button"
-                    onClick={handleRecalibrate}
-                    className="text-xs text-DarkGrey hover:text-OffBlack dark:hover:text-OffWhite underline underline-offset-2 transition-colors"
-                  >
-                    Recalibrate
-                  </button>
-                )}
+        <div className="h-full" data-tour="gesture-camera">
+          {calibrated === false ? (
+            <GestureCalibration
+              key={calRunKey}
+              className="h-full"
+              onComplete={() => setCalibrated(true)}
+              onRestart={handleRecalibrate}
+            />
+          ) : (
+            <Card
+              variant="glass"
+              className="h-full flex flex-col"
+              data-tour="gesture-camera"
+            >
+              <div className="flex flex-col gap-4 flex-1">
+                <div className="flex items-center justify-between">
+                  <Label className="text-lg font-semibold">
+                    Gesture Detection
+                  </Label>
+
+                  {calibrated && (
+                    <button
+                      type="button"
+                      onClick={handleRecalibrate}
+                      className="text-xs text-dim hover:text-red underline underline-offset-2 transition-colors"
+                    >
+                      Recalibrate
+                    </button>
+                  )}
+                </div>
+
+                <GestureCameraFeed className="flex-1" />
               </div>
-
-              <GestureCameraFeed className="flex-1" />
-            </div>
-          </Card>
-        )}
-
-        <GestureGuide
-          className="h-full"
-          sendCommand={handleControlAction}
-          onKeyboardResp={handleKeyboardResp}
-        />
+            </Card>
+          )}
+        </div>
+        <div className="flex flex-col gap-6 h-full">
+          <div className="flex-1" data-tour="gesture-guide">
+            <GestureGuide
+              className="h-full"
+              sendCommand={handleControlAction}
+              onKeyboardResp={handleKeyboardResp}
+            />
+          </div>
+          <div data-tour="sim-viewer">
+            <DroneFeedPanel
+              droneMode={droneMode}
+              connectionStatus={connectionStatus}
+            />
+          </div>
+        </div>
       </div>
 
-      <CommandHistory commands={commands} />
+      <div data-tour="command-history">
+        <CommandHistory commands={commandHistory} />
+      </div>
     </div>
   )
 }

@@ -32,3 +32,6 @@ jobs:
 
       - name: Ruff Linter
         run: task lint
+
+      - name: API Contracts
+        run: task contracts

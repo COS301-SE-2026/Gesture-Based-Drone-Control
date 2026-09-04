@@ -1,1 +1,0 @@
-# /services/cv-pipeline/drone-control/adapters/xfly.py

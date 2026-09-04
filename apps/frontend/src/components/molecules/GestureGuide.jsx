@@ -1,6 +1,6 @@
 import { useState, memo } from "react"
 import PropTypes from "prop-types"
-import { Card, Label, Button } from "../atoms"
+import { Card, Label, Button, StatusDot } from "../atoms"
 import {
   Monitor,
   Keyboard,
@@ -23,6 +23,7 @@ import { useDroneControls } from "../../hooks/useDroneControls"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
 import { useGamepadControl } from "@/hooks/useGamepadControl"
 import { useGestureControl } from "@/hooks/useGestureControl"
+import { useDebug } from "@/context/DebugContext"
 import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tab
 
 const tabs = [
@@ -133,10 +134,10 @@ const inputMapping = {
     "R Stick Down",
     "R Stick Left",
     "R Stick Right",
-    "Triangle",
+    "Cross",
     "Square",
     "Circle",
-    "Cross",
+    "Triangle",
   ],
   gestures: [
     "1 finger + 1 finger",
@@ -180,20 +181,47 @@ const GestureGuide = memo(function GestureGuide({
 }) {
   const [activeTab, setActiveTab] = useState("onscreen")
   const { handleControlPress, isControlActive } = useDroneControls(sendCommand)
+  const [isFlying, setIsFlying] = useState(false)
+  const { debugMode } = useDebug()
+
+  //wrap handlePress so takeoff/land/emergencyStop also toggle the isFlying
+  const handlePress = (action, label) => {
+    handleControlPress(action, label)
+    if (action === "takeoff") setIsFlying(true)
+    if (action === "land" || action === "emergencyStop") setIsFlying(false)
+  }
 
   /**will only be active when the keyboard tab is selected and handles connecting  the backend keyboard input adapter,
     opening the /input/ws/keyboard/socket, and listening for real key events **/
-  const { connected: keyboardConnected } = useKeyboardControl(
-    activeTab === "keyboard",
-    onKeyboardResp
-  )
+  const { connected: keyboardConnected, status: keyboardStatus } =
+    useKeyboardControl(activeTab === "keyboard", onKeyboardResp)
 
-  const { connected: controllerConnected } = useGamepadControl(
-    activeTab === "controller"
-  )
+  const { connected: controllerConnected, status: controllerStatus } =
+    useGamepadControl(activeTab === "controller")
 
-  const { connected: gestureConnected, status: gestureStatus } =
-    useGestureControl(activeTab === "gestures")
+  const {
+    connected: gestureConnected,
+    status: gestureStatus,
+    wsStatus: gestureWsStatus,
+  } = useGestureControl(activeTab === "gestures")
+
+  const adapterInfo = {
+    keyboard: {
+      name: "Keyboard is active",
+      connected: keyboardConnected,
+      debugText: keyboardStatus,
+    },
+    controller: {
+      name: "Controller is active",
+      connected: controllerConnected,
+      debugText: controllerStatus,
+    },
+    gestures: {
+      name: "Gestures is active",
+      connected: gestureConnected,
+      debugText: `adapter: ${gestureConnected ? "connected" : "disconnected"}  status-ws: ${gestureWsStatus}`,
+    },
+  }[activeTab]
 
   const onScreenControls = () => (
     <div className="flex gap-6 py-4">
@@ -204,7 +232,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Move Forward") ? "default" : "secondary"}
             icon={ArrowUp}
-            onClick={() => handleControlPress("moveForward", "Move Forward")}
+            onClick={() => handlePress("moveForward", "Move Forward")}
+            disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
           />
@@ -214,7 +243,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Move Left") ? "default" : "secondary"}
             icon={ArrowLeft}
-            onClick={() => handleControlPress("moveLeft", "Move Left")}
+            onClick={() => handlePress("moveLeft", "Move Left")}
+            disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
           />
@@ -222,7 +252,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Hover") ? "default" : "secondary"}
             icon={CircleDot}
-            onClick={() => handleControlPress("hover", "Hover")}
+            onClick={() => handlePress("hover", "Hover")}
+            disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
           />
@@ -230,7 +261,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Move Right") ? "default" : "secondary"}
             icon={ArrowRight}
-            onClick={() => handleControlPress("moveRight", "Move Right")}
+            onClick={() => handlePress("moveRight", "Move Right")}
+            disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
           />
@@ -240,7 +272,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Move Backward") ? "default" : "secondary"}
             icon={ArrowDown}
-            onClick={() => handleControlPress("moveBackward", "Move Backward")}
+            onClick={() => handlePress("moveBackward", "Move Backward")}
+            disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
           />
@@ -257,7 +290,8 @@ const GestureGuide = memo(function GestureGuide({
               isControlActive("Increase Altitude") ? "default" : "secondary"
             }
             icon={ChevronUp}
-            onClick={() => handleControlPress("goUp", "Increase Altitude")}
+            onClick={() => handlePress("goUp", "Increase Altitude")}
+            disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
@@ -267,7 +301,8 @@ const GestureGuide = memo(function GestureGuide({
               isControlActive("Decrease Altitude") ? "default" : "secondary"
             }
             icon={ChevronDown}
-            onClick={() => handleControlPress("goDown", "Decrease Altitude")}
+            onClick={() => handlePress("goDown", "Decrease Altitude")}
+            disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
@@ -275,7 +310,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Rotate Left") ? "default" : "secondary"}
             icon={RotateCcw}
-            onClick={() => handleControlPress("rotateLeft", "Rotate Left")}
+            onClick={() => handlePress("rotateLeft", "Rotate Left")}
+            disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
@@ -283,7 +319,8 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Rotate Right") ? "default" : "secondary"}
             icon={RotateCw}
-            onClick={() => handleControlPress("rotateRight", "Rotate Right")}
+            onClick={() => handlePress("rotateRight", "Rotate Right")}
+            disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
@@ -294,14 +331,16 @@ const GestureGuide = memo(function GestureGuide({
           <Button
             variant={isControlActive("Take Off") ? "default" : "secondary"}
             icon={PlaneTakeoff}
-            onClick={() => handleControlPress("takeoff", "Take Off")}
+            onClick={() => handlePress("takeoff", "Take Off")}
+            disabled={isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
           <Button
             variant={isControlActive("Land") ? "default" : "secondary"}
             icon={PlaneLanding}
-            onClick={() => handleControlPress("land", "Land")}
+            onClick={() => handlePress("land", "Land")}
+            disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
           />
@@ -311,7 +350,7 @@ const GestureGuide = memo(function GestureGuide({
         <Button
           variant={isControlActive("Emergency Stop") ? "default" : "secondary"}
           icon={OctagonX}
-          onClick={() => handleControlPress("emergencyStop", "Emergency Stop")}
+          onClick={() => handlePress("emergencyStop", "Emergency Stop")}
           className="w-full h-16 rounded-lg text-sm font-bold"
           size="lg"
         >
@@ -326,13 +365,11 @@ const GestureGuide = memo(function GestureGuide({
       {controls[activeTab].map(({ icon: Icon, label, input }) => (
         <div
           key={label}
-          className="flex items-center gap-3 bg-OffBlack/10 dark:bg-OffWhite/5 rounded-lg px-3 py-2 border border-Grey/10"
+          className="flex items-center gap-3 bg-glass backdrop-blur-sm rounded-lg px-3 py-2 border border-glass"
         >
-          <Icon className="w-4 h-4 text-Red shrink-0" />
-          <span className="text-xs text-OffBlack/70 dark:text-OffWhite/70 flex-1 text-left">
-            {label}
-          </span>
-          <span className="text-xs font-mono font-semibold text-OffBlack dark:text-OffWhite bg-Grey/20 dark:bd-DarkGrey/40 px-2 py-0.5 rounded">
+          <Icon className="w-4 h-4 text-red shrink-0" />
+          <span className="text-xs text-ink/70 flex-1 text-left">{label}</span>
+          <span className="text-xs font-mono font-semibold text-ink bg-dim/20 px-2 py-0.5 rounded">
             {input || "Not Mapped"}
           </span>
         </div>
@@ -343,7 +380,17 @@ const GestureGuide = memo(function GestureGuide({
   return (
     <Card variant="glass" className={className}>
       <div className="flex flex-col gap-6">
-        <Label size="md">Control Guide</Label>
+        <div className="flex items-center justify-between">
+          <Label size="md">Control Guide</Label>
+          {adapterInfo && (
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-ink/70">{adapterInfo.name}</span>
+              <StatusDot
+                variant={adapterInfo.connected ? "connected" : "disconnected"}
+              />
+            </div>
+          )}
+        </div>
 
         {/* tabs */}
         <div className="flex gap-2 flex-wrap">
@@ -360,54 +407,27 @@ const GestureGuide = memo(function GestureGuide({
           ))}
         </div>
 
-        {activeTab === "keyboard" && (
-          <div className="flex items-center gap-2 text-xs">
-            <span
-              className={`w-2 h-2 rounded-full ${
-                keyboardConnected ? "bg-green-500 animate-pulse" : "bg-Grey/40"
-              }`}
-            />
-            <span className="text-OffBlack/70 dark:text-OffWhite/70">
-              {keyboardConnected
-                ? "Keyboard control active"
-                : "Connecting keyboard controls..."}
-            </span>
+        {activeTab === "keyboard" && debugMode && (
+          <div className="text-xs font-mono text-dim">
+            [ws: {keyboardStatus}]
           </div>
         )}
 
-        {activeTab === "controller" && (
-          <div className="flex items-center gap-2 text-xs">
-            <span
-              className={`w-2 h-2 rounded-full ${
-                controllerConnected
-                  ? "bg-green-500 animate-pulse"
-                  : "bg-Grey/40"
-              }`}
-            />
-            <span className="text-OffBlack/70 dark:text-OffWhite/70">
-              {controllerConnected
-                ? "Gamepad control active"
-                : "Connecting gamepad controls..."}
-            </span>
+        {activeTab === "controller" && debugMode && (
+          <div className="text-xs font-mono text-dim">
+            [ws: {controllerStatus}]
           </div>
         )}
 
         {activeTab === "gestures" && (
           <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  gestureConnected ? "bg-green-500 animate-pulse" : "bg-Grey/40"
-                }`}
-              />
-              <span className="text-OffBlack/70 dark:text-OffWhite/70">
-                {gestureConnected
-                  ? "Gesture control active"
-                  : "Connecting gesture controls..."}
+            {debugMode && (
+              <span className="font-mono text-dim">
+                {adapterInfo.debugText}
               </span>
-            </div>
+            )}
             {gestureConnected && gestureStatus.active && (
-              <span className="font-mono text-OffBlack/60 dark:text-OffWhite/60">
+              <span className="font-mono text-ink/60">
                 {gestureStatus.lastGesture === "none"
                   ? "no gesture"
                   : gestureStatus.lastGesture.toLowerCase().replace(/_/g, " ")}

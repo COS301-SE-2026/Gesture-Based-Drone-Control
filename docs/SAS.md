@@ -1,7 +1,7 @@
 # Software Architecture Specification
 
 <div class="tx-badges">
-  <span class="tx-status"><span class="tx-status__dot"></span>Demo 2 deliverable</span>
+  <span class="tx-status"><span class="tx-status__dot"></span>Demo 3 deliverable</span>
 </div>
 
 !!! abstract "What this document covers"
@@ -31,7 +31,7 @@ documents:
 
 ### 1.2 Scope
 
-This document covers the system as designed for Demo 2 and is
+This document covers the system as designed for Demo 3 and is
 maintained for subsequent demos. It complements:
 
 - [`SRS.md`](SRS.md) - *what* the system must do (functional
