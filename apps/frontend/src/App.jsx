@@ -50,7 +50,7 @@ function App() {
                       <Route path="tutorial" element={<Tutorial />} />
                       <Route path="test" element={<TestPage />} />
                       <Route path="games" element={<Games />} />
-                </Route>
+                    </Route>
                   </Routes>
                 </AuthProvider>
               </TourProvider>

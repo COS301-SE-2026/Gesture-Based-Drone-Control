@@ -446,10 +446,10 @@ export default function PacDroneGame() {
               }
             } else {
               if (facing.x !== 0) {
-                player.pos.x = px(tileCol(player.pos.x))
+                player.pos.x = px(playerCol)
               }
               if (facing.y !== 0) {
-                player.pos.y = py(tileRow(player.pos.y))
+                player.pos.y = py(playerRow)
               }
             }
 
@@ -512,9 +512,10 @@ export default function PacDroneGame() {
               // check if we can continue in this direction
               const nc = (g._col + g._dir.x + cols) % cols
               const nr = g._row + g._dir.y
+              const blocked = nr < 0 || nr >= rows || isWall(maze, nc, nr)
 
               //hit a brick wall
-              if (isWall(maze, nc, nr)) {
+              if (blocked) {
                 // pick a random valid direction, preferring not to reverse
                 const reverse = { x: -g._dir.x, y: -g._dir.y }
                 const shuffled = [...GHOST_DIRS]
@@ -539,17 +540,24 @@ export default function PacDroneGame() {
             g.pos.y += g._dir.y * g._speed * dt
 
             // edge of screen wraparound
+            // only tries to wrap around on the horizontal
+            // vertical just makes the ghost disappear
             if (g.pos.x < 0) {
               g.pos.x += cols * tile
             }
             if (g.pos.x > cols * tile) {
               g.pos.x -= cols * tile
             }
+            //clamp vertical so ghost doesnt go offsccreen
+            g.posY = Math.max(
+              tile / 2,
+              Math.min(g.pos.y, (rows - 1) * tile + tile / 2)
+            )
 
             // collision logic comparing logical coords
             const gc = tileCol(g.pos.x)
             const gr = tileRow(g.pos.y)
-            if (gc == playerCol && gr === playerRow) {
+            if (gc === playerCol && gr === playerRow) {
               // eat the ghost
               if (scared) {
                 const spawn = ghostSpawns[ghosts.indexOf(g)] ??

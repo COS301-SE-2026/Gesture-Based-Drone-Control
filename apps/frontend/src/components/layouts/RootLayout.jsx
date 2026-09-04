@@ -1,6 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom"
 import { useEffect } from "react"
-
 import {
   SideBar,
   AnalyticsSideContent,
@@ -8,6 +7,7 @@ import {
   GpsSideContent,
   HelpSideContent,
   SettingsSideContent,
+  GamesSideContent,
 } from "../molecules"
 import {
   Home,
@@ -21,7 +21,6 @@ import {
 // import bgDark from "../../assets/darkbackground.png"
 // import { useTheme } from "../../context/ThemeContext"
 import { useAuth } from "../../context/AuthContext"
-
 import { useTour } from "@/context/TourContext"
 import { fullTourSteps } from "@/lib/tours/steps"
 import TourController from "./TourController"
@@ -41,7 +40,12 @@ const RootLayout = () => {
     },
     { id: "gps", label: "GPS", icon: MapPin, path: "/app/gps" },
     { id: "games", label: "Games", icon: Gamepad, path: "/app/games" },
-    { id: "settings", label: "Settings", icon: Settings, path: "/app/settings" },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: Settings,
+      path: "/app/settings",
+    },
     { id: "help", label: "Help", icon: HelpCircle, path: "/app/help" },
   ]
 
@@ -59,6 +63,8 @@ const RootLayout = () => {
       return <HelpSideContent />
     } else if (location.pathname.includes("/settings")) {
       return <SettingsSideContent />
+    } else if (location.pathname.includes("/games")) {
+      return <GamesSideContent />
     }
   }
 
