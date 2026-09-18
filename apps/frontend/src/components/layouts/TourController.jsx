@@ -118,8 +118,13 @@ const TourController = () => {
           target: s.target,
           title: s.title,
           content: s.content,
+          placement: s.placement ?? "bottom",
           disableBeacon: true,
         }))}
+        floaterProps={{
+          offset:16,
+          flipBehaviour:["bottom", "right", "left"]
+        }}
         stepIndex={stepIndex}
         run
         continuous
