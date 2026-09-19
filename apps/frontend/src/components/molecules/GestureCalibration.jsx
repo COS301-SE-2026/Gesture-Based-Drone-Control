@@ -139,7 +139,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
           Calibration complete, all {total || completed.length} gestures passed.
           Flight commands are now unlocked.
         </p>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <button
             type="button"
             onClick={() => onComplete?.("completed")}
@@ -168,7 +168,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
   } else {
     statusArea = (
       <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <p className="text-md text-ink/80">
             {target ? (
               <>
@@ -212,7 +212,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
   if (!enabled) {
     return (
       <Card variant="glass" className={className}>
-        <div className="min-h-[400px] flex items-center justify-center">
+        <div className="min-h-[16 rem] aspect-video flex items-center justify-center">
           <CameraDisabledNotice message="Calibration needs the camera to check it can read your hand reliably." />
         </div>
       </Card>
@@ -230,7 +230,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
         </div>
 
         {/* camera and skeleton overlay */}
-        <div className="relative w-full bg-black/50 rounded border border-dim/20 overflow-hidden min-h-[400px]">
+        <div className="relative w-full bg-black/50 rounded border border-dim/20 overflow-hidden min-h-[16rem] aspect-video">
           <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
         </div>
         {/* sequnce chips */}
