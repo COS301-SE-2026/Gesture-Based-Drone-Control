@@ -31,7 +31,10 @@ function getDbPath() {
 }
 
 function startBackend() {
-  const backendName = process.platform === "win32" ? "backend.exe" : "backend"
+  const backendName = process.platform === "win32" ? 
+  "GestureBasedDroneControl-Backend.exe" :
+  "GestureBasedDroneControl-Backend"
+
   const backendPath = app.isPackaged
     ? path.join(process.resourcesPath, "backend", backendName)
     : path.join(__dirname, "../../../dist", backendName)
@@ -85,6 +88,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1920,
     height: 1080,
+    title: "GestureBasedDroneControl",
     webPreferences: { contextIsolation: true },
   })
 
