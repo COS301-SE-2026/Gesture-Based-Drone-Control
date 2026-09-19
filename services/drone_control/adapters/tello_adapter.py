@@ -25,6 +25,7 @@ class TelloAdapter(DroneAdapter):
 		self._tello = Tello(retry_count=1)
 		self._connected = False
 		self._is_flying = False
+		self._command_lock = asyncio.Lock()
 		self._hover_task: asyncio.Task | None = None
 		self._hover_delay: float = 0.5
 		self._x_displacement: float = 0.0
@@ -41,15 +42,22 @@ class TelloAdapter(DroneAdapter):
 
 	async def connect(self) -> bool:
 		try:
-			self._tello.connect()
+			async with self._command_lock:
+				await asyncio.to_thread(self._tello.connect)
+
 			self._connected = True
 			return True
 		except Exception:
-			self._tello.end()
+			logger.warning("Tello connect failed", exc_info = True)
+			try:
+				await asyncio.to_thread(self._tello.end)
+			except Exception:
+				logger.debug('Tello end after failed connect also failed', exc_info = True)
 			return False
 
 	async def disconnect(self) -> None:
-		self._assert_connected()
+		if not self._connected:
+			return
 
 		try:
 			if self._is_flying:
@@ -63,13 +71,21 @@ class TelloAdapter(DroneAdapter):
 
 			try:
 				self._connected = False
-				self._tello.end()
+				async with self._command_lock:
+					await asyncio.to_thread(self._tello.end)
 			except Exception as ex:
 				logger.warning('Tello.end failed with %s', ex, exc_info=True)
 
 	async def takeoff(self) -> None:
 		self._assert_connected()
-		await asyncio.to_thread(self._tello.takeoff)
+		
+		if self._is_flying:
+			logger.warning('Tello is already flying. Takeoff ignored')
+			return
+
+		async with self._command_lock:
+			await asyncio.to_thread(self._tello.takeoff)
+
 		self._is_flying = True
 		self._x_displacement = 0.0
 		self._y_displacement = 0.0
@@ -83,7 +99,9 @@ class TelloAdapter(DroneAdapter):
 		if self._hover_task is not None and not self._hover_task.done():
 			self._hover_task.cancel()
 
-		await asyncio.to_thread(self._tello.land)
+		async with self._command_lock:
+			await asyncio.to_thread(self._tello.land)
+
 		self._is_flying = False
 		logger.info('Tello Drone: landing')
 
@@ -97,7 +115,7 @@ class TelloAdapter(DroneAdapter):
 		if not self._is_flying:
 			return 
 
-		speed = kwargs.get('speed_ms', self.MOVEMENTSPEED)
+		speed = int(kwargs.get('speed_ms', self.MOVEMENTSPEED))
 
 		velocity_map: dict[CommandType, tuple[int, int, int, int]] = {
 			CommandType.MOVE_FORWARD: (0, speed, 0, 0),
@@ -148,12 +166,19 @@ class TelloAdapter(DroneAdapter):
 
 	async def hover(self) -> None:
 		self._assert_connected()
-		self._assert_flying()
+		
+		if not self._is_flying:
+			return
 
 		self._tello.send_rc_control(0, 0, 0, 0)
 
 	async def emergency_stop(self) -> None:
+		if self._hover_task is not None and not self._hover_task.done():
+			self._hover_task.cancel()
+
 		self._tello.emergency()
+		self._is_flying = False
+		logger.warning("Tello Drone: EMERGENCY STOP")
 
 	async def get_telemetry(self):
 		if not self._connected:
@@ -307,7 +332,10 @@ class TelloAdapter(DroneAdapter):
 
 	async def _refresh_wifi_signal(self) -> None:
 		try:
-			response = await asyncio.to_thread(self._tello.query_wifi_signal_noise_ratio)
+
+			async with self._command_lock:
+				response = await asyncio.to_thread(self._tello.query_wifi_signal_noise_ratio)
+
 			self._wifi_signal = int(response)
 		except Exception as e:
 			logger.debug('Tello wifi signal query failed %s', e)
@@ -329,6 +357,8 @@ class TelloAdapter(DroneAdapter):
 		except asyncio.CancelledError:
 			raise
 			# this happens when a new command comes in
+		except Exception:
+			logger.warning('Tello hover watchdog failed (what did u do to get here)', exc_info=True)
 
 	async def stop(self):
 		"""
