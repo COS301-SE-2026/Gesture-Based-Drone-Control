@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react"
 import { useGameCommands } from "@/hooks/useGameCommands"
 
+import eatSound from "@/assets/games/pac/eat.mp3"
+import powerSound from "@/assets/games/pac/power.mp3"
+
 /**
  * mazes are defined as 2d arrays
  * W = wall
@@ -98,6 +101,10 @@ export default function PacDroneGame() {
         background: col_bg,
         global: false,
       })
+
+      //asset imports
+      k.loadSound("eat", eatSound)
+      k.loadSound("power", powerSound)
 
       //helper functions for collission
       const tileAt = (maze, col, row) => maze[row]?.[col] ?? "W"
@@ -460,6 +467,7 @@ export default function PacDroneGame() {
             // collect dots and pellets according to logical coordinate
             k.get("dot").forEach((d) => {
               if (d.col === playerCol && d.row === playerRow) {
+                k.play("eat")
                 k.destroy(d) //one time use
                 score += 10
                 dotsLeft-- //tracked for win condition
@@ -468,12 +476,13 @@ export default function PacDroneGame() {
             })
             k.get("pellet").forEach((p) => {
               if (p.col === playerCol && p.row === playerRow) {
+                k.play("power")
                 k.destroy(p)
                 score += 50 //worth more points
                 dotsLeft--
                 scoreLbl.text = `SCORE ${score}`
                 scared = true // set the ghosts to be consumed
-                scaredTimer = 10
+                scaredTimer = 9
                 ghosts.forEach((g) => (g.color = k.rgb(...col_scared)))
                 statusLbl.text = "EAT THE GHOSTS!!!"
               }
