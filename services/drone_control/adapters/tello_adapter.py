@@ -69,7 +69,7 @@ class TelloAdapter(DroneAdapter):
 
 	async def takeoff(self) -> None:
 		self._assert_connected()
-		self._tello.takeoff()
+		await asyncio.to_thread(self._tello.takeoff)
 		self._is_flying = True
 		self._x_displacement = 0.0
 		self._y_displacement = 0.0
@@ -83,7 +83,7 @@ class TelloAdapter(DroneAdapter):
 		if self._hover_task is not None and not self._hover_task.done():
 			self._hover_task.cancel()
 
-		self._tello.land()
+		await asyncio.to_thread(self._tello.land)
 		self._is_flying = False
 		logger.info('Tello Drone: landing')
 
@@ -93,7 +93,9 @@ class TelloAdapter(DroneAdapter):
 		We are just moving with it considering its perfectly tuned without the kwargs input
 		"""
 		self._assert_connected()
-		self._assert_flying()
+		
+		if not self._is_flying:
+			return 
 
 		speed = kwargs.get('speed_ms', self.MOVEMENTSPEED)
 
@@ -128,7 +130,9 @@ class TelloAdapter(DroneAdapter):
 
 	async def analog(self, input: AnalogInput) -> None:
 		self._assert_connected()
-		self._assert_flying()
+
+		if not self._is_flying:
+			return 
 
 		fb = int(-input.left_y * self.MOVEMENTSPEED)
 		lr = int(input.left_x * self.MOVEMENTSPEED)
@@ -331,5 +335,5 @@ class TelloAdapter(DroneAdapter):
 		explicit immediate hover
 		"""
 		if self._hover_task is not None and not self._hover_task.done():
-			self.hover_task.cancel()
+			self._hover_task.cancel()
 		await self.hover()
