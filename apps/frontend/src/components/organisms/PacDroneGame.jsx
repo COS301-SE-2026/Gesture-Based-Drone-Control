@@ -1,8 +1,11 @@
 import { useEffect, useRef } from "react"
 import { useGameCommands } from "@/hooks/useGameCommands"
 
+
 import eatSound from "@/assets/games/pac/eat.mp3"
 import powerSound from "@/assets/games/pac/power.mp3"
+import dieSound from "@/assets/games/pac/die.mp3"
+import margitSound from "@/assets/games/pac/margit.mp3"
 
 /**
  * mazes are defined as 2d arrays
@@ -105,6 +108,8 @@ export default function PacDroneGame() {
       //asset imports
       k.loadSound("eat", eatSound)
       k.loadSound("power", powerSound)
+      k.loadSound("die", dieSound)
+      k.loadSound("margit", margitSound)
 
       //helper functions for collission
       const tileAt = (maze, col, row) => maze[row]?.[col] ?? "W"
@@ -467,7 +472,7 @@ export default function PacDroneGame() {
             // collect dots and pellets according to logical coordinate
             k.get("dot").forEach((d) => {
               if (d.col === playerCol && d.row === playerRow) {
-                k.play("eat")
+                k.play("eat", {volume: 0.5})
                 k.destroy(d) //one time use
                 score += 10
                 dotsLeft-- //tracked for win condition
@@ -476,7 +481,7 @@ export default function PacDroneGame() {
             })
             k.get("pellet").forEach((p) => {
               if (p.col === playerCol && p.row === playerRow) {
-                k.play("power")
+                k.play("power", {volume: 0.5})
                 k.destroy(p)
                 score += 50 //worth more points
                 dotsLeft--
@@ -580,6 +585,7 @@ export default function PacDroneGame() {
                 scoreLbl.text = `SCORE  ${score}`
               } else {
                 // ghost eat us
+                k.play("die")
                 k.go("lose", score, mazeIndex)
               }
             }
@@ -621,6 +627,8 @@ export default function PacDroneGame() {
 
       // lose scene
       k.scene("lose", (score = 0, mazeIndex = 0) => {
+        k.play("margit")
+
         k.add([
           k.text("YOU DIED", { size: 52 }),
           k.anchor("center"),
