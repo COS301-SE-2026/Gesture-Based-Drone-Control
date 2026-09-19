@@ -6,7 +6,8 @@ import pipeFlipped from "@/assets/games/flappy/towerr_flipped.png"
 import { useGameCommands } from "@/hooks/useGameCommands"
 import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
 import { GAME_COLORS } from "@/lib/gameTheme"
-
+import loseSound  from "@/assets/games/flappy/fahhh.mp3"
+import pointSound from "@/assets/games/flappy/point.mp3"
 /**
  * this page houses everything for the kaplay minigame
  * it will be rendered inside a frame on the minigames page
@@ -81,6 +82,9 @@ export default function FlappyDroneGame() {
     k.loadSprite("backSprite", background)
     k.loadSprite("pipeSprite", pipe)
     k.loadSprite("pipeSpriteFlipped", pipeFlipped)
+
+    k.loadSound("lose", loseSound)
+    k.loadSound("point", pointSound)
 
     k.setGravity(1)
 
@@ -198,28 +202,6 @@ export default function FlappyDroneGame() {
         const h1 = (prevPipeH1 = k.rand(low, high))
         const h2 = k.height() - h1 - PIPE_OPEN
 
-        // generic object template for pipes to follow
-        // const makePipe = (posY, h) => [
-        //   k.sprite("pipeSprite", {
-        //     width: 64,
-        //     height: h,
-        //   }),
-        //   k.pos(k.width(), posY),
-        //   //k.rect(64, h),
-        //   //k.color(10, 0, 33),
-        //   k.outline(4, k.rgb(...GAME_COLORS.redDeep)),
-        //   k.area({ isSensor: true }), //collision
-        //   k.move(k.LEFT, SPEED), //illusion of scrolling level
-        //   k.offscreen({ destroy: true }), //it dont exist if its behind us
-        //   "pipe", //easier to refer to later on with a tag
-        // ]
-
-        // //make a top pipe
-        // k.add(makePipe(0, h1), { passed: true })
-
-        // //make a bottom pipe
-        // k.add([...makePipe(h1 + PIPE_OPEN, h2), { passed: false }])
-
         const makeBuilding = (posY, h, flipped) => {
           const parent = k.add([
             k.pos(k.width(), posY),
@@ -279,6 +261,7 @@ export default function FlappyDroneGame() {
       // so when the pipe passes the player, give them a point
       k.onUpdate("pipe", (p) => {
         if (p.pos.x + BUILDING_WIDTH <= player.pos.x && !p.passed) {
+          k.play("point")
           score++
           scoreLabel.text = score.toString()
           p.passed = true
@@ -296,6 +279,8 @@ export default function FlappyDroneGame() {
       downRef.current = null
       hoverRef.current = null
       goLoseRef.current = null
+
+      k.play("lose")
 
       k.add([
         k.sprite("backSprite", { width: k.width(), height: k.height() }),
