@@ -5,6 +5,55 @@ import { useTour } from "@/context/TourContext"
 import TourTooltip from "../molecules/TourTooltip"
 import TourBlurOverlay from "./Tourbluroverlay"
 
+const TIP_W = 340
+const TIP_H = 200
+const GAP = 24
+
+const pickPlacement = (selector) => {
+  const el =document.querySelector(selector)
+  if(!el)
+  {
+    return "bottom"
+  }
+  const r = el.getBoundingClientRect()
+  if(window.innerHeight - r.bottom >= TIP_H + GAP)
+  {
+    return "bottom"
+  }
+
+  if(window.innerWidth - r.right >= TIP_W + GAP)
+  {
+    return "right"
+  }
+
+  if(r.left >= TIP_W + GAP)
+  {
+    return "left"
+  }
+
+  if(r.top >= TIP_H + GAP)
+  {
+    return "top"
+  }
+
+  return null
+}
+
+const resolve = (s) => {
+if (!s)
+{
+  return { target:undefined, placement:"bottom"}
+}
+const full = pickPlacement(s.target)
+if(full) return {target:s.target,placement:full}
+
+const anchor = s.anchor ?? `${s.target} > *:first-child`
+if(document.querySelector(anchor)) {
+  return { target:anchor,placement:pickPlacement(anchor) ?? "bottom"}
+}
+return {target: s.target, placement:"bottom"}
+}
+
 //WHAT A PROBLAMATIC FILE OMG
 const TourController = () => {
   const { activeSteps, tourKey, endTour } = useTour()
@@ -14,6 +63,13 @@ const TourController = () => {
 
   const [readyStep, setReadyStep] = useState(-1)
   const readyToShow = !!activeSteps && readyStep === stepIndex
+
+  const[,setLayoutTick] = useState(0)
+  useEffect(() => {
+    const bump = () => setLayoutTick((n) => n+1)
+    window.addEventListener("resize", bump)
+    return () => window.removeEventListener("resize", bump)
+  },[])
 
   //so that the scroll lock can be avoided
   useEffect(() => {
@@ -61,7 +117,8 @@ const TourController = () => {
       waited += intervalMs
       if (found) {
         clearInterval(check)
-        found.scrollIntoView({ behavior: "smooth", block: "center" })
+        found.style.scrollMarginTop = "24px"
+        found.scrollIntoView({ behavior: "instant", block: "start" })
         setTimeout(() => setReadyStep(stepIndex), 300)
         return
       }
@@ -108,22 +165,22 @@ const TourController = () => {
     }
   }
 
-  const currentTarget = activeSteps[stepIndex]?.target
+  const current = resolve(activeSteps[stepIndex])
   return (
     <>
-      <TourBlurOverlay target={currentTarget} />
+      <TourBlurOverlay target={current.target} />
       <Joyride
         key={tourKey}
-        steps={activeSteps.map((s) => ({
-          target: s.target,
+        steps={activeSteps.map((s,i) => ({
+          target: i === stepIndex ? current.target : s.target,
           title: s.title,
           content: s.content,
-          placement: s.placement ?? "bottom",
+          placement:i === stepIndex ? current.placement : "bottom",
           disableBeacon: true,
         }))}
         floaterProps={{
           offset:16,
-          flipBehaviour:["bottom", "right", "left"]
+          disableFlip:true,
         }}
         stepIndex={stepIndex}
         run

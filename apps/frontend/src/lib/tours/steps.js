@@ -22,7 +22,6 @@ export const gesturesSteps = [
     title: "Gesture Detection",
     content:
       "Your hand is tracked here. If you have not caliberated yet, this card will walk you through it first.",
-    placement: "right",
   },
 
   {
@@ -39,7 +38,6 @@ export const gesturesSteps = [
     title: "Sim Viewer",
     content:
       "A live feed simulation drone, it shows the connection status as well as the current mode.This does switch to the actual caera of the physical drone depending on the mode selected",
-    placement:"left",
   },
 
   {
@@ -61,7 +59,6 @@ export const gpsSteps = [
     title: "Flight Path",
     content:
       "Built live from telemetry as you fly - traces exactly where the drone has gone during the session.",
-      placement: "bottom",
   },
 
   {
@@ -70,7 +67,6 @@ export const gpsSteps = [
     title: "Displacement Stats",
     content:
       " Altitude, X/Y displacement, speed, and heading - the numbers behind the map.",
-    placement:"left",
   },
 ]
 
