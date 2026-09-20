@@ -6,7 +6,7 @@ import pipeFlipped from "@/assets/games/flappy/towerr_flipped.png"
 import { useGameCommands } from "@/hooks/useGameCommands"
 import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
 import { GAME_COLORS } from "@/lib/gameTheme"
-import loseSound  from "@/assets/games/flappy/fahhh.mp3"
+import loseSound from "@/assets/games/flappy/fahhh.mp3"
 import pointSound from "@/assets/games/flappy/point.mp3"
 /**
  * this page houses everything for the kaplay minigame

@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react"
 import { useGameCommands } from "@/hooks/useGameCommands"
 
-
 import eatSound from "@/assets/games/pac/eat.mp3"
 import powerSound from "@/assets/games/pac/power.mp3"
 import dieSound from "@/assets/games/pac/die.mp3"
@@ -412,15 +411,22 @@ export default function PacDroneGame() {
         const tileRow = (y) => Math.round((y - tile / 2) / tile)
 
         // check if a ghost can step out of the tile
-        const canEnter = (col, row) => !isWall(maze, ((col % cols) + cols) % cols, row)
+        const canEnter = (col, row) =>
+          !isWall(maze, ((col % cols) + cols) % cols, row)
 
         //choose a new direction of any neighbour except backtracking
         // will backtrack in the case of a dead end as a last resort
         const pickGhostDir = (g) => {
-          const open = GHOST_DIRS.filter((d) => canEnter(g._col + d.x, g._row + d.y))
-          const forward = open.filter((d) => !(d.x === -g._dir.x && d.y === -g._dir.y))
+          const open = GHOST_DIRS.filter((d) =>
+            canEnter(g._col + d.x, g._row + d.y)
+          )
+          const forward = open.filter(
+            (d) => !(d.x === -g._dir.x && d.y === -g._dir.y)
+          )
           const pool = forward.length ? forward : open
-          return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null
+          return pool.length
+            ? pool[Math.floor(Math.random() * pool.length)]
+            : null
         }
 
         const moveGhost = (g, dt) => {
@@ -528,7 +534,7 @@ export default function PacDroneGame() {
             // collect dots and pellets according to logical coordinate
             k.get("dot").forEach((d) => {
               if (d.col === playerCol && d.row === playerRow) {
-                k.play("eat", {volume: 0.5})
+                k.play("eat", { volume: 0.5 })
                 k.destroy(d) //one time use
                 score += 10
                 dotsLeft-- //tracked for win condition
@@ -537,7 +543,7 @@ export default function PacDroneGame() {
             })
             k.get("pellet").forEach((p) => {
               if (p.col === playerCol && p.row === playerRow) {
-                k.play("power", {volume: 0.5})
+                k.play("power", { volume: 0.5 })
                 k.destroy(p)
                 score += 50 //worth more points
                 dotsLeft--
@@ -583,7 +589,7 @@ export default function PacDroneGame() {
                   ghostSpawns[0] ?? { col: 1, row: 1 }
                 g._col = spawn.col
                 g._row = spawn.row
-                g._dir = {x: 0, y: 0}
+                g._dir = { x: 0, y: 0 }
                 g.pos.x = px(spawn.col)
                 g.pos.y = py(spawn.row)
                 g.color = k.rgb(...col_ghost)
