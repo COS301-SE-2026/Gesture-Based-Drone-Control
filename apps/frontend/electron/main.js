@@ -31,9 +31,10 @@ function getDbPath() {
 }
 
 function startBackend() {
-  const backendName = process.platform === "win32" ? 
-  "GestureBasedDroneControl-Backend.exe" :
-  "GestureBasedDroneControl-Backend"
+  const backendName =
+    process.platform === "win32"
+      ? "GestureBasedDroneControl-Backend.exe"
+      : "GestureBasedDroneControl-Backend"
 
   const backendPath = app.isPackaged
     ? path.join(process.resourcesPath, "backend", backendName)
