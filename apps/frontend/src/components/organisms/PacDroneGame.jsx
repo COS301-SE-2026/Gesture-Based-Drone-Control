@@ -346,7 +346,10 @@ export default function PacDroneGame() {
           ])
           g._col = col
           g._row = row
-          g._dir = GHOST_DIRS[i % GHOST_DIRS.length]
+          //snap ghosts to tle
+          g._tx = col
+          g._ty = row
+          g._dir = { x: 0, y: 0 }
           g._speed = GHOST_SPEED * (1 + i * 0.1) //random variances in speed
           return g
         })
@@ -407,6 +410,59 @@ export default function PacDroneGame() {
         // get the current coordiantes as a tile from pixel positions
         const tileCol = (x) => Math.round((x - tile / 2) / tile)
         const tileRow = (y) => Math.round((y - tile / 2) / tile)
+
+        // check if a ghost can step out of the tile
+        const canEnter = (col, row) => !isWall(maze, ((col % cols) + cols) % cols, row)
+
+        //choose a new direction of any neighbour except backtracking
+        // will backtrack in the case of a dead end as a last resort
+        const pickGhostDir = (g) => {
+          const open = GHOST_DIRS.filter((d) => canEnter(g._col + d.x, g._row + d.y))
+          const forward = open.filter((d) => !(d.x === -g._dir.x && d.y === -g._dir.y))
+          const pool = forward.length ? forward : open
+          return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null
+        }
+
+        const moveGhost = (g, dt) => {
+          let dist = g._speed * dt
+          while (dist > 0) {
+            const dx = px(g._tx) - g.pos.x
+            const dy = py(g._ty) - g.pos.y
+            const remaining = Math.abs(dx) + Math.abs(dy)
+
+            if (remaining > dist) {
+              g.pos.y += Math.sign(dy) * dist
+              g.pos.x += Math.sign(dx) * dist
+              return
+            }
+
+            //ghost has arrived at the target tile
+            g.pos.x = px(g._tx)
+            g.pos.y = py(g._ty)
+            dist -= remaining
+
+            //handle tunnel wrap for target -1 or target == cols
+            if (g._tx < 0) {
+              g._tx += cols
+              g.pos.x += cols * tile
+            } else if (g._tx >= cols) {
+              g._tx -= cols
+              g.pos.x -= cols * tile
+            }
+
+            g._col = g._tx
+            g._row = g._ty
+
+            const next = pickGhostDir(g)
+            if (!next) {
+              return //boxed in somehow
+            }
+
+            g._dir = next
+            g._tx = g._col + next.x
+            g._ty = g._row + next.y
+          }
+        }
 
         //update positions
         k.onUpdate(() => {
@@ -515,58 +571,7 @@ export default function PacDroneGame() {
 
           // smooth ghost movement
           ghosts.forEach((g) => {
-            const offPerp = perpendicularOffset(g.pos.x, g.pos.y, g._dir)
-            const aligned = offPerp < ALIGN_THRESHOLD
-
-            if (aligned) {
-              snapToAxis(g, g._dir)
-              g._col = tileCol(g.pos.x)
-              g._row = tileRow(g.pos.y)
-
-              // check if we can continue in this direction
-              const nc = (g._col + g._dir.x + cols) % cols
-              const nr = g._row + g._dir.y
-              const blocked = nr < 0 || nr >= rows || isWall(maze, nc, nr)
-
-              //hit a brick wall
-              if (blocked) {
-                // pick a random valid direction, preferring not to reverse
-                const reverse = { x: -g._dir.x, y: -g._dir.y }
-                const shuffled = [...GHOST_DIRS]
-                  .filter((d) => !(d.x === reverse.x && d.y === reverse.y))
-                  .sort(() => Math.random() - 0.5) // NOSONAR
-
-                // fall back to reverse if completely boxed in
-                const options = [...shuffled, reverse]
-                for (const d of options) {
-                  const tc = (g._col + d.x + cols) % cols
-                  const tr = g._row + d.y
-                  if (!isWall(maze, tc, tr)) {
-                    g._dir = d
-                    break
-                  }
-                }
-              }
-            }
-
-            // advance the ghost
-            g.pos.x += g._dir.x * g._speed * dt
-            g.pos.y += g._dir.y * g._speed * dt
-
-            // edge of screen wraparound
-            // only tries to wrap around on the horizontal
-            // vertical just makes the ghost disappear
-            if (g.pos.x < 0) {
-              g.pos.x += cols * tile
-            }
-            if (g.pos.x > cols * tile) {
-              g.pos.x -= cols * tile
-            }
-            //clamp vertical so ghost doesnt go offsccreen
-            g.posY = Math.max(
-              tile / 2,
-              Math.min(g.pos.y, (rows - 1) * tile + tile / 2)
-            )
+            moveGhost(g, dt)
 
             // collision logic comparing logical coords
             const gc = tileCol(g.pos.x)
@@ -578,6 +583,7 @@ export default function PacDroneGame() {
                   ghostSpawns[0] ?? { col: 1, row: 1 }
                 g._col = spawn.col
                 g._row = spawn.row
+                g._dir = {x: 0, y: 0}
                 g.pos.x = px(spawn.col)
                 g.pos.y = py(spawn.row)
                 g.color = k.rgb(...col_ghost)
