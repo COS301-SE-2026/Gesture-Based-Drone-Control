@@ -26,7 +26,7 @@ export default function TelemetryAlerts({ alerts, onDismiss }) {
   if (!alerts.length) return null
 
   return (
-    <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 w-[300px] pointer-event-none">
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 w-[min(18.75rem,calc(100vw-2rem))] pointer-event-none">
       {alerts.map((alert) => {
         const Icon = ICONS[alert.id] ?? AlertTriangle
         const style = SEVERITY_STYLES[alert.severity] ?? SEVERITY_STYLES.warning

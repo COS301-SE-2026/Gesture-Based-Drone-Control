@@ -224,9 +224,9 @@ const GestureGuide = memo(function GestureGuide({
   }[activeTab]
 
   const onScreenControls = () => (
-    <div className="flex gap-6 py-4">
-      <div className="flex flex-col items-center">
-        <div className="grid grid-cols-3 gap-2 w-[240px]">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,15rem),1fr))] gap-4 p-y">
+      <div className="flex flex-col items-center justify-center min-w-0">
+        <div className="grid grid-cols-3 gap-2 w-full max-w-[15rem]">
           <div> </div>
           {/* up button for d pad */}
           <Button
@@ -282,7 +282,7 @@ const GestureGuide = memo(function GestureGuide({
       </div>
 
       {/* right col with other controls */}
-      <div className="flex-1 flex flex-col gap-2">
+      <div className="flex-1 flex flex-col justify-center gap-2 min-w-0">
         {/* altitude and rotation */}
         <div className="flex gap-2">
           <Button
@@ -361,14 +361,16 @@ const GestureGuide = memo(function GestureGuide({
   )
 
   const otherControls = () => (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-3">
       {controls[activeTab].map(({ icon: Icon, label, input }) => (
         <div
           key={label}
-          className="flex items-center gap-3 bg-glass backdrop-blur-sm rounded-lg px-3 py-2 border border-glass"
+          className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0 bg-glass backdrop-blur-sm rounded-lg px-3 py-2 border border-glass"
         >
           <Icon className="w-4 h-4 text-red shrink-0" />
-          <span className="text-xs text-ink/70 flex-1 text-left">{label}</span>
+          <span className="text-xs text-ink/70 flex-1 min-w-[6rem] text-left">
+            {label}
+          </span>
           <span className="text-xs font-mono font-semibold text-ink bg-dim/20 px-2 py-0.5 rounded">
             {input || "Not Mapped"}
           </span>
@@ -378,9 +380,9 @@ const GestureGuide = memo(function GestureGuide({
   )
 
   return (
-    <Card variant="glass" className={className}>
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
+    <Card variant="glass" className={`min-w-0 ${className}`}>
+      <div className="flex flex-col xl:gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <Label size="md">Control Guide</Label>
           {adapterInfo && (
             <div className="flex items-center gap-2 text-xs">
@@ -420,9 +422,9 @@ const GestureGuide = memo(function GestureGuide({
         )}
 
         {activeTab === "gestures" && (
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
             {debugMode && (
-              <span className="font-mono text-dim">
+              <span className="font-mono text-dim break-words">
                 {adapterInfo.debugText}
               </span>
             )}
