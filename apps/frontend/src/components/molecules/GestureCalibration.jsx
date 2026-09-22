@@ -212,7 +212,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
   if (!enabled) {
     return (
       <Card variant="glass" className={className}>
-        <div className="min-h-[16 rem] aspect-video flex items-center justify-center">
+        <div className="min-h-[16rem] aspect-video flex items-center justify-center">
           <CameraDisabledNotice message="Calibration needs the camera to check it can read your hand reliably." />
         </div>
       </Card>
@@ -235,14 +235,14 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
         </div>
         {/* sequnce chips */}
         {chips.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-nowrap gap-1.5 overflow-x-auto pb-1">
             {chips.map((gesture) => {
               const isDone = completed.includes(gesture)
               const isCurrent = gesture === target && !finished
               return (
                 <span
                   key={gesture}
-                  className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${chipClass(isDone, isCurrent)}`}
+                  className={`shrink px-2.5 py-0.5 rounded-lg text-xs font-medium border border-dim whitespace-nowrap transition-colors ${chipClass(isDone, isCurrent)}`}
                 >
                   {/* ✓ pasted */}
                   {isDone ? "✓ " : ""}

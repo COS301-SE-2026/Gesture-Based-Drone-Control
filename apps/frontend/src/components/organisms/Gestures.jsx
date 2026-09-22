@@ -336,8 +336,8 @@ const GestureControl = () => {
           </span>
         </div>
       )}
-      <div className="grid grid-cols-1 xl:grid-cols-1[minmax(0,1fr)_18rem] gap-4 xl:gap-6 items-stretch">
-        <Card variant="glass" data-tour="stats-card" className="min-w-0">
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_18rem] gap-4 xl:gap-6 items-stretch">
+        <Card variant="glass" data-tour="stats-card" className="min-w-0 h-full">
           <div className="flex items-center justify-between">
             <Label size="md" className="shrink-0">
               {" "}
@@ -393,12 +393,12 @@ const GestureControl = () => {
           </div>
         </Card>
 
-        <div data-tour="drone-mode-card">
+        <div className="min-w-0 h-full" data-tour="drone-mode-card">
           <DroneModeCard
             currentMode={droneMode}
             onModeChange={handleModeChange}
             onDisconnect={handleDisconnect}
-            className="w-72"
+            className="w-full h-full"
           />
         </div>
       </div>

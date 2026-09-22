@@ -16,7 +16,7 @@ const LABEL_BG = "rgba(11, 9, 10, 0.75)"
 const LABEL_TEXT = "#ffffff"
 
 const CONTAINER_GLASS =
-  "relative w-full h-full bg-ink/50 rounded border border-dim/20 overflow-hidden min-h-[16rem] aspect-video"
+  "relative w-full h-full bg-ink/50 rounded border border-dim overflow-hidden min-h-[16rem] aspect-video"
 
 const GestureCameraFeed = ({
   className = "",
