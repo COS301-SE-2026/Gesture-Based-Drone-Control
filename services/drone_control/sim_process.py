@@ -188,3 +188,50 @@ class SimSettings(BaseSettings):
             raise SimLaunchError(f'Ambiuguous {what} under {root}: {listed}. set the override in .env')
 
         return matches[0] 
+
+
+
+
+# LAUNCHER
+
+class PixelStreamLauncher:
+    def __init__(self, settings: SimSettings | None = None) -> None:
+        self._s = settings or SimSettings()
+        self._cirrus: asyncio.subprocess.Process | None = None
+        self._sim: asyncio.subprocess.Process | None = None
+        self._lock = asyncio.Lock()
+
+    @property 
+    def sim_binary(self) -> pathlib.Path:
+        def keep(p: pathlib.path) -> bool:
+            return p.is_file() and (p.suffix == '.exe' if IS_WINDOWS else p.suffix == '')
+        
+        return _discover(
+            self._s.ue_root, SIM_BINARY_GLOB, 'simulator binary', self._s.pas_sim_binary, keep
+        )
+
+    @property 
+    def signalling_dir(self) -> pathlib.Path:
+        return discover(
+            self._s.ue_root,
+			SIGNALLING_GLOB,
+			'signalling server',
+			self._s.pas_signalling_dir,
+			lambda p: p.is_dir(),
+        )
+
+    @property
+    def project_name(self) -> str:
+        return self.sim_binary.parents[2].name
+
+    @property
+    def is_running(self) -> bool:
+        return self._sim is not None and self._sim.returncode is None
+
+    @property 
+    def player_url(self) -> str:
+        return (\
+        f'http://127.0.0.1:{self._s.pas_http_port}/'
+		'?AutoConnect=true&AutoPlayVideo=true&StartVideoMuted=true'
+		'&MatchViewportRes=true&HoveringMouse=true'
+        )
