@@ -16,6 +16,8 @@ import jetbrainsMono from "@/assets/games/fonts/jetbrains-mono-v24-latin-regular
  * before the assets and fonts are ready
  */
 
+let mountCounter = 0
+
 export function useKaplayCanvas(canvasRef, onReady) {
   const initRef = useRef(false)
   const kRef = useRef(null)
@@ -32,6 +34,14 @@ export function useKaplayCanvas(canvasRef, onReady) {
 
     let cancelled = false
 
+    // create a unique id per instance mounted
+    const suffix = `${Date.now()}-${mountCounter++}`
+    const fonts = {
+      heading: `heading-${suffix}`,
+      body: `body-${suffix}`,
+      mono: `mono-${suffix}`,
+    }
+
     import("kaplay").then(({ default: kaplay }) => {
       if (cancelled) return
 
@@ -43,14 +53,15 @@ export function useKaplayCanvas(canvasRef, onReady) {
         letterbox: true,
         background: GAME_COLORS.bg,
         global: false,
+        font: fonts.body,
       })
 
-      k.loadFont("heading", chakraPetch)
-      k.loadFont("body", spaceGrotesk)
-      k.loadFont("mono", jetbrainsMono)
+      k.loadFont(fonts.heading, chakraPetch)
+      k.loadFont(fonts.body, spaceGrotesk)
+      k.loadFont(fonts.mono, jetbrainsMono)
 
       kRef.current = k
-      onReadyRef.current?.(k)
+      onReadyRef.current?.(k, fonts)
     })
 
     return () => {
