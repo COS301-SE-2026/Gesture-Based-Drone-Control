@@ -204,3 +204,109 @@ class MotionBasedRecognizer(GestureRecognizer):
     def reset(self) -> None:
         """Drop every track, called on recognizer swap and on pipeline restart"""
         self._tracks.clear()
+        
+    # track management
+    def _get_track(self, handedness: Handedness, now: float) -> _HandTrack:
+        """
+        Fetch this hands track, starting a fresh one if the hand has been out of frame
+        long enouhg
+        
+        Engine never tells a recoginzer that a hnd left, it just stops calling us for it, so
+        staleness has to be inferred from the clock
+        """
+        
+        track = self._tracks.get(handedness)
+        
+        if track is None:
+            track = _HandTrack()
+            self._tracks[handedness] = track
+            return track
+        
+        if (now - track.last_seen) > STALE_SECONDS:
+            logger.debug('motion track for %s went stale, re-arming', handedness.name)
+            track = _HandTrack()
+            self._tracks[handedness] = track
+
+        return track
+    
+    def _sample(self, hand: DetectedHand, now:float) -> Trackpoint:
+        """Reduce 21 landmarks to the one point and one scale we want"""
+        lm = hand.landmarks
+        
+        cx = sum(lm[i].x for i in PALM_POINTS) / len(PALM_POINTS)
+        cy = sum(lm[i].y for i in PALM_POINTS) / len(PALM_POINTS)
+        
+        palm = math.hypot(
+            lm[MIDDLE_MCP].x - lm[WRIST].x,
+            lm[MIDDLE_MCP].y - lm[WRIST].y,
+        )
+        
+        #a degernerate palm would divide everything by about 0
+        if palm < 1e-4:
+            palm = 1e-4
+            
+        return Trackpoint(t=now, x=cx, palm=palm)
+    
+    def _resolve(self, track: _HandTrack, now: float) -> Gesture:
+        """
+        Runs the latch / refactory / detect state machine and returns watever this 
+        frame should report
+        """
+        
+        if now < track.latch_until:
+            return track.latched
+        
+        if now < track.refactory_until:
+            track.clear_buffer()
+            track.latched = Gesture.UNKNOWN
+            return Gesture.UNKNOWN
+        
+        track.latched = Gesture.UNKNOWN
+        
+        detected = self._classify(track)
+        if detected is Gesture.UNKNOWN:
+            return Gesture.UNKNOWN
+        
+        track.latched = detected
+        track.latch_until = now + self._latch_seconds
+        track.refactory_until = track.latch_until + self._refactory_seconds
+        track.clear_buffer()
+        track.origin = None
+        
+        logger.debug('motion gesture %s detected, detected.name')
+        return detected
+    
+    def _classify(self, track, _HandTrack) -> Gesture:
+        """
+        Turn the curr trajectory buffer into a gesture, or UNNKNOWN
+        
+        Order matters: circles checked first then swipes then depth
+        """
+        points = list(track.points)
+        if len(points) < MIN_SAMPLES:
+            return Gesture.UNKNOWN
+        
+        first = points[0]
+        last = points[-1]
+        elapsed = last.t - first.t
+        if elapsed <= 0:
+            return Gesture.UNKNOWN
+        
+        scale = sum(p.palm for p in points) / len(points)
+        
+        dx = (last.x - first.x) / scale
+        dy = (last.y - first.y) / scale
+        if self._enable_circles:
+            circle = self._classify_circle(points, scale, dx, dy)
+            if circle is not Gesture.UNKNOWN:
+                return circle
+            
+        straightness = self._straightness(points, scale, dx, dy)
+        swipe = self._classify_swipe(dx, dy, elapsed, straightness)
+        if swipe is not Gesture.UNKNOWN:
+            return swipe
+        
+        
+        return self._classify_depth(first, last, dx, dy)
+
+        
