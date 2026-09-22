@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { API_BASE_URL } from "@/lib/api"
 import { Card, Label } from "../atoms"
 import { GestureCameraFeed } from "../molecules"
@@ -120,6 +120,23 @@ const Games = () => {
       method: "POST",
     }).catch(() => {})
   }, [])
+
+  // automatically start the input pipeline when the page mounts
+  const startedRef = useRef(false)
+  useEffect(() => {
+    if (startedRef.current){
+      return
+    }
+    startedRef.current = true
+    start()
+
+    // disconnect when leaving the page
+    return () => {
+      fetch(`${API_BASE_URL}/api/game/disconnect`, {method: "POST"}).catch(() => {})
+    }
+  }, [start])
+
+
 
   const ActiveGame = GAMES.find((g) => g.id === selectedGame)?.component ?? null
 

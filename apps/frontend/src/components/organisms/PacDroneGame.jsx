@@ -64,7 +64,7 @@ export default function PacDroneGame() {
       MOVE_DOWN: { x: 0, y: 1 },
       MOVE_LEFT: { x: -1, y: 0 },
       MOVE_RIGHT: { x: 1, y: 0 },
-      MOVE_FORWARD: { x: 0, y: -1 },
+      MOVE_FORWARD: { x: 0, y: 1 },
       MOVE_BACKWARD: { x: 0, y: -1 },
       ROTATE_CW: { x: 1, y: 0 },
       ROTATE_CCW: { x: -1, y: 0 },
