@@ -32,7 +32,7 @@ LOG_DIR = pathlib.Path(tempfile.gettempdir()) / 'gbdc-pixelstream'
 
 class SimLaunchError(RuntimeError):
 
-
+#PLATFORM DETECTION
 if IS_WINDOWS:
     import win32api
     import win32con
@@ -135,3 +135,56 @@ else:
                     if os.readline(f'/proc'{entry.name}/exe) == target:
                         found.append(int(entry.name))
         return found
+
+
+
+#SETTINGS
+
+class SimSettings(BaseSettings):
+    pas_path: str = ''
+    pas_http_port: int = 8080
+    pas_signalling_port: int = 8888
+    pas_services_port: int = 8990
+    pas_node: str = 'node'
+    pas_sim_args: str = '-PixelStreamingEncoderCodec=VP8 -windowed -ResX=1280 -ResY=720'
+    pas_sim_binary: str = ''
+    pas_signalling_dir: str = ''
+
+    model_config = SettingsConfigDict(env_file='.env', extra='ignore')
+
+    @field_validator('*', mode='before')
+    @classmethod
+    def _strip(cls, value):
+        return value.strip() if isinstace(value, str) else value
+
+    def ue_root(self) -> pathlib.Path:
+        if not self.pas_path:
+            raise SimLaunchError(
+                'PAS_PATH is not set in .env - point it at the simulator launcher (Blocks.sh / Blocks.exe) or the folder containing it'
+            )
+        
+        path = pathlib.Path(self.pas_path).expanduser().resolve()
+        if not path.exists():
+            raise SimLaunchError(f'PAS_PATH does not exist: {path}' )
+        return path if path.is_dir() else path.parent
+
+    def _discover(root: pathlib.Path, glob: str, what: str, override: str, keep) -> pathlib.Path:
+        if override:
+            chosen = pathlib.Path(override).expanduser().resolve()
+            if not keep(chosen):
+                raose SimLaunchError(f'{what} override does not exist: {chosen}')
+            return chosen
+        
+        matches = sorted(p for p in root.glob(glob) if keep(p))
+
+        if not matches:
+            raise SimLaunchError(
+                f'Could not find the {what} under {root} (looked for {glob})'
+                f'Checked PAS_PATH or set the override in .env'
+            )
+
+        if len(matches) >1:
+            listed = ', '.join(str(m) for m in matches)
+            raise SimLaunchError(f'Ambiuguous {what} under {root}: {listed}. set the override in .env')
+
+        return matches[0] 
