@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
 const PADDING = 8
-const BLUR_PX = 4
+const BLUR_PX = 18
 const Z_INDEX = 10000
 
 function getRect(selector) {
@@ -12,10 +12,10 @@ function getRect(selector) {
 
   const r = el.getBoundingClientRect()
   return {
-    top: r.top - PADDING,
-    left: r.left - PADDING,
-    width: r.width + PADDING * 2,
-    height: r.height + PADDING * 2,
+    top: Math.round(r.top - PADDING),
+    left: Math.round(r.left - PADDING),
+    width: Math.round(r.width + PADDING * 2),
+    height: Math.round(r.height + PADDING * 2),
   }
 }
 
@@ -73,7 +73,7 @@ const TourBlurOverlay = ({ target }) => {
     position: "fixed",
     backdropFilter: `blur(${BLUR_PX}px)`,
     WebkitBackdropFilter: `blur(${BLUR_PX}px)`,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: "rgba(0,0,0,0.6)",
     pointerEvents: "none",
     zIndex: Z_INDEX,
   }

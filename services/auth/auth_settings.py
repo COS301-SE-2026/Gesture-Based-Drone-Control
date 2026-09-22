@@ -16,8 +16,8 @@ class AuthSettings(BaseSettings):
 	refresh_token_bytes: int = 32
 
 	cookie_domain: str | None = None
-	cookie_secure: bool = False
-	cookie_samesite: str = 'lax'
+	cookie_secure: bool = True
+	cookie_samesite: str = 'none'
 	access_cookie_name: str = 'access_cookie'
 	refresh_cookie_name: str = 'refresh_cookie'
 	bcrypt_rounds: int = 13

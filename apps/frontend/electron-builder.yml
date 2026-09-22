@@ -1,5 +1,5 @@
 appId: com.codexmerchants.gesturebaseddronecontrol
-productName: GestureBasedDroneControl 
+productName: GestureBasedDroneControl
 
 directories: 
   output: ../../release
@@ -16,5 +16,9 @@ extraResources:
 
 win:
   target: portable
+  icon: ../../packaging/app-icon.ico
 linux:
   target: AppImage
+  icon: ../../packaging/app-icon.png
+  category: Utility
+  executableName: gesture-based-drone-control
