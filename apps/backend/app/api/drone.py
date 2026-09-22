@@ -25,7 +25,7 @@ from dataclasses import asdict
 from typing import Annotated
 
 import cv2
-from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSocketDisconnect, RedirectResponse
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -261,6 +261,11 @@ async def feed(
 ):
 	if not state.is_connected or state.adapter is None:
 		raise HTTPException(status_code=409, detail='No drone connected')
+
+	if state.adapter_name == 'projectairsim':
+		if not sim_launcher.is_running:
+			raise HTTPException(status_code=409, detail='The simulator is not running - relaunch the simulator')
+		return RedirectResponse(sim_launcher.player_url, status_code=307)
 
 	adapter = state.adapter
 
