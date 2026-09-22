@@ -308,5 +308,139 @@ class MotionBasedRecognizer(GestureRecognizer):
         
         
         return self._classify_depth(first, last, dx, dy)
+    
+    def _straightness(
+        self, points: list[Trackpoint], scale: float, dx: float, dy: float,
+    ) -> float:
+        """
+        How direct the path was, 1.0 means perfect line
+        """
+        path=0.0
+        for previous, current in zip(points, points[1:]):
+            path += math.hypot(current.x - previous.x, current.y - previous.y)
+        path /= scale
+
+        if path < 1e-6:
+            return 0.0
+        
+        return math.hypot(dx, dy) / path
+    
+    def _classify_swipe(
+        self, dx: float, dy: float, elapsed: float, straightness: float,
+    ) -> Gesture:
+        """
+        Lateral or vertical travel, in palm widths
+        """
+        if straightness < MIN_SWIPE_STRAIGHTNESS:
+            return Gesture.UNKNOWN
+        
+        adx = abs(dx)
+        ady = abs(dy)
+        
+        if adx >= ady * AXIS_DOMINACE and adx >= MIN_SWIPE_DISTANCE:
+            if (adx / elapsed) >= MIN_SWIPE_SPEED:
+                return Gesture.SWPIE_RIGHT if dx > 0 else Gesture.SWIPE_LEFT
+            
+        if ady >= adx * AXIS_DOMINACE and ady >= MIN_SWIPE_DISTANCE:
+            if (ady / elapsed) >= MIN_SWIPE_SPEED:
+                return Gesture.SWIPE_DOWN if dy > 0 else Gesture.SWIPE_UP
+            
+        return Gesture.UNKNOWN
+    
+    def _classify_depth(
+        self, first: Trackpoint, last: Trackpoint, dx: float, dy: float,
+    ) -> Gesture:
+        """
+        Push and pull, read off apparent palm size rather than landmark z
+        
+        Rejected if the hand also travelled sideways, since a swipe across the
+        frame changes apparent size too as the hand arcs
+        """
+        if math.hypot(dx, dy) > MAX_PUSH_LATERAL:
+            return Gesture.UNKNOWN
+        
+        ratio = last.palm / first.palm
+
+        if ratio >= PUSH_SCALE_RATIO:
+            return Gesture.PUSH
+        if ratio <= PULL_SCALE_RATIO:
+            return Gesture.PULL
+        
+        return Gesture.UNKNOWN
+    
+    def _classify_circle(
+        self, points: list[Trackpoint], scale: float, dx: float, dy: float,
+    ) -> Gesture:
+        """
+        Accumulated signed sweep around trajectory centroid
+        """
+        if math.hypot(dx, dy) > MAX_CIRCLE_DRIFT:
+            return Gesture.UNKNOWN
+        
+        cx = sum(p.x for p in points) / len(points)
+        cy = sum(p.y for p in points) / len(points)
+        
+        radius = sum(math.hypot(p.x -cx, p.y - cy) for p in points) / len(points)
+        if (radius / scale) < 0.25:
+            return Gesture.UNKNOWN
+        
+        total = 0.0
+        previous = math.atan2(points[0].y - cy, points[0].x - cx)
+        
+        for p in points[1:]:
+            current = math.atan2(p.y - cy, p.x - cx)
+            delta = current - previous
+
+            if delta > math.pi:
+                delta -= 2 * math.pi
+            elif delta < -math.pi:
+                delta += 2 * math.pi
+            total += delta
+            previous = current
+
+        if abs(total) < MIN_CIRCLE_RADIANS:
+            return Gesture.UNKNOWN
+        
+        clockwise = total > 0
+        if self._inverted_x:
+            clockwise = not clockwise
+            
+        return Gesture.CIRCLE_CW if clockwise else Gesture.CIRCLE_CCW
+    
+    # continous side
+    def _continuous(self, track: _HandTrack, point: Trackpoint) -> MotionVector:
+        """
+        Palm offset from the neutral origin, deadzoned and clamped to [-1, 1]
+        
+        Behaves like a virtual joystick
+        """
+        origin = track.origin
+        if origin is None:
+            return MotionVector()
+        
+        scale = max(origin.palm, 1e-4)
+        
+        x = (point.x - origin.x) / scale
+        y = (point.y - origin.y) / scale
+        if self._inverted_x:
+            x = -x
+            
+        depth = math.log(point.palm / scale) / math.log(PULL_SCALE_RATIO)
+        
+        return MotionVector(
+            x=self._deflection(x), y=self._deflection(y), depth=self._deflection(depth),
+        )
+        
+    def _deflection(self, value: float) -> float:
+        """Deadzone, then linear ramp to full scale, then clamp"""
+        magnitude = abs(value)
+        if magnitude <= CONTINUOUS_DEADZONE:
+            return 0.0
+        
+        span = CONTINUOUS_RANGE - CONTINUOUS_DEADZONE
+        ramped = (magnitude - CONTINUOUS_DEADZONE) / span
+        ramped = min(1.0, ramped)
+        
+        return ramped if value > 0 else -ramped
 
         
