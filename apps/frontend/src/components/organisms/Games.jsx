@@ -68,7 +68,7 @@ function Segmented({ options, value, onChange, disabled }) {
 const Games = () => {
   const [gameActive, setGameActive] = useState(false)
   const [input, setInput] = useState("gesture")
-  const [selectedGame, setSelectedGame] = useState("flappy")
+  const [selectedGame, setSelectedGame] = useState("pacman")
   // uses the same sort of thing that we have to show connection status. just shittier
   const [status, setStatus] = useState("disconnected")
   const [error, setError] = useState("")
