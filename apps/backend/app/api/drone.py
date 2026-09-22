@@ -18,9 +18,9 @@ WS /drone/ws/commands - Utility to bypass inputs, directly issue a Command to dr
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import time
-import contextlib
 from dataclasses import asdict
 from typing import Annotated
 
@@ -47,6 +47,7 @@ router = APIRouter(prefix='/drone', tags=['drone'])
 _connect_lock = asyncio.Lock()
 SWAP_DISCONNECT_TIMEOUT_S = 12.0
 
+
 # support all kwargs. defaults should work when running locally
 class ConnectRequest(BaseModel):
 	# shared
@@ -58,7 +59,7 @@ class ConnectRequest(BaseModel):
 	# pas specific
 	topics_port: int = 8989
 	services_port: int = 8990
-	launch_sim: bool = True 
+	launch_sim: bool = True
 
 
 class ConnectResponse(BaseModel):
@@ -130,8 +131,7 @@ async def connect(
 	"""
 
 	if _connect_lock.locked():
-		raise HTTPException(status_code=409, detail = 'A connect is already in progress')
-
+		raise HTTPException(status_code=409, detail='A connect is already in progress')
 
 	async with _connect_lock:
 		try:
@@ -142,9 +142,7 @@ async def connect(
 		if body.adapter == 'projectairsim' and body.launch_sim:
 			if state.adapter is not None:
 				with contextlib.suppress(Exception, TimeoutError):
-					await asyncio.wait_for(
-						state.adapter.disconnect(), SWAP_DISCONNECT_TIMEOUT_S
-					)
+					await asyncio.wait_for(state.adapter.disconnect(), SWAP_DISCONNECT_TIMEOUT_S)
 				state.reset()
 
 			try:
@@ -156,14 +154,16 @@ async def connect(
 			if not await adapter.connect():
 				await sim_launcher.stop()
 				return ConnectResponse(
-					connected=False, adapter = body.adapter,
-					message='Sim started but the project airsim lient could not attach'
+					connected=False,
+					adapter=body.adapter,
+					message='Sim started but the project airsim lient could not attach',
 				)
 		else:
 			if not await adapter.connect():
 				return ConnectResponse(
-					connected=False, adapter=body.adapter,
-					message=f'Cannot connect to {body.adapter}'
+					connected=False,
+					adapter=body.adapter,
+					message=f'Cannot connect to {body.adapter}',
 				)
 
 			if state.adapter is not None:
@@ -210,7 +210,7 @@ async def disconnect(
 			await flight_manager.end_flight(db, state.current_flight_id)
 		with contextlib.suppress(Exception, TimeoutError):
 			await asyncio.wait_for(state.adapter.disconnect(), SWAP_DISCONNECT_TIMEOUT_S)
-		
+
 		state.reset()
 
 	stopped = await sim_launcher.stop()

@@ -220,3 +220,33 @@ tasks:
           curl -LsSf https://astral.sh/uv/install.sh | sh
           npm install -g yarn
         platforms: [linux]
+
+  ps-setup:
+  desc: One time bootstrap for pixel streaming
+  cmds:
+    - cmd: |
+          set -e
+          ROOT="$PAS_PATH"; [ -d "$ROOT" ] || ROOT="$(dirname "$ROOT")"
+          WEBSERVERS="$(find "$ROOT" -maxdepth 4 -type d -path '*/Samples/PixelStreaming/WebServers' | head -1)"
+          [ -n "$WEBSERVERS" ] || { echo "no WebServers dir under $ROOT - check PAS_PATH"; exit 1; }
+          cd "$WEBSERVERS"
+          [ -d SignallingWebServer ] || ./get_ps_servers.sh
+          cd SignallingWebServer
+          # the system node runs cirrus fine. Epic's setup.sh installs a pinned
+          # node 16 and then hard-exits when coturn/apt-get are missing, which
+          # is every arch box. we need neither - coturn is only for TURN, and a
+          # loopback-only stream never uses one
+          npm install --omit=dev
+          test -f Public/player.html || { echo "player.html missing, re-run get_ps_servers.sh"; exit 1; }
+          echo "pixel streaming ready: $WEBSERVERS/SignallingWebServer"
+      platforms: [linux, darwin]
+    - cmd: powershell -NoProfile -Command "
+          $root = if (Test-Path -PathType Container $env:PAS_PATH) { $env:PAS_PATH } else { Split-Path $env:PAS_PATH };
+          $ws = Get-ChildItem $root -Recurse -Depth 4 -Directory -Filter WebServers | Where-Object FullName -like '*Samples*PixelStreaming*' | Select-Object -First 1;
+          if (-not $ws) { throw 'no WebServers dir - check PAS_PATH' };
+          Set-Location $ws.FullName;
+          if (-not (Test-Path SignallingWebServer)) { .\get_ps_servers.bat };
+          Set-Location SignallingWebServer;
+          npm install --omit=dev;
+          if (-not (Test-Path Public\player.html)) { throw 'player.html missing' }"
+      platforms: [windows]

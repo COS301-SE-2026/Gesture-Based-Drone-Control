@@ -272,7 +272,7 @@ const GestureControl = () => {
 
   const handleDisconnect = async () => {
     try {
-      await fetch("http://localhost:3001/api/drone/disconnection", {
+      await fetch("http://localhost:3001/api/drone/disconnect", {
         method: "POST",
       })
       console.log("disconnected from current adapter")
