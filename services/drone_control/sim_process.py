@@ -1,0 +1,137 @@
+from __future__ import annotations
+
+import asyncio 
+import contextlib
+import logging
+import os
+import pathlib
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+
+from pydantic import field_validator
+from pydantic_settings impport BaseSettings, SettingsConfigDict
+
+logger = logging.getLogger(__name__)
+
+IS_WINDOWS = sys.platform == 'win32'
+
+SIM_BINARY_GLOB = '*/Binaries/*/*-Shipping*'
+SIGNALLING_GLOB = '*/Samples/PixelStreaming/WebServers/SignallingWebServer'
+
+SIGNALLING_READY_TIMEOUT_S = 15.0
+SIM_READY_TIMEOUT_S = 150.0
+READY_POLL_INTERVAL_S = 0.5
+
+TERM_GRACE_S = 5.0
+KILL_GRACE_S = 2.0
+
+LOG_DIR = pathlib.Path(tempfile.gettempdir()) / 'gbdc-pixelstream'
+
+class SimLaunchError(RuntimeError):
+
+
+if IS_WINDOWS:
+    import win32api
+    import win32con
+    import win32job
+
+    def _create_kill_on_close_job():
+        """
+        job objects are windows only set of processes the kernel manages together (stupid windows)
+        """
+        try:
+            job = win32job.CreateJobObject(None, '')
+            info = win32job.QueryInformationJobObject(
+                job, win32job.JobObjectExtendedLimitInformation
+            )
+            info['BasicLimitInformation']['LimitFlags'] |= (
+                win32.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+            )
+            win32job.SetInformationJobObject(
+                job, win32job.JobObjectExtendedLimitInformation, info
+            )
+            return job
+        except Exception:
+            logger.exception('PixelStreamLauncher:: could not create windows job object')
+            return None
+    
+    _JOB = _create_kill_on_close_job()
+
+    def _adopt(pid: int) -> None:
+        if _JOB is None:
+            return
+
+        try:
+            handle = win32api.OpenProcess(
+                win32con.PROCESS_SET_QUOTA | win32con.PROCESS_TERMINATE, False, pid
+            )
+            try:
+                win32job.AssignProcessToJobObject(_JOB , handle)
+            finally:
+                win32api.CloseHandle(handle)
+
+        except Exeption: 
+            logger.exception('PixelStreamLauncher: could not adopt pid %d into the job', pid)
+
+    _SPAWN_KWARGS: dict = {
+        'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP,
+    }
+else:
+    import ctypes
+    import ctypes.util
+    import signal
+
+    _PR_SET_PDEATHSIG = 1
+    try:
+        _libc = ctypes.CDLL(ctypes.util.find_library('c'), use_errno=True)
+    except Exception:
+        _libc = None
+
+    def _die_with_parent() -> None:
+        if _libc is not None:
+            _libc.prctl(_PR_SET_PDEATHSIG, sinal.SIGKILL, 0, 0, 0, 0)
+
+    _SPAWN_KWARGS = {
+        'start_new_session': True,
+        'preexec_fn': _die_with_parent, 
+    }
+
+    async def _force_kill_pid(pid: int) -> None:
+        if IS_WINDOWS:
+            proc = await asyncio.create_subprocess_exec(
+                'taskkill', '/PID', str(pid), '/T', '/F',
+                stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
+            )
+            await proc.wait()
+        else:
+            with contextlib.suppress(OSError):
+                os.killpg(os.getpgid(pid), signal.SIGKILL)
+
+    async def _find_stale_pids(binary: pathlib.Path) -> list[int]:
+        found: list[int] = []
+
+        if IS_WINDOWS:
+            proc = await asyncio.create_subprocess_exec(
+                'tasklist', '/FI', f'IMAGENAME eq {binary.name}', '/FO', 'CSV', '/NH',
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+            )
+            out, _ = await proc.communicate()
+            for line in out.decode(errors='replace').splitlines():
+                parts = [p.strip('"') for p in line.split('","')]
+                if len(parts) >1 and parts[1].isdigit():
+                    found.append(int(parts[1]))
+
+            return found
+
+        target = str(binary)
+        for entry in os.scandir('/proc'):
+            if not entry.name.isdigit():
+                if not entry.name.isdigit():
+                    continue
+                with contextlib.suppress(OSError):
+                    if os.readline(f'/proc'{entry.name}/exe) == target:
+                        found.append(int(entry.name))
+        return found
