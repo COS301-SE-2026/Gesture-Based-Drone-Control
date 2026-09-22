@@ -8,6 +8,8 @@ import {
   HelpSideContent,
   SettingsSideContent,
   GamesSideContent,
+  LicenseSideContent,
+
 } from "../molecules"
 import {
   Home,
@@ -67,8 +69,11 @@ const RootLayout = () => {
       return <SettingsSideContent />
     } else if (location.pathname.includes("/games")) {
       return <GamesSideContent />
-    }
+    } else if (location.pathname.includes("/license")){
+      return <LicenseSideContent/>
   }
+}
+
 
   useEffect(() => {
     if (navigator.webdriver) {
