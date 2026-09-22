@@ -46,6 +46,15 @@ class InputAdapter(ABC):
 	or async task, schedule the handler appropriately. I do not know how to do this
 	"""
 
+	# Which CV recognizer modes this adapter can understand
+	# Empty means the adapter doesnt read the gesture stream at all
+	# so recoignzer is none of its business
+	COMPATIBLE_RECOGNIZERS: tuple[str, ...] = ()
+
+	# What to switch the pipeline to when live mode is not comptable
+	# None means dont touch it. Only gesture family sets this
+	REQUIRED_RECOGNIZER: str | None = None
+
 	def __init__(self) -> None:
 		# inentionally set to None until set_handler is called
 		# _emit() will log a warning rather than silently drop commands
