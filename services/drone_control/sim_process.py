@@ -467,3 +467,5 @@ async def _port_open(port: int, host: str = '127.0.0.1') -> bool:
     with contextlib.suppress(Exception):
         await writer.wait_closed()
     return True
+
+launcher = PixelStreamLauncher()

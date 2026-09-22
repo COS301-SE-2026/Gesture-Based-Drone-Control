@@ -20,6 +20,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
+import contextlib
 from dataclasses import asdict
 from typing import Annotated
 
@@ -36,11 +37,15 @@ from services.commands.command import Command, CommandType
 from services.database_manager.database import AsyncSessionLocal, get_db
 from services.database_manager.managers.flight_manager import flight_manager
 from services.drone_control.adapters.drone_adapter import DroneAdapter, TelemetryData
+from services.drone_control.sim_process import SimLaunchError
+from services.drone_control.sim_process import launcher as sim_launcher
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/drone', tags=['drone'])
 
+_connect_lock = asyncio.Lock()
+SWAP_DISCONNECT_TIMEOUT_S = 12.0
 
 # support all kwargs. defaults should work when running locally
 class ConnectRequest(BaseModel):
@@ -53,6 +58,7 @@ class ConnectRequest(BaseModel):
 	# pas specific
 	topics_port: int = 8989
 	services_port: int = 8990
+	launch_sim: bool = True 
 
 
 class ConnectResponse(BaseModel):
@@ -123,40 +129,64 @@ async def connect(
 	should be seamless switching
 	"""
 
-	try:
-		adapter = _build_adapter(body)
-	except ValueError as ex:
-		return ConnectResponse(connected=False, adapter=body.adapter, message=str(ex))
+	if _connect_lock.locked():
+		raise HTTPException(status_code=409, detail = 'A connect is already in progress')
 
-	all_good = await adapter.connect()
-	if not all_good:
-		return ConnectResponse(
-			connected=False,
-			adapter=body.adapter,
-			message=f'Cannot connect to {body.adapter} at {body.host}.',
+
+	async with _connect_lock:
+		try:
+			adapter = _build_adapter(body)
+		except ValueError as ex:
+			return ConnectResponse(connected=False, adapter=body.adapter, message=str(ex))
+
+		if body.adapter == 'projectairsim' and body.launch_sim:
+			if state.adapter is not None:
+				with contextlib.suppress(Exception, TimeoutError):
+					await asyncio.wait_for(
+						state.adapter.disconnect(), SWAP_DISCONNECT_TIMEOUT_S
+					)
+				state.reset()
+
+			try:
+				await sim_launcher.start()
+			except SimLaunchError as ex:
+				logger.error('/drone/connect: sim failed to launch -%s', ex)
+				return ConnectResponse(connected=False, adapter=body.adapter, message=str(ex))
+
+			if not await adapter.connect():
+				await sim_launcher.stop()
+				return ConnectResponse(
+					connected=False, adapter = body.adapter,
+					message='Sim started but the project airsim lient could not attach'
+				)
+		else:
+			if not await adapter.connect():
+				return ConnectResponse(
+					connected=False, adapter=body.adapter,
+					message=f'Cannot connect to {body.adapter}'
+				)
+
+			if state.adapter is not None:
+				await sim_launcher.stop()
+				await state.adapter.disconnect()
+				state.reset()
+
+		# update global state
+		state.adapter = adapter
+		state.adapter_name = body.adapter
+
+		# start flight record
+		drone_row = await flight_manager.get_or_create_drone(
+			db, display_name=body.adapter, is_simulated=(body.adapter != 'tello')
 		)
+		state.current_drone_id = drone_row.id
 
-	if state.adapter is not None:
-		logger.info('drone/connect: replacing existing adapter %s', state.adapter_name)
-		await state.adapter.disconnect()
-		state.reset()
-
-	# update global state
-	state.adapter = adapter
-	state.adapter_name = body.adapter
-
-	# start flight record
-	drone_row = await flight_manager.get_or_create_drone(
-		db, display_name=body.adapter, is_simulated=(body.adapter != 'tello')
-	)
-	state.current_drone_id = drone_row.id
-
-	logger.info('/drone/connect: connected via %s', state.adapter)
-	return ConnectResponse(
-		connected=True,
-		adapter=body.adapter,
-		message=f'Connected to {body.adapter} at {body.host}',
-	)
+		logger.info('/drone/connect: connected via %s', state.adapter)
+		return ConnectResponse(
+			connected=True,
+			adapter=body.adapter,
+			message=f'Connected to {body.adapter} at {body.host}',
+		)
 
 
 class DisconnectResponse(BaseModel):
@@ -172,15 +202,22 @@ async def disconnect(
 	Simply disconnects from the connected drone if there is one connected.
 	Returns a false for failure cases
 	"""
-	if state.adapter is None:
+	name = state.adapter_name
+	had_adapter = state.adapter is not None
+
+	if had_adapter:
+		if state.current_flight_id is not None:
+			await flight_manager.end_flight(db, state.current_flight_id)
+		with contextlib.suppress(Exception, TimeoutError):
+			await asyncio.wait_for(state.adapter.disconnect(), SWAP_DISCONNECT_TIMEOUT_S)
+		
+		state.reset()
+
+	stopped = await sim_launcher.stop()
+
+	if not had_adapter and not stopped:
 		return DisconnectResponse(success=False, message='There is no drone connected.')
 
-	# there is an adapter connected, simply call disconnect and see if it works
-	name = state.adapter_name
-	if state.current_flight_id is not None:
-		await flight_manager.end_flight(db, state.current_flight_id)
-	await state.adapter.disconnect()
-	state.reset()
 	return DisconnectResponse(success=True, message=f'{name} adapter successfully disconnected')
 
 
