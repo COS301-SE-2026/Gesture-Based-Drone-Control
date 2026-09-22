@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react"
 import { useGameCommands } from "@/hooks/useGameCommands"
+import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
 
 import eatSound from "@/assets/games/pac/eat.mp3"
 import powerSound from "@/assets/games/pac/power.mp3"
@@ -57,7 +58,6 @@ let instanceCounter = 0
 
 export default function PacDroneGame() {
   const canvasRef = useRef(null)
-  const initialisedRef = useRef(false)
   const dirRef = useRef({ x: 0, y: 0 }) //direction from the ws used for input
   
   //movement mappings
@@ -91,29 +91,7 @@ export default function PacDroneGame() {
     }
   })
   
-  useEffect(() => {
-    if (!canvasRef.current || initialisedRef.current) {
-      return
-    }
-    initialisedRef.current = true
-    
-    //this is the fuckass bug thats been plaguing us
-    //where a font isnt specified, kaplay freaks out if
-    //two games use this same unspecified font
-    //so we give it a unique ID
-    const fontId = `pac-${Date.now()}-${instanceCounter++}`
-    
-    import("kaplay").then(({ default: kaplay }) => {
-      const k = kaplay({
-        canvas: canvasRef.current,
-        width: w,
-        height: h,
-        stretch: true,
-        letterbox: true,
-        background: col_bg,
-        global: false,
-        font: fontId
-      })
+  useKaplayCanvas(canvasRef, (k, fonts) => {
 
       //asset imports
       k.loadSound("eat", eatSound)
@@ -687,13 +665,8 @@ export default function PacDroneGame() {
         })
       })
 
-      k.go("title")
-    })
-
-    return () => {
-      dirRef.current = { x: 0, y: 0 }
-    }
-  }, [])
+      k.onLoad(() => k.go("title"))
+  })
   return (
     <canvas
       ref={canvasRef}
