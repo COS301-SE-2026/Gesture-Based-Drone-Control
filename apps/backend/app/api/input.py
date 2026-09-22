@@ -21,7 +21,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
@@ -44,6 +44,8 @@ class ConnectInputResponse(BaseModel):
 	connected: bool
 	message: str
 	adapter: str
+	# CV recognizer in effect, null if not applicable
+	recognizer: Optional[str] = None
 
 
 def _build_input_adapter(body: ConnectInputRequest) -> InputAdapter:
@@ -67,9 +69,54 @@ def _build_input_adapter(body: ConnectInputRequest) -> InputAdapter:
 
 		return GestureAdapter()
 
+	elif body.adapter == 'motion':
+		from services.input.sources.motion_adapter import MotionAdapter
+
+		return MotionAdapter()
+
 	# add more as they get developed here
 
 	raise ValueError(f'invalid input adapter: {body.adapter!r}')
+
+
+async def _align_recognizer(adapter: InputAdapter) -> Optional[str]:
+	"""
+	Keep the CV recognizer and the input adapter talking the same language
+
+	The gesture family reads gesture names off the shared stream, so the
+	adapter and recognizer have to agree on vocab. They used to be 2 independent
+	switches: pick the motion adapter while the pipeline sat on rule and every frame
+	arrived as OPEN_PALM, which the motion maps do not contain, so nothing was ever emitted
+	and nothing explained why
+
+	The adapter declares what it understands, so connection one now pulls the recognizer
+	along with it. Adapters that ignore the stream entirelyy declare nothing and this is
+	a no op for them
+
+	An already compatible mode is left alone, so connection the pose adapter while the pipeline
+	is on ml does not quietly knock it back to rule
+
+	Return the mode in effect afterwards, or None if the adapter does not care
+	"""
+	required = adapter.REQUIRED_RECOGNIZER
+	if required is None:
+		return None
+
+	from app.api.gestures import stream
+
+	current = stream.recognizer_mode
+	if current in adapter.COMPATIBLE_RECOGNIZERS:
+		return current
+
+	applied = await stream.set_recognizer_mode(required)
+	logger.info(
+		'input/connect: %s needs one of %s, switched recognizer %s -> %s',
+		type(adapter).__name__,
+		adapter.COMPATIBLE_RECOGNIZERS,
+		current,
+		applied,
+	)
+	return applied
 
 
 def _make_handler(state: AppState):
@@ -119,15 +166,23 @@ async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, De
 	except ValueError as ex:
 		return ConnectInputResponse(connected=False, adapter=body.adapter, message=str(ex))
 
+	# align before start() so the adapter never sees a frame in the wrong
+	# vocab on its very first subscription
+	recognizer = await _align_recognizer(adapter)
+
 	adapter.set_handler(_make_handler(state))
 	await adapter.start()
 
 	state.input = adapter
 	state.input_name = body.adapter
 
+	message = f'{state.input_name} input adapter connected'
+	if recognizer is not None:
+		message += f', gesture recognizer set to {recognizer}'
+
 	logger.info('input/connect: connected to the adapter successfully')
 	return ConnectInputResponse(
-		connected=True, adapter=body.adapter, message=f'{state.input_name} input adapter connected'
+		connected=True, adapter=body.adapter, message=message, recognizer=recognizer
 	)
 
 
