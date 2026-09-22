@@ -272,7 +272,7 @@ const GestureControl = () => {
 
   const handleDisconnect = async () => {
     try {
-      await fetch("http://localhost:3001/api/drone/disconnection", {
+      await fetch("http://localhost:3001/api/drone/disconnect", {
         method: "POST",
       })
       console.log("disconnected from current adapter")
@@ -286,10 +286,10 @@ const GestureControl = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="w-full min-w-0 max-w-[120rem] mx-auto space-y-4 xl:space-y-6">
       <TelemetryAlerts alerts={allAlerts} onDismiss={handleDismissAlert} />
       {debugMode && (
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <span className="text-dim">Drone status:</span>
           <span
             className={`font-semibold ${
@@ -336,8 +336,8 @@ const GestureControl = () => {
           </span>
         </div>
       )}
-      <div className="grid grid-cols-[1fr_auto] gap-6 items-stretch">
-        <Card variant="glass" data-tour="stats-card">
+      <div className="grid grid-cols-1 xl:grid-cols-1[minmax(0,1fr)_18rem] gap-4 xl:gap-6 items-stretch">
+        <Card variant="glass" data-tour="stats-card" className="min-w-0">
           <div className="flex items-center justify-between">
             <Label size="md" className="shrink-0">
               {" "}
