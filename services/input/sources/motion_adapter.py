@@ -67,6 +67,11 @@ class MotionAdapter(GestureAdapter):
 	nuetral origin. This iss the path to use for sustained flight
 	"""
 
+	# motion is the only recognizer that produces these gestures names, and the
+	# only one that populates HandOut.motion
+	COMPATIBLE_RECOGNIZERS = ('motion',)
+	REQUIRED_RECOGNIZER = 'motion'
+
 	TWO_HAND_MAP = MOTION_TWO_HAND_MAP
 	ASYMMETRICAL_TWO_HAND_MAP = MOTION_ASYMMETRICAL_TWO_HAND_MAP
 	SINGLE_HAND_MAP = MOTION_SINGLE_HAND_MAP
