@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 import { useGameCommands } from "@/hooks/useGameCommands"
 import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
+import { GAME_CANVAS } from "@/lib/gameTheme"
 
 import eatSound from "@/assets/games/pac/eat.mp3"
 import powerSound from "@/assets/games/pac/power.mp3"
@@ -16,32 +17,40 @@ import margitSound from "@/assets/games/pac/margit.mp3"
  * G = ghost spawn
  */
 const MAZE_A = [
-  "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-  " G....................................G",
-  "W..WWW..W..WWW.W.P.WWW.WWW.WW.W.WWW.W.W",
-  "W..Wo..W.W.WWW.WWW..W..W W.W.WW..oW...W",
-  "W..WWW.W.W.W.....W..W..WWW.W..W.WWW.W.W",
-  "W.....................................W",
-  "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W.W",
-  "W.W......W..G..W.W.G..W..W..G...W...W.W",
-  "W.W.WWWW.W.WWW.W.W.WW..W.W.......WoW..W",
-  " ...Wo...............G...WWWWWW...W... ",
-  "W.W.WWWW.W.WWW.W.W.WW..W.W.......W.W..W",
-  "W.W......W..G..W.W.G..W..W..G...W...W.W",
-  "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W.W",
-  " G....................................G",
+
+  "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+  "G......................................G",
+  "W..WWW..W..WWW.W.P.WWW.WWW.WW.W.WWW.W..W",
+  "W..Wo..W.W.WWW.WWW..W..W.W.WW..oW...W..W",
+  "W..WWW.W.W.W.....W..W..WWW.W..W.WWW.W..W",
+  "W......................................W",
+  "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W..W",
+  "W.W......W..G..W.W.G..W..W..G...W...W..W",
+  "W.W.WWWW.W.WWW.W.W.WW..W.W.......WoW...W",
+  " ...Wo...............G...WWWWWW...W.... ",
+  "W.W.WWWW.W.WWW.W.W.WW..W.W.......W.W...W",
+  "W.W......W..G..W.W.G..W..W..G...W...W..W",
+  "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W..W",
+  "G......................................G",
+  "W..WWWWW...WWW.W..W.W..W.W.WWWWW..WWW..W",
+  "W.W.oW..W.W....W..W.WW...W...W...Wo..W.W",
+  "W.W..W..W.W.WW.WWWW.WoW..W.W.W.W..W....W",
+  "W.W..W..W.WoWW.W..W.W..WoW.W.W.W...WW..W",
+  "W.W..W..W.W....W..W.W...WW.W.W.W.W...W.W",
+  "W.W.GW..W..WWW.W..W.WGW..W.W.WGW..WWW..W",
+  "G......................................G",
   "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 ]
 
 //keep an array so we can add more mazes
 const mazes = [MAZE_A]
 
-const tile = 32 //dimensions of a single tile
+const tile = 26.6 //dimensions of a single tile
 const cols = MAZE_A[0].length
 const rows = MAZE_A.length
 
-const w = cols * tile
-const h = rows * tile
+const w = GAME_CANVAS.width
+const h = GAME_CANVAS.height
 
 
 //colours
@@ -49,12 +58,10 @@ const col_wall = [30, 60, 180]
 const col_dot = [200, 200, 150]
 const col_power = [255, 255, 25]
 const col_player = [255, 220, 0]
-const col_bg = [12, 12, 12]
 const col_ghost = [90, 5, 5]
 const col_scared = [12, 100, 12]
 
 // for font caching just a temp fix
-let instanceCounter = 0
 
 export default function PacDroneGame() {
   const canvasRef = useRef(null)
