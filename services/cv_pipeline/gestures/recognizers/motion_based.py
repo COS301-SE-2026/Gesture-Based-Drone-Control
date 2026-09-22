@@ -464,3 +464,74 @@ class MotionBasedRecognizer(GestureRecognizer):
 		ramped = min(1.0, ramped)
 
 		return ramped if value > 0 else -ramped
+
+
+if __name__ == '__main__':
+	import cv2
+
+	from services.cv_pipeline.camera.camera_feed import CameraConfig, CameraFeed
+	from services.cv_pipeline.gestures.gesture_engine import GestureEngine
+	from services.cv_pipeline.gestures.stabilizer import GestureStabilizer
+	from services.cv_pipeline.hand_detection.mediapipe_detector import HandDetectionPipeline
+
+	logging.basicConfig(level=logging.INFO)
+
+	DISPLAY_SECONDS = 1.2
+
+	with CameraFeed(CameraConfig()) as camera, HandDetectionPipeline() as detector:
+		engine = GestureEngine(
+			recognizer=MotionBasedRecognizer(),
+			stabilizer=GestureStabilizer(window=1, min_agreement=1),
+		)
+
+		last_gesture = 'none'
+		last_at = 0.0
+
+		while True:
+			frame = camera.capture_image()
+			if frame is None:
+				break
+
+			detection = detector.detect_hands(frame)
+			engine_result = engine.process(detection)
+			annotated = detector.draw_landmarks(frame, detection)
+
+			now = time.monotonic()
+			for gr in engine_result.hand_gestures:
+				if gr.gesture is not Gesture.UNKNOWN:
+					last_gesture = f'{gr.handedness.name}: {gr.gesture.name}'
+					last_at = now
+
+			if (now - last_at) > DISPLAY_SECONDS:
+				last_gesture = 'none'
+
+			cv2.putText(
+				annotated,
+				f'motion: {last_gesture}',
+				(10, 30),
+				cv2.FONT_HERSHEY_SIMPLEX,
+				0.8,
+				(0, 255, 0),
+				2,
+			)
+
+			y = 60
+			for gr in engine_result.hand_gestures:
+				mv = gr.motion or MotionVector()
+				text = f'{gr.handedness.name} x={mv.x:+.2f} depth={mv.depth:+.2f}'
+				cv2.putText(
+					annotated,
+					text,
+					(10, y),
+					cv2.FONT_HERSHEY_SIMPLEX,
+					0.6,
+					(0, 255, 255),
+					2,
+				)
+				y += 26
+
+			cv2.imshow('motion recognizer smoke test', annotated)
+			if cv2.waitKey(1) & 0xFF == ord('q'):
+				break
+
+	cv2.destroyAllWindows()
