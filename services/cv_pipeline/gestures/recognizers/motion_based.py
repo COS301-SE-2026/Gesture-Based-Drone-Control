@@ -4,10 +4,10 @@ Motion based gesture recognition using landmark trajectories overtime
 Tracks based on where the hand has been going not shape of hand
 
 How it works:
-    -> Receives a detected hand per freame
-    -> Keeps a short rolling buffer of palm centre positions per hand
-    -> DiscreteL classifies the buffer into a swipe / push / pull / circle
-    -> Continuous: reports palm offset from a neutral irigin as a MotionVector
+	-> Receives a detected hand per freame
+	-> Keeps a short rolling buffer of palm centre positions per hand
+	-> DiscreteL classifies the buffer into a swipe / push / pull / circle
+	-> Continuous: reports palm offset from a neutral irigin as a MotionVector
 
 Interface hands one frame at a tie with no timestamp, so the clock is injected
 instead
@@ -63,7 +63,7 @@ AXIS_DOMINACE = 1.8
 # net displacement/path length, a swipe is a straight line, an arc isnt
 # half circle =0.64
 # circle in prgoress from exe a swipe before loop closes
-MIN_SWIPE_STRAIGHTNESS = 0.55
+MIN_SWIPE_STRAIGHTNESS = 0.85
 
 # palm has to grow/shrink by theis ratio for push/pull
 PUSH_SCALE_RATIO = 1.35
@@ -131,7 +131,7 @@ class MotionBasedRecognizer(GestureRecognizer):
 	Classifies hand motion rather than hand pose
 
 	Swap it at runtime:
-	    engine.set_recoginzer(MotionBasedRecognizer())
+	engine.set_recoginzer(MotionBasedRecognizer())
 
 	Discrete gestures are latched: once a swipe executes, interpret_gesture keeps returning
 	it fro LATCH_SECONDS, then returns UNKNOWN through the refactoy period. Needed for adapter
@@ -248,7 +248,7 @@ class MotionBasedRecognizer(GestureRecognizer):
 		if palm < 1e-4:
 			palm = 1e-4
 
-		return Trackpoint(t=now, x=cx, palm=palm)
+		return Trackpoint(t=now, x=cx, y=cy, palm=palm)
 
 	def _resolve(self, track: _HandTrack, now: float) -> Gesture:
 		"""
@@ -276,10 +276,10 @@ class MotionBasedRecognizer(GestureRecognizer):
 		track.clear_buffer()
 		track.origin = None
 
-		logger.debug('motion gesture %s detected, detected.name')
+		logger.debug('motion gesture %s detected', detected.name)
 		return detected
 
-	def _classify(self, track, _HandTrack) -> Gesture:
+	def _classify(self, track: _HandTrack) -> Gesture:
 		"""
 		Turn the curr trajectory buffer into a gesture, or UNNKNOWN
 
@@ -299,6 +299,8 @@ class MotionBasedRecognizer(GestureRecognizer):
 
 		dx = (last.x - first.x) / scale
 		dy = (last.y - first.y) / scale
+		if self._inverted_x:
+			dx = -dx
 		if self._enable_circles:
 			circle = self._classify_circle(points, scale, dx, dy)
 			if circle is not Gesture.UNKNOWN:
@@ -349,7 +351,7 @@ class MotionBasedRecognizer(GestureRecognizer):
 
 		if adx >= ady * AXIS_DOMINACE and adx >= MIN_SWIPE_DISTANCE:
 			if (adx / elapsed) >= MIN_SWIPE_SPEED:
-				return Gesture.SWPIE_RIGHT if dx > 0 else Gesture.SWIPE_LEFT
+				return Gesture.SWIPE_RIGHT if dx > 0 else Gesture.SWIPE_LEFT
 
 		if ady >= adx * AXIS_DOMINACE and ady >= MIN_SWIPE_DISTANCE:
 			if (ady / elapsed) >= MIN_SWIPE_SPEED:
@@ -443,7 +445,7 @@ class MotionBasedRecognizer(GestureRecognizer):
 		if self._inverted_x:
 			x = -x
 
-		depth = math.log(point.palm / scale) / math.log(PULL_SCALE_RATIO)
+		depth = math.log(point.palm / scale) / math.log(PUSH_SCALE_RATIO)
 
 		return MotionVector(
 			x=self._deflection(x),

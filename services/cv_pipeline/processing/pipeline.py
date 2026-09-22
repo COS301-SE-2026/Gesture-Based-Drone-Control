@@ -24,7 +24,9 @@ from services.cv_pipeline.camera.camera_feed import (
 )
 from services.cv_pipeline.gestures.gesture_engine import GestureEngine, GestureEngineResult
 from services.cv_pipeline.gestures.recognizers.ml_based import MLBasedRecognizer
+from services.cv_pipeline.gestures.recognizers.motion_based import MotionBasedRecognizer
 from services.cv_pipeline.gestures.recognizers.rule_based import RuleBasedRecognizer
+from services.cv_pipeline.gestures.stabilizer import GestureStabilizer
 from services.cv_pipeline.hand_detection.mediapipe_detector import (
 	DetectorConfig,
 	HandDetectionPipeline,
@@ -310,8 +312,8 @@ class CvPipeline:
 			if recognizer is None:
 				logger.warning('ML model unavailable, staying on rule-based')
 				mode = 'rule'
-			elif mode == 'motion':
-				recognizer = MotionBasedRecognizer()
+		elif mode == 'motion':
+			recognizer = MotionBasedRecognizer()
 
 		if recognizer is None:
 			recognizer = RuleBasedRecognizer()
@@ -320,7 +322,7 @@ class CvPipeline:
 			self._engine.set_recognizer(recognizer)
 
 			if mode == 'motion':
-				self._engine.set_stabilizer(GestureStabilizer(windows=1, min_agreement=1))
+				self._engine.set_stabilizer(GestureStabilizer(window=1, min_agreement=1))
 			else:
 				self._engine.set_stabilizer(GestureStabilizer())
 			# stale votes would leak across swap
