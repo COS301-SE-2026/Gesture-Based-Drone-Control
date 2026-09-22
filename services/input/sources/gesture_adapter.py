@@ -87,6 +87,11 @@ class GestureAdapter(InputAdapter):
 	vocab without touching this file -> for motion adapter
 	"""
 
+	# reads poses, so either pose recognizer works, only forced back to rule
+	# if the pipeline is sitting on motion, whose vocab means nothing here
+	COMPATIBLE_RECOGNIZERS = ('rule', 'ml')
+	REQUIRED_RECOGNIZER = 'rule'
+
 	TWO_HAND_MAP = TWO_HAND_MAP
 	ASYMMETRICAL_TWO_HAND_MAP = ASYMMETRICAL_TWO_HAND_MAP
 	SINGLE_HAND_MAP = SINGLE_HAND_MAP
