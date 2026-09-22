@@ -22,11 +22,11 @@ const MAZE_A = [
   "W..WWW.W.W.W.....W..W..WWW.W..W.WWW.W.W",
   "W.....................................W",
   "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W.W",
-  "W.W......W..G..W.WGG..W..W..G...W...W.W",
+  "W.W......W..G..W.W.G..W..W..G...W...W.W",
   "W.W.WWWW.W.WWW.W.W.WW..W.W.......WoW..W",
-  " ...Wo.............GGG...WWWWWW...W... ",
+  " ...Wo...............G...WWWWWW...W... ",
   "W.W.WWWW.W.WWW.W.W.WW..W.W.......W.W..W",
-  "W.W......W..G..W.WGG..W..W..G...W...W.W",
+  "W.W......W..G..W.W.G..W..W..G...W...W.W",
   "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W.W",
   " G....................................G",
   "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -525,6 +525,7 @@ export default function PacDroneGame() {
               if (facing.y !== 0) {
                 player.pos.y = py(playerRow)
               }
+              facing = { x: 0, y: 0 }
             }
 
             // update the logical position as well for dot collection and collission
