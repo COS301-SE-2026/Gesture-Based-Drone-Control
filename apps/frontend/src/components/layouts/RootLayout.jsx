@@ -16,6 +16,7 @@ import {
   Settings,
   HelpCircle,
   Gamepad,
+  Award,
 } from "lucide-react"
 // import bgLight from "../../assets/Lightbackground.png"
 // import bgDark from "../../assets/darkbackground.png"
@@ -40,6 +41,7 @@ const RootLayout = () => {
     },
     { id: "gps", label: "GPS", icon: MapPin, path: "/app/gps" },
     { id: "games", label: "Games", icon: Gamepad, path: "/app/games" },
+    { id: "license", label:"RPL", icon: Award,path:"/app/license"},
     {
       id: "settings",
       label: "Settings",

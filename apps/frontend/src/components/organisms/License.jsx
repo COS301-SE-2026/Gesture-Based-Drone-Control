@@ -18,14 +18,14 @@ export default function Liense(){
 
             </section>
 
-            <section className = "grid gap-4 sm:grid-col-2">
+            <section className = "grid gap-4 sm:grid-cols-2">
                 <TrainingOptionCard
                 icon={GraduationCap}
                 title="Theory training"
                 description="Study air law. meterorology and navigation with an accrediited ATO, then sit the SACAA theory exam."
                 buttonLabel="Start theory training"
                 buttonVariant="secondary"
-                onActtion={() => window.open(THEORY_COURSE_URL, "_blank")}
+                onAction={() => window.open(THEORY_COURSE_URL, "_blank")}
                 />
 
                 <TrainingOptionCard
@@ -35,7 +35,7 @@ export default function Liense(){
                 title="Practical training"
                 description="Practise the stick skills your ATO skills test will cover, right here in the simulator."
                 buttonLabel="Start practical training"
-                onActtion={() => navigate("/app/license/practical")}
+                onAction={() => navigate("/app/license/practical")}
                 />
             </section>
         </div>
