@@ -42,6 +42,7 @@ const rows = MAZE_A.length
 const w = cols * tile
 const h = rows * tile
 
+
 //colours
 const col_wall = [30, 60, 180]
 const col_dot = [200, 200, 150]
@@ -51,11 +52,14 @@ const col_bg = [12, 12, 12]
 const col_ghost = [90, 5, 5]
 const col_scared = [12, 100, 12]
 
+// for font caching just a temp fix
+let instanceCounter = 0
+
 export default function PacDroneGame() {
   const canvasRef = useRef(null)
   const initialisedRef = useRef(false)
   const dirRef = useRef({ x: 0, y: 0 }) //direction from the ws used for input
-
+  
   //movement mappings
   useGameCommands((msg) => {
     const { command, left_x, left_y } = msg
@@ -74,11 +78,11 @@ export default function PacDroneGame() {
       dirRef.current = DIR[command]
       return
     }
-
+    
     // analog inputs use dominant axis
     if (command === "ANALOG") {
       const ax = left_x ?? 0,
-        ay = left_y ?? 0
+      ay = left_y ?? 0
       if (Math.abs(ax) > Math.abs(ay)) {
         dirRef.current = ax > 0 ? { x: 1, y: 0 } : { x: -1, y: 0 }
       } else if (Math.abs(ay) > 0.2) {
@@ -86,13 +90,19 @@ export default function PacDroneGame() {
       }
     }
   })
-
+  
   useEffect(() => {
     if (!canvasRef.current || initialisedRef.current) {
       return
     }
     initialisedRef.current = true
-
+    
+    //this is the fuckass bug thats been plaguing us
+    //where a font isnt specified, kaplay freaks out if
+    //two games use this same unspecified font
+    //so we give it a unique ID
+    const fontId = `pac-${Date.now()}-${instanceCounter++}`
+    
     import("kaplay").then(({ default: kaplay }) => {
       const k = kaplay({
         canvas: canvasRef.current,
@@ -102,6 +112,7 @@ export default function PacDroneGame() {
         letterbox: true,
         background: col_bg,
         global: false,
+        font: fontId
       })
 
       //asset imports
