@@ -36,7 +36,7 @@ from services.cv_pipeline.processing.async_queue import BoundedFrameQueue
 
 logger = logging.getLogger(__name__)
 
-RECOGNIZER_MODES = ('rule', 'ml')
+RECOGNIZER_MODES = ('rule', 'ml', 'motion')
 
 
 # pipeline config
@@ -310,12 +310,19 @@ class CvPipeline:
 			if recognizer is None:
 				logger.warning('ML model unavailable, staying on rule-based')
 				mode = 'rule'
+			elif mode == 'motion':
+				recognizer = MotionBasedRecognizer()
 
 		if recognizer is None:
 			recognizer = RuleBasedRecognizer()
 
 		if self._engine is not None:
 			self._engine.set_recognizer(recognizer)
+
+			if mode == 'motion':
+				self._engine.set_stabilizer(GestureStabilizer(windows=1, min_agreement=1))
+			else:
+				self._engine.set_stabilizer(GestureStabilizer())
 			# stale votes would leak across swap
 			self._engine.reset_stabilizer()
 
