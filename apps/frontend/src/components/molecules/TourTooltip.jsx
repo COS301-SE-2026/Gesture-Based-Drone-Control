@@ -13,7 +13,7 @@ const TourTooltip = ({
 }) => (
   <div {...tooltipProps}>
     <Card variant="glass" className="max-w-xs">
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 max-h-[40vh] overflow-y-auto">
         <h4 className="text-md font-semibold text-ink">{step?.title}</h4>
         <p className="text-sm text-dim">{step?.content}</p>
         <div className="flex items-center justify-between pt-2">
