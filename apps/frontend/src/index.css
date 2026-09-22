@@ -417,3 +417,42 @@ select:focus-visible {
     opacity: 0;
   }
 }
+
+html {
+  font-size: 16px;
+}
+
+/* short laptop screen */
+@media (max-height: 800px) and (min-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* smaller windows/ tablets => the idea is to reflow not shrink */
+@media (max-width: 1023px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* 1080p screens and monitors */
+@media (min-width: 1920px) and (min-height: 900px) {
+  html {
+    font-size: 18px;
+  }
+}
+
+/* 1440p screens and monitors */
+@media (min-width: 2560px) and (min-height: 1200px) {
+  html {
+    font-size: 22px;
+  }
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}

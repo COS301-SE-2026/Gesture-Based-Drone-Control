@@ -30,7 +30,7 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
           </div>
         </div>
 
-        <div className="relative flex-1 min-h-[220px] rounded-lg overflow-hidden bg-black/40 border border-glass">
+        <div className="relative flex-1 min-h-[14rem] rounded-lg overflow-hidden bg-black/40 border border-glass">
           {!isConnected && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-dim">
               <Video className="w-10 h-10 opacity-40" />
