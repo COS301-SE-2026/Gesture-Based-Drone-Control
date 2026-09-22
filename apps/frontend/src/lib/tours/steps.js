@@ -5,7 +5,6 @@ export const gesturesSteps = [
     title: "Live Stats",
     content:
       "Battery, signal, speed, and alternative update here in real time once you are connected.",
-    
   },
 
   {

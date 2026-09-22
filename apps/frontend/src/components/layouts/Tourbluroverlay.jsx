@@ -12,10 +12,10 @@ function getRect(selector) {
 
   const r = el.getBoundingClientRect()
   return {
-    top:Math.round( r.top - PADDING),
-    left:Math.round( r.left - PADDING),
-    width:Math.round( r.width + PADDING * 2),
-    height:Math.round( r.height + PADDING * 2),
+    top: Math.round(r.top - PADDING),
+    left: Math.round(r.left - PADDING),
+    width: Math.round(r.width + PADDING * 2),
+    height: Math.round(r.height + PADDING * 2),
   }
 }
 
