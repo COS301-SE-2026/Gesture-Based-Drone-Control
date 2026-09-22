@@ -68,7 +68,7 @@ function Segmented({ options, value, onChange, disabled }) {
 const Games = () => {
   const [gameActive, setGameActive] = useState(false)
   const [input, setInput] = useState("gesture")
-  const [selectedGame, setSelectedGame] = useState("pacman")
+  const [selectedGame, setSelectedGame] = useState("flappy")
   // uses the same sort of thing that we have to show connection status. just shittier
   const [status, setStatus] = useState("disconnected")
   const [error, setError] = useState("")
@@ -124,7 +124,7 @@ const Games = () => {
   // automatically start the input pipeline when the page mounts
   const startedRef = useRef(false)
   useEffect(() => {
-    if (startedRef.current){
+    if (startedRef.current) {
       return
     }
     startedRef.current = true
@@ -132,11 +132,11 @@ const Games = () => {
 
     // disconnect when leaving the page
     return () => {
-      fetch(`${API_BASE_URL}/api/game/disconnect`, {method: "POST"}).catch(() => {})
+      fetch(`${API_BASE_URL}/api/game/disconnect`, { method: "POST" }).catch(
+        () => {}
+      )
     }
   }, [start])
-
-
 
   const ActiveGame = GAMES.find((g) => g.id === selectedGame)?.component ?? null
 

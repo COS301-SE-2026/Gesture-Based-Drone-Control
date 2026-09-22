@@ -15,15 +15,15 @@ import pointSound from "@/assets/games/flappy/point.mp3"
  * allow it to interpret and accept input like a drone.
  * for now it will just use keyboard inputs until the rest is
  * built out and ready for integration
-*
-* this is the first game we're adding so its gonna be a little
-* fuckass and overdocumented
-*/
+ *
+ * this is the first game we're adding so its gonna be a little
+ * fuckass and overdocumented
+ */
 
 /**
  * mini game is renderd inside a frame on the page, connects to the game
  * websocket to accept drone inputs
-*/
+ */
 
 // commands will map to actual actions in the game
 const UP_COMMANDS = new Set(["MOVE_UP", "TAKEOFF", "MOVE_FORWARD", "ROTATE_CW"])
@@ -42,19 +42,19 @@ const BUILDING_FILL = [9, 15, 28]
 export default function FlappyDroneGame() {
   const canvasRef = useRef(null)
   // const initialisedRef = useRef(false)
-  
+
   // these refs are exposed to the WS handler
   // they are set inside the kaplay scene so that they are always current
   const upRef = useRef(null)
   const downRef = useRef(null)
   const hoverRef = useRef(null)
   const goLoseRef = useRef(null)
-  
+
   // commands are recieved from the game WS and are mapped to kaplay actions
   // check if input maps to an in game action and execute it
   useGameCommands((msg) => {
     const { command, left_y, right_y, rtrigger, ltrigger } = msg
-    
+
     if (UP_COMMANDS.has(command)) {
       upRef.current?.()
       return
@@ -76,8 +76,7 @@ export default function FlappyDroneGame() {
       }
     }
   })
-  
-  
+
   useKaplayCanvas(canvasRef, (k, fonts) => {
     k.loadSprite("drone", droneSprite)
     k.loadSprite("backSprite", background)
