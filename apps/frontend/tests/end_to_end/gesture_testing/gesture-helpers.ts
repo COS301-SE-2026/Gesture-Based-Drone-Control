@@ -114,3 +114,15 @@ export async function connectInput(
 export async function disconnectInput(request: APIRequestContext): Promise<void> {
     await request.post(`${API_BASE}/api/input/disconnect`)
 }
+
+export interface InputStatus {
+    connected: boolean
+    adapter: string
+}
+
+export async function getInputStatus(
+    request: APIRequestContext
+): Promise<InputStatus> {
+    const res = await request.get(`${API_BASE}/api/input/status`)
+    return (await res.json()) as InputStatus
+}
