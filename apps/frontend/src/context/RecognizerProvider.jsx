@@ -19,69 +19,69 @@ const DEFAULT_AVAILABLE = ["rule", "ml", "motion"]
 //2 have to be connected together. Keep in step with the adapters
 const MOTION_MODES = ["motion"]
 
-export const RecognizerProivder = ({children}) => {
-    const [mode, setMode] = useState(null)
-    const [available, setAvailable] = useState(DEFAULT_AVAILABLE)
-    const [pending, setPending] = useState(false)
-    const [notice, setNotice] = useState(null)
+export const RecognizerProivder = ({ children }) => {
+  const [mode, setMode] = useState(null)
+  const [available, setAvailable] = useState(DEFAULT_AVAILABLE)
+  const [pending, setPending] = useState(false)
+  const [notice, setNotice] = useState(null)
 
-    useEffect(() => {
-        let cancelled = false
+  useEffect(() => {
+    let cancelled = false
 
-        fetchRecognizerMode()
-            .then((data) => {
-                if (cancelled) return
-                setMode(data.mode)
-                if (Array.isArray(data.available)) setAvailable(data.available)
-            })
-            .catch(() => {
-                if (cancelled) return
-                setMode("rule")
-                setNotice("Could not reach backend")
-            })
+    fetchRecognizerMode()
+      .then((data) => {
+        if (cancelled) return
+        setMode(data.mode)
+        if (Array.isArray(data.available)) setAvailable(data.available)
+      })
+      .catch(() => {
+        if (cancelled) return
+        setMode("rule")
+        setNotice("Could not reach backend")
+      })
 
-            return () => {
-                cancelled = true
-            }
-    }, [])
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
-    const switchMode = useCallback(async (next) => {
-        setPending(true)
-        setNotice(null)
-        try {
-            const data = await updateRecognizerMode(next)
-            setMode(data.mode)
-            if (data.mode !== data.requested) {
-                setNotice("No trained model on server, staying on rules")
-            } else if (data.warning) {
-                setNotice(data.warning)
-            }
-        } catch {
-            setNotice("Switch failed")
-        } finally {
-            setPending(false)
-        }
-    }, [])
+  const switchMode = useCallback(async (next) => {
+    setPending(true)
+    setNotice(null)
+    try {
+      const data = await updateRecognizerMode(next)
+      setMode(data.mode)
+      if (data.mode !== data.requested) {
+        setNotice("No trained model on server, staying on rules")
+      } else if (data.warning) {
+        setNotice(data.warning)
+      }
+    } catch {
+      setNotice("Switch failed")
+    } finally {
+      setPending(false)
+    }
+  }, [])
 
-    const value = useMemo(
-        () => ({
-            mode,
-            available,
-            pending,
-            notice,
-            switchMode,
-            inputAdapter: MOTION_MODES.includes(mode) ? "motion" : "gesture",
-        }),
-        [mode, available, pending, notice, switchMode]
-    )
+  const value = useMemo(
+    () => ({
+      mode,
+      available,
+      pending,
+      notice,
+      switchMode,
+      inputAdapter: MOTION_MODES.includes(mode) ? "motion" : "gesture",
+    }),
+    [mode, available, pending, notice, switchMode]
+  )
 
-    return (
-        <RecognizerContext.Provider value={value}>
-            {children}
-        </RecognizerContext.Provider>
-    )
+  return (
+    <RecognizerContext.Provider value={value}>
+      {children}
+    </RecognizerContext.Provider>
+  )
 }
 
 RecognizerProivder.propTypes = {
-    children: PropTypes.node.isRequired,
+  children: PropTypes.node.isRequired,
 }

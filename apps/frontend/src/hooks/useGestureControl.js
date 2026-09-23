@@ -33,7 +33,7 @@ export function useGestureControl(enabled) {
   const { enabled: cameraEnabled } = useCameraConsent()
 
   // 'gesture' for rule and ml, 'motion' for motion recognizer
-  const {mode, inputAdapter} = useRecognizerMode()
+  const { mode, inputAdapter } = useRecognizerMode()
 
   //mode starts null until the first fetch lands, connection before then
   // would pick an adapter on a guess and reconnect a moment later

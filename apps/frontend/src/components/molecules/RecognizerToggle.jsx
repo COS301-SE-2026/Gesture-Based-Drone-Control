@@ -14,7 +14,7 @@ export default function RecognizerToggle({ className = "" }) {
     {
       id: "rule",
       label: "Rule",
-      blurb: "counts finger using fixed landmark rules. always available"
+      blurb: "counts finger using fixed landmark rules. always available",
     },
     {
       id: "ml",
@@ -33,15 +33,15 @@ export default function RecognizerToggle({ className = "" }) {
   return (
     <Card variant="glass" className={className}>
       <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1">
-            <Label size="md">Recognizer</Label>
-            <p className="text-sm text-dim max-w-sm">
-              {active
-                ? active.blurb
-                : "how the backend turns your hands into commands."}
-            </p>
-          </div>
-          <div className="=flex gap-3">
+        <div className="flex flex-col gap-1">
+          <Label size="md">Recognizer</Label>
+          <p className="text-sm text-dim max-w-sm">
+            {active
+              ? active.blurb
+              : "how the backend turns your hands into commands."}
+          </p>
+        </div>
+        <div className="=flex gap-3">
           {mode.map((m) => (
             <Button
               key={m.id}
