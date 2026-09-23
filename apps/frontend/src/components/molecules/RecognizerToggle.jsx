@@ -42,7 +42,7 @@ export default function RecognizerToggle({ className = "" }) {
           </p>
         </div>
         <div className="=flex gap-3">
-          {mode.map((m) => (
+          {modes.map((m) => (
             <Button
               key={m.id}
               variant={mode === m.id ? "default" : "secondary"}
