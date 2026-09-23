@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { API_BASE_URL, getWsUrl } from "@/lib/api"
 import { useWebSocket } from "./useWebSocket"
 import { useCameraConsent } from "@/context/CameraConsentContext"
+import { useRecognizerMode } from "@/context/RecognizerContext"
 
 const DEFAULT_STATUS = {
   active: false,
@@ -30,7 +31,13 @@ export function useGestureControl(enabled) {
   // the backend opens the webcam the moment the gesture adapter connects,
   // so consent has to gate the connect not just ui element
   const { enabled: cameraEnabled } = useCameraConsent()
-  const active = enabled && cameraEnabled
+
+  // 'gesture' for rule and ml, 'motion' for motion recognizer
+  const {mode, inputAdapter} = useRecognizerMode()
+
+  //mode starts null until the first fetch lands, connection before then
+  // would pick an adapter on a guess and reconnect a moment later
+  const active = enabled && cameraEnabled && mode !== null
 
   // connection handling
 
@@ -42,7 +49,7 @@ export function useGestureControl(enabled) {
     fetch(`${API_BASE_URL}/api/input/connect`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ adapter: "gesture" }),
+      body: JSON.stringify({ adapter: inputAdapter }),
     })
       .then((res) => {
         if (!cancelled && res.ok) {
@@ -69,7 +76,7 @@ export function useGestureControl(enabled) {
         }).catch(() => {})
       }
     }
-  }, [active])
+  }, [active, inputAdapter])
 
   // websocket polling
   const { status: wsStatus } = useWebSocket(
