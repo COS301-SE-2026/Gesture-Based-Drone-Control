@@ -35,7 +35,7 @@ class FakeClock:
     def __call__(self) -> float:
         return self.now
     
-    def tick(self, seconds, float = FRAME_DT) -> None:
+    def tick(self, seconds: float = FRAME_DT) -> None:
         self.now += seconds
 
 def make_hand(cx=0.5, cy=0.5, palm=PALM, handedness=Handedness.RIGHT, confidence=0.95):
@@ -57,7 +57,7 @@ def feed(rec, clock, points, palm=PALM, handedness=Handedness.RIGHT, dt=FRAME_DT
     results = []
     for cx, cy in points:
         clock.tick(dt)
-        results.append(rec.intepret_gesture(make_hand(cx, cy, palm, handedness)))
+        results.append(rec.interpret_gesture(make_hand(cx, cy, palm, handedness)))
     return results
 
 def gestures(results):
@@ -90,13 +90,24 @@ def rec(clock):
     ('path', 'expected'),
     [
         (line(0.30, 0.5, 0.045, 0.0), Gesture.SWIPE_RIGHT),
-        (line(0.75, -0.045, 0.0), Gesture.SWIPE_LEFT),
+        (line(0.75, 0.5,-0.045, 0.0), Gesture.SWIPE_LEFT),
         (line(0.5, 0.25, 0.0, 0.045), Gesture.SWIPE_DOWN),
         (line(0.5, 0.75, 0.0, -0.045), Gesture.SWIPE_UP),
     ],
 )
 def test_swipes(rec, clock, path, expected):
     assert expected in gestures(feed(rec, clock, path))
+    
+@pytest.mark.parametrize(
+    ('path', 'dt'),
+    [
+        (line(0.30, 0.5, 0.045, 0.0), 0.2),
+        (line(0.50, 0.5, 0.002, 0.0), FRAME_DT),
+        ([0.5, 0.5] * 20, FRAME_DT),
+    ],
+)
+def test_non_gesture_stay_silent(rec, clock, path, dt):
+    assert set(gestures(feed(rec, clock, path, dt=dt))) == {Gesture.UNKNOWN}
     
 def test_gesture_is_latched_across_frames(rec, clock):
     """
@@ -110,3 +121,111 @@ def test_gesture_is_latched_across_frames(rec, clock):
     ]
     
     assert len(held) >= 2
+    
+def test_return_stroke_does_not_fire_the_opposite_swipe(rec, clock):
+    """
+    The main thing the state machine exists for, swipe left bring hand back to rest
+    """
+    feed(rec, clock, line(0.75, 0.5, -0.045, 0.0))
+    back = feed(rec, clock, line(0.30, 0.5, 0.045, 0.0))
+    
+    assert Gesture.SWIPE_RIGHT not in gestures(back)
+    
+def test_a_new_gesture_fires_once_the_refactory_expires(rec, clock):
+    feed(rec, clock, line(0.75, 0.5, -0.045, 0.0))
+    clock.tick(LATCH_SECONDS + REFACTORY_SECONDS + 0.1)
+    
+    assert Gesture.SWIPE_LEFT in gestures(feed(rec, clock, line(0.75, 0.5, -0.045, 0.0)))
+    
+@pytest.mark.parametrize(
+    ('start', 'step', 'expected'),
+    [(0.10, 0.006, Gesture.PUSH), (0.17, -0.007, Gesture.PULL)],
+)
+def test_depth_from_apparent_palm_size(rec, clock, start, step, expected):
+    results = []
+    for i in range(11):
+        clock.tick()
+        results.append(rec.interpret_gesture(make_hand(0.5, 0.5, start + step * i)))
+        
+    assert expected in gestures(results)
+        
+@pytest.mark.parametrize(
+    ('clockwise', 'expected'),
+    [(True, Gesture.CIRCLE_CW), (False, Gesture.CIRCLE_CCW)],
+)
+def test_circles(rec, clock, clockwise, expected):
+    assert expected in gestures(feed(rec, clock, circle(clockwise=clockwise)))
+    
+def test_circle_does_not_fire_a_swipe_partway_round(rec, clock):
+    """
+    Hald a circle covers as much ground as fast as a swipe, so without the 
+    straigtness gate it fires SWIPE_* long before the loop closes
+    """
+    assert not SWIPES.intersection(gestures(feed(rec, clock, circle())))
+    
+def test_circles_can_be_disabled(clock):
+    rec = MotionBasedRecognizer(time_source=clock, enable_circles=False)
+    
+    assert Gesture.CIRCLE_CW not in gestures(feed(rec, clock, circle()))
+    
+@pytest.mark.parametrize(
+    ('path', 'axis', 'check'),
+    [
+        ([0.5, 0.5] * 5, 'x', lambda v: v == 0.0),
+        ([0.5, 0.5], (0.62, 0.5), (0.68, 0.5), 'x', lambda v: v > 0.0),
+        ([0.5, 0.5], (0.5, 0.62), (0.5, 0.68), 'y', lambda v: v > 0.0),
+        ([0.5, 0.5], (0.95, 0.5), (0.99, 0.5), 'x', lambda v: v <= 1.0),
+        ([0.5, 0.5], (0.51, 0.5), 'x', lambda v: v == 0.0),
+    ],
+)
+def test_continuous_deflections(rec, clock, path, axis, check):
+    results = feed(rec, clock, path)
+    
+    assert results[-1].motion is not None
+    assert check(getattr(results[-1].motion, axis))
+    
+def test_growing_palm_gives_positive_depth(rec, clock):
+    clock.tick()
+    rec.interpret_gesture(make_hand(0.5, 0.5, 0.10))
+    clock.tick()
+    
+    assert rec.interpret_gesture(make_hand(0.5, 0.5, 0.16)).motion.depth > 0.0
+    
+def test_hands_are_tracked_independently(rec, clock):
+    """a moving right hand must not contaiminate a still left hand"""
+    left = []
+    for cx, _ in line(0.30, 0.5, 0.045, 0.0):
+        clock.tick()
+        rec.interpret_gesture(make_hand(cx, 0.5, handedness=Handedness.RIGHT))
+        left.append(rec.interpret_gesture(make_hand(0.5, 0.5, handedness=Handedness.LEFT)))
+        
+    assert set(gestures(left)) == {Gesture.UNKNOWN}
+    
+def test_stale_track_is_rearmed_when_a_hand_returns(rec, clock):
+    clock.tick()
+    rec.interpret_gesture(make_hand(0.20, 0.5))
+    clock.tick(STALE_SECONDS + 0.2)
+    result = rec.interpret_gesture(make_hand(0.85, 0.5))
+    
+    assert result.gesture is Gesture.UNKNOWN
+    assert result.motion.is_neutral
+    
+def test_reset_drops_every_track(rec, clock):
+    feed(rec, clock, line(0.30, 0.5, 0.045, 0.0))
+    rec.reset()
+    clock.tick()
+    
+    assert rec.interpret_gesture(make_hand(0.85, 0.5)).gesture is Gesture.UNKNOWN
+    
+def test_result_contract(rec, clock):
+    clock.tick()
+    result = rec.interpret_gesture(make_hand(handedness=Handedness.LEFT, confidence=0.77))
+    
+    assert 0 <= result.finger_state.count <= 5
+    assert result.handedness is Handedness.LEFT
+    assert result.confidence == pytest.approx(0.77)
+    
+def test_invert_x_flips_lateral_swipes(clock):
+    rec = MotionBasedRecognizer(time_source=clock, invert_x=True)
+    
+    assert Gesture.SWIPE_LEFT in gestures(feed(rec, clock, line(0.30, 0.5, 0.045, 0.0)))
