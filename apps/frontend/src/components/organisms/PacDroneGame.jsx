@@ -59,8 +59,6 @@ const col_player = [255, 220, 0]
 const col_ghost = [90, 5, 5]
 const col_scared = [12, 100, 12]
 
-// for font caching just a temp fix
-
 export default function PacDroneGame() {
   const canvasRef = useRef(null)
   const dirRef = useRef({ x: 0, y: 0 }) //direction from the ws used for input
@@ -295,7 +293,7 @@ export default function PacDroneGame() {
       ])
 
       // actual player
-      const PLAYER_SPEED = tile * 7
+      const PLAYER_SPEED = tile * 6
       const GHOST_SPEED = tile * 3.5
       const ALIGN_THRESHOLD = 3
 
