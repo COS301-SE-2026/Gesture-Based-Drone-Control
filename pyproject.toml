@@ -108,3 +108,11 @@ omit=[
     "*/test_*.py",
     "*/ml_training/*"
     ]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    #doesnt count my smoke tests in my pipeline files as uncovered now 
+    #for codecov
+    "if __name__ == .__main__.:",
+]
