@@ -13,6 +13,8 @@ const __dirname = path.dirname(__filename)
 // so a clean shutdown wins the race and cv2 gets to release the webcam properly
 const BACKEND_KILL_DEADLINE_MS = 6000
 
+app.commandLine.appendSwitch("disable-features", "WebRtcHideLocalIpsWithMdns")
+
 let backendProcess
 let backendExited = false
 let mainWindow
