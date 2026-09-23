@@ -20,7 +20,7 @@ export const gesturesSteps = [
     target: '[data-tour="gesture-camera"]',
     title: "Gesture Detection",
     content:
-      "Your hand is tracked here. If you have not caliberated yet, this card will walk you through it first.",
+      "Your hand is tracked here. If you have not calibrated yet, this card will walk you through it first.",
   },
 
   {
@@ -36,7 +36,7 @@ export const gesturesSteps = [
     target: '[data-tour="sim-viewer"]',
     title: "Sim Viewer",
     content:
-      "A live feed simulation drone, it shows the connection status as well as the current mode.This does switch to the actual caera of the physical drone depending on the mode selected",
+      "A live feed simulation drone, it shows the connection status as well as the current mode. This switches to the actual camera of the physical drone depending on the mode selected",
   },
 
   {
@@ -47,8 +47,8 @@ export const gesturesSteps = [
       "Every command executed this session , whether triggered by a gesture, keyboard input or an onscreen button will show up here ",
   },
 
-  // ayt so if we decide to do the carea card switching thing then that has to be chnages accordingly here too
-  //dont forget to make the chnages on the organism pages as well to ass the tags pper name
+  // ayt so if we decide to do the camera card switching thing then that has to be changes accordingly here too
+  //dont forget to make the changes on the organism pages as well to add the tags proper name
 ]
 
 export const gpsSteps = [
@@ -75,7 +75,7 @@ export const analyticsSteps = [
     target: '[data-tour="analytics-summary"]',
     title: "Session Summary",
     content:
-      "Total flights, your fastest speed and altitude reached this sesssion.",
+      "Total flights, your fastest speed and altitude reached this session.",
   },
 
   {
@@ -84,6 +84,7 @@ export const analyticsSteps = [
     title: "Live Charts",
     content:
       "Speed and battery health,updating in real time as telemetry comes in.",
+    placement: "bottom",
   },
 
   {
@@ -99,7 +100,7 @@ export const analyticsSteps = [
     target: '[data-tour="analytics-totals"]',
     title: "Overall Totals",
     content:
-      "Distance flown, average flight duration and avergae speed across your sessions.",
+      "Distance flown, average flight duration and average speed across your sessions.",
   },
 ]
 
