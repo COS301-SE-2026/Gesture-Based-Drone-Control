@@ -3,12 +3,12 @@ import{Modal , Button} from "../atoms"
 
 export default function ExerciseModal({ open, onClose, module}){
     return (
-        <Modal open = {open} onClose={onClose} title= {module?.title}>
-            <div className = "flex flex-col gap-4">
+        <Modal open = {open} onClose={onClose} title= {module?.title} size = "full">
+            <div className = "flex flex-col gap-4 flex-1 min-h-0">
                 <span className="eyebrow">{module?.difficulty}</span>
                 <p className ="text-sm text-dim">{module?.description}</p>
 
-                <div className = "rounded-lg border border-dashed border-glassBrd bg-glass-2 flex flex-col items-center justify-center gap-3 py-10">
+                    <div className="flex-1 min-h-0 rounded-lg border border-dashed border-glassBrd bg-glass-2 flex flex-col items-center justify-center gap-3">
                     <p className = "text-sm font-semibold text-ink">
                         Exercise environment in progress 
                     </p>
@@ -23,7 +23,7 @@ export default function ExerciseModal({ open, onClose, module}){
                     </div>
                 </div>
 
-                <Button variant = "secondary" disabled className="w-full">
+                <Button variant = "secondary" disabled className="w-full shrink-0">
                     Start Exercise
                 </Button>
 

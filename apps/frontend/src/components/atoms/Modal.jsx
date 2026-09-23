@@ -2,7 +2,15 @@ import{useEffect} from "react"
 import PropTypes from "prop-types"
 import {X} from "lucide-react"
 
-export default function Modal ({ open,onClose, title, children , className = ""}){
+export default function Modal({
+    open, 
+    onClose,
+    title,
+    children,
+    className= "",
+    size="md",
+}){
+
     useEffect(() => {
         if (!open) {
             return
@@ -27,12 +35,16 @@ export default function Modal ({ open,onClose, title, children , className = ""}
         aria-modal="true"
         >
             <div
-            className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-bg/90 backdrop-blur-sm"
             onClick={onClose}
             />
 
             <div 
-            className={`relative w-full max-w-lg rounded-xl border border-glassBrd bg-[linear-gradient(145deg,var(--glass),var(--glass-2))] backdrop-blur-xl backdrop-saturate-150 shadow-glass-combo p-6 ${className}`}
+            className={`relative w-full flex flex-col rounded-xl border border-glassBrd bg-[linear-gradient(145deg, var(--glass).var(--glass-2))] backdrop-blur-xl backdrop-saturate-150 shadow-glass-combo p-6 ${
+                size =="full"
+                ? "max-w-[96vw] h-[92vh]"
+                :"max-w-lg"
+            }${className}`}
             >
                 <div className = "flex items-center justify-between mb-4">
                     {title && <h3 className="font-semibold text-ink">{title}</h3>}
@@ -45,7 +57,7 @@ export default function Modal ({ open,onClose, title, children , className = ""}
                         <X className="w-4 h-4"/>
                     </button>
                 </div>
-                {children}
+                <div className="flex-1 min-h-0 flex flex-col" >{children}</div>
             </div>
         </div>
     )
@@ -57,6 +69,7 @@ Modal.propTypes= {
     title:PropTypes.string,
     children:PropTypes.node,
     className:PropTypes.string,
+    size:PropTypes.oneOf(["md","full"]),
 }
 
 Modal.defaultProps = {
@@ -65,4 +78,5 @@ Modal.defaultProps = {
     title:"",
     children:undefined,
     className:"",
+    size:"md",
 }

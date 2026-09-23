@@ -12,6 +12,7 @@ import {
   Tutorial,
   Games,
   License,
+  Practical,
 } from "./components/organisms"
 import { ThemeProvider } from "./context/ThemeProvider.jsx"
 import { TelemetryProvider } from "./context/TelemetryProvider.jsx"
@@ -52,6 +53,7 @@ function App() {
                       <Route path="test" element={<TestPage />} />
                       <Route path="games" element={<Games />} />
                       <Route path="license" element={<License />} />
+                      <Route path ="license/practical" element={<Practical />}/>
                     </Route>
                   </Routes>
                 </AuthProvider>
