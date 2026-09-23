@@ -55,7 +55,7 @@ export const FURNITURE = [
   { x: 780, y: 90, w: 35, h: 35, kind: "nightstand" },
   //kitchen
   { x: 50, y: 340, w: 30, h: 140, kind: "sink" },
-  { x: 110, y: 90, w: 35, h: 40, kind: "sink" },
+  { x: 110, y: 90, w: 35, h: 40, kind: "counter" },
   //hallway
   { x: 500, y: 420, w: 90, h: 70, kind: "consoleTable" },
   //garage

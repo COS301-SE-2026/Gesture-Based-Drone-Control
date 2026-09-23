@@ -5,6 +5,7 @@ import coffeeTable from "../assets/games/nightwatch/coffee_table.png"
 import bed from "../assets/games/nightwatch/bed.png"
 import nightstand from "../assets/games/nightwatch/nightstand.png"
 import sink from "../assets/games/nightwatch/sink.png"
+import counter from "../assets/games/nightwatch/counter.png"
 import consoleTable from "../assets/games/nightwatch/console_table.png"
 import crateStack from "../assets/games/nightwatch/crate_stack.png"
 import shelf from "../assets/games/nightwatch/shelf.png"
@@ -23,6 +24,7 @@ const SPRITE_SOURCES = {
   bed,
   nightstand,
   sink,
+  counter,
   consoleTable,
   crateStack,
   shelf,
@@ -49,6 +51,7 @@ export const FURNITURE_SPRITES = {
   bed: "bed",
   nightstand: "nightstand",
   sink: "sink",
+  counter: "counter",
   consoleTable: "consoleTable",
   crateStack: "crateStack",
   shelf: "shelf",
