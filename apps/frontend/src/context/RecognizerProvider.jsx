@@ -19,7 +19,7 @@ const DEFAULT_AVAILABLE = ["rule", "ml", "motion"]
 //2 have to be connected together. Keep in step with the adapters
 const MOTION_MODES = ["motion"]
 
-export const RecognizerProivder = ({ children }) => {
+export const RecognizerProvider = ({ children }) => {
   const [mode, setMode] = useState(null)
   const [available, setAvailable] = useState(DEFAULT_AVAILABLE)
   const [pending, setPending] = useState(false)
@@ -82,6 +82,6 @@ export const RecognizerProivder = ({ children }) => {
   )
 }
 
-RecognizerProivder.propTypes = {
+RecognizerProvider.propTypes = {
   children: PropTypes.node.isRequired,
 }
