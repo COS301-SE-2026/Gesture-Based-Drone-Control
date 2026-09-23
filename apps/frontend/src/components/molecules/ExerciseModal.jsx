@@ -8,7 +8,7 @@ export default function ExerciseModal({ open, onClose, module}){
                 <span className="eyebrow">{module?.difficulty}</span>
                 <p className ="text-sm text-dim">{module?.description}</p>
 
-                    <div className="flex-1 min-h-0 rounded-lg border border-dashed border-glassBrd bg-glass-2 flex flex-col items-center justify-center gap-3">
+                    <div className="flex-1 min-h-0 rounded-lg border border-dashed border-glassBrd bg-surface flex flex-col items-center justify-center gap-3">
                     <p className = "text-sm font-semibold text-ink">
                         Exercise environment in progress 
                     </p>
@@ -23,7 +23,7 @@ export default function ExerciseModal({ open, onClose, module}){
                     </div>
                 </div>
 
-                <Button variant = "secondary" disabled className="w-full shrink-0">
+                <Button variant = "default" disabled className="w-full shrink-0">
                     Start Exercise
                 </Button>
 

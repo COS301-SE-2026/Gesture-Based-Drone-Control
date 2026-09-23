@@ -35,19 +35,28 @@ export default function Modal({
         aria-modal="true"
         >
             <div
-            className="absolute inset-0 bg-bg/90 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 backdrop-blur-lg"
             onClick={onClose}
             />
 
             <div 
-            className={`relative w-full flex flex-col rounded-xl border border-glassBrd bg-[linear-gradient(145deg, var(--glass).var(--glass-2))] backdrop-blur-xl backdrop-saturate-150 shadow-glass-combo p-6 ${
+            className={`relative w-full flex flex-col rounded-xl border border-glassBrd backdrop-saturate-150 shadow-glass-combo p-6 ${
                 size =="full"
                 ? "max-w-[96vw] h-[92vh]"
                 :"max-w-lg"
             }${className}`}
+            style={{
+                background: "linear-gradient(145deg,color-mix(in srgb, var(--red-shadow)), color-mix(in srgb,var(--red-deep)))",
+                backdropFilter: "blur(24px) saturate(160%)",
+                WebkitBackdropFilter:"blur(24px) saturate(160%)",
+            }}
             >
-                <div className = "flex items-center justify-between mb-4">
-                    {title && <h3 className="font-semibold text-ink">{title}</h3>}
+                <div className = "flex items-center justify-between pb-4 mb-4 border-b border-line">
+                    {title && (
+                    <h3 className="font-semibold text-ink text-lg tracking-wide">
+                        {title}
+                        </h3>
+                        )}
                     <button
                     type="button"
                     onClick={onClose}
