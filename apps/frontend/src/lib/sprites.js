@@ -16,7 +16,7 @@ import bedroomFloor from "../assets/games/nightwatch/bedroom_floor.png"
 import garageFloor from "../assets/games/nightwatch/garage_floor.png"
 import horizontalWall from "../assets/games/nightwatch/wall_horizontal.png"
 import verticalWall from "../assets/games/nightwatch/wall_vertical.png"
-import doorframe from "../assets/games/nightwatch/door_frame.png"
+import doorFrame from "../assets/games/nightwatch/door_frame.png"
 
 const SPRITE_SOURCES = {
   sofa,
@@ -35,7 +35,7 @@ const SPRITE_SOURCES = {
   garageFloor,
   horizontalWall,
   verticalWall,
-  doorframe,
+  doorFrame,
 }
 
 export function loadNightWatchSprites(k) {

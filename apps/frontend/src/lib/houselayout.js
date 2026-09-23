@@ -67,15 +67,15 @@ export const FURNITURE = [
 //gameplay doesnt look at this is just background stuff
 export const FLOOR_ZONES = [
   { x: HOUSE.x, y: HOUSE.y, w: 700, h: 250, floor: "main" }, //living room
-  { x: 720, y: HOUSE.y, w: HOUSE.x + HOUSE.w - 720, h: 250, kind: "bedroom" }, //bedroom
-  { x: 340, y: 300, w: 380, h: HOUSE.y + HOUSE.h - 300, kind: "kitchen" }, //kitchen
-  { x: 340, y: 300, w: 380, h: HOUSE.y + HOUSE.H - 300, kind: "main" }, //hallway
+  { x: 720, y: HOUSE.y, w: HOUSE.x + HOUSE.w - 720, h: 250, floor: "bedroom" }, //bedroom
+  { x: 340, y: 300, w: 380, h: HOUSE.y + HOUSE.h - 300, floor: "kitchen" }, //kitchen
+  { x: 340, y: 300, w: 380, h: HOUSE.y + HOUSE.h - 300, floor: "main" }, //hallway
   {
     x: 720,
     y: 300,
     w: HOUSE.x + HOUSE.w - 720,
     h: HOUSE.y + HOUSE.h - 300,
-    kind: "garage",
+    floor: "garage",
   },
 ]
 

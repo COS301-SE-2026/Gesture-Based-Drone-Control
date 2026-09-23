@@ -1,7 +1,7 @@
 //helpers for search game
 
 export function clamp(value, min, max) {
-  return Math.max(min, Math, min(max, value))
+  return Math.max(min, Math.min(max, value))
 }
 
 function norm360(a) {
@@ -41,7 +41,7 @@ export function pickRandom(arr) {
 //returns true if a push happened
 export function resolveCircleRect(pos, radius, rect) {
   const closestX = clamp(pos.x, rect.x, rect.x + rect.w)
-  const closestY = clamp(pos.x, rect.x, rect.x + rect.w)
+  const closestY = clamp(pos.y, rect.y, rect.y + rect.h)
   const dx = pos.x - closestX
   const dy = pos.y - closestY
   const distSq = dx * dx + dy * dy
@@ -58,7 +58,7 @@ export function resolveCircleRect(pos, radius, rect) {
     const min = Math.min(l, r, t, b)
     if (min === l) pos.x = rect.x - radius
     else if (min === r) pos.x = rect.x + rect.w + radius
-    else if (min === top) pos.y = rect.y - radius
+    else if (min === t) pos.y = rect.y - radius
     else pos.y = rect.y + rect.h + radius
   } else {
     const overlap = radius - d
@@ -110,6 +110,13 @@ export function segIntersectsRect(x0, y0, x1, y1, rect) {
     }
   }
   return true
+}
+
+export function hasLineOfSight(x0, y0, x1, y1, obstacles) {
+    for (const rect of obstacles) {
+        if (segIntersectsRect(x0, y0, x1, y1, rect)) return false
+    }
+    return true
 }
 
 //BFS of room
