@@ -33,6 +33,8 @@ def make_mock_input_adapter() -> MagicMock:
 	adapter.stop = AsyncMock()
 	adapter.handle_message = AsyncMock()
 	adapter.set_handler = MagicMock()
+	adapter.COMPATIBLE_RECOGNIZER = ()
+	adapter.REQUIRED_RECOGNIZER = None
 	return adapter
 
 
