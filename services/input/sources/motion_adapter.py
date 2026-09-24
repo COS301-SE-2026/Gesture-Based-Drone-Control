@@ -40,6 +40,13 @@ MOTION_TWO_HAND_MAP: dict[frozenset, CommandType] = {
 # to exist, left empty rather than removed so the resolution order is intact
 MOTION_ASYMMETRICAL_TWO_HAND_MAP: dict[tuple[str, str], CommandType] = {}
 
+# pose adapters 3s idle hover assumes a held gesture keeps refreshing the clock
+# Motion gestures are momentary, a swipe latches for 0.25s then goes queit so a
+# user thinking between gestures trips the timeout constantly and fills the command
+# history with HOVER. A deflected hand still refreshes it through the analog path, so
+# this only stretches how long a genuinely idle hand waits before the safety hover
+MOTION_IDLE_TIMEOUT_S: float = 8.0
+
 # single handed, works with either hand
 MOTION_SINGLE_HAND_MAP: dict[str, CommandType] = {
 	'SWIPE_LEFT': CommandType.MOVE_LEFT,
@@ -75,6 +82,9 @@ class MotionAdapter(GestureAdapter):
 	TWO_HAND_MAP = MOTION_TWO_HAND_MAP
 	ASYMMETRICAL_TWO_HAND_MAP = MOTION_ASYMMETRICAL_TWO_HAND_MAP
 	SINGLE_HAND_MAP = MOTION_SINGLE_HAND_MAP
+
+	def __init__(self, idle_timeout_s=MOTION_IDLE_TIMEOUT_S, **kwargs: Any):
+		super().__init__(idle_timeout_s=idle_timeout_s, **kwargs)
 
 	def _select_hands(self, hands: list[Any]) -> list[Any]:
 		"""

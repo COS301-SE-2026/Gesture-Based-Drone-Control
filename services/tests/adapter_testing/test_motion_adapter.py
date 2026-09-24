@@ -169,6 +169,14 @@ def test_analog_holds_off_the_idle_hover(adapter):
 	assert CommandType.HOVER not in emitted(adapter)
 
 
+def test_idle_timeout_is_longer_than_the_pose_default():
+	"""
+	Motion gestures are momentary, so a user thinking between gestures trips
+	the pose adapter's 3s hover constantly and fills the command history
+	"""
+	assert make_adapter()._idle_timeout > GestureAdapter(event_log=MagicMock())._idle_timeout
+
+
 def test_recognizer_coupling_is_declared():
 	assert MotionAdapter.COMPATIBLE_RECOGNIZERS == ('motion',)
 	assert MotionAdapter.REQUIRED_RECOGNIZER == 'motion'
