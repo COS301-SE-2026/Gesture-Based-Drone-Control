@@ -152,7 +152,10 @@ test.describe("recognizer selector in settings", () => {
 
         await page.goto(MOTION_ROUTE)
 
-        await page.getByRole("button", {name: "Gestures", exact: true}).click()
+        await page
+        .getByRole("main")
+        .getByRole("button", {name: "Gestures", exact: true})
+        .click()
         await expect
             .poll(
                 async () => (await getInputStatus(request)).adapter, {
@@ -170,12 +173,18 @@ test.describe("recognizer selector in settings", () => {
         await page.goto(SETTINGS_ROUTE)
         await page.getByRole("button", {name: "Motion"}).click()
         await page.goto(MOTION_ROUTE)
-        await page.getByRole("button", {name: "Gestures", exact: true}).click()
+        await page
+        .getByRole("main")
+        .getByRole("button", {name: "Gestures", exact: true})
+        .click()
 
         await page.goto(SETTINGS_ROUTE)
         await page.getByRole("button", {name: "Rule"}).click()
         await page.goto(MOTION_ROUTE)
-        await page.getByRole("button", {name: "Gestures", exact: true}).click()
+        await page
+        .getByRole("main")
+        .getByRole("button", {name: "Gestures", exact: true})
+        .click()
 
         await expect
             .poll(
