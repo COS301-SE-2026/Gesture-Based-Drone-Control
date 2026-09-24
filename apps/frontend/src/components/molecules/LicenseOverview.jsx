@@ -23,15 +23,6 @@ export default function LicenseOverview() {
         restricted radiotelephony certificate.
       </p>
 
-      <p className="text-dim">
-        Gesture-Based Drone Control does not issue the licence itself but this
-        is a great platform to get you ready for the practical side. Work
-        through theory course with an accredited ATO , then use our simulator to
-        log stick time and build the flying skills your practical skills test
-        will check. This will enable you to be more confident before taking the
-        actual test in real life making you feel more prepared.
-      </p>
-
       <div>
         <h4 className="text-ink mb-2"> Before you start, you will need</h4>
         <ul className="flex flex-col gap-1">
