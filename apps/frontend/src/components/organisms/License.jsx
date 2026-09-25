@@ -1,6 +1,6 @@
 import{GraduationCap,Rocket} from "lucide-react"
 import {useNavigate} from "react-router-dom"
-import {LicenseOverview,TrainingOptionCard} from "../molecules"
+import {LicenseOverview,LicenseOffering,TrainingOptionCard} from "../molecules"
 
 const THEORY_COURSE_URL  = "https://www.drone-x.co.za/"
 
@@ -8,17 +8,46 @@ export default function Liense(){
     const navigate = useNavigate()
 
     return(
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 flex flex-col gap-14">
+        <div className="relative max-w-5xl mx-auto px-4 md:px-6 py-10 flex flex-col gap-14 overflow-hidden">
+            <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-24 -right-32 w-[28rem] h-[28rem] rounded-full"
+            style={{
+                background: "color-mix(in srgb,var(--red-shadow) 30%,transparent",
+                filter:"blur(110px)",
+            }}
+            />
+            <div 
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/3 -left-24 w-96 h-96 rounded-full"
+            style={{
+                background:"color-mix(insrgb,var((--red-deep) 18% ,transparent)",
+                filter:"blur(100px)",
+            }}
+            />
+
             <section className="flex flex-col gap-4">
 
                 <span className="eyebrow">RPL Pathway</span>
                 <h1 className="text-ink">Get your Remote Pilot License</h1>
-
+                <h2 className="text-sm font-semibold text-dim uppercase tracking-widest mt-2">
+                    What is an RPL?
+                </h2>
                 <LicenseOverview/>
 
             </section>
+            <section className ="flex flex-col gap-4">
+                <h2 className="text-sm font-semibold text-dim uppercase tracking-widest">
+                    What we provide:
+                </h2>
+                <LicenseOffering/>
+            </section>
 
-            <section className = "grid gap-4 sm:grid-cols-2">
+            <section className = "flex flex-col gap-4">
+                <h2 className="text-sm font-semibold text-dim uppercase tracking-widest">
+                    Get Started
+                </h2>
+                <div className="grid gap-4 sm:grid-cols-2">
                 <TrainingOptionCard
                 icon={GraduationCap}
                 title="Theory training"
@@ -37,6 +66,7 @@ export default function Liense(){
                 buttonLabel="Start practical training"
                 onAction={() => navigate("/app/license/practical")}
                 />
+                </div>
             </section>
         </div>
     )
