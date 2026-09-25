@@ -15,6 +15,12 @@ const SKELETON_COLOR = "#ef4444"
 const LABEL_BG = "rgba(11, 9, 10, 0.75)"
 const LABEL_TEXT = "#ffffff"
 
+const MOTION_COLOR = "rgba(239, 68, 68, 0.55)"
+const MOTION_DOT = "#ef4444"
+
+const MOTION_DEADZONE_PALMS = 0.35
+const MOTION_RANGE_PALMS = 2.0
+
 const CONTAINER_GLASS =
   "relative w-full h-full bg-ink/50 rounded border border-dim overflow-hidden min-h-[16rem] aspect-video"
 
@@ -138,7 +144,68 @@ function drawFrame(canvas, bitmap, frame, skeletonColor) {
     const line2 = `${confidence}% spd ${(hand.speed ?? 0).toFixed(2)}`
     drawLabel(ctx, line1, wrist.x, wrist.y - 34, { clamp: true })
     drawLabel(ctx, line2, wrist.x, wrist.y - 14, { clamp: true })
+
+    if (hand.motion) drawMotionGuide(ctx, points, hand.motion)
   })
+}
+
+function drawMotionGuide(ctx, points, motion) {
+  const wrist = points[0]
+  const middleMcp = points[9]
+  if (!wrist || !middleMcp) return
+
+  const palm = Math.hypot(middleMcp.x - wrist.x, middleMcp.y - wrist.y)
+  if (palm < 1) return
+
+  const palmPoints = [0, 5, 9, 13, 17].map((i) => points[i]).filter(Boolean)
+  if (palmPoints.length < 5) return
+  const cx = palmPoints.reduce((sum, p) => sum + p.x, 0) / palmPoints.length
+  const cy = palmPoints.reduce((sum, p) => sum + p.y, 0) / palmPoints.length
+
+  const outer = palm * MOTION_RANGE_PALMS
+  const inner = palm * MOTION_DEADZONE_PALMS
+
+  ctx.save()
+  ctx.strokeStyle = MOTION_COLOR
+  ctx.lineWidth = 1.5
+
+  ctx.beginPath()
+  ctx.arc(cx, cy, outer, 0, Math.PI * 2)
+  ctx.stroke()
+
+  ctx.setLineDash([4, 4])
+  ctx.beginPath()
+  ctx.arc(cx, cy, inner, 0, Math.PI * 2)
+  ctx.stroke()
+  ctx.setLineDash([])
+
+  ctx.beginPath()
+  ctx.moveTo(cx - outer, cy)
+  ctx.lineTo(cx + outer, cy)
+  ctx.moveTo(cx, cy - outer)
+  ctx.lineTo(cx, cy + outer)
+  ctx.stroke()
+
+  const dotX = cx + motion.x * outer
+  const dotY = cy + motion.y * outer
+  ctx.fillStyle = MOTION_DOT
+  ctx.beginPath()
+  ctx.arc(dotX, dotY, 5, 0, Math.PI * 2)
+  ctx.fill()
+
+  if (motion.depth !== 0) {
+    ctx.beginPath()
+    ctx.arc(
+      cx,
+      cy,
+      inner + Math.abs(motion.depth) * (outer - inner),
+      0,
+      Math.PI * 2
+    )
+    ctx.stroke()
+  }
+
+  ctx.restore()
 }
 
 //draws text with dark pill background
