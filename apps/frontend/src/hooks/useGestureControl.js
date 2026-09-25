@@ -60,9 +60,17 @@ export function useGestureControl(enabled) {
         console.error("UseGestureControl: failed to connect adapter ", err)
       })
 
+    const onUnload = () => {
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(`${API_BASE_URL}/api/input/disconnect`)
+      }
+    }
+    window.addEventListener("beforeunload", onUnload)
+
     // disconnect
     return () => {
       cancelled = true
+      window.removeEventListener("beforeunload", onUnload)
       setConnected(false)
       setStatus(DEFAULT_STATUS)
 

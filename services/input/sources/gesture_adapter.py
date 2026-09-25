@@ -142,7 +142,7 @@ class GestureAdapter(InputAdapter):
 		self._last_gesture_ts = time.monotonic()
 		self._active_key = None
 		self._unresolved_count = 0
-		self._queue = await stream.subscribe()
+		self._queue = await stream.subscribe(viewer=False)
 		# continuously deq and process... 226 returns
 		self._task = asyncio.create_task(self._consume(), name='gesture-adapter-consumer')
 

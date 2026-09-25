@@ -40,6 +40,7 @@ class GestureStream:
 		self._linger_task: Optional[asyncio.Task] = None
 		self._teardown_task: Optional[asyncio.Task] = None
 		self._clients: set[asyncio.Queue] = set()
+		self._viewers: set[asyncio.Queue] = set()
 		self._lock = asyncio.Lock()
 		self._last_error: Optional[str] = None
 		self._recognizer_mode = 'ml' if (config is not None and config.use_ml) else 'rule'
@@ -47,6 +48,11 @@ class GestureStream:
 	@property
 	def client_count(self) -> int:
 		return len(self._clients)
+
+	@property
+	def viewer_count(self) -> int:
+		"""Subscribers that justify holding the camera open"""
+		return len(self._viewers)
 
 	@property
 	def is_running(self) -> bool:
@@ -75,19 +81,22 @@ class GestureStream:
 			return applied
 		return mode
 
-	async def subscribe(self) -> 'asyncio.Queue[GestureFramePayload]':
+	async def subscribe(self, viewer: bool = True) -> 'asyncio.Queue[GestureFramePayload]':
 		"""
 		Register a new client queue and ensure the pipeline is running
 		"""
 
 		queue: asyncio.Queue = asyncio.Queue(maxsize=1)
 		self._clients.add(queue)
+		if viewer:
+			self._viewers.add(queue)
 		self._cancel_linger()
 
 		try:
 			await self._ensure_started()
 		except Exception:
 			self._clients.discard(queue)
+			self._viewers.discard(queue)
 			raise
 		return queue
 
@@ -96,6 +105,7 @@ class GestureStream:
 		Remove a client queue and stop the pipeline if it was the last one
 		"""
 		self._clients.discard(queue)
+		self._viewers.discard(queue)
 		await asyncio.shield(self._schedule_stop_if_idle())
 
 	async def shutdown(self) -> None:
@@ -103,6 +113,7 @@ class GestureStream:
 		Force-stop regardless of clients Call this from app shutdown/lifespan
 		"""
 		self._clients.clear()
+		self._viewers.clear()
 		self._cancel_linger()
 		await self._stop_pipeline()
 
@@ -144,7 +155,7 @@ class GestureStream:
 		self._linger_task = None
 
 	async def _schedule_stop_if_idle(self) -> None:  # NOSONAR
-		if self._clients or self._pipeline is None:
+		if self._viewers or self._pipeline is None:
 			return
 		if self._linger_task is not None and not self._linger_task.done():
 			return
@@ -157,7 +168,7 @@ class GestureStream:
 			await asyncio.sleep(LINGER_SECONDS)
 		except asyncio.CancelledError:  # NOSONAR
 			raise  # NOSONAR
-		if self._clients:
+		if self._viewers:
 			return
 		await self._stop_pipeline()
 		logger.info('Gesture stopped (idle for %.1fs)', LINGER_SECONDS)
