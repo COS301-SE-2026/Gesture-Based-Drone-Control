@@ -45,8 +45,10 @@ PINKY_MCP = 17
 PALM_POINTS = (WRIST, INDEX_MCP, MIDDLE_MCP, RING_MCP, PINKY_MCP)
 
 # tuning vals
+FRAME_ASPECT = 640 / 480
+SWIPE_WINDOW_SECONDS = 0.45
 # how much trajectory history to classify over
-BUFFER_SECONDS = 0.6
+BUFFER_SECONDS = 1.2
 # hand gone for longer than this and track is thrwon away not resumed
 STALE_SECONDS = 0.4
 # keep reporting a detected motion for this long so consumer sees its
@@ -55,15 +57,15 @@ LATCH_SECONDS = 0.25
 REFACTORY_SECONDS = 0.5
 
 # swipe must cover this much ground in palm widths
-MIN_SWIPE_DISTANCE = 0.9
+MIN_SWIPE_DISTANCE = 0.65
 # move atleast this fast, in palm widths per second
-MIN_SWIPE_SPEED = 2.5
+MIN_SWIPE_SPEED = 1.6
 # the winning axis must beat the other one by this ratio, stops diagonal executing both
 AXIS_DOMINACE = 1.8
 # net displacement/path length, a swipe is a straight line, an arc isnt
 # half circle =0.64
 # circle in prgoress from exe a swipe before loop closes
-MIN_SWIPE_STRAIGHTNESS = 0.85
+MIN_SWIPE_STRAIGHTNESS = 0.93
 
 # palm has to grow/shrink by theis ratio for push/pull
 PUSH_SCALE_RATIO = 1.35
@@ -72,9 +74,9 @@ PULL_SCALE_RATIO = 0.74
 MAX_PUSH_LATERAL = 0.7
 
 # acirlce must sweep at least this much agnle
-MIN_CIRCLE_RADIANS = 1.5 * math.pi
+MIN_CIRCLE_RADIANS = 1.25 * math.pi
 # and end up back near where it started in palm widths
-MAX_CIRCLE_DRIFT = 0.8
+MAX_CIRCLE_DRIFT = 1.8
 
 # continuous mode: offset below this is treated as zero, above this is full deflection
 CONTINUOUS_DEADZONE = 0.35
@@ -236,11 +238,11 @@ class MotionBasedRecognizer(GestureRecognizer):
 		"""Reduce 21 landmarks to the one point and one scale we want"""
 		lm = hand.landmarks
 
-		cx = sum(lm[i].x for i in PALM_POINTS) / len(PALM_POINTS)
+		cx = sum(lm[i].x for i in PALM_POINTS) / len(PALM_POINTS) * FRAME_ASPECT
 		cy = sum(lm[i].y for i in PALM_POINTS) / len(PALM_POINTS)
 
 		palm = math.hypot(
-			lm[MIDDLE_MCP].x - lm[WRIST].x,
+			(lm[MIDDLE_MCP].x - lm[WRIST].x) * FRAME_ASPECT,
 			lm[MIDDLE_MCP].y - lm[WRIST].y,
 		)
 
@@ -306,10 +308,11 @@ class MotionBasedRecognizer(GestureRecognizer):
 			if circle is not Gesture.UNKNOWN:
 				return circle
 
-		straightness = self._straightness(points, scale, dx, dy)
-		swipe = self._classify_swipe(dx, dy, elapsed, straightness)
-		if swipe is not Gesture.UNKNOWN:
-			return swipe
+		recent = [p for p in points if (last.t - p.t) <= SWIPE_WINDOW_SECONDS]
+		if len(recent) >= MIN_SAMPLES:
+			swipe = self._classify_swipe_window(recent, scale)
+			if swipe is not Gesture.UNKNOWN:
+				return swipe
 
 		return self._classify_depth(first, last, dx, dy)
 
@@ -358,6 +361,22 @@ class MotionBasedRecognizer(GestureRecognizer):
 				return Gesture.SWIPE_DOWN if dy > 0 else Gesture.SWIPE_UP
 
 		return Gesture.UNKNOWN
+
+	def _classify_swipe_window(self, points: list[Trackpoint], scale: float) -> Gesture:
+		"""Measure a swipe over the recent slice, then classify it"""
+		first = points[0]
+		last = points[-1]
+		elapsed = last.t - first.t
+		if elapsed <= 0:
+			return Gesture.UNKNOWN
+
+		dx = (last.x - first.x) / scale
+		dy = (last.y - first.y) / scale
+		if self._inverted_x:
+			dx = -dx
+
+		straightness = self._straightness(points, scale, dx, dy)
+		return self._classify_swipe(dx, dy, elapsed, straightness)
 
 	def _classify_depth(
 		self,
