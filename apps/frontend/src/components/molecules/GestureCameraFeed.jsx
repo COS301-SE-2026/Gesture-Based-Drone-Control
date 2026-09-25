@@ -51,7 +51,9 @@ const GestureCameraFeed = ({
         bitmap?.close?.()
         return
       }
-      drawFrame(canvas, bitmap, frame, skeletonColor, skeleton, motionGuide)
+      drawFrame(canvas, bitmap, frame, skeletonColor, {
+        skeleton,
+        motionGuide})
       bitmap?.close?.()
     }
 

@@ -3,7 +3,7 @@ import { Card, Label, Toggle } from "../atoms"
 import { useOverlays } from "../../context/OverlayContext"
 
 const OverlaySettingsCard = ({ className = "" }) => {
-  const { skeleton, motionGuide, setSkeleton, setMotionguide } = useOverlays()
+  const { skeleton, motionGuide, setSkeleton, setMotionGuide } = useOverlays()
 
   return (
     <Card variant="glass" className={className}>
@@ -23,7 +23,7 @@ const OverlaySettingsCard = ({ className = "" }) => {
           />
         </div>
 
-        <div className="flex items.center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex flex-col gap-1">
             <Label size="md">Motion guide</Label>
             <p className="text-sm text-dim max-w-sm">
@@ -33,7 +33,7 @@ const OverlaySettingsCard = ({ className = "" }) => {
           </div>
           <Toggle
             checked={motionGuide}
-            onChange={setMotionguide}
+            onChange={setMotionGuide}
             aria-label="Motion guide"
           />
         </div>
@@ -42,7 +42,7 @@ const OverlaySettingsCard = ({ className = "" }) => {
   )
 }
 
-OverlaySettingsCard.PropTypes = {
+OverlaySettingsCard.propTypes = {
   className: PropTypes.string,
 }
 
