@@ -19,8 +19,8 @@ import margitSound from "@/assets/games/pac/margit.mp3"
 const MAZE_A = [
   "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
   "G......................................G",
-  "W..WWW..W..WWW.W.P.WWW.WWW.WW.W.WWW.W..W",
-  "W..Wo..W.W.WWW.WWW..W..W.W.WW..oW...W..W",
+  "W..WWW..W..WWW.W.P.WWW.WWW.WWWW.WWW.W..W",
+  "W..Wo..W.W.WWW.WWW..W..W W.W..WoW......W",
   "W..WWW.W.W.W.....W..W..WWW.W..W.WWW.W..W",
   "W......................................W",
   "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W..W",
