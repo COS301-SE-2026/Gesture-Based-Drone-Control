@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import { useGestureStream } from "../../hooks/useGestureStream"
 import { useCameraConsent } from "../../context/CameraConsentContext"
+import { useOverlays } from "../../context/OverlayContext"
 import CameraDisabledNotice from "./CameraDisabledNotice"
 import {
   prepareCanvas,
@@ -31,6 +32,7 @@ const GestureCameraFeed = ({
 }) => {
   const canvasRef = useRef(null)
   const { enabled } = useCameraConsent()
+  const { skeleton, motionGuide } = useOverlays()
   const { frame, connected, error } = useGestureStream()
 
   useEffect(() => {
@@ -49,7 +51,7 @@ const GestureCameraFeed = ({
         bitmap?.close?.()
         return
       }
-      drawFrame(canvas, bitmap, frame, skeletonColor)
+      drawFrame(canvas, bitmap, frame, skeletonColor, skeleton, motionGuide)
       bitmap?.close?.()
     }
 
@@ -57,7 +59,7 @@ const GestureCameraFeed = ({
     return () => {
       cancelled = true
     }
-  }, [frame, skeletonColor])
+  }, [frame, skeletonColor, skeleton, motionGuide])
 
   if (!enabled) {
     return (
@@ -105,7 +107,7 @@ function getStatusLabel(connected, error, frame) {
   return "Active"
 }
 
-function drawFrame(canvas, bitmap, frame, skeletonColor) {
+function drawFrame(canvas, bitmap, frame, skeletonColor, overlays) {
   const ctx = prepareCanvas(canvas)
 
   const sourceWidth = frame.frame_width || bitmap?.width || canvas.width
@@ -134,7 +136,7 @@ function drawFrame(canvas, bitmap, frame, skeletonColor) {
 
   frame.hands.forEach((hand) => {
     const points = toCanvasPoints(hand.landmarks, transform)
-    drawHand(ctx, points, skeletonColor)
+    if (overlays.skeleton) drawHand(ctx, points, skeletonColor)
 
     // per-hand info label above wrist (landmark 0)
     const wrist = points[0]
@@ -145,7 +147,9 @@ function drawFrame(canvas, bitmap, frame, skeletonColor) {
     drawLabel(ctx, line1, wrist.x, wrist.y - 34, { clamp: true })
     drawLabel(ctx, line2, wrist.x, wrist.y - 14, { clamp: true })
 
-    if (hand.motion) drawMotionGuide(ctx, points, hand.motion)
+    if (hand.motion && overlays.motionGuide) {
+      drawMotionGuide(ctx, points, hand.motion)
+    }
   })
 }
 
