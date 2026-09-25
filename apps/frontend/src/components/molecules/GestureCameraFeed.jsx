@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import { useGestureStream } from "../../hooks/useGestureStream"
 import { useCameraConsent } from "../../context/CameraConsentContext"
 import { useOverlays } from "../../context/OverlayContext"
-import {gestureLabel} from "../../constants/GestureCommands"
+import { gestureLabel } from "../../constants/GestureCommands"
 import CameraDisabledNotice from "./CameraDisabledNotice"
 import {
   prepareCanvas,
@@ -33,7 +33,7 @@ const GestureCameraFeed = ({
   skeletonColor = SKELETON_COLOR,
 }) => {
   const canvasRef = useRef(null)
-  const lastMotionRef = useRef({label: null, at: 0})
+  const lastMotionRef = useRef({ label: null, at: 0 })
   const { enabled } = useCameraConsent()
   const { skeleton, motionGuide } = useOverlays()
   const { frame, connected, error } = useGestureStream()
@@ -57,7 +57,7 @@ const GestureCameraFeed = ({
       drawFrame(canvas, bitmap, frame, skeletonColor, {
         skeleton,
         motionGuide,
-        motionBanner: readMotionBanner(frame, lastMotionRef)
+        motionBanner: readMotionBanner(frame, lastMotionRef),
       })
       bitmap?.close?.()
     }
@@ -154,8 +154,8 @@ function drawFrame(canvas, bitmap, frame, skeletonColor, overlays) {
     if (!wrist) return
     const confidence = Math.round((hand.confidence ?? 0) * 100)
     const line1 = hand.motion
-    ? `${hand.handedness}`: 
-    `${hand.handedness}: ${hand.gesture} (${hand.fingers})`
+      ? `${hand.handedness}`
+      : `${hand.handedness}: ${hand.gesture} (${hand.fingers})`
     const line2 = `${confidence}% spd ${(hand.speed ?? 0).toFixed(2)}`
     drawLabel(ctx, line1, wrist.x, wrist.y - 34, { clamp: true })
     drawLabel(ctx, line2, wrist.x, wrist.y - 14, { clamp: true })
@@ -169,18 +169,16 @@ function drawFrame(canvas, bitmap, frame, skeletonColor, overlays) {
 function readMotionBanner(frame, ref) {
   const hands = frame?.hands ?? []
   if (hands.length && !hands.some((hand) => hand.motion)) {
-    ref.current = {label: null, at: 0}
+    ref.current = { label: null, at: 0 }
     return null
   }
 
-  const fired = hands.find(
-    (hand) => hand.gesture && hand.gesture !== "UNKNOWN"
-  )
+  const fired = hands.find((hand) => hand.gesture && hand.gesture !== "UNKNOWN")
   if (fired) {
-    ref.current = {label: gestureLabel(fired.gesture), at: Date.now() }
+    ref.current = { label: gestureLabel(fired.gesture), at: Date.now() }
   }
 
-  const {label, at} = ref.current
+  const { label, at } = ref.current
   if (!label || Date.now() - at > MOTION_BANNER_HOLD_MS) return null
   return label
 }
