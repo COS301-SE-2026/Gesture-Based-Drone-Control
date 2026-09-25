@@ -310,5 +310,178 @@ function setupGame(k, fonts, refs) {
 
     }
 
+    function buildConePoints(range, halfAngDeg, segs = 12) {
+        const pts = [k.vec2(0, 0)]
+        for (let i = 0; i <= segs; i++) {
+            const t = 1 / segs
+            const ang = ((-halfAngDeg + t * halfAngDeg * 2) * Math.PI) / 100
+            pts.push(k.vec2(Math.cos(ang) * range, Math.sin(ang) * range))
+        }
+        return pts
+    }
+
+    function createFlashLight() {
+        const layers = [
+            { range: LIGHT_RANGE, half: LIGHT_HALF_ANGLE, opacity: 0.1 },
+            { range: LIGHT_RANGE * 0.68, half: LIGHT_HALF_ANGLE * 0.85, opacity: 0.16 },
+            { range: LIGHT_RANGE * 0.38, half: LIGHT_HALF_ANGLE * 0.65, opacity: 0.24 }
+        ]
+        return layers.map((layer) => {
+            const obj = k.add([
+                k.pos(drone.pos.x, drone.pos.y),
+                k.polygon(buildConePoints(layer.range, layer.half)),
+                k.color(...GAME_COLORS.ink),
+                k.opacity(layer.opacity),
+                k.rotate(drone.angle),
+                k.z(Z_CONE)
+            ])
+            obj.baseOpacity = layer.opacity
+            return obj
+        })
+    }
+
+    function syncDroneVisual() {
+        drone.obj.pos = k.vec2(drone.pos.x, drone.pos.y + Math.sin(k.time() * 5) * 1.2)
+        drone.obj.angle = drone.angle
+        drone.rotors.forEach((r, i) => {
+            const s = 1 + Math.sin(k.time() * 14 + i * 1.3) * 0.1
+            r.scale = k.scale = k.vec2(s, s)
+        })
+    }
+
+    function syncFlashLight() {
+        for (const obj of flashlightObjs) {
+            obj.pos = k.vec2(drone.pos.x, drone.pos.y)
+            obj.angle = drone.angle
+            obj.opacity = obj.baseOpacity + Math.sin(k.time() * 3) * 0.015
+        }
+    }
+
+    //keyboard stuff is polled like shavs other games, controller writes continuously into inputRef
+    function readAxis(posKey, negKey) {
+        let v = 0
+        if (k.isKeyDown(posKey)) v += 1
+        if (k.isKeyDown(negKey)) v -= 1
+        return v
+    }
+
+    function handleRotation(dt) {
+        const kb = readAxis("e", "q")
+        if (kb !== 0) {
+            //keyboard polls live every frame so we dont need to watch it
+            //naturally stops when key is released
+            drone.angle += kb * DRONE_ROT_SPEED * dt
+            return
+        }
+
+        //controller rotate input only count while its being actively refreshed
+        //if nothign is touched within rotate_idle_ms, treat it as stale and force 0 so drone doesnt spin like toad on the chandellier
+        const stale = performance.now() -lastRotateAtRef.current > ROTATE_IDLE_MS
+        const rotateInput = stale ? 0 : clamp(inputRef.current.rotate, -1, 1)
+        if (stale) inputRef.current.rotate = 0
+        drone.angle += rotateInput * DRONE_ROT_SPEED * dt
+    }
+
+    function handleMovement(dt) {
+        const kbforw = readAxis("w", "s")
+        const kbstrafe = readAxis("d", "a")
+        const forwardInput = kbforw !== 0 ? kbforw : clamp(inputRef.current.forward, -1, 1)
+        const strafeInput = kbstrafe !== 0 ? kbstrafe : clamp(inputRef.current.strafe, -1, 1)
+        let mx = strafeInput
+        let my = -forwardInput
+        const len = Math.hypot(mx, my)
+        if (len > 1) {
+            mx /= len
+            my /= len
+        }
+
+        drone.pos.x += mx * DRONE_MOVE_SPEED * dt
+        drone.pos.y += my * DRONE_MOVE_SPEED * dt
+
+        resolveCollisions(drone.pos, DRONE_RADIUS, obstacles, 3)
+        drone.pos.x = clamp(drone.pos.x, HOUSE.x + 10, HOUSE.x + HOUSE.w - 10)
+        drone.pos.y = clamp(drone.pos.y, HOUSE.y + 10, HOUSE.y + HOUSE.h - 10)
+    }
+
+    //intruders pick a rng spot on floor, walk to it w collisions and along walls/furniture, pause to ponder, repeat
+    function createIntruders() {
+        intruders = []
+        const avoid = [{ x: drone.pos.x, y: drone.pos.y}]
+        for (let i = 0; i < INTRUDER_COUNT; i++) {
+            const spawn = randomSpawn(INTRUDER_RADIUS, avoid, 110)
+            avoid.push(spawn)
+
+            const container = k.add([k.pos(spawn.x, spawn.y), k.anchor("center"), k.z(Z_ENTITY), "intruder"])
+            container.add([
+                k.pos(0, 0),
+                k.rect(18, 24, { radius: 6 }),
+                k.anchor("center"),
+                k.color(...GAME_COLORS.bg),
+                k.outline(2, col(GAME_COLORS.dim)),
+                k.opacity(0.95)
+            ])
+            const indicator = container.add([
+                k.pos(0, -4),
+                k.circle(3),
+                k.anchor("center"),
+                k.color(...GAME_COLORS.red)
+            ])
+
+            intruders.push({
+                obj: container,
+                indicator,
+                pos: { x: spawn.x, y: spawn.y },
+                target: {
+                    x: randRange(FLOOR.x, FLOOR.x + FLOOR.w),
+                    y: randRange(FLOOR.y, FLOOR.y + FLOOR.h)
+                },
+                pauseTimer: randRange(0, 1),
+                dwell: 0,
+                frozen: false,
+                caught: false,
+                blinkT: Math.random() * 10
+            })
+        }
+    }
+
+    function moveIntruder(iv, dt) {
+        if (iv.pauseTimer > 0) {
+            iv.pauseTimer -= dt
+            return
+        }
+        const d = dist(iv.pos.x, iv.pos.y, iv.target.x, iv.target.y)
+        if (d < 10) {
+            iv.target = {
+                x: randRange(FLOOR.x, FLOOR.x + FLOOR.w),
+                y: randRange(FLOOR.y, FLOOR.y + FLOOR.h)
+            }
+            iv.pauseTimer = randRange(0.3, 1.2)
+            return
+        }
+        iv.pos.x += ((iv.target.x - iv.pos.x) / d) * INTRUDER_SPEED * dt
+        iv.pos.y += ((iv.target.y - iv.pos.y) / d) * INTRUDER_SPEED * dt
+        resolveCollisions(iv.pos, INTRUDER_RADIUS, obstacles, 2)
+    }
+
+    function updateIntruders(dt) {
+        for (const iv of intruders) {
+            if (iv.caught) continue
+
+            iv.blinkT += dt
+            const blink = 0.55 + Math.sin(iv.blinkT * 3.2) * 0.35
+            iv.indicator.opacity = clamp(blink, 0.2, 1)
+
+            if (!iv.frozen) moveIntruder(iv, dt)
+
+                iv.obj.pos = k.vec2(iv.pos.x, iv.pos.y)
+        }
+    }
+
+
+
+
+
+
+
 
 }
