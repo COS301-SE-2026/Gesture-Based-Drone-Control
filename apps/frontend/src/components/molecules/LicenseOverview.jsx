@@ -12,7 +12,7 @@ const REQUIREMENTS = [
 
 export default function LicenseOverview() {
   return (
-    <Card variant="glass" classname="flex flex-col gap-4">
+    <Card variant="glass" className="flex flex-col gap-4 flex-1">
       <p className="text-dim">
         A Remote Pilot License (RPL) is the South African Civil Aviation
         Authority (SACAA) - issues qualification that lets you fly a drone

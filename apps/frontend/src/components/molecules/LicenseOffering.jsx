@@ -26,8 +26,7 @@ const OFFERINGS =[
 
 export default function LicenseOffering(){
     return(
-        <Card variant="glass" className="flex flex-col gap-5">
-            <Card variant="glass" className="flex flex-col gap-5">
+        <Card variant="glass" className="flex flex-col gap-5 flex-1">
                 <p className="text-dim">
                     Gesture-Based Drone Control does not issue the license itself as it can only be done by the South African Civil Aviation Authority(SACAA) and your Approved Training Organizations(ATO)'s call but that's where you would get the practcal side sorted.
                     Pair your ATO's theory course with our simulator so that you are already commfortable with the stick before your actual skills test.
@@ -46,6 +45,6 @@ export default function LicenseOffering(){
                     ))}
                 </div>
             </Card>
-        </Card>
+        
     )
 }

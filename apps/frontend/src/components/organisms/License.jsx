@@ -8,12 +8,12 @@ export default function Liense(){
     const navigate = useNavigate()
 
     return(
-        <div className="relative max-w-5xl mx-auto px-4 md:px-6 py-10 flex flex-col gap-14 overflow-hidden">
+        <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-10 flex flex-col gap-14 overflow-hidden">
             <div
             aria-hidden="true"
             className="pointer-events-none absolute -top-24 -right-32 w-[28rem] h-[28rem] rounded-full"
             style={{
-                background: "color-mix(in srgb,var(--red-shadow) 30%,transparent",
+                background: "color-mix(in srgb,var((--red-shadow) 30%,transparent)",
                 filter:"blur(110px)",
             }}
             />
@@ -21,7 +21,7 @@ export default function Liense(){
             aria-hidden="true"
             className="pointer-events-none absolute top-1/3 -left-24 w-96 h-96 rounded-full"
             style={{
-                background:"color-mix(insrgb,var((--red-deep) 18% ,transparent)",
+                background:"color-mix(in srgb,var((--red-deep) 18% ,transparent)",
                 filter:"blur(100px)",
             }}
             />
@@ -30,17 +30,24 @@ export default function Liense(){
 
                 <span className="eyebrow">RPL Pathway</span>
                 <h1 className="text-ink">Get your Remote Pilot License</h1>
-                <h2 className="text-sm font-semibold text-dim uppercase tracking-widest mt-2">
+                
+
+                
+                <section className="grid gap-6 lg:grid-cols-2">
+                    <div className="flex flex-col gap-4">
+                    <h2 className="text-sm font-semibold text-dim uppercase tracking-widest mt-2">
                     What is an RPL?
                 </h2>
                 <LicenseOverview/>
-
-            </section>
-            <section className ="flex flex-col gap-4">
-                <h2 className="text-sm font-semibold text-dim uppercase tracking-widest">
+                </div>
+                <div className="flex flex-col gap-4">
+                    <h2 className="text-sm font-semibold text-dim uppercase tracking-widest">
                     What we provide:
                 </h2>
                 <LicenseOffering/>
+
+                </div>
+                </section>
             </section>
 
             <section className = "flex flex-col gap-4">
