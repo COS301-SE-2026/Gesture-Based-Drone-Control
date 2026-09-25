@@ -82,7 +82,19 @@ class GestureAdapter(InputAdapter):
 	- idle_timeout_s
 	- min_confidence
 	- min_stable_frames
+
+	The 3 maps are bound as class attributes so a subclass can swap in its own
+	vocab without touching this file -> for motion adapter
 	"""
+
+	# reads poses, so either pose recognizer works, only forced back to rule
+	# if the pipeline is sitting on motion, whose vocab means nothing here
+	COMPATIBLE_RECOGNIZERS = ('rule', 'ml')
+	REQUIRED_RECOGNIZER = 'rule'
+
+	TWO_HAND_MAP = TWO_HAND_MAP
+	ASYMMETRICAL_TWO_HAND_MAP = ASYMMETRICAL_TWO_HAND_MAP
+	SINGLE_HAND_MAP = SINGLE_HAND_MAP
 
 	def __init__(
 		self,
@@ -130,7 +142,7 @@ class GestureAdapter(InputAdapter):
 		self._last_gesture_ts = time.monotonic()
 		self._active_key = None
 		self._unresolved_count = 0
-		self._queue = await stream.subscribe()
+		self._queue = await stream.subscribe(viewer=False)
 		# continuously deq and process... 226 returns
 		self._task = asyncio.create_task(self._consume(), name='gesture-adapter-consumer')
 
@@ -217,7 +229,7 @@ class GestureAdapter(InputAdapter):
 		hands = getattr(payload, 'hands', [])
 
 		# filter out ambiguity. assume CV pipeline works well enough to classify
-		confident = [h for h in hands if h.confidence >= self._min_confidence]
+		confident = self._select_hands(hands)
 
 		if not confident:
 			self._reset_stability()
@@ -274,6 +286,16 @@ class GestureAdapter(InputAdapter):
 			cmd_type.name,
 		)
 
+	def _select_hands(self, hands: list[Any]) -> list[Any]:
+		"""
+		Pick the hands this frame that are worth resolving
+
+		Filters out ambiguity, assume CV pipeline works well enough to classify,
+		Subclasses override this to narrow it further or to run their own per-frame
+		wrok before the discrete side sees the frame
+		"""
+		return [h for h in hands if h.confidence >= self._min_confidence]
+
 	@staticmethod
 	def _make_event_key(cmd_type: CommandType, by_side: dict[str, str]) -> str:
 		"""
@@ -297,18 +319,18 @@ class GestureAdapter(InputAdapter):
 		# case 1: both hands present
 		if right and left:
 			# case 1.1: defined in asymmetrical map?
-			asym = ASYMMETRICAL_TWO_HAND_MAP.get((right, left))
+			asym = self.ASYMMETRICAL_TWO_HAND_MAP.get((right, left))
 			if asym is not None:
 				return asym
 			# case  1.2: defined in symmetrical map?
-			sym = TWO_HAND_MAP.get(frozenset({right, left}))
+			sym = self.TWO_HAND_MAP.get(frozenset({right, left}))
 			if sym is not None:
 				return sym
 
 		# case 2: one or the other
 		single = right or left
 		if single:
-			return SINGLE_HAND_MAP.get(single)
+			return self.SINGLE_HAND_MAP.get(single)
 
 		# case oopsy
 		return None

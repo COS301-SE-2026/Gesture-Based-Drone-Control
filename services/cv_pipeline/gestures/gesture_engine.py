@@ -72,6 +72,13 @@ class GestureEngine:
 		self._recognizer = recognizer
 		logger.info('GestureEngine recognizer changed to %s', type(recognizer).__name__)
 
+	def set_stabilizer(self, stabilizer: GestureStabilizer) -> None:
+		"""
+		Swap the stabilizer at runtime
+		"""
+		self._stabilizer = stabilizer
+		logger.info('GestureEngine stabilizer changed to %s', type(stabilizer).__name__)
+
 	def process(self, detection_result: HandDetectionResult) -> GestureEngineResult:
 		"""
 		Process all detected hands and return hand gesture results for each hand

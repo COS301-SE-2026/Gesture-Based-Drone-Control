@@ -17,12 +17,15 @@ WS /api/gestures/stream
 import asyncio
 import contextlib
 import logging
+from typing import Annotated, Optional
 
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
 from app.cv.serialization import GestureFramePayload
 from app.cv.stream import GestureStream
+from apps.backend.app.dependencies import get_state
+from apps.backend.app.state import AppState
 from services.cv_pipeline.processing.pipeline import RECOGNIZER_MODES
 
 logger = logging.getLogger(__name__)
@@ -174,6 +177,13 @@ class RecognizerModeOut(BaseModel):
 	mode: str = Field(..., description='Mode actaully in effect')
 	requested: str = Field(..., description='Mode the caller asked for')
 	available: list[str] = Field(..., description='Valid modes')
+	warning: Optional[str] = Field(
+		default=None,
+		description=(
+			'Set when the connected input adapter cannot read this recognizer, '
+			'so gestures will reslove to no commands until one of them changes'
+		),
+	)
 
 
 @router.get('/recognizer', summary='Get active gesture recognizer')
@@ -183,9 +193,25 @@ async def get_recognizer_mode() -> RecognizerModeOut:
 
 
 @router.post('/recognizer', summary='Switch gesture recognizer')
-async def set_recognizer_mode(body: RecognizerModeBody) -> RecognizerModeOut:
+async def set_recognizer_mode(
+	body: RecognizerModeBody, state: Annotated[AppState, Depends(get_state)]
+) -> RecognizerModeOut:
 	try:
 		applied = await stream.set_recognizer_mode(body.mode)
 	except ValueError as exc:
 		raise HTTPException(status_code=400, detail=str(exc)) from exc
-	return RecognizerModeOut(mode=applied, requested=body.mode, available=list(RECOGNIZER_MODES))
+	warning = None
+	compatible = getattr(state.input, 'COMPATIBLE_RECOGNIZERS', ())
+	if compatible and applied not in compatible:
+		warning = (
+			f'{state.input_name} input adapter reads {"/".join(compatible)}, '
+			f'not {applied}. No commands will resolve until you reconnect a '
+			f'compatible input adapter'
+		)
+		logger.warning('gestures/recognizer: %s', warning)
+	return RecognizerModeOut(
+		mode=applied,
+		requested=body.mode,
+		available=list(RECOGNIZER_MODES),
+		warning=warning,
+	)

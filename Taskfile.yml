@@ -39,8 +39,9 @@ tasks:
     desc: Builds and packages app into a single executable
     cmds:
       - | 
-          uv run pyinstaller --onefile --name backend \
+          uv run pyinstaller --onefile --name GestureBasedDroneControl-Backend \
           --paths . \
+          --icon packaging/app-icon.ico \
           --collect-all mediapipe \
           --collect-all airsim \
           --collect-all projectairsim \
@@ -176,6 +177,11 @@ tasks:
     desc: full async pipeline (landmarks + fps + speed + confidence)
     cmds:
       - uv run python -m services.cv_pipeline.processing.pipeline
+
+  cv-motion:
+    desc: camera and detector and motion recognizer
+    cmds: 
+      - uv run python -m services.cv_pipeline.gestures.recognizers.motion_based
 
   landing:
     desc: Runs the landing page (seperate port from frontend)
