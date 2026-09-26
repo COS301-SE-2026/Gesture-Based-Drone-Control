@@ -92,3 +92,12 @@ async def set_display_name(
     if entry is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Score not found')
     return entry
+
+@router.get('/scores/{game_id}', response_model=list[LeaderboardEntryResponse])
+async def get_top_scores(
+    game_id: str,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user_id: Annotated[uuid.UUID, Depends(get_current_user_id)],
+    limit: int = 20,
+):
+    return await leaderboard_manager.top_scores(db, game_id=game_id, limit=limit, user_id=user_id)
