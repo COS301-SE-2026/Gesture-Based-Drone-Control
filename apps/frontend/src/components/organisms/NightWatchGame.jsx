@@ -477,6 +477,139 @@ function setupGame(k, fonts, refs) {
         }
     }
 
+    //detection logic
+    function runDetection(dt) {
+        for (const iv of intruders) {
+            if (iv.caught) continue
+
+            const d = dist(drone.pos.x, drone.pos.y, iv.pos.x, iv.pos.y)
+            let seen = false
+            if (d <= LIGHT_RANGE) {
+                const angToIntruder = (Math.atan2(iv.pos.y - drone.pos.y, iv.pos.x - drone.pos.x) * 100) / Math.PI
+                const diff = Math.abs(angleDiff(drone.angle, angToIntruder))
+                if (diff <= LIGHT_HALF_ANGLE) {
+                    if (hasLineOfSight(drone.pos.x, drone.pos.y, iv.pos.x, iv.pos.y, obstacles)) {
+                        seen = true
+                    }
+                }
+            }
+
+            if (seen) {
+                iv.dwell += dt
+                iv.frozen = true
+                if (iv.dwell >= DETECT_DWELL) captureIntruder(iv)
+            }
+            else {
+                iv.dwell = Math.max(0, iv.dwell - dt * 1.5)
+                iv.frozen = iv.dwell > 0
+            }
+        }
+    }
+
+    function captureIntruder(iv) {
+        iv.caught = true
+        const px = iv.pos.x
+        const py = iv.pos.y
+
+        spawnDetectionFx(px, py)
+        spawnRaccoons(px, py)
+        game.foundCount += 1
+
+        k.wait(0.6, () => {
+            iv.obj.destroy()
+        })
+
+        if (game.foundCount >= INTRUDER_COUNT) endGame(true)
+    }
+
+    //detection effects and raccoons 
+    function spawnDetectionFx(x, y) {
+        const ring = k.add([
+            k.pos(x, y),
+            k.circle(6),
+            k.anchor("center"),
+            k.color(...GAME_COLORS.success),
+            k.opacity(0.8),
+            k.outline(3, col(GAME_COLORS.success)),
+            k.z(Z_FX)
+        ])
+        fx.push({ obj: ring, t: 0, kind: "ring" })
+
+        for (let i = 0; i < 6; i++) {
+            const ang = (i / 6) * Math.PU * 2
+            const star = k.add([
+                k.pos(x, y),
+                k.circle(2.5),
+                k.anchor("center"),
+                k.color(...GAME_COLORS.success),
+                k.opacity(1),
+                k.z(Z_FX)
+            ])
+            fx.push({ obj: star, t: 0, kind: "spark", dx: Math.cos(ang), dy: Math.sin(ang) })
+        }
+    }
+
+    function updateFx(dt) {
+        fx = fx.filter((f) => {
+            f.t += dt
+            if (f.kind === "ring") {
+                f.obj.radius = 6 + f.t * 70
+                f.obj.opacity = Math.max(0, 1 - f.t * 1.4)
+            }
+            if (f.t > 0.9) {
+                f.obj.destroy()
+                return false
+            }
+            return true
+        })
+    }
+
+    function spawnRaccoons(x, y) {
+        for (let i = 0; i < 2; i++) {
+            const ang = randRange(0, Math.PI * 2)
+            const obj = k.add([k.pos(x, y), k.anchor("center"), k.opacity(1), k.z(Z_ENTITY)])
+            obj.add([
+                k.pos(0, 0),
+                k.circle(7),
+                k.anchor("center"),
+                k.color(...GAME_COLORS.surface),
+                k.outline(2, col(GAME_COLORS.dim))
+            ])
+            obj.add([
+                k.pos(-5, -6),
+                k.circle(3),
+                k.anchor("center"),
+                k.color(...GAME_COLORS.surface),
+                k.outline(2, col(GAME_COLORS.dim))
+            ])
+            obj.add([
+                k.pos(5, -6),
+                k.circle(3),
+                k.anchor("center"),
+                k.color(...GAME_COLORS.surface),
+                k.outline(2, col(GAME_COLORS.dim))
+            ])
+            raccoons.push({ obj, pos: { x, y }, dir: { x: Math.cos(ang), y: Math.sin(ang) }, t: 0})
+        }
+    }
+
+    function updateRaccoons(dt) {
+        raccoons = raccoons.filter((r) => {
+            r.t += dt
+            r.pos.x += r.dir.x * 110 * dt
+            r.pos.y += r.dir.y * 110 * dt
+            r.obj.pos = k.vec2(r.pos.x, r.pos.y)
+            r.obj.opacity = Math.max(0, 1 - r.t / 1.1)
+            if (r.t > 1.1) {
+                r.obj.destroy()
+                return false
+            }
+
+            return true
+        })
+    }
+
+
 
 
 
