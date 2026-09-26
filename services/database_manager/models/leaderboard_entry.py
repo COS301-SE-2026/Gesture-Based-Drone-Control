@@ -13,7 +13,7 @@ from services.database_manager.database import Base
 
 class LeaderboardEntry(Base):
     __tablename__ = 'leaderboard_entries'
-    __table_args__ = (Index('ix_leaderboard_game_score', 'game_id', 'score'),)
+    __table_args__ = (Index('ix_leaderboard_game_score', 'user_id', 'game_id', 'score'),)
     
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('users.id'), nullable=False)
