@@ -25,6 +25,7 @@ import {
     hasLineOfSight
 } from "../../constants/DroneSearchgameUtils"
 
+
 const GAME_TIME = 90 //sec
 const DRONE_RADIUS = 15
 const DRONE_MOVE_SPEED = 200 //px/s
@@ -70,26 +71,26 @@ export default function NightWatchGame() {
         const input = inputRef.current
 
         switch (command) {
-            case "MOVE_FORWARD": 
-                input.forward = 1
-                break
-            case "MOVE_BACKWARD": 
-                input.forward = -1
-                break
-            case "MOVE_RIGHT": 
-                input.strafe = 1
-                break
-            case "MOVE_LEFT": 
-                input.strafe = -1
-                break
-            case "ROTATE_CW": 
-                input.rotate = 1
-                lastRotateAtRef.current = performance.now()
-                break
-            case "ROTATE_CCW": 
-                input.rotate = -1
-                lastRotateAtRef.current = performance.now()
-                break
+            // case "MOVE_FORWARD": 
+            //     input.forward = 1
+            //     break
+            // case "MOVE_BACKWARD": 
+            //     input.forward = -1
+            //     break
+            // case "MOVE_RIGHT": 
+            //     input.strafe = 1
+            //     break
+            // case "MOVE_LEFT": 
+            //     input.strafe = -1
+            //     break
+            // case "ROTATE_CW": 
+            //     input.rotate = 1
+            //     lastRotateAtRef.current = performance.now()
+            //     break
+            // case "ROTATE_CCW": 
+            //     input.rotate = -1
+            //     lastRotateAtRef.current = performance.now()
+            //     break
             case "HOVER":
                 input.forward = 0
                 input.strafe = 0
@@ -109,6 +110,7 @@ export default function NightWatchGame() {
                 input.forward = Math.abs(ly) > ANALOG_DEADZONE ? -ly : 0
                 input.strafe = Math.abs(lx) > ANALOG_DEADZONE ? lx : 0
                 input.rotate = Math.abs(rotation) > ANALOG_DEADZONE ? rotation : 0
+                if (input.rotate !== 0) lastRotateAtRef.current = performance.now()
                 break
             }
             default:
@@ -252,7 +254,7 @@ function setupGame(k, fonts, refs) {
 
         //shadowmaxxing
         container.add([
-            k.po(3, 3),
+            k.pos(3, 3),
             k.circle(DRONE_RADIUS + 2),
             k.anchor("center"),
             k.color(0, 0, 0),
@@ -313,8 +315,8 @@ function setupGame(k, fonts, refs) {
     function buildConePoints(range, halfAngDeg, segs = 12) {
         const pts = [k.vec2(0, 0)]
         for (let i = 0; i <= segs; i++) {
-            const t = 1 / segs
-            const ang = ((-halfAngDeg + t * halfAngDeg * 2) * Math.PI) / 100
+            const t = i / segs
+            const ang = ((-halfAngDeg + t * halfAngDeg * 2) * Math.PI) / 180
             pts.push(k.vec2(Math.cos(ang) * range, Math.sin(ang) * range))
         }
         return pts
@@ -345,7 +347,7 @@ function setupGame(k, fonts, refs) {
         drone.obj.angle = drone.angle
         drone.rotors.forEach((r, i) => {
             const s = 1 + Math.sin(k.time() * 14 + i * 1.3) * 0.1
-            r.scale = k.scale = k.vec2(s, s)
+            r.scale = k.vec2(s, s)
         })
     }
 
@@ -485,7 +487,7 @@ function setupGame(k, fonts, refs) {
             const d = dist(drone.pos.x, drone.pos.y, iv.pos.x, iv.pos.y)
             let seen = false
             if (d <= LIGHT_RANGE) {
-                const angToIntruder = (Math.atan2(iv.pos.y - drone.pos.y, iv.pos.x - drone.pos.x) * 100) / Math.PI
+                const angToIntruder = (Math.atan2(iv.pos.y - drone.pos.y, iv.pos.x - drone.pos.x) * 180) / Math.PI
                 const diff = Math.abs(angleDiff(drone.angle, angToIntruder))
                 if (diff <= LIGHT_HALF_ANGLE) {
                     if (hasLineOfSight(drone.pos.x, drone.pos.y, iv.pos.x, iv.pos.y, obstacles)) {
@@ -536,7 +538,7 @@ function setupGame(k, fonts, refs) {
         fx.push({ obj: ring, t: 0, kind: "ring" })
 
         for (let i = 0; i < 6; i++) {
-            const ang = (i / 6) * Math.PU * 2
+            const ang = (i / 6) * Math.PI * 2
             const star = k.add([
                 k.pos(x, y),
                 k.circle(2.5),
@@ -554,6 +556,11 @@ function setupGame(k, fonts, refs) {
             f.t += dt
             if (f.kind === "ring") {
                 f.obj.radius = 6 + f.t * 70
+                f.obj.opacity = Math.max(0, 1 - f.t * 1.2)
+            }
+            else {
+                f.obj.pos.x += f.dx * 60 * dt
+                f.obj.pos.y += f.dy * 60 * dt
                 f.obj.opacity = Math.max(0, 1 - f.t * 1.4)
             }
             if (f.t > 0.9) {
@@ -632,6 +639,13 @@ function setupGame(k, fonts, refs) {
             k.fixed(),
             k.z(Z_HUD)
         ])
+        hud.count = k.add([
+            k.pos(GAME_CANVAS.width - 190, 74),
+            k.text(`0 / ${INTRUDER_COUNT}`, { size: 18, font: fonts.mono }),
+            k.color(...GAME_COLORS.red),
+            k.fixed(),
+            k.z(Z_HUD)
+        ])
         hud.countLabel = k.add([
             k.pos(GAME_CANVAS.width - 190, 60),
             k.text("INTRUDERS", { size: 11, font: fonts.mono }),
@@ -640,14 +654,14 @@ function setupGame(k, fonts, refs) {
             k.z(Z_HUD)
         ])
         hud.controls1 = k.add([
-            k.pos(GAME_CANVAS.height - 40),
+            k.pos(24, GAME_CANVAS.height - 40),
             k.text("WASD/ LEFT STICK", { size: 12, font: fonts.mono }),
             k.color(...GAME_COLORS.dim),
             k.fixed(),
             k.z(Z_HUD)
         ])
         hud.controls2 = k.add([
-            k.pos(GAME_CANVAS.height - 40),
+            k.pos(24, GAME_CANVAS.height - 40),
             k.text("QE/ RT/LT", { size: 12, font: fonts.mono }),
             k.color(...GAME_COLORS.dim),
             k.fixed(),
@@ -658,7 +672,7 @@ function setupGame(k, fonts, refs) {
     function refreshHud() {
         const t = Math.max(0, game.timeLeft)
         const mm = String(Math.floor(t / 60)).padStart(2, "0")
-        const ss = String(Math.floor(t / 60)).padStart(2, "0")
+        const ss = String(Math.floor(t % 60)).padStart(2, "0")
         hud.timer.text = `${mm}:${ss}`
         hud.timer.color = t <= 20 ? col(GAME_COLORS.red) : col(GAME_COLORS.ink)
         hud.count.text = `${game.foundCount} / ${INTRUDER_COUNT}`
@@ -714,13 +728,119 @@ function setupGame(k, fonts, refs) {
         ])
     }
 
-    
+    function showEndPanel(won) {
+        clearPanel()
+         const w = 560
+        const h = 260
+        const x = (GAME_CANVAS.width - w) / 2
+        const y = (GAME_CANVAS.height - h) / 2
+        panelObjs.push(
+            k.add([
+                k.pos(x, y),
+                k.rect(w, h, { radius: 10 }),
+                k.color(...GAME_COLORS.bg),
+                k.opacity(0.92),
+                k.outline(2, col(won ? GAME_COLORS.success : GAME_COLORS.red)),
+                k.fixed(),
+                k.z(Z_PANEL)
+            ])
+        )
+        // const t = Math.max(0, game.timeLeft)
+        // const mm = String(Math.floor(t / 60)).padStart(2, "0")
+        // const ss = String(Math.floor(t % 60)).padStart(2, "0")
+        // const remaining = INTRUDER_COUNT - game.foundCount
 
+        const lines = won ? [
+            ["MISSION COMPLETE", 22, GAME_COLORS.success],
+            ["PRESS R OR TAKEOFF TO PLAY AGAIN", 18, GAME_COLORS.success],
+        ] :
+        [
+            ["MISSION FAILED", 22, GAME_COLORS.red],
+            ["PRESS R OR TAKEOFF TO TRY AGAIN", 18, GAME_COLORS.red],
+        ]
+        panelLines(x, w, y + 34, lines)
+    }
 
+    //game flow
 
+    function startGame() {
+        clearPanel()
+        game.phase = "playing"
+    }
 
+    //make end game function here
+    function endGame(won) {
+        game.phase = won ? "won" : "lost"
+        showEndPanel(won)
+    }
 
+    function resetGame() {
+        clearPanel()
+        drone.obj?.destroy()
+        intruders.forEach((iv) => iv.obj && !iv.caught && iv.obj.destroy())
+        raccoons.forEach((r) => r.obj.destroy())
+        fx.forEach((f) => f.obj.destroy())
+        flashlightObjs.forEach((o) => o.destroy())
+        raccoons = []
+        fx = []
 
+        drone.pos = { x: HOUSE.x + HOUSE.w / 2, y: HOUSE.y + HOUSE.h / 2}
+        drone.angle = -90
+        createDrone()
+        flashlightObjs = createFlashLight()
+        createIntruders()
 
+        game.timeLeft = GAME_TIME
+        game.foundCount = 0
+        game.phase = "playing"
+    }
+
+    //primary actions ENTER, R and TAKEOFF
+    function primaryAction() {
+        if (game.phase === "intro") startGame()
+        else if (game.phase === "won" || game.phase === "lost") resetGame()
+    }
+
+    //boot the thing
+    k.onLoad(() => {
+        buildHouse()
+        buildHud()
+        createDrone()
+        flashlightObjs = createFlashLight()
+        createIntruders()
+        showIntroPanel()
+
+        refs.actionRef.current = primaryAction
+
+        k.onKeyPress("enter", () => {
+            if (game.phase === "intro") startGame()
+        })
+        k.onKeyPress("r", () => {
+            if (game.phase === "won" || game.phase === "lost") resetGame()
+        })
+
+        k.onUpdate(() => {
+            const dt = k.dt()
+
+            if (game.phase === "playing") {
+                handleRotation(dt)
+                handleMovement(dt)
+                updateIntruders(dt)
+                runDetection(dt)
+                game.timeLeft -= dt
+                if (game.timeLeft <= 0) {
+                    game.timeLeft = 0
+                    endGame(false)
+                }
+            }
+
+            syncDroneVisual()
+            syncFlashLight()
+            updateRaccoons(dt)
+            updateFx(dt)
+            refreshHud()
+        })
+
+    })
 
 }
