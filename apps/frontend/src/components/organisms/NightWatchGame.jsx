@@ -609,6 +609,112 @@ function setupGame(k, fonts, refs) {
         })
     }
 
+    //hud
+    function buildHud() {
+        hud.title = k.add([
+            k.pos(24, 16),
+            k.text("NIGHTWATCH", { size: 18, font: fonts.heading }),
+            k.color(...GAME_COLORS.ink),
+            k.fixed(),
+            k.z(Z_HUD)
+        ])
+        hud.timerLabel = k.add([
+            k.pos(GAME_CANVAS.width - 190, 12),
+            k.text("TIME", { size: 11, font: fonts.mono }),
+            k.color(...GAME_COLORS.dim),
+            k.fixed(),
+            k.z(Z_HUD)
+        ])
+        hud.timer = k.add([
+            k.pos(GAME_CANVAS.width - 190, 26),
+            k.text("01:30", { size: 22, font: fonts.mono }),
+            k.color(...GAME_COLORS.ink),
+            k.fixed(),
+            k.z(Z_HUD)
+        ])
+        hud.countLabel = k.add([
+            k.pos(GAME_CANVAS.width - 190, 60),
+            k.text("INTRUDERS", { size: 11, font: fonts.mono }),
+            k.color(...GAME_COLORS.dim),
+            k.fixed(),
+            k.z(Z_HUD)
+        ])
+        hud.controls1 = k.add([
+            k.pos(GAME_CANVAS.height - 40),
+            k.text("WASD/ LEFT STICK", { size: 12, font: fonts.mono }),
+            k.color(...GAME_COLORS.dim),
+            k.fixed(),
+            k.z(Z_HUD)
+        ])
+        hud.controls2 = k.add([
+            k.pos(GAME_CANVAS.height - 40),
+            k.text("QE/ RT/LT", { size: 12, font: fonts.mono }),
+            k.color(...GAME_COLORS.dim),
+            k.fixed(),
+            k.z(Z_HUD)
+        ])
+    }
+
+    function refreshHud() {
+        const t = Math.max(0, game.timeLeft)
+        const mm = String(Math.floor(t / 60)).padStart(2, "0")
+        const ss = String(Math.floor(t / 60)).padStart(2, "0")
+        hud.timer.text = `${mm}:${ss}`
+        hud.timer.color = t <= 20 ? col(GAME_COLORS.red) : col(GAME_COLORS.ink)
+        hud.count.text = `${game.foundCount} / ${INTRUDER_COUNT}`
+    }
+
+    //Intro/win/lose screens
+
+    function clearPanel() {
+        panelObjs.forEach((o) => o.destroy())
+        panelObjs = []
+    }
+
+    function panelLines(x, w, startY, lines) {
+        let cy = startY
+        for (const [str, size, c] of lines) {
+            panelObjs.push(
+                k.add([
+                    k.pos(x + w / 2, cy),
+                    k.text(str, { size, font: fonts.mono }),
+                    k.anchor("center"),
+                    k.color(...c),
+                    k.fixed(),
+                    k.z(Z_PANEL)
+                ])
+            )
+            cy += size + 14
+        }
+    }
+
+    function showIntroPanel() {
+        clearPanel()
+        const w = 560
+        const h = 320
+        const x = (GAME_CANVAS.width - w) / 2
+        const y = (GAME_CANVAS.height - h) / 2
+        panelObjs.push(
+            k.add([
+                k.pos(x, y),
+                k.rect(w, h, { radius: 10 }),
+                k.color(...GAME_COLORS.bg),
+                k.opacity(0.92),
+                k.outline(2, col(GAME_COLORS.dim)),
+                k.fixed(),
+                k.z(Z_PANEL)
+            ])
+        )
+        panelLines(x, w, y + 34, [
+            ["NIGHTWATCH", 24, GAME_COLORS.ink],
+            [`${INTRUDER_COUNT} INTRUDERS DETECTED`, 14, GAME_COLORS.red],
+            ["Locate all of them before time runs out.", 13, GAME_COLORS.dim],
+            ["", 6, GAME_COLORS.dim],
+            ["PRESS ENTER OR TAKEOFF TO START", 15, GAME_COLORS.success]
+        ])
+    }
+
+    
 
 
 
