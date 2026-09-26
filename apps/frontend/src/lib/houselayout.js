@@ -68,7 +68,13 @@ export const FURNITURE = [
 export const FLOOR_ZONES = [
   { x: HOUSE.x, y: HOUSE.y, w: 700, h: 250, floor: "main" }, //living room
   { x: 720, y: HOUSE.y, w: HOUSE.x + HOUSE.w - 720, h: 250, floor: "bedroom" }, //bedroom
-  { x: HOUSE.x, y: 300, w: 340 - HOUSE.x, h: HOUSE.y + HOUSE.h - 300, floor: "kitchen" }, //kitchen
+  {
+    x: HOUSE.x,
+    y: 300,
+    w: 340 - HOUSE.x,
+    h: HOUSE.y + HOUSE.h - 300,
+    floor: "kitchen",
+  }, //kitchen
   { x: 340, y: 300, w: 380, h: HOUSE.y + HOUSE.h - 300, floor: "main" }, //hallway
   {
     x: 720,

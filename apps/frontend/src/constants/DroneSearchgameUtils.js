@@ -113,10 +113,10 @@ export function segIntersectsRect(x0, y0, x1, y1, rect) {
 }
 
 export function hasLineOfSight(x0, y0, x1, y1, obstacles) {
-    for (const rect of obstacles) {
-        if (segIntersectsRect(x0, y0, x1, y1, rect)) return false
-    }
-    return true
+  for (const rect of obstacles) {
+    if (segIntersectsRect(x0, y0, x1, y1, rect)) return false
+  }
+  return true
 }
 
 //BFS of room
