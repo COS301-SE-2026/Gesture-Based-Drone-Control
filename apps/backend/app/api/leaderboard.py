@@ -58,6 +58,9 @@ class LeaderboardEntryResponse(BaseModel):
     display_name: str | None
     created_at: datetime
     
+class SetNameRequest(BaseModel):
+    display_name: str
+    
 @router.post('/scores', response_model=LeaderboardEntryResponse, status_code=status.HTTP_201_CREATED)
 async def submit_score(
     body: SubmitScoreRequest,
@@ -72,4 +75,20 @@ async def submit_score(
     return await leaderboard_manager.submit_score(
         db, user_id=user_id, game_id=body.game_id, score=body.score
     )
-        
+
+@router.patch('/scores/{entry_id}/name', response_model=LeaderboardEntryResponse)
+async def set_display_name(
+    entry_id: uuid.UUID,
+    body: SetNameRequest,
+    db: Annotated[AsyncSession, Depends(get_current_user_id)],
+    user_id: Annotated[uuid.UUID, Depends(get_current_user_id)],
+):
+    """
+    Attaches a display name to a score that the user just submitted
+    """
+    entry = await leaderboard_manager.set_display_name(
+        db, entry_id=entry_id, user_id=user_id, display_name=body.display_name
+    )
+    if entry is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Score not found')
+    return entry
