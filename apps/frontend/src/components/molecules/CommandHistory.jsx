@@ -77,10 +77,13 @@ const CommandHistory = ({
 
         <div
           className={`transition-all duration-300 ease-in-out overflow-hidden ${
-            isOpen ? "max-h-[28rem] opacity-100" : "max-h-0 opacity-0"
+            isOpen ? "max-h-[26rem] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div ref={listRef} className="space-y-3 max-h-112 overflow-y-auto">
+          <div
+            ref={listRef}
+            className="space-y-3 max-h-[24rem] overflow-x-y-auto pr-1"
+          >
             {visibleCommands.length > 0 ? (
               visibleCommands.map((cmd, index) => (
                 <Card

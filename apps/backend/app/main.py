@@ -22,11 +22,13 @@ from app.api import router
 from app.api.auth import router as auth_router
 from app.api.gestures import stream as gesture_stream
 from app.state import AppState
-from services.database_manager.database import Base, engine
+from services.database_manager.database import AsyncSessionLocal, Base, engine
 from services.database_manager.models.drones import Drone
 from services.database_manager.models.flight_summary import FlightSummary
+from services.database_manager.models.refresh_tokens import RefreshToken
 from services.database_manager.models.telemetry import Telemetry
 from services.database_manager.models.users import User
+from services.database_manager.seed import seed_defaults
 
 logging.basicConfig(
 	level=logging.INFO,
@@ -43,6 +45,9 @@ async def lifespan(app: FastAPI):
 
 	async with engine.begin() as conn:
 		await conn.run_sync(Base.metadata.create_all)
+
+	async with AsyncSessionLocal() as session:
+		await seed_defaults(session)
 
 	app.state.app = AppState()
 	try:

@@ -35,7 +35,7 @@ info:
 
 servers:
   - url: http://127.0.0.1:3001
-    description: Local development server (BACKENDPORT, default 3001)
+    description: Local development server (BACKENDPORT, default 3001).
 
 tags:
   - name: health
@@ -44,6 +44,8 @@ tags:
     description: Operator registration, login and session rotation.
   - name: drone
     description: Drone adapter lifecycle and state.
+  - name: game
+    description: Game adapter lifecycle and connected client count.
   - name: gestures
     description: Camera pipeline status.
   - name: calibration
@@ -332,7 +334,7 @@ paths:
                   value:
                     connected: false
                     adapter: hoverboard
-                    message: 'Unknown adapter: hoverboard. Supported: dummy, airsim, projectairsim, tello'
+                    message: 'Unknown adapter: hoverboard. Supported: dummy, airsim, projectairsim, tello, game'
         '422':
           $ref: '#/components/responses/ValidationError'
 
@@ -398,7 +400,134 @@ paths:
                     connected: false
                     adapter: null
 
-  # -------------------------------------------------------------- gestures
+  /api/drone/feed:
+    get:
+      summary: MJPEG camera stream from the connected adapter
+      operationId: droneFeed
+      tags: [drone]
+      description: |
+        Long-lived `multipart/x-mixed-replace` response carrying one JPEG part
+        per frame at roughly 20 fps. The adapter's camera is started lazily on
+        the first request and the stream ends when the client disconnects.
+
+        Only adapters reporting `has_camera` serve frames. Project AirSim does
+        not yet, so it answers 409 until its camera hooks are implemented.
+      parameters:
+        - name: w
+          in: query
+          required: false
+          description: Output frame width.
+          schema:
+            type: integer
+            minimum: 160
+            maximum: 1280
+            default: 640
+        - name: h
+          in: query
+          required: false
+          description: Output frame height.
+          schema:
+            type: integer
+            minimum: 160
+            maximum: 1280
+            default: 480
+      responses:
+        '200':
+          description: Ongoing MJPEG stream, one part per frame.
+          content:
+            multipart/x-mixed-replace:
+              schema:
+                type: string
+                format: binary
+        '409':
+          description: No drone connected, or the connected adapter has no camera.
+        '503':
+          description: Video stream could not be started, or is not producing frames.
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  # -------------------------------------------------------------------- game
+  /api/game/connect:
+    post:
+      summary: Activate the game adapter
+      operationId: gameConnect
+      tags: [game]
+      description: |
+        Installs `GameAdapter` as the single active adapter, disconnecting
+        whatever was connected first. Equivalent to `POST /api/drone/connect`
+        with `adapter: game`; both exist and enforce the same exclusivity.
+
+        Takes no request body.
+      responses:
+        '200':
+          description: |
+            Returned whether or not the adapter came up. Branch on `active`
+            rather than on the status code.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameConnectResponse'
+              examples:
+                connected:
+                  value:
+                    active: true
+                    message: Game adapter connected
+                failed:
+                  value:
+                    active: false
+                    message: GameAdapter failed to connect
+
+  /api/game/disconnect:
+    post:
+      summary: Deactivate the game adapter
+      operationId: gameDisconnect
+      tags: [game]
+      description: |
+        Disconnects the game adapter and clears it from `AppState`. A no-op when
+        the active adapter is not the game adapter.
+      responses:
+        '200':
+          description: 'Always `active: false`; the message separates the two cases.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameConnectResponse'
+              examples:
+                disconnected:
+                  value:
+                    active: false
+                    message: Game adapter disconnected
+                notConnected:
+                  value:
+                    active: false
+                    message: No game adapter is connected
+
+  /api/game/status:
+    get:
+      summary: Game adapter state and connected client count
+      operationId: gameStatus
+      tags: [game]
+      description: |
+        `connected_clients` counts the WebSocket clients attached to
+        `/api/game/ws/commands`, and is always 0 when the adapter is inactive.
+      responses:
+        '200':
+          description: Current game adapter state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameStatus'
+              examples:
+                active:
+                  value:
+                    active: true
+                    connected_clients: 2
+                inactive:
+                  value:
+                    active: false
+                    connected_clients: 0
+
+  # ---------------------------------------------------------------- gestures
   /api/gestures/status:
     get:
       summary: Camera pipeline status
@@ -484,7 +613,7 @@ paths:
         '422':
           $ref: '#/components/responses/ValidationError'
 
-  # ------------------------------------------------------------ calibration
+  # ------------------------------------------------------------- calibration
   /api/calibration/status:
     get:
       summary: Current calibration state
@@ -853,7 +982,7 @@ components:
       properties:
         adapter:
           type: string
-          enum: [dummy, airsim, projectairsim, tello]
+          enum: [dummy, airsim, projectairsim, tello, game]
           default: dummy
         vehicle_name:
           type: string
@@ -905,6 +1034,30 @@ components:
           nullable: true
         telemetry:
           $ref: '#/components/schemas/TelemetryData'
+
+    GameConnectResponse:
+      type: object
+      description: |
+        Shared response for both game adapter lifecycle calls. `active` reflects the
+        state after the call, so disconnect always returns false.
+      required: [active, message]
+      properties:
+        active:
+          type: boolean
+        message:
+          type: string
+
+    GameStatus:
+      type: object
+      required: [active, connected_clients]
+      properties:
+        active:
+          type: boolean
+        connected_clients:
+          type: integer
+          minimum: 0
+          description: |
+            WebSocket clients on /api/game/ws/commands. Always 0 when inactive.
 
     TelemetryData:
       type: object
