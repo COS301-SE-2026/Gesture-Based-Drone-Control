@@ -132,7 +132,10 @@ export default function FlappyDroneGame() {
         // position (x,y)
         k.pos(k.width() / 8, k.height() / 2),
         // enable collision checking
-        k.area({ isSensor: true }),
+        k.area({ 
+          shape: new k.Rect(k.vec2(0, 16), 64, 32),
+          isSensor: true
+         }),
         //it will respond to gravity
         k.body(),
         "player",
@@ -261,7 +264,7 @@ export default function FlappyDroneGame() {
       // so when the pipe passes the player, give them a point
       k.onUpdate("pipe", (p) => {
         if (p.pos.x + BUILDING_WIDTH <= player.pos.x && !p.passed) {
-          k.play("point")
+          k.play("point", { volume: 0.2 })
           score++
           scoreLabel.text = score.toString()
           p.passed = true
