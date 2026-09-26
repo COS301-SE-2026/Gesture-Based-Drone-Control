@@ -25,6 +25,51 @@ from services.auth.auth_settings import get_auth_settings
 from services.auth.cookies import clear_auth_cookies, set_auth_cookies
 from services.auth.schemas import AuthResponse, LoginRequest, SignupRequest, UserResponse
 from services.database_manager.database import get_db
+from services.database_manager.managers.leaderboard_manager import leaderboard_manager
+from services.auth.auth_manager import auth_manager
 
 settings = get_auth_settings()
 router = APIRouter(prefix='/leaderboard', tags=['leaderboard'])
+
+async def get_current_user_id(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    access_token: Annotated[str | None, Cookie(alias=settings.access_cookie_name)] = None,
+) -> uuid.UUID:
+    # tell the fake user to get lost
+    if access_token is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not logged in")
+    
+    try:
+        user = await auth_manager.get_user_from_access_token(db=db, access_token=access_token)
+    except Exception as ex:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(ex))
+    return user.id
+
+class SubmitScoreRequest(BaseModel):
+    game_id: str
+    score: int
+    
+class LeaderboardEntryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    id: uuid.UUID
+    game_id: str
+    score: int
+    display_name: str | None
+    created_at: datetime
+    
+@router.post('/scores', response_model=LeaderboardEntryResponse, status_code=status.HTTP_201_CREATED)
+async def submit_score(
+    body: SubmitScoreRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user_id: Annotated[uuid.UUID, Depends(get_current_user_id)],
+):
+    """
+    Called once immediately on a game-over
+    Score is always saved
+    Name is optional and gets added at a later stage
+    """
+    return await leaderboard_manager.submit_score(
+        db, user_id=user_id, game_id=body.game_id, score=body.score
+    )
+        
