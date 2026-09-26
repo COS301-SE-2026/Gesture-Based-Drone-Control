@@ -29,11 +29,11 @@ export function dist(ax, ay, bx, by) {
 }
 
 export function randRange(min, max) {
-  return min + Math.random() * (max - min)
+  return min + Math.random() * (max - min) // NOSONAR
 }
 
 export function pickRandom(arr) {
-  return arr[Math.floor(Math.random() * arr.length)]
+  return arr[Math.floor(Math.random() * arr.length)] // NOSONAR
 }
 
 //push a circle w position x,y and radius out of a rect drone sprite {x, y, w, h}

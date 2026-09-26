@@ -481,7 +481,7 @@ function setupGame(k, fonts, refs) {
         dwell: 0,
         frozen: false,
         caught: false,
-        blinkT: Math.random() * 10,
+        blinkT: Math.random() * 10, // NOSONAR
       })
     }
   }
