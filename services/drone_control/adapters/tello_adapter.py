@@ -48,11 +48,11 @@ class TelloAdapter(DroneAdapter):
 			self._connected = True
 			return True
 		except Exception:
-			logger.warning("Tello connect failed", exc_info = True)
+			logger.warning('Tello connect failed', exc_info=True)
 			try:
 				await asyncio.to_thread(self._tello.end)
 			except Exception:
-				logger.debug('Tello end after failed connect also failed', exc_info = True)
+				logger.debug('Tello end after failed connect also failed', exc_info=True)
 			return False
 
 	async def disconnect(self) -> None:
@@ -78,7 +78,7 @@ class TelloAdapter(DroneAdapter):
 
 	async def takeoff(self) -> None:
 		self._assert_connected()
-		
+
 		if self._is_flying:
 			logger.warning('Tello is already flying. Takeoff ignored')
 			return
@@ -111,9 +111,9 @@ class TelloAdapter(DroneAdapter):
 		We are just moving with it considering its perfectly tuned without the kwargs input
 		"""
 		self._assert_connected()
-		
+
 		if not self._is_flying:
-			return 
+			return
 
 		speed = int(kwargs.get('speed_ms', self.MOVEMENTSPEED))
 
@@ -150,7 +150,7 @@ class TelloAdapter(DroneAdapter):
 		self._assert_connected()
 
 		if not self._is_flying:
-			return 
+			return
 
 		fb = int(-input.left_y * self.MOVEMENTSPEED)
 		lr = int(input.left_x * self.MOVEMENTSPEED)
@@ -166,7 +166,7 @@ class TelloAdapter(DroneAdapter):
 
 	async def hover(self) -> None:
 		self._assert_connected()
-		
+
 		if not self._is_flying:
 			return
 
@@ -178,7 +178,7 @@ class TelloAdapter(DroneAdapter):
 
 		self._tello.emergency()
 		self._is_flying = False
-		logger.warning("Tello Drone: EMERGENCY STOP")
+		logger.warning('Tello Drone: EMERGENCY STOP')
 
 	async def get_telemetry(self):
 		if not self._connected:
@@ -332,7 +332,6 @@ class TelloAdapter(DroneAdapter):
 
 	async def _refresh_wifi_signal(self) -> None:
 		try:
-
 			async with self._command_lock:
 				response = await asyncio.to_thread(self._tello.query_wifi_signal_noise_ratio)
 
