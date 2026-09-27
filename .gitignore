@@ -26,3 +26,4 @@ site_build/
 deploy/
 serve_root/
 release
+GestureBasedDroneControl-Backend.spec
