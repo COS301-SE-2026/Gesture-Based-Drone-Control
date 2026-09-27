@@ -9,11 +9,24 @@ connect/ now pulls the recognizer along, and the recognizer endpoint wanrs when
 it cannot pull the adapter the other way
 """
 
+import pytest
+from app.cv.stream import GestureStream
+
 from services.cv_pipeline.processing.pipeline import RECOGNIZER_MODES
 
 RECOGNIZER_PATH = '/api/gestures/recognizer'
 CONNECT_PATH = '/api/input/connect'
 DISCONNECT_PATH = '/api/input/disconnect'
+
+
+@pytest.fixture(autouse=True)
+def no_camera(monkeypatch):
+	"""CI has no webcam so dontlet it connect"""
+
+	async def _fake_ensure_started(self):
+		return None
+
+	monkeypatch.setattr(GestureStream, '_ensure_started', _fake_ensure_started)
 
 
 def connect(client, adapter: str) -> dict:

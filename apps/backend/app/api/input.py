@@ -23,13 +23,14 @@ import contextlib
 import logging
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, HTTPException
 from pydantic import BaseModel
 
 from apps.backend.app.dependencies import get_state
 from apps.backend.app.state import AppState
 from services.input.gesture_events import gesture_events
 from services.input.sources.input_adapter import InputAdapter
+from services.cv_pipeline.camera.camera_feed import CameraError
 
 logger = logging.getLogger(__name__)
 
@@ -171,7 +172,11 @@ async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, De
 	recognizer = await _align_recognizer(adapter)
 
 	adapter.set_handler(_make_handler(state))
-	await adapter.start()
+ 
+	try:
+		await adapter.start()
+	except CameraError as exc:
+		raise HTTPException(status_code=503, detail=str(exc))
 
 	state.input = adapter
 	state.input_name = body.adapter
