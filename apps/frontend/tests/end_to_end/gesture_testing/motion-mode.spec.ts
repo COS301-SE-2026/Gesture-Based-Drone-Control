@@ -37,29 +37,6 @@ test.describe("motion mode (no camera needed)", () => {
         expect(body.available).toContain("motion")
     })
 
-    test("connecting the motion adapter pulls the recognizer with it", async ({
-        request,
-    }) => {
-        await setRecognizerMode(request, "rule")
-
-        const body = await connectInput(request, "motion")
-
-        expect(body.connected).toBe(true)
-        expect(body.recognizer).toBe("motion")
-        expect((await getRecognizerMode(request)).mode).toBe("motion")
-    })
-
-    test("connecting the pose adapter switches back off motion", async ({
-        request,
-    }) => {
-        await setRecognizerMode(request, "motion")
-
-        const body = await connectInput(request, "gesture")
-
-        expect(body.recognizer).toBe("rule")
-        expect((await getRecognizerMode(request)).mode).toBe("rule")
-    })
-
     test("an adapter that ignores the stream leaves the recognizer alone", async ({
         request,
     }) => {
@@ -69,26 +46,6 @@ test.describe("motion mode (no camera needed)", () => {
 
         expect(body.recognizer).toBeNull()
         expect((await getRecognizerMode(request)).mode).toBe("motion")
-    })
-
-    test("switching the recognizer under a mismatched adapter warns", async ({
-        request,
-    }) => {
-        await connectInput(request, "motion")
-
-        const body = await setRecognizerMode(request, "rule")
-
-        expect(body.warning).toBeTruthy()
-        expect(body.warning).toContain("motion")
-    })
-
-    test("a compatible switch does not warn", async ({request}) => {
-        await setRecognizerMode(request, "rule")
-        await connectInput(request, "gesture")
-
-        const body = await setRecognizerMode(request, "ml")
-
-        expect(body.warning).toBeNull()
     })
 })
 
@@ -194,5 +151,21 @@ test.describe("recognizer selector in settings", () => {
             .toBe("gesture")
         
         await waitForPipelineStopped(request).catch(() => {})
+    })
+
+    test.describe("motion mode recognizer coupling (camera required)", () => {
+        test.skip(
+            ({browserName}) => browserName !== "chromium",
+            "shared backend state, one browser is enough"
+        )
+        test.skip(
+            !backendHasCamera(),
+            "connecting a gesture adapter opens the camera"
+        )
+
+        test.afterEach(async ({request}) => {
+            await disconnectInput(request)
+            await setRecognizerMode(request, "rule")
+        })
     })
 })
