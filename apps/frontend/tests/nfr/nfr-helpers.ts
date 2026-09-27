@@ -41,7 +41,7 @@ function runContext(browserVersion: string) {
         branch: 
         process.env.GITHUB_HEAD_REF ||
         process.env.GITHUB_REF_NAME ||
-        git("rev-parse -- abbrev-ref HEAD") ||
+        git("rev-parse --abbrev-ref HEAD") ||
         "unknown",
     runner: process.env.GITHUB_RUN_ID ? "github-actions" : "local",
     }
