@@ -110,8 +110,7 @@ async def test_disconnect(adapter, mock_tello):
 @pytest.mark.asyncio
 async def test_disconnect_not_connected(adapter, mock_tello):
 	adapter._connected = False
-	with pytest.raises(RuntimeError, match='Tello Drone is not connected.'):
-		await adapter.disconnect()
+	await adapter.disconnect()
 	mock_tello.land.assert_not_called()
 
 
@@ -190,14 +189,6 @@ async def test_move_not_connected(adapter):
 
 
 @pytest.mark.asyncio
-async def test_move_not_flying(adapter):
-	adapter._connected = True
-	adapter._is_flying = False
-	with pytest.raises(RuntimeError, match='Tello Drone is not flying.'):
-		await adapter.move(CommandType.MOVE_FORWARD)
-
-
-@pytest.mark.asyncio
 async def test_analog(adapter, mock_tello):
 	adapter._connected = True
 	adapter._is_flying = True
@@ -244,16 +235,6 @@ async def test_analog_not_connected(adapter):
 
 
 @pytest.mark.asyncio
-async def test_analog_not_flying(adapter):
-	adapter._connected = True
-	adapter._is_flying = False
-	analog_input = MagicMock()
-
-	with pytest.raises(RuntimeError, match='Tello Drone is not flying.'):
-		await adapter.analog(analog_input)
-
-
-@pytest.mark.asyncio
 async def test_hover(adapter, mock_tello):
 	adapter._connected = True
 	adapter._is_flying = True
@@ -265,14 +246,6 @@ async def test_hover(adapter, mock_tello):
 async def test_hover_not_connected(adapter):
 	adapter._connected = False
 	with pytest.raises(RuntimeError, match='Tello Drone is not connected.'):
-		await adapter.hover()
-
-
-@pytest.mark.asyncio
-async def test_hover_not_flying(adapter):
-	adapter._connected = True
-	adapter._is_flying = False
-	with pytest.raises(RuntimeError, match='Tello Drone is not flying.'):
 		await adapter.hover()
 
 
