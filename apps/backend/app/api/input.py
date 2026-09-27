@@ -149,7 +149,7 @@ def _make_handler(state: AppState):
 @router.post(
     '/connect', 
     response_model=ConnectInputResponse,
-    response={503: {'description': 'Camera unavailable, the gesture pipeline could not start'}}
+    responses={503: {'description': 'Camera unavailable, the gesture pipeline could not start'}}
     )
 async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, Depends(get_state)]):
 	"""
