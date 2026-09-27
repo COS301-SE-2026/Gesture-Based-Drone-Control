@@ -14,10 +14,10 @@ test.describe('License Page', () => {
             page.getByRole('heading', {name: /get your remote pilot license/i })
         ).toBeVisible()
     })
-    
+
 
     test.describe('LicenseOverview card', () => {
-        test('should explain what an rpl is' async ({page}) => {
+        test('should explain what an rpl is' ,async ({page}) => {
             await expect(
                 page.getByText(/what is an rpl\?/i)
             ).toBeVisible()
@@ -41,6 +41,57 @@ test.describe('License Page', () => {
             ).toBeVisible()
         })
 
+    })
+
+    test.describe('LicenseeOffering card',() => {
+        test('should explain what the platform provides' ,async({ page})=>{
+            await expect(page.getByText(/what we provide/i)).toBeVisible()
+            await expect(page.getByText(/does not issue the license itself/i)).toBeVisible()
+        })
+
+        test('should list all three offerings', async ({page}) => {
+            await expect(
+                page.getByText(/progressive simulator modules/i)
+            ).toBeVisible()
+            await expect(
+                page.getByText(/real gesture control practice/i)
+            ).toBeVisible()
+            await expect(
+                page.getByText(/a mock skills test/i)
+            ).toBeVisible()
+
+        })
+    })
+
+
+    test.describe('Get started section ', () => {
+        test('should show both training option cards', async ({ page }) => {
+            await expect(page.getByText(/theory training/i)).toBeVisible()
+            await expect(page.getByText(/practical training/i)).toBeVisible()
+        })
+
+        test ('should open the ato theroy site in a new tab ',async ({
+            page,
+            context,
+        }) => {
+            const newP = context.waitForEvent('page')
+            await  page
+                .getByRole('button', {name :/start theory training/i })
+                .click()
+
+            const newPage = await newP 
+            await expect(newPage).toHaveURL(/drone-x\.co\.za/)
+            await newPage.close()
+        })
+
+        test('should navigate to the practical training page', async ({
+            page,
+
+        }) => {
+            await page
+            .getByRole('button', {name: /start practical training/i}).click()
+            await expect(page).toHaveURL(/.*license\/practical.*/i)
+        })
     })
 
 })
