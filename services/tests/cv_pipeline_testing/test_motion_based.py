@@ -85,12 +85,12 @@ def circle(frames=16, radius=0.06, clockwise=True):
 	return pts
 
 
-@pytest.fixture()
+@pytest.fixture
 def clock():
 	return FakeClock()
 
 
-@pytest.fixture()
+@pytest.fixture
 def rec(clock):
 	return MotionBasedRecognizer(time_source=clock)
 

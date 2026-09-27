@@ -208,7 +208,10 @@ async def set_recognizer_mode(
 			f'not {applied}. No commands will resolve until you reconnect a '
 			f'compatible input adapter'
 		)
-		logger.warning('gestures/recognizer: %s', warning)
+		logger.warning(
+      'gestures/recognizer: %s cannot read the new recognizer, no commands will resolve',
+    type(state.input).__name__,
+    )
 	return RecognizerModeOut(
 		mode=applied,
 		requested=body.mode,

@@ -17,7 +17,7 @@ const DEFAULT_AVAILABLE = ["rule", "ml", "motion"]
 
 //motion reports gesture names the pose adapter has no mapping for, so the
 //2 have to be connected together. Keep in step with the adapters
-const MOTION_MODES = ["motion"]
+const MOTION_MODES = new Set(["motion"])
 
 export const RecognizerProvider = ({ children }) => {
   const [mode, setMode] = useState(null)
@@ -70,7 +70,7 @@ export const RecognizerProvider = ({ children }) => {
       pending,
       notice,
       switchMode,
-      inputAdapter: MOTION_MODES.includes(mode) ? "motion" : "gesture",
+      inputAdapter: MOTION_MODES.has(mode) ? "motion" : "gesture",
     }),
     [mode, available, pending, notice, switchMode]
   )

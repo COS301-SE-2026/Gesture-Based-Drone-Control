@@ -91,7 +91,7 @@ class MotionVector:
 
 	@property
 	def is_neutral(self) -> bool:
-		return self.x == 0.0 and self.y == 0.0 and self.depth == 0.0
+		return not (self.x or self.y or self.depth)
 
 
 # gesture result

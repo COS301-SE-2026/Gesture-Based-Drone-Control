@@ -51,7 +51,7 @@ def run(adapter, payload, frames=4):
 		adapter._process_payload(payload)
 
 
-@pytest.fixture()
+@pytest.fixture
 def adapter():
 	return make_adapter()
 

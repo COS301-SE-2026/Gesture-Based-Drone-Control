@@ -146,7 +146,11 @@ def _make_handler(state: AppState):
 # REST endpoints
 
 
-@router.post('/connect', response_model=ConnectInputResponse)
+@router.post(
+    '/connect', 
+    response_model=ConnectInputResponse,
+    response={503: {'description': 'Camera unavailable, the gesture pipeline could not start'}}
+    )
 async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, Depends(get_state)]):
 	"""
 	Connect an input adapter and wire it to the active drone.
@@ -176,7 +180,7 @@ async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, De
 	try:
 		await adapter.start()
 	except CameraError as exc:
-		raise HTTPException(status_code=503, detail=str(exc))
+		raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 	state.input = adapter
 	state.input_name = body.adapter
