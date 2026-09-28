@@ -26,6 +26,23 @@ class LandmarkOut(BaseModel):
 	z: float = Field(..., description='Depth relative to wrist, negative is closer to camera')
 
 
+class MotionOut(BaseModel):
+	"""
+	Continuous hand motion for 1 hand, joystick style
+
+	Null under the rule and ml recognizers, whixh classify a pose and dont track
+	where the hand has been going
+	"""
+
+	x: float = Field(
+		..., ge=-1.0, le=1.0, description='Deflection across the frame, positive is right'
+	)
+	y: float = Field(..., ge=-1.0, le=1.0, description='Deflection up the frame, positive is down')
+	depth: float = Field(
+		..., ge=-1.0, le=1.0, description='Deflection toward the camera, positive is closer'
+	)
+
+
 class HandOut(BaseModel):
 	"""
 	Per-hand gesture, tracking, and confidence data for one detected hand
@@ -67,6 +84,13 @@ class HandOut(BaseModel):
 		description='All 21 Mediapipe hand landmarks for this hand',
 		min_length=21,
 		max_length=21,
+	)
+	motion: Optional[MotionOut] = Field(
+		default=None,
+		description=(
+			'continuous joystick style deflection, only populated by the motion '
+			'recognizer. Null under rule and ml'
+		),
 	)
 
 
@@ -127,6 +151,7 @@ def _build_hand_out(detected_hand, gesture_result, hand_metric) -> HandOut:
 	"""
 	Assemble one HandOut, to keep sonarqube happy
 	"""
+	motion = gesture_result.motion if gesture_result else None
 	return HandOut(
 		handedness=detected_hand.handedness.name,
 		gesture=gesture_result.gesture.name if gesture_result else 'UNKNOWN',
@@ -138,6 +163,11 @@ def _build_hand_out(detected_hand, gesture_result, hand_metric) -> HandOut:
 			LandmarkOut(x=round(lm.x, 4), y=round(lm.y, 4), z=round(lm.z, 4))
 			for lm in detected_hand.landmarks
 		],
+		motion=(
+			MotionOut(x=round(motion.x, 3), y=round(motion.y, 3), depth=round(motion.depth, 3))
+			if motion
+			else None
+		),
 	)
 
 
