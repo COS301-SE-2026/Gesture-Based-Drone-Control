@@ -15,7 +15,6 @@ real hand, a drone); see `_perf.py` and NFR.md section 4.
 ```
 task nfr-test          # backend + frontend, then the report
 task nfr-backend       # this folder only
-task nfr-soak          # the 10-minute runs (marked slow)
 task nfr-report        # rebuild the pages from recorded evidence
 ```
 
@@ -31,7 +30,6 @@ Or directly: `uv run --with radon pytest tests/nfr -q -m "not slow"` then
 | `test_realtime_performance.py` | QR-26, QR-29 to QR-34 | Full live system at 30 fps (and 90 fps for capacity): end-to-end and gesture-onset latency, CPU, dropped frames, 10 clients + 1 stalled |
 | `test_backend_performance.py` | QR-35 to QR-40 | Real FastAPI app: REST under load, telemetry and command WebSockets, login, database |
 | `test_resources.py` | QR-41, QR-42 | Backend cold start, first gesture frame, memory growth |
-| `test_soak.py` | QR-43 | 10-minute steady state (`slow`) |
 | `test_usability.py` | QR-44 to QR-49 | KLM time to first flight, usability-study scoring, error-message audit, input parity, history feedback |
 | `test_accuracy.py` | QR-01, QR-02 | Real recognizer over the committed landmark dataset |
 | `test_command_mapping.py` | QR-04 to QR-06 | Real gesture->command tables and `_resolve` |

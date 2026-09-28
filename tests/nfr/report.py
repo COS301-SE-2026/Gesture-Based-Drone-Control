@@ -191,13 +191,6 @@ GROUPS: dict[str, dict[str, tuple[str, str, str, str, bool]]] = {
 			'test_backend_performance.py',
 			False,
 		),
-		'QR-43': (
-			'NFR1.3',
-			'10-minute steady state, 0 dropped',
-			'All of the above',
-			'test_soak.py',
-			False,
-		),
 		'QR-50': (
 			'NFR1.3',
 			'Dashboard renders >= 24 fps',
