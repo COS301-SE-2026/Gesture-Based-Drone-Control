@@ -1,11 +1,16 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
+import { useGameCommands } from "@/hooks/useGameCommands"
+import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
+
+import { submitScore } from "@/lib/leaderboard"
+import { GAME_COLORS } from "@/lib/gameTheme"
+
+import { ScoreNamePrompt } from "../molecules/ScoreNamePrompt"
+
 import droneSprite from "@/assets/games/flappy/drone.png"
 import background from "@/assets/games/flappy/sky_cropped.png"
 import pipe from "@/assets/games/flappy/towerr.png"
 import pipeFlipped from "@/assets/games/flappy/towerr_flipped.png"
-import { useGameCommands } from "@/hooks/useGameCommands"
-import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
-import { GAME_COLORS } from "@/lib/gameTheme"
 import loseSound from "@/assets/games/flappy/fahhh.mp3"
 import pointSound from "@/assets/games/flappy/point.mp3"
 /**
@@ -76,6 +81,8 @@ export default function FlappyDroneGame() {
       }
     }
   })
+
+  const [pendingEntry, setPendingEntry] = useState(null)
 
   useKaplayCanvas(canvasRef, (k, fonts) => {
     k.loadSprite("drone", droneSprite)
@@ -285,6 +292,13 @@ export default function FlappyDroneGame() {
 
       k.play("lose")
 
+      // chuck the name prompt on screen and just hope the user does the thing
+      submitScore("flappy", score)
+        .then((entry) => setPendingEntry({id:entry.id}))
+        .catch(() => {
+          // dont care enough
+        })
+
       k.add([
         k.sprite("backSprite", { width: k.width(), height: k.height() }),
         k.pos(0, 0),
@@ -347,10 +361,18 @@ export default function FlappyDroneGame() {
   })
 
   return (
+    <div className="relative w-full">
     <canvas
       ref={canvasRef}
       className="w-full rounded-xl"
       style={{ aspectRatio: "16/9" }}
     />
+    {pendingEntry && (
+      <ScoreNamePrompt
+      entryId={pendingEntry.id}
+      onDone={() => setPendingEntry(null)}
+      />
+    )}
+    </div>
   )
 }
