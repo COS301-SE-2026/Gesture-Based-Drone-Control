@@ -40,25 +40,31 @@ test("QR-50 dashbaord renders the livefeed at >= 24 fps", async ({page}) => {
         w.__arrivals = []
         //timestamp every gesture frame as the app parses it, independent of how the socket is provided
         const parse = JSON.parse.bind(JSON)
-        JSON.parse = ((
+            JSON.parse = ((
             text: string,
             reviver?: (k: string, v: unknown) => unknown
-        ): unknown => {
+            ): unknown => {
+            const value = parse(text, reviver) as { type?: string } | null
+            if (value?.type === "gesture_frame") w.__arrivals.push(performance.now())
+            return value
+            }) as typeof JSON.parse
+            // deliberate monkeypatch: count every frame the feed paints
+            // eslint-disable-next-line @typescript-eslint/unbound-method
             const original = CanvasRenderingContext2D.prototype.drawImage
             CanvasRenderingContext2D.prototype.drawImage = function (
-                this: CanvasRenderingContext2D,
-                ...args: unknown[]
+            this: CanvasRenderingContext2D,
+            ...args: unknown[]
             ) {
-                if (this.canvas?.closest?.('[data-testid="gesture-camera-feed]'))
-                    w.__draws.push(performance.now())
-                Reflect.apply(original, this, args)
+            if (this.canvas?.closest?.('[data-testid="gesture-camera-feed"]'))
+                w.__draws.push(performance.now())
+            Reflect.apply(original, this, args)
             }
             try {
-                new PerformanceObserver((list) => {
-                    for (const e of list.getEntries()) w.__longTasks.push(e.duration)
-                }).observe({type: "longtask", buffered: true})
+            new PerformanceObserver((list) => {
+                for (const e of list.getEntries()) w.__longTasks.push(e.duration)
+            }).observe({ type: "longtask", buffered: true })
             } catch {
-                //longtask unsupported
+            /* longtask not supported */
             }
         })
 
@@ -167,121 +173,121 @@ test("QR-50 dashbaord renders the livefeed at >= 24 fps", async ({page}) => {
         expect(paintedPct, "painted %").toBeGreaterThanOrEqual(TARGET_PAINTED_PCT)
     })
 
-    const ROUTES = [
-        ["login", "/#/login"],
-        ["signup", "/#/signup"],
-        ["dashboard", "/#/gestures"],
-        ["analytics", "/#/analytics"],
-        ["gps", "/#/app/gps"],
-        ["games", "/#/app/games"],
-        ["settings", "/#/app/settings"],
-        ["help", "/#/app/help"],
-        ["tutorial", "/#/app/tutorial"],
-    ] as const
+const ROUTES = [
+    ["login", "/#/login"],
+    ["signup", "/#/signup"],
+    ["dashboard", "/#/app/gestures"],
+    ["analytics", "/#/app/analytics"],
+    ["gps", "/#/app/gps"],
+    ["games", "/#/app/games"],
+    ["settings", "/#/app/settings"],
+    ["help", "/#/app/help"],
+    ["tutorial", "/#/app/tutorial"],
+] as const
 
-    test("QR-51 every screen paints within core web vital limits", async ({
-        playwright,
-    }, testInfo) => {
-        test.setTimeout(5 * 60 * 1000)
-        const rows: {
-            route: string
-            fcp: number
-            lcp: number
-            dcl: number
-            kb: number
-        } [] = []
-        let evidencePage: Page | null = null
+test("QR-51 every screen paints within core web vital limits", async ({
+    playwright,
+}, testInfo) => {
+    test.setTimeout(5 * 60 * 1000)
+    const rows: {
+        route: string
+        fcp: number
+        lcp: number
+        dcl: number
+        kb: number
+    } [] = []
+    let evidencePage: Page | null = null
 
-        const order =
-            process.env.GBDC_NFR_ROUTE_ORDER === "reverse"
-                ? [...ROUTES].reverse()
-                : ROUTES
-        for (const [name, route] of order) {
-            if (evidencePage) await evidencePage.context().browser()?.close()
-            const browser = await playwright.chromium.launch(
-                testInfo.project.use.launchOptions
-            )
-            const context = await browser.newContext({
-                viewport: { width: 1366, height: 768},
-                baseURL: testInfo.project.use.baseURL,
-            })
-            const page = await context.newPage()
-            const mock = await mockBackend(page)
-            await page.goto(route, {waitUntil: "load"})
-            await page.waitForTimeout(1500)
-            const m = await page.evaluate(async () => {
-                const lcp = await new Promise<number>((resolve) => {
-                    let value = 0
-                    new PerformanceObserver((list) => {
-                        for (const e of list.getEntries())
-                            value = Math.max(value, e.startTime)
-                    }).observe({type: "largest-contentful-paint", buffered: true})
-                    setTimeout(() => resolve(value), 300)
-                })
-                const fcp =
-                    performance.getEntriesByName("first-contentful-paint")[0]?.startTime ??
-                    0
-                const nav = performance.getEntriesByType(
-                    "navigation"
-                )[0] as PerformanceNavigationTiming
-                const bytes = performance
-                    .getEntriesByType("resource")
-                    .reduce(
-                        (a, r) => a + ((r as PerformanceResourceTiming).transferSize || 0),
-                        nav?.transferSize ?? 0
-                    )
-                return {fcp, lcp, dcl: nav?.domContentLoadedEventEnd ?? 0, bytes}
-            })
-            rows.push({
-                route: name,
-                fcp: Math.round(m.fcp),
-                lcp: Math.round(m.lcp || m.fcp),
-                dcl: Math.round(m.dcl),
-                kb: Math.round(m.bytes / 1024),
-            })
-            mock.stop()
-            if (name === "dashboard")
-                await screenshot(page, "QR-51-dashboard-cold-load")
-            evidencePage = page
-        }
-
-        const worstFcp = Math.max(...rows.map((r) => r.fcp))
-        const worstLcp = Math.max(...rows.map((r) => r.lcp))
-        const passed = worstFcp <= TARGET_FCP_MS && worstLcp <= TARGET_LCP_MS
-        writeSamples("QR-51", {
-            screen: rows.map((r) => r.route),
-            lcp_ms: rows.map((r) => r.lcp),
-            fcp_ms: rows.map((r) => r.fcp),
-        })
-        if (!evidencePage) throw new Error("no screen was measured")
-        emit(
-        evidencePage,
-        "QR-51",
-        "NFR1.1",
-        "slowest screen: largest contentful paint, cold start (ms)",
-        worstLcp,
-        `LCP <= ${TARGET_LCP_MS}, FCP <= ${TARGET_FCP_MS} on every screen`,
-        passed,
-        {
-            worst_fcp_ms: worstFcp,
-            per_screen: rows,
-            method:
-                "Each screen opened in a vrand new browser process from the " +
-                "production build, as when the desktop app launches. FCP and LCP are read from the " +
-                "browsers own Paint timing and largest contentful paint apis",
-            chart: {
-                kind: "bars",
-                column: "lcp_ms",
-                label: "screen",
-                unit: "ms",
-                threshold: TARGET_LCP_MS,
-            },
-        }
+    const order =
+        process.env.GBDC_NFR_ROUTE_ORDER === "reverse"
+            ? [...ROUTES].reverse()
+            : ROUTES
+    for (const [name, route] of order) {
+        if (evidencePage) await evidencePage.context().browser()?.close()
+        const browser = await playwright.chromium.launch(
+            testInfo.project.use.launchOptions
         )
-        await evidencePage.context().browser()?.close()
-        expect(worstFcp).toBeLessThanOrEqual(TARGET_FCP_MS)
-        expect(worstLcp).toBeLessThanOrEqual(TARGET_LCP_MS)
+        const context = await browser.newContext({
+            viewport: { width: 1366, height: 768},
+            baseURL: testInfo.project.use.baseURL,
+        })
+        const page = await context.newPage()
+        const mock = await mockBackend(page)
+        await page.goto(route, {waitUntil: "load"})
+        await page.waitForTimeout(1500)
+        const m = await page.evaluate(async () => {
+            const lcp = await new Promise<number>((resolve) => {
+                let value = 0
+                new PerformanceObserver((list) => {
+                    for (const e of list.getEntries())
+                        value = Math.max(value, e.startTime)
+                }).observe({type: "largest-contentful-paint", buffered: true})
+                setTimeout(() => resolve(value), 300)
+            })
+            const fcp =
+                performance.getEntriesByName("first-contentful-paint")[0]?.startTime ??
+                0
+            const nav = performance.getEntriesByType(
+                "navigation"
+            )[0] as PerformanceNavigationTiming
+            const bytes = performance
+                .getEntriesByType("resource")
+                .reduce(
+                    (a, r) => a + ((r as PerformanceResourceTiming).transferSize || 0),
+                    nav?.transferSize ?? 0
+                )
+            return {fcp, lcp, dcl: nav?.domContentLoadedEventEnd ?? 0, bytes}
+        })
+        rows.push({
+            route: name,
+            fcp: Math.round(m.fcp),
+            lcp: Math.round(m.lcp || m.fcp),
+            dcl: Math.round(m.dcl),
+            kb: Math.round(m.bytes / 1024),
+        })
+        mock.stop()
+        if (name === "dashboard")
+            await screenshot(page, "QR-51-dashboard-cold-load")
+        evidencePage = page
+    }
+
+    const worstFcp = Math.max(...rows.map((r) => r.fcp))
+    const worstLcp = Math.max(...rows.map((r) => r.lcp))
+    const passed = worstFcp <= TARGET_FCP_MS && worstLcp <= TARGET_LCP_MS
+    writeSamples("QR-51", {
+        screen: rows.map((r) => r.route),
+        lcp_ms: rows.map((r) => r.lcp),
+        fcp_ms: rows.map((r) => r.fcp),
     })
+    if (!evidencePage) throw new Error("no screen was measured")
+    emit(
+    evidencePage,
+    "QR-51",
+    "NFR1.1",
+    "slowest screen: largest contentful paint, cold start (ms)",
+    worstLcp,
+    `LCP <= ${TARGET_LCP_MS}, FCP <= ${TARGET_FCP_MS} on every screen`,
+    passed,
+    {
+        worst_fcp_ms: worstFcp,
+        per_screen: rows,
+        method:
+            "Each screen opened in a vrand new browser process from the " +
+            "production build, as when the desktop app launches. FCP and LCP are read from the " +
+            "browsers own Paint timing and largest contentful paint apis",
+        chart: {
+            kind: "bars",
+            column: "lcp_ms",
+            label: "screen",
+            unit: "ms",
+            threshold: TARGET_LCP_MS,
+        },
+    }
+    )
+    await evidencePage.context().browser()?.close()
+    expect(worstFcp).toBeLessThanOrEqual(TARGET_FCP_MS)
+    expect(worstLcp).toBeLessThanOrEqual(TARGET_LCP_MS)
+})
 
     test("QR-52 on-screen controls confirm a command within 200 ms", async ({
         page,
@@ -316,11 +322,11 @@ test("QR-50 dashbaord renders the livefeed at >= 24 fps", async ({page}) => {
         })
 
         const buttons: [string, string][] = [
-            ["lucide_plane_takeoff", "TAKEOFF"],
+            ["lucide-plane-takeoff", "TAKEOFF"],
             ["lucide-arrow-up", "MOVE_FORWARD"],
             ["lucide-arrow-left", "MOVE_LEFT"],
             ["lucide-circle-dot", "HOVER"],
-            ["lucide-arrow-right", "MOVE-RIGHT"],
+            ["lucide-arrow-right", "MOVE_RIGHT"],
             ["lucide-arrow-down", "MOVE_BACKWARD"],
             ["lucide-plane-landing", "LAND"],
         ]
@@ -358,7 +364,7 @@ test("QR-50 dashbaord renders the livefeed at >= 24 fps", async ({page}) => {
             () => (window as unknown as {__feedback: number[]}).__feedback
         )
         const stats = summarize(feedback)
-        const p95 = "p95" in stats ? stats.p95 : Infinity
+        const p95 = "p95" in stats ? stats.p95 ?? Infinity : Infinity
         const passed = p95 <= TARGET_FEEDBACK_MS && missed === 0
         writeSamples("QR-52", {feedback_ms: feedback})
         emit(
@@ -377,7 +383,7 @@ test("QR-50 dashbaord renders the livefeed at >= 24 fps", async ({page}) => {
                     "Clocks the on screen take off,D pad and land buttons. Time from the click event to the " +
                     "command appearing in Command History, i.e. UI ->. command WebSocket -> re-render",
                 chart: {
-                    kind: "historgram",
+                    kind: "histogram",
                     column: "feedback_ms",
                     unit: "ms",
                     threshold: TARGET_FEEDBACK_MS,
@@ -387,4 +393,3 @@ test("QR-50 dashbaord renders the livefeed at >= 24 fps", async ({page}) => {
         expect(missed, "clicks without feedback").toBe(0)
         expect(p95).toBeLessThanOrEqual(TARGET_FEEDBACK_MS)
     })
-})
