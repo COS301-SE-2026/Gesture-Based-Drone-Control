@@ -11,12 +11,23 @@ asarUnpack:
   - "dist/assets/*.mp4"
 
 extraResources:
-  - from: "../../dist"
-    to: "backend"
+  - from: "../../dist/GestureBasedDroneControl-Backend"
+    to: "backend/GestureBasedDroneControl-Backend"
+  - from: "../../build/sim"
+    to: "sim"
+  - from: "../../build/signalling"
+    to: "signalling"
 
 win:
   target: portable
   icon: ../../packaging/app-icon.ico
+  extraResources:
+  - from: "../../dist/GestureBasedDroneControl-Backend.exe"
+    to: "backend/GestureBasedDroneControl-Backend.exe"
+  - from: "../../build/sim"
+    to: "sim"
+  - from: "../../build/signalling"
+    to: "signalling"
 linux:
   target: AppImage
   icon: ../../packaging/app-icon.png
