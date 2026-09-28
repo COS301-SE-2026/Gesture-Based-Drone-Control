@@ -17,6 +17,8 @@ extraResources:
     to: "sim"
   - from: "../../build/signalling"
     to: "signalling"
+  - from: "../../build/signalling/node_modules"
+    to: "signalling/node_modules"
 
 win:
   target: portable

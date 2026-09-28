@@ -38,7 +38,7 @@ tasks:
   build:
     desc: Builds and packages app into a single executable
     deps:
-      -sim-stage
+      - sim-stage
     cmds:
       - | 
           uv run pyinstaller --onefile --name GestureBasedDroneControl-Backend \
@@ -70,7 +70,7 @@ tasks:
           --hidden-import aiosqlite \
           --hidden-import win32api \
           --hidden-import win32con \
-          --hidden-import win32job\
+          --hidden-import win32job \
           apps/backend/app/main.py
     
       - cd apps/frontend && yarn electron-build
@@ -79,7 +79,7 @@ tasks:
   clean:
     desc: removes all folders related to packaged executable
     cmds: 
-      - rm -r release dist apps/frontend/dist
+      - rm -r release dist apps/frontend/dist build
 
   test:
     desc: Runs Unit Tests, Integration and End to End tests
@@ -244,14 +244,14 @@ tasks:
           else
             unzip -q "{{.SIM_SRC}}" -d build/sim
           fi
-          [ -d "build/sim/{{.PROJ}}" ] || { echo "no {{.PROJ}}/ at tje root of {{.SIM_SRC}}"; exit 1; }
+          [ -d "build/sim/{{.PROJ}}" ] || { echo "no {{.PROJ}}/ at the root of {{.SIM_SRC}}"; exit 1; }
 
           WS="build/sim/{{.PROJ}}/Samples/PixelStreaming/WebServers"
           [ -d "$WS/SignallingWebServer" ] || (cd "$WS" && ./get_ps_servers.sh)
           (cd "$WS/SignallingWebServer" && npm install --omit=dev)
 
           mv "$WS/SignallingWebServer" build/signalling
-          test -f build/signalling/Public/player.html || { echo "player.html missing;" exit 1; }
+          test -f build/signalling/Public/player.html || { echo "player.html missing"; exit 1; }
 
           rm -rf "build/sim/{{.PROJ}}/Samples"
           find build/sim -name 'libonnxruntime_providers_cuda.so' -delete

@@ -190,7 +190,7 @@ class SimSettings(BaseSettings):
 	pas_signalling_port: int = 8888
 	pas_services_port: int = 8990
 	pas_node: str = 'node'
-	pas_sim_args: str = '-PixelStreamingEncoderCodec=VP8 -windowed -ResX=1280 -ResY=720'
+	pas_sim_args: str = '-PixelStreamingEncoderCodec=VP8 -RenderOffScreen -ResX=1280 -ResY=720'
 	pas_sim_binary: str = ''
 	pas_signalling_dir: str = ''
 
@@ -304,9 +304,10 @@ class PixelStreamLauncher:
 		signalling = self.signalling_dir
 
 		if not IS_WINDOWS and not os.access(binary, os.X_OK):
-			# Blocks.sh chmod +x's this on every run; bypassing it means we must
-			# do it ourselves, or exec fails with EACCES on a fresh checkout
-			os.chmod(binary, binary.stat().st_mode | 0o111)
+			with contextlib.suppress(OSError):
+				os.chmod(binary, binary.stat().st_mode | 0o111)
+			if not os.access(binary, os.X_OK):
+				raise SimLaunchError(f'simulator binary is not executable: {binary}')
 
 		for required in (
 			signalling / 'cirrus.js',
@@ -316,7 +317,7 @@ class PixelStreamLauncher:
 			if not required.exists():
 				raise SimLaunchError(
 					f'Pixel streaming is not bootstrapped ({required} is missing). '
-					'Run: task ps-setup'
+					'Run: task sim-stage with SIM_SRC=<path to the Blocks.zip> in env'
 				)
 
 		if shutil.which(self._s.pas_node) is None:
@@ -339,7 +340,7 @@ class PixelStreamLauncher:
 			logger.warning('PixelStreamLauncher: reaping orphaned sim pid %d', pid)
 			await _force_kill_pid(pid)
 
-	async def _spawn(self, name: str, argv: list[str], cwd: pathlib.Path):
+	async def _spawn(self, name: str, argv: list[str], cwd: pathlib.Path, env: dict[str, str] | None = None):
 		"""
 		stdout and stderr go to a file, never a PIPE. UE logs heavily, and a
 		full 64KiB pipe buffer blocks it mid-startup - a hang that looks exactly
@@ -354,6 +355,7 @@ class PixelStreamLauncher:
 				cwd=str(cwd),
 				stdout=sink,
 				stderr=asyncio.subprocess.STDOUT,
+				env={**os.environ, **env} if env else None,
 				**_SPAWN_KWARGS,
 			)
 
@@ -371,12 +373,13 @@ class PixelStreamLauncher:
 			'cirrus',
 			[
 				shutil.which(self._s.pas_node),  # absolute: windows needs the .exe resolved
-				'cirrus.js',
+				str(self.signalling_dir / 'cirrus.js'),
 				f'--HttpPort={self._s.pas_http_port}',
 				f'--StreamerPort={self._s.pas_signalling_port}',
 				'--PublicIp=127.0.0.1',
 			],
-			self.signalling_dir,
+			LOG_DIR,
+			env={'ELECTRON_RUN_AS_NODE': '1'},
 		)
 		await self._await_port(
 			self._s.pas_signalling_port, SIGNALLING_READY_TIMEOUT_S, self._cirrus, 'cirrus'

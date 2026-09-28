@@ -3,7 +3,7 @@ from PyInstaller.utils.hooks import collect_all
 
 datas = [('vendors/sim_config', 'vendors/sim_config'), ('services/cv_pipeline/gestures/recognizers/models', 'services/cv_pipeline/gestures/recognizers/models')]
 binaries = []
-hiddenimports = ['cv2', 'services', 'jwt.algorithms', 'email_validator', 'sqlalchemy.dialects.sqlite', 'sqlalchemy.dialects.postgresql', 'sqlalchemy.dialects.postgresql.asyncpg', 'uvicorn.logging', 'uvicorn.loops.auto', 'uvicorn.protocols.http.auto', 'uvicorn.protocols.websockets.auto', 'uvicorn.lifespan.on', 'aiosqlite']
+hiddenimports = ['cv2', 'services', 'jwt.algorithms', 'email_validator', 'sqlalchemy.dialects.sqlite', 'sqlalchemy.dialects.postgresql', 'sqlalchemy.dialects.postgresql.asyncpg', 'uvicorn.logging', 'uvicorn.loops.auto', 'uvicorn.protocols.http.auto', 'uvicorn.protocols.websockets.auto', 'uvicorn.lifespan.on', 'aiosqlite', 'win32api', 'win32con', 'win32job']
 tmp_ret = collect_all('mediapipe')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 tmp_ret = collect_all('airsim')
@@ -25,7 +25,7 @@ datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
-    ['apps\\backend\\app\\main.py'],
+    ['apps/backend/app/main.py'],
     pathex=['.'],
     binaries=binaries,
     datas=datas,
@@ -58,5 +58,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['packaging\\app-icon.ico'],
+    icon=['packaging/app-icon.ico'],
 )
