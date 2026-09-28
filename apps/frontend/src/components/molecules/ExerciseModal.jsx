@@ -20,6 +20,7 @@ export default function ExerciseModal({ open, onClose, module }) {
           <div className="flex flex-col gap-2 min-h-0">
             <p className="text-xs text-dim uppercase trackingn-widest">
               Simulation
+              
             </p>
             <div className="flex-1 min-h-0 rounded-lg border border-dashed border-glassBrd bg-surface flex flex-col items-center justify-center gap-3">
               <p className="text-sm font-semibold text-ink">

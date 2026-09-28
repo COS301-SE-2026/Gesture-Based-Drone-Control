@@ -43,7 +43,7 @@ export default function BasicManeuversSim({running,onComplete}) {
     const [moves, setMoves] = useState(0)
     const done = idx >= WAYPOINTS.length
 
-    useEffect(() = > {
+    useEffect(() => {
         runningRef.current = running
     },[running])
 
@@ -61,7 +61,6 @@ export default function BasicManeuversSim({running,onComplete}) {
             }
 
             if (next.x === posRef.current.x && next.y === posRef.current.y) return
-
 
             posRef.current = next
             targetRef.current.copy(toWorld(next.x, next.y))
@@ -82,5 +81,54 @@ export default function BasicManeuversSim({running,onComplete}) {
     const {status} = useGestureCommands(handleCommand)
 
 
-    
+    useEffect(() => {
+        const mount = mountRef.current
+        if(!mount) return
+        const reduced = window.matchMedia("(prefers-reduces-motion: reduce)").matches
+
+        const scene = new THREE.Scene()
+        const camera = new THREE.PerspectiveCamera(50,1,0.1,100)
+        camera.position.set(0,0.3,7)
+
+        const scene = new THREE.Scene()
+        const camera = new THREE.PerspectiveCamera(50,1,0.1,100)
+        camera.position.set(0,0.3,7)
+
+        const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true })
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio,2))
+        mount.appendChild(renderer.domElement)
+
+
+        const frame = new THREE.MeshBasicMaterial({ wireframe: true, transparent:true , opacity:0.9})
+    })
+
+
+    const red = new THREE.MeshBasicMaterial({wireframe:true })
+    mats.current.frame = frame
+    mats.current.red = red
+
+
+    const drone = new THREE.Group()
+    drone.add(new THREE.Mesh(new THREE.BoxGeometry(1.35,0.42,1.35,2,1,2), frame))
+    const canopy = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.28,0.9,1,1,1), red)
+    canopy.position.y = 0.32
+    drone.add(canopy)
+    const armA = new THREE.Mesh(new THREE.BoxGeometry(3.0,0.1,0.12) , frame)
+    armA.rotation.y = Math.PI /4
+    const armB = armA.clone()
+    armB.rotation.y = -Math.PI /4
+    drone.add(armA,armB)
+
+    const props[]
+    const rotorGeo = new THREE.TorusGeometry(0.52,0.035,6,26)
+    const bladeGeo = new THREE.BoxGeometry(0.95,0.015,0.07)
+    const d = 1.06
+
+    ;[[d,d], [d,-d],[-d,d], [-d,-d]].forEach((px,pz)) => {
+        const ring = new THREE.Mesh(rotorGeo, red)
+        ring.rotation.x = Math.PI/2 
+        
+    }
+
+
 }
