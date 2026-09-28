@@ -37,6 +37,8 @@ tasks:
 
   build:
     desc: Builds and packages app into a single executable
+    deps:
+      -sim-stage
     cmds:
       - | 
           uv run pyinstaller --onefile --name GestureBasedDroneControl-Backend \
@@ -222,32 +224,55 @@ tasks:
           npm install -g yarn
         platforms: [linux]
 
-  ps-setup:
-  desc: One time bootstrap for pixel streaming
-  cmds:
-    - cmd: |
-          set -e
-          ROOT="$PAS_PATH"; [ -d "$ROOT" ] || ROOT="$(dirname "$ROOT")"
-          WEBSERVERS="$(find "$ROOT" -maxdepth 4 -type d -path '*/Samples/PixelStreaming/WebServers' | head -1)"
-          [ -n "$WEBSERVERS" ] || { echo "no WebServers dir under $ROOT - check PAS_PATH"; exit 1; }
-          cd "$WEBSERVERS"
-          [ -d SignallingWebServer ] || ./get_ps_servers.sh
-          cd SignallingWebServer
-          # the system node runs cirrus fine. Epic's setup.sh installs a pinned
-          # node 16 and then hard-exits when coturn/apt-get are missing, which
-          # is every arch box. we need neither - coturn is only for TURN, and a
-          # loopback-only stream never uses one
-          npm install --omit=dev
-          test -f Public/player.html || { echo "player.html missing, re-run get_ps_servers.sh"; exit 1; }
-          echo "pixel streaming ready: $WEBSERVERS/SignallingWebServer"
-      platforms: [linux, darwin]
-    - cmd: powershell -NoProfile -Command "
-          $root = if (Test-Path -PathType Container $env:PAS_PATH) { $env:PAS_PATH } else { Split-Path $env:PAS_PATH };
-          $ws = Get-ChildItem $root -Recurse -Depth 4 -Directory -Filter WebServers | Where-Object FullName -like '*Samples*PixelStreaming*' | Select-Object -First 1;
-          if (-not $ws) { throw 'no WebServers dir - check PAS_PATH' };
-          Set-Location $ws.FullName;
-          if (-not (Test-Path SignallingWebServer)) { .\get_ps_servers.bat };
-          Set-Location SignallingWebServer;
-          npm install --omit=dev;
-          if (-not (Test-Path Public\player.html)) { throw 'player.html missing' }"
-      platforms: [windows]
+  sim-stage:
+    desc: Stage sim + signalling server into the build
+    vars: 
+      PROJ: Blocks
+    requires:
+      vars: [SIM_SRC]
+    cmds:
+      - cmd: | 
+          set -e 
+          rm -rf build/sim build/signalling
+          mkdir -p build/sim
+
+          if [ -d "{{.SIM_SRC}}" ]; then
+            cp -a "{{.SIM_SRC}}/." build/sim/
+          else
+            unzip -q "{{.SIM_SRC}}" -d build/sim
+          fi
+          [ -d "build/sim/{{.PROJ}}" ] || { echo "no {{.PROJ}}/ at tje root of {{.SIM_SRC}}"; exit 1; }
+
+          WS="build/sim/{{.PROJ}}/Samples/PixelStreaming/WebServers"
+          [ -d "$WS/SignallingWebServer" ] || (cd "$WS" && ./get_ps_servers.sh)
+          (cd "$WS/SignallingWebServer" && npm install --omit=dev)
+
+          mv "$WS/SignallingWebServer" build/signalling
+          test -f build/signalling/Public/player.html || { echo "player.html missing;" exit 1; }
+
+          rm -rf "build/sim/{{.PROJ}}/Samples"
+          find build/sim -name 'libonnxruntime_providers_cuda.so' -delete
+          find build/sim -name 'libonnxruntime_providers_tensorrt.so' -delete
+          find build/sim -name '*.pdb' -delete
+
+          BIN="build/sim/{{.PROJ}}/Binaries/Linux/{{.PROJ}}-Linux-Shipping"
+          chmod +x "$BIN"
+          test -x "$BIN" || { echo "not executable: $BIN"; exit 1; }
+          echo "staged: build/sim + build/signalling"
+        platforms: [linux, darwin]
+      - cmd: powershell -NoProfile -Command "
+          $ErrorActionPreference = 'Stop';
+          Remove-Item -Recurse -Force build/sim, build/signalling -EA SilentlyContinue;
+          New-Item -ItemType Directory -Force build/sim | Out-Null;
+          if (Test-Path -PathType Container '{{.SIM_SRC}}') { Copy-Item '{{.SIM_SRC}}/*' build/sim -Recursive }
+          else { tar -xf '{{.PROJ}}/Samples/PixelStreaming/WebServers'};
+          $ws = 'build/sim/{{.PROJ}}/Samples/PixelStreaming/WebServers';
+          if (-not (Test-Path \"$ws/SignallingWebServer\")) { Push-Location $ws; .\get_ps_servers.bat; Pop-Location };
+          Push_location \"$ws/SignallingWebServer\"; npm install --omit=dev; Pop-Location;
+          Move-Item \"$ws/SignallingWebServer\" build/signalling;
+          if (-not (Test-Path build/signalling/Public/player.html)) { throw 'player.html missing' };
+          Remove-Item -Recurse -Force 'build/sim/{{.PROJ}}/Samples';
+          Get-ChildItem build/sim -Recurse -Include *.pdb,onnxruntime_providers_cuda.dll,onnxruntime_providers_tensorrt.dll | Remove-Item -Force;
+          if (-not (Test-Path 'build/sim/{{.PROJ}}/Binaries/Win64/{{.PROJ}}-Win64-Shipping.exe')) { throw 'shipping binary missing'}
+          "
+        platforms: [windows]
