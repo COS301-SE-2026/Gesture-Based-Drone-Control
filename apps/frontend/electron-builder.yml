@@ -10,16 +10,6 @@ files :
 asarUnpack:
   - "dist/assets/*.mp4"
 
-extraResources:
-  - from: "../../dist/GestureBasedDroneControl-Backend"
-    to: "backend/GestureBasedDroneControl-Backend"
-  - from: "../../build/sim"
-    to: "sim"
-  - from: "../../build/signalling"
-    to: "signalling"
-  - from: "../../build/signalling/node_modules"
-    to: "signalling/node_modules"
-
 win:
   target: portable
   icon: ../../packaging/app-icon.ico
@@ -37,3 +27,12 @@ linux:
   icon: ../../packaging/app-icon.png
   category: Utility
   executableName: gesture-based-drone-control
+  extraResources:
+  - from: "../../dist/GestureBasedDroneControl-Backend"
+    to: "backend/GestureBasedDroneControl-Backend"
+  - from: "../../build/sim"
+    to: "sim"
+  - from: "../../build/signalling"
+    to: "signalling"
+  - from: "../../build/signalling/node_modules"
+    to: "signalling/node_modules"

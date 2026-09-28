@@ -13,10 +13,13 @@ function Invoke-Native {
 }
 
 Remove-Item -Recurse -Force build/sim, build/signalling -EA SilentlyContinue
+if ((Test-Path build/sim) -or (Test-Path build/signalling)) {
+    throw 'could not clear build/sim or build/signalling (is the sim running?)'
+}
 New-Item -ItemType Directory -Force build/sim | Out-Null
 
-if (Test-Path -PathType Container $SimSrc) {
-    Copy-Item "$SimSrc/*" build/sim -Recurse
+if (Test-Path -PathType Container -LiteralPath $SimSrc) {
+    Get-ChildItem -LiteralPath $SimSrc -Force | Copy-Item -Destination build/sim -Recurse -Force
 } else {
     Invoke-Native { & "$env:SystemRoot\System32\tar.exe" -xf $SimSrc -C build/sim } 'tar'
 }
