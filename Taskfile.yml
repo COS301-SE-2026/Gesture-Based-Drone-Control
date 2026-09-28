@@ -103,7 +103,8 @@ tasks:
   integration-test:
     desc: Runs Integration Tests
     cmds:
-      - uv run pytest tests --cov --cov-report=term-missing
+      # tests/nfr has its own job (task nfr-test); its timing runs must not run twice
+      - uv run pytest tests --ignore=tests/nfr --cov --cov-report=term-missing
 
   contracts:
     desc: Validates API service contracts
@@ -117,9 +118,34 @@ tasks:
       - yarn e2e-test
 
   nfr-test:
-    desc: Runs NFR tests and regenerates docs/nfr/Matrix.md
+    desc: Runs every NFR test (backend + frontend) and regenerates docs/nfr (matrix + evidence page)
     cmds:
-      - cmd: uv run pytest tests/nfr -q
+      - defer: uv run python tests/nfr/report.py
+      - task: nfr-backend
+      - task: nfr-frontend
+
+  nfr-backend:
+    desc: Backend NFR tests (performance, usability, security, reliability) - pytest
+    cmds:
+      # radon is only needed for the complexity check (QR-22), so it is pulled in for this run only
+      - uv run --with radon pytest tests/nfr -q -m "not slow"
+
+  nfr-frontend:
+    desc: Frontend NFR tests (render rate, page load, accessibility, layout) - Playwright
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn nfr-test
+
+  nfr-soak:
+    desc: 10-minute steady-state runs (NFR1.3) - backend soak + dashboard render, then the report
+    cmds:
+      - defer: uv run python tests/nfr/report.py
+      - uv run pytest tests/nfr -q -m slow
+      - cmd: cd {{.FRONTEND_DIR}} && GBDC_NFR_RENDER_SECONDS=600 yarn nfr-test --grep QR-50
+
+  nfr-report:
+    desc: Rebuilds docs/nfr/MATRIX.md and docs/nfr/EVIDENCE.md from the evidence already recorded
+    cmds:
       - uv run python tests/nfr/report.py
 
   lint:

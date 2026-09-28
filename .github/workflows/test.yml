@@ -53,15 +53,23 @@ jobs:
 
   NFR-Tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     needs: ["Backend-Unit-Tests"]
     env:
       JWT_SECRET_KEY: BwuCYnAL1AcvIE4IlVwVhEMBJX-hBmSyOfOsUvneSrM
+      BACKENDPORT: 3001
+      YARN_ENABLE_SCRIPTS: false
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.0"
+          cache: "yarn"
+          cache-dependency-path: "apps/frontend/yarn.lock"
 
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
@@ -78,17 +86,57 @@ jobs:
 
       - name: Install Dependencies
         run: task install
-      # The rule-based ceiling is recorded as an
-      # informational row, not a failure
-      - name: NFR Testing
-        run: task nfr-test
 
-      - name: Upload NFR matrix
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('apps/frontend/yarn.lock') }}
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        working-directory: apps/frontend
+        run: yarn playwright install --with-deps chromium
+
+      - name: Install Playwright system deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        working-directory: apps/frontend
+        run: yarn playwright install-deps chromium
+
+      # both suites run even if the other fails, so the evidence is always complete;
+      # the last step fails the job if either did
+      - name: NFR tests - backend (pytest)
+        id: nfr_backend
+        continue-on-error: true
+        run: task nfr-backend
+
+      - name: NFR tests - frontend (Playwright)
+        id: nfr_frontend
+        continue-on-error: true
+        run: task nfr-frontend
+
+      - name: Build evidence report
+        if: always()
+        run: task nfr-report
+
+      - name: Upload NFR evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nfr-matrix
-          path: docs/nfr/MATRIX.md
+          name: nfr-evidence
+          path: |
+            docs/nfr/MATRIX.md
+            docs/nfr/EVIDENCE.md
+            docs/nfr/evidence/
+            apps/frontend/playwright-report-nfr/
+          retention-days: 90
+
+      - name: Fail if an NFR requirement failed
+        if: steps.nfr_backend.outcome == 'failure' || steps.nfr_frontend.outcome == 'failure'
+        run: |
+          echo "::error::One or more NFR requirements failed - see the job summary and the nfr-evidence artifact"
+          exit 1
 
   Frontend-Unit-Tests:
     runs-on: ubuntu-latest
