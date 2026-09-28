@@ -87,7 +87,12 @@ class AuthManager:
 		if stored_token.revoked:
 			raise InvalidRefreshTokenError('Refresh token is revoked')
 
-		if stored_token.expires_at < datetime.now(timezone.utc):
+		expires_at = stored_token.expires_at
+
+		if expires_at.tzinfo is None:
+			expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+		if expires_at < datetime.now(timezone.utc):
 			raise InvalidRefreshTokenError('Refresh token is expired')
 
 		user = await user_manager.get_by_id(db=db, id=stored_token.user_id)
