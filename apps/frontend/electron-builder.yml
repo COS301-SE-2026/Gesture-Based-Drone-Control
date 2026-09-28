@@ -30,6 +30,8 @@ win:
     to: "sim"
   - from: "../../build/signalling"
     to: "signalling"
+  - from: "../../build/signalling/node_modules"
+    to: "signalling/node_modules"
 linux:
   target: AppImage
   icon: ../../packaging/app-icon.png
