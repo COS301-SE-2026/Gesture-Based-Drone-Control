@@ -20,7 +20,7 @@ test.describe('Practical page ' , () => {
     test('should list every module in the roadmap' , async({page}) => {
         await expect (page.getByText(/basic maneuvers/i)).toBeVisible()
         await expect (page.getByText(/obstacle blocks/i)).toBeVisible()
-        await expect (page.getByText(/figure-8/i)).toBeVisible()
+        await expect (page.getByRole('heading',{name: /figure-8/i})).toBeVisible()
         await expect (page.getByText(/mock test/i)).toBeVisible()
     })
 
@@ -62,7 +62,7 @@ test.describe('Practical page ' , () => {
                 dialog.getByText(/beginner/i)
             ).toBeVisible()
             await expect(
-                dialog.getByText(/fly up,down,left and right/i)
+                dialog.getByText(/fly up, down, left and right/i)
             ).toBeVisible()
         })
 

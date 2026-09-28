@@ -66,10 +66,14 @@ test.describe('License Page', () => {
 
     test.describe('Get started section ', () => {
         test('should show both training option cards', async ({ page }) => {
-            await expect(page.getByText(/theory training/i)).toBeVisible()
-            await expect(page.getByText(/practical training/i)).toBeVisible()
-        })
+            await expect(page.getByRole('heading',{name: /theory training/i})).toBeVisible()
+            await expect(page.getByRole('heading',{name: /practical training/i})).toBeVisible()
+            await expect(
+            page.getByRole('listitem').filter({ hasText: /restricted radiotelephony certificate/i})
+        ).toBeVisible()
 
+        })
+        
         test ('should open the ato theroy site in a new tab ',async ({
             page,
             context,
