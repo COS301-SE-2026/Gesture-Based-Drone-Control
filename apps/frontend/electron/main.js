@@ -13,6 +13,8 @@ const __dirname = path.dirname(__filename)
 // so a clean shutdown wins the race and cv2 gets to release the webcam properly
 const BACKEND_KILL_DEADLINE_MS = 6000
 
+app.commandLine.appendSwitch("disable-features", "WebRtcHideLocalIpsWithMdns")
+
 let backendProcess
 let backendExited = false
 let mainWindow
@@ -40,6 +42,14 @@ function startBackend() {
     ? path.join(process.resourcesPath, "backend", backendName)
     : path.join(__dirname, "../../../dist", backendName)
 
+  const simEnv = app.isPackaged
+    ? {
+        PAS_PATH: path.join(process.resourcesPath, "sim"),
+        PAS_SIGNALLING_DIR: path.join(process.resourcesPath, "signalling"),
+        PAS_NODE: process.execPath,
+      }
+    : {}
+
   backendProcess = spawn(backendPath, [], {
     detached: process.platform !== "win32",
     stdio: ["pipe", "inherit", "inherit"],
@@ -47,6 +57,7 @@ function startBackend() {
       ...process.env,
       JWT_SECRET_KEY: getOrCreateSecret(),
       SQLITE_DB_PATH: getDbPath(),
+      ...simEnv,
     },
   })
 

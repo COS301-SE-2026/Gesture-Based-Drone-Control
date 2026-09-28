@@ -10,12 +10,21 @@ jobs:
         include:
           - os: windows-latest
             platform: win
+            sim_zip: Blocks-Windows-1.0.1.zip
           - os: ubuntu-latest
             platform: linux
+            sim_zip: Blocks-Linux-1.0.1.zip
     runs-on: ${{ matrix.os }}
     env: 
       BACKENDPORT: ${{vars.BACKENDPORT || 3001}}
+      SIM_SRC: .sim/${{ matrix.sim_zip }}
+      SIM_URL: https://github.com/iamaisim/ProjectAirSim/releases/download/v1.0.1
     steps:
+
+      - name: Free disk space
+        if: runner.os == 'Linux'
+        run: usdo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc 
+
       - uses: actions/checkout@v4
         with:
           submodules: true
@@ -41,6 +50,20 @@ jobs:
 
       - name: Install dependencies
         run: task install
+
+      - name: Cache sim zip
+        id: sim-cache
+        uses: actions/cache@v4
+        with:
+          path: .sim
+          key: sim-${{ matrix.sim_zip }}
+
+      - name: Download sim
+        if: steps.sim-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p .sim
+          curl -fL --retry 3 -o "$SIM_SRC" "$SIM_URL/${{ matrix.sim_zip }}"
 
       - name: Build Executable
         run: task build
