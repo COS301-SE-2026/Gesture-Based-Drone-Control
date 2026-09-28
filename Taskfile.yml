@@ -68,6 +68,9 @@ tasks:
           --hidden-import uvicorn.protocols.websockets.auto \
           --hidden-import uvicorn.lifespan.on \
           --hidden-import aiosqlite \
+          --hidden-import win32api \
+          --hidden-import win32con \
+          --hidden-import win32job\
           apps/backend/app/main.py
     
       - cd apps/frontend && yarn electron-build
