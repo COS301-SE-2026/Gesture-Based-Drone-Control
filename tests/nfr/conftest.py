@@ -9,6 +9,8 @@ Session setup for NFR suite
 -> gives jwt secret key a local default so the suite runs outside CI too
 """
 
+from __future__ import annotations
+
 import os
 import sys
 import tempfile
