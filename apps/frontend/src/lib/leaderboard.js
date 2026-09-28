@@ -13,3 +13,18 @@ export async function submitScore(gameId, score) {
     return res.json()
 }
 
+export async function setScoreName(entryId, displayName) {
+    const res = await fetch (`${API_BASE_URL}/leaderboard/scores/${entryId}/name`, {
+        method: "PATCH",
+        credentials: "include", // auth cookies
+        headers: { "Content-Type": "application/json"},
+        body: JSON.stringify({displayName: displayName}),
+    })
+    if (!res.ok){
+        throw new Error("Failed to save name")
+    }
+    return res.json()
+}
+
+
+
