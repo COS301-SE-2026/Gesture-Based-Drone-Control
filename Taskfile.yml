@@ -267,11 +267,11 @@ tasks:
           $ErrorActionPreference = 'Stop';
           Remove-Item -Recurse -Force build/sim, build/signalling -EA SilentlyContinue;
           New-Item -ItemType Directory -Force build/sim | Out-Null;
-          if (Test-Path -PathType Container '{{.SIM_SRC}}') { Copy-Item '{{.SIM_SRC}}/*' build/sim -Recursive }
-          else { tar -xf '{{.PROJ}}/Samples/PixelStreaming/WebServers'};
+          if (Test-Path -PathType Container '{{.SIM_SRC}}') { Copy-Item '{{.SIM_SRC}}/*' build/sim -Recurse }
+          else { tar -xf '{{.SIM_SRC}}' -C build/sim };
           $ws = 'build/sim/{{.PROJ}}/Samples/PixelStreaming/WebServers';
           if (-not (Test-Path \"$ws/SignallingWebServer\")) { Push-Location $ws; .\get_ps_servers.bat; Pop-Location };
-          Push_location \"$ws/SignallingWebServer\"; npm install --omit=dev; Pop-Location;
+          Push-location \"$ws/SignallingWebServer\"; npm install --omit=dev; Pop-Location;
           Move-Item \"$ws/SignallingWebServer\" build/signalling;
           if (-not (Test-Path build/signalling/Public/player.html)) { throw 'player.html missing' };
           Remove-Item -Recurse -Force 'build/sim/{{.PROJ}}/Samples';
