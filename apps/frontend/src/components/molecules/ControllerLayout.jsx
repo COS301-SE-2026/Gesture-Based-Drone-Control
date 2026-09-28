@@ -217,15 +217,15 @@ const ControllerLayout = ({ className = "" }) => {
         {(isPressed(7) ? ["rt", "rb"] : ["rb", "rt"]).map((id) =>
           id === "rb" ? (
             <rect
-            key="rb"
-            data-testid="btn-rb"
-            x="590"
-            y="15"
-            width="150"
-            height="45"
-            rx="10"
-            strokeWidth="2"
-            className={btnFill(5)}
+              key="rb"
+              data-testid="btn-rb"
+              x="590"
+              y="15"
+              width="150"
+              height="45"
+              rx="10"
+              strokeWidth="2"
+              className={btnFill(5)}
             />
           ) : (
             <rect

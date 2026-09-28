@@ -132,10 +132,10 @@ export default function FlappyDroneGame() {
         // position (x,y)
         k.pos(k.width() / 8, k.height() / 2),
         // enable collision checking
-        k.area({ 
+        k.area({
           shape: new k.Rect(k.vec2(0, 16), 64, 32),
-          isSensor: true
-         }),
+          isSensor: true,
+        }),
         //it will respond to gravity
         k.body(),
         "player",

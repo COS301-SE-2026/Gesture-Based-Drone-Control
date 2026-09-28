@@ -536,7 +536,6 @@ export default function PacDroneGame() {
           })
           k.get("pellet").forEach((p) => {
             if (p.col === playerCol && p.row === playerRow) {
-              
               k.play("power", { volume: 0.5 })
               k.destroy(p)
               score += 50 //worth more points
