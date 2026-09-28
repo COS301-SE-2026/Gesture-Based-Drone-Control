@@ -21,7 +21,8 @@ test.describe('Practical page ' , () => {
         await expect (page.getByText(/basic maneuvers/i)).toBeVisible()
         await expect (page.getByText(/obstacle blocks/i)).toBeVisible()
         await expect (page.getByRole('heading',{name: /figure-8/i})).toBeVisible()
-        await expect (page.getByText(/mock test/i)).toBeVisible()
+        await expect (page.getByRole('heading',{name: /mock test/i})).toBeVisible()
+
     })
 
     test.describe('module locking',() => {

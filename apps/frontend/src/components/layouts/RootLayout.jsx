@@ -9,7 +9,6 @@ import {
   SettingsSideContent,
   GamesSideContent,
   LicenseSideContent,
-
 } from "../molecules"
 import {
   Home,
@@ -43,7 +42,7 @@ const RootLayout = () => {
     },
     { id: "gps", label: "GPS", icon: MapPin, path: "/app/gps" },
     { id: "games", label: "Games", icon: Gamepad, path: "/app/games" },
-    { id: "license", label:"RPL", icon: Award,path:"/app/license"},
+    { id: "license", label: "RPL", icon: Award, path: "/app/license" },
     {
       id: "settings",
       label: "Settings",
@@ -69,11 +68,10 @@ const RootLayout = () => {
       return <SettingsSideContent />
     } else if (location.pathname.includes("/games")) {
       return <GamesSideContent />
-    } else if (location.pathname.includes("/license")){
-      return <LicenseSideContent/>
+    } else if (location.pathname.includes("/license")) {
+      return <LicenseSideContent />
+    }
   }
-}
-
 
   useEffect(() => {
     if (navigator.webdriver) {

@@ -34,7 +34,7 @@ test.describe('License Page', () => {
                 page.getByText(/class 3\(or class 5 self declaration\) aviation medical certificate/i)
             ).toBeVisible()
             await expect(
-                page.getByText(/restricted radiotelephony certificate/i)
+                page.getByText('Restricted Radiotelephony Certificate',{exact:true})
             ).toBeVisible()
             await expect(
                 page.getByText(/english proficiency, spoken and written/i)
