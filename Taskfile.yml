@@ -39,8 +39,9 @@ tasks:
     desc: Builds and packages app into a single executable
     cmds:
       - | 
-          uv run pyinstaller --onefile --name backend \
+          uv run pyinstaller --onefile --name GestureBasedDroneControl-Backend \
           --paths . \
+          --icon packaging/app-icon.ico \
           --collect-all mediapipe \
           --collect-all airsim \
           --collect-all projectairsim \

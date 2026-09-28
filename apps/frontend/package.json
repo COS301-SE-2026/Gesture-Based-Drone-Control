@@ -1,10 +1,12 @@
 {
   "license": "UNLICENSED",
-  "name": "frontend",
+  "name": "gesture-based-drone-control",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "main": "electron/main.js",
+  "author": "Codex Merchants",
+  "description": "Universal Control Input for Drones",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

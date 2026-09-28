@@ -16,7 +16,7 @@ const LABEL_BG = "rgba(11, 9, 10, 0.75)"
 const LABEL_TEXT = "#ffffff"
 
 const CONTAINER_GLASS =
-  "relative w-full h-full bg-OffBlack/50 rounded border border-Grey/20 overflow-hidden min-h-[400px]"
+  "relative w-full h-full bg-ink/50 rounded border border-dim overflow-hidden min-h-[16rem] aspect-video"
 
 const GestureCameraFeed = ({
   className = "",
@@ -72,11 +72,11 @@ const GestureCameraFeed = ({
     >
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
       {!frame && (
-        <div className="absolute inset-0 flex items-center justify-center text-sm text-Grey">
+        <div className="absolute inset-0 flex items-center justify-center text-sm text-dim">
           {error ?? "Waiting for camera..."}
         </div>
       )}
-      <div className="absolute top-4 right-4 flex items-center gap-2 bg-OffBlack/60 px-3 py-1 rounded-full text-xs text-OffWhite">
+      <div className="absolute top-4 right-4 flex items-center gap-2 bg-ink/60 px-3 py-1 rounded-full text-xs text-white">
         <span
           className={`w-2 h-2 rounded-full ${statusDotClass(connected, error)}`}
         />
@@ -89,7 +89,7 @@ const GestureCameraFeed = ({
 function statusDotClass(connected, error) {
   if (error) return "bg-red-500"
   if (connected) return "bg-green-500 animate-pulse"
-  return "bg-Grey"
+  return "bg-dim"
 }
 
 function getStatusLabel(connected, error, frame) {
