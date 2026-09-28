@@ -103,7 +103,7 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
             <img
               src={hardwareUrl}
               alt="drone live feed"
-              onLoad={() => setLoaded(true)}
+              onLoad={() => setLoadedKey(sourceKey)}
               className={`w-full h-full object-cover transition-opacity duration-500 ${
                 loaded ? "opacity-100" : "opacity-0" //NOSONAR
               }`}
