@@ -263,19 +263,5 @@ tasks:
           test -x "$BIN" || { echo "not executable: $BIN"; exit 1; }
           echo "staged: build/sim + build/signalling"
         platforms: [linux, darwin]
-      - cmd: powershell -NoProfile -Command "
-          $ErrorActionPreference = 'Stop';
-          Remove-Item -Recurse -Force build/sim, build/signalling -EA SilentlyContinue;
-          New-Item -ItemType Directory -Force build/sim | Out-Null;
-          if (Test-Path -PathType Container '{{.SIM_SRC}}') { Copy-Item '{{.SIM_SRC}}/*' build/sim -Recurse }
-          else { tar -xf '{{.SIM_SRC}}' -C build/sim };
-          $ws = 'build/sim/{{.PROJ}}/Samples/PixelStreaming/WebServers';
-          if (-not (Test-Path \"$ws/SignallingWebServer\")) { Push-Location $ws; .\get_ps_servers.bat; Pop-Location };
-          Push-location \"$ws/SignallingWebServer\"; npm install --omit=dev; Pop-Location;
-          Move-Item \"$ws/SignallingWebServer\" build/signalling;
-          if (-not (Test-Path build/signalling/Public/player.html)) { throw 'player.html missing' };
-          Remove-Item -Recurse -Force 'build/sim/{{.PROJ}}/Samples';
-          Get-ChildItem build/sim -Recurse -Include *.pdb,onnxruntime_providers_cuda.dll,onnxruntime_providers_tensorrt.dll | Remove-Item -Force;
-          if (-not (Test-Path 'build/sim/{{.PROJ}}/Binaries/Win64/{{.PROJ}}-Win64-Shipping.exe')) { throw 'shipping binary missing'}
-          "
+      - cmd: powershell -NoProfile -ExecutionPolicy Bypass -File packaging/sim-stage.ps1 -SimSrc "{{.SIM_SRC}}" -Proj "{{.PROJ}}"
         platforms: [windows]
