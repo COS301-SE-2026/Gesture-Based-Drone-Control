@@ -340,7 +340,9 @@ class PixelStreamLauncher:
 			logger.warning('PixelStreamLauncher: reaping orphaned sim pid %d', pid)
 			await _force_kill_pid(pid)
 
-	async def _spawn(self, name: str, argv: list[str], cwd: pathlib.Path, env: dict[str, str] | None = None):
+	async def _spawn(
+		self, name: str, argv: list[str], cwd: pathlib.Path, env: dict[str, str] | None = None
+	):
 		"""
 		stdout and stderr go to a file, never a PIPE. UE logs heavily, and a
 		full 64KiB pipe buffer blocks it mid-startup - a hang that looks exactly

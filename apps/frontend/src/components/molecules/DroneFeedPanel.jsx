@@ -34,7 +34,6 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
   hardwareFeedUrl = null,
   className = "",
 }) {
-  const [loaded, setLoaded] = useState(false)
   const [boxRef, box] = useElementSize()
 
   const isConnected = connectionStatus === "connected"
@@ -49,9 +48,9 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
     return `${API_BASE_URL}${FEED_PATH}?w=${w}&h=${h}`
   }, [hardwareFeedUrl, w, h])
 
-  useEffect(() => {
-    setLoaded(false)
-  }, [isConnected, isSim, hardwareUrl])
+  const sourceKey = `${isConnected}|${isSim}|${hardwareUrl}`
+  const [loadedKey, setLoadedKey] = useState(null)
+  const loaded = loadedKey === sourceKey
 
   return (
     <Card variant="glass" className={`animate-rise ${className}`}>
@@ -92,7 +91,7 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
             <iframe
               title="drone-sim-viewer"
               src={droneSimUrl}
-              onLoad={() => setLoaded(true)}
+              onLoad={() => setLoadedKey(sourceKey)}
               className={`w-full h-full transition-opacity duration-500 ${
                 loaded ? "opacity-100" : "opacity-0"
               }`}
