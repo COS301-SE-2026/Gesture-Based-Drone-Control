@@ -2,7 +2,7 @@ import {useCallback, useEffect,useRef,useState } from "react"
 import PropTypes from "prop-types"
 import * as THREE from "three"
 import { CheckCircle2 , Circle, CircleDot} from "lucide-react"
-import useTheme from "@/context/ThemeContext"
+import {useTheme} from "@/context/ThemeContext"
 import {useGestureCommands} from "@/hooks/useGestureCommands"
 import {commandLabel} from "@/constants/GestureCommands"
 
@@ -13,18 +13,18 @@ const STEP_DELTA={
     MOVE_RIGHT:[1,0],
 }
 
-const BOUNDS ={minX:-4 , maxY:4 , minY: -2 , maxY:3}
+const BOUNDS ={minX:-4 , maxX:4 , minY: -2 , maxY:3}
 const WORLD_STEP =0.55
 
 const WAYPOINTS=[
     {x:0, y:2 , label:"Fly up 2"},
-    {x:0, y:2 , label:"Fly right 3"},
-    {x:0, y:-1 , label:"Fly down 3"},
-    {x:0, y:-1 , label:"Fly left 6"},
+    {x:3, y:2 , label:"Fly right 3"},
+    {x:3, y:-1 , label:"Fly down 3"},
+    {x:-3, y:-1 , label:"Fly left 6"},
 ]
 
 const clamp = (v,lo,hi) => Math.min(hi,Math.max(lo,v))
-const toWorld = (gx,gy) => new THREE.Vector3(gx ** WORLD_STEP,gy * WORLD_STEP,0)
+const toWorld = (gx,gy) => new THREE.Vector3(gx * WORLD_STEP,gy * WORLD_STEP,0)
 
 export default function BasicManeuversSim({running,onComplete}) {
     const {theme} = useTheme()
@@ -68,10 +68,11 @@ export default function BasicManeuversSim({running,onComplete}) {
 
             const wp = WAYPOINTS[idxRef.current]
             if (wp && wp.x === next.x && wp.y === next.y) {
-                idx.current += 1
+                idxRef.current += 1
                 setIdx(idxRef.current)
                 if (idxRef.current >= WAYPOINTS.length) {
-                    doneRef.current = trueonComplete?.()
+                    doneRef.current = true
+                    onComplete?.()
                 }
             }
         },
@@ -84,11 +85,7 @@ export default function BasicManeuversSim({running,onComplete}) {
     useEffect(() => {
         const mount = mountRef.current
         if(!mount) return
-        const reduced = window.matchMedia("(prefers-reduces-motion: reduce)").matches
-
-        const scene = new THREE.Scene()
-        const camera = new THREE.PerspectiveCamera(50,1,0.1,100)
-        camera.position.set(0,0.3,7)
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
         const scene = new THREE.Scene()
         const camera = new THREE.PerspectiveCamera(50,1,0.1,100)
@@ -100,7 +97,7 @@ export default function BasicManeuversSim({running,onComplete}) {
 
 
         const frame = new THREE.MeshBasicMaterial({ wireframe: true, transparent:true , opacity:0.9})
-    })
+    
 
 
     const red = new THREE.MeshBasicMaterial({wireframe:true })
@@ -119,12 +116,12 @@ export default function BasicManeuversSim({running,onComplete}) {
     armB.rotation.y = -Math.PI /4
     drone.add(armA,armB)
 
-    const props[]
+    const props= []
     const rotorGeo = new THREE.TorusGeometry(0.52,0.035,6,26)
     const bladeGeo = new THREE.BoxGeometry(0.95,0.015,0.07)
     const d = 1.06
 
-    ;[[d,d], [d,-d],[-d,d], [-d,-d]].forEach((px,pz) => {
+    ;[[d, d], [d, -d], [-d,d], [-d,-d]].forEach(([px,pz]) => {
         const ring = new THREE.Mesh(rotorGeo, red)
         ring.rotation.x = Math.PI/2 
         ring.position.set(px, 0.22,pz)
@@ -132,7 +129,7 @@ export default function BasicManeuversSim({running,onComplete}) {
         const prop = new THREE.Group()
         const b1 = new THREE.Mesh(bladeGeo, frame)
         const b2 = b1.clone()
-        b2.rotation.y = Math/2 
+        b2.rotation.y = Math.PI/2 
         prop.add(b1,b2)
         prop.position.set(px,0.24,pz)
         drone.add(prop)
@@ -160,8 +157,8 @@ export default function BasicManeuversSim({running,onComplete}) {
     })
 
     const resize = () => {
-        const w= Math.max(1, mount,clientWidth)
-        const h = Math.max(1, mount.clientHeiight)
+        const w= Math.max(1, mount.clientWidth)
+        const h = Math.max(1, mount.clientHeight)
         camera.aspect = w/h 
         camera.updateProjectionMatrix()
         renderer.setSize(w,h)
@@ -199,7 +196,7 @@ export default function BasicManeuversSim({running,onComplete}) {
         cancelAnimationFrame(raf)
         ro.disconnect()
         renderer.dispose()
-        if (renderer.domElement.parentNode === mount) render.domElement.remove()
+        if (renderer.domElement.parentNode === mount) renderer.domElement.remove()
     }
 },[])
 
@@ -226,7 +223,7 @@ useEffect(() => {
     return () => cancelAnimationFrame(raf)
 },[theme,idx])
 
-const linkLink = status === "open"
+const linkLive = status === "open"
 
 return (
     <div className="relative flex-1 min-h-0 rounded-lg border border-glassBrd bg-surface overflow-hidden">
@@ -255,7 +252,7 @@ return (
         </ol>
 
         <div className ="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3 font-mono text-xs text-dim">
-            <div className = "flex fle-col gap-0.5">
+            <div className = "flex flex-col gap-0.5">
                 <span> Last command: {lastCmd ?? "none yet"}</span>
                 <span>Moves: {moves}</span>
             </div>
