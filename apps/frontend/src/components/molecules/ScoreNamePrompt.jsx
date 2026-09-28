@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react"
 import { setScoreName } from "@/lib/leaderboard"
 
-const AUTO_DISMISS_MS = 5000
+const AUTO_DISMISS_MS = 60000
 
 export function ScoreNamePrompt({entryId, onDone}) {
     const [name, setName] = useState("")
@@ -40,7 +40,7 @@ export function ScoreNamePrompt({entryId, onDone}) {
     return (
         <form
             onSubmit={submit}
-            className="absolute inset-x-0 bottom-4 mx-auto"
+            className="absolute inset-x-0 bottom-4 mx-auto w-fit flex items-center gap-2 bg-black/75 backdrop-blur px-3 py-2 rounded-md border border-white/10 z-50"
         >
             <input
                 autoFocus
@@ -49,19 +49,19 @@ export function ScoreNamePrompt({entryId, onDone}) {
                 onChange={(e) => setName(e.target.value)}
                 onKeyDown={(e) => e.key === "Escape" && onDone()}
                 placeholder="Enter your name: "
-                className="bg-transparent text-white text-sm outline-none placeholder:text-white/40 w-64"
+                className="bg-transparent text-white text-sm  placeholder:text-white/40 w-64"
             />
             <button
                 type="submit"
                 disabled={saving}
-                className="text-xs text-white/90"
+                className="text-xs text-white/90 hover:text-white px-2"
             >
                 Save
             </button>
             <button
                 type="button"
                 onClick={onDone}
-                className="text-xs text-white/40"
+                className="text-xs text-white/40 hover:text-white/70 px-2"
             >
                 Skip
             </button>
