@@ -9,7 +9,7 @@ currently added:
 
 from fastapi import APIRouter
 
-from app.api import analytics, auth, calibration, drone, game, gestures, input
+from app.api import analytics, auth, calibration, drone, game, gestures, input, leaderboard
 
 router = APIRouter(prefix='/api')
 
