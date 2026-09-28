@@ -1,8 +1,39 @@
 import PropTypes from "prop-types"
 import { Modal, Button } from "../atoms"
+import {useEffect,useState} from "react"
+import BasicManeuversSim from "./BasicManeuversSim"
 import GestureCameraFeed from "./GestureCameraFeed"
 
-export default function ExerciseModal({ open, onClose, module }) {
+const SIMULATIONS={
+  "basic-maneuvers": BasicManeuversSim,
+}
+export default function ExerciseModal({ open, onClose, module,onComplete}){
+const Simulation = module?.id ? SIMULATIONS[module.id] : undefined
+const [runId, setRunId] = useState(0)
+const [running,setRunning] = useState(false)
+const [finished,setFinished] = useState(false)
+
+useEffect(() =>{
+  setRunning(false)
+  setFinished(false)
+  setRunId((r) => r+ 1)
+},[open,module?.id])
+
+
+const handleStart = () => {
+  setFinished(false)
+  setRunning(true)
+  setRunId((r) => r+1)
+}
+
+
+const handleFinish = () => {
+  setFinished(true)
+  onComplete?.()
+}
+
+const buttonLabel = finished ? "Replay Exercise" : running ? "Restart Exercise" : "Start Exercise"
+
   return (
     <Modal open={open} onClose={onClose} title={module?.title} size="full">
       <div className="flex flex-col gap-4 flex-1 min-h-0">
@@ -20,8 +51,12 @@ export default function ExerciseModal({ open, onClose, module }) {
           <div className="flex flex-col gap-2 min-h-0">
             <p className="text-xs text-dim uppercase trackingn-widest">
               Simulation
-              
+
             </p>
+            {Simulation ? (
+              open && <Simulation key = {runId} running={running} onComplete={handleFinish}/>
+            ) :(
+              
             <div className="flex-1 min-h-0 rounded-lg border border-dashed border-glassBrd bg-surface flex flex-col items-center justify-center gap-3">
               <p className="text-sm font-semibold text-ink">
                 AirSim environment in progress
@@ -33,21 +68,30 @@ export default function ExerciseModal({ open, onClose, module }) {
                 <div className="h-full w-1/3 bg-[linear-gradient(90deg,var(--red),var(--red-deep))] animate-pulse rounded-full" />
               </div>
             </div>
+            )}
           </div>
         </div>
 
-        <Button variant="default" disabled className="w-full shrink-0">
-          Start Exercise
+        <Button 
+        variant="default" 
+        disabled={!Simulation} 
+        onClick={handleStart} 
+        className="w-full shrink-0"
+        >
+
+          {buttonLabel}
         </Button>
       </div>
     </Modal>
   )
 }
 
-ExerciseModal.propTypes = {
+ExerciseModal.PropTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
+  onComplete: PropTypes.func,
   module: PropTypes.shape({
+    id: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string,
     difficulty: PropTypes.string,
@@ -57,5 +101,6 @@ ExerciseModal.propTypes = {
 ExerciseModal.defaultProps = {
   open: false,
   onClose: undefined,
+  onComplete: undefined,
   module: null,
 }
