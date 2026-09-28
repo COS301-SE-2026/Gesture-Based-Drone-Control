@@ -5,6 +5,7 @@ import { GestureCameraFeed } from "../molecules"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
 import { useGamepadControl } from "@/hooks/useGamepadControl"
 import { useGestureControl } from "@/hooks/useGestureControl"
+import { LeaderboardPanel } from "../molecules/LeaderboardPanel"
 
 import FlappyDroneGame from "./FlappyDroneGame"
 import PacDroneGame from "./PacDroneGame"
@@ -225,6 +226,12 @@ const Games = () => {
             <GestureCameraFeed className="flex-1 rounded-md overflow-hidden" />
           </Card>
         )}
+    <div className="flex flex-col gap-md w-72 shrink-0">
+    <LeaderboardPanel
+      gameId={selectedGame}
+      gameLabel={GAMES.find((g) => g.id === selectedGame)?.label}
+    />
+    </div>
       </div>
     </div>
   )
