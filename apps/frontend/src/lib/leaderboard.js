@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "./api"
 
 export async function submitScore(gameId, score) {
-  const res = await fetch(`${API_BASE_URL}/leaderboard/scores`, {
+  const res = await fetch(`${API_BASE_URL}/api/leaderboard/scores`, {
     method: "POST",
     credentials: "include", // auth cookies
     headers: { "Content-Type": "application/json" },
@@ -15,7 +15,7 @@ export async function submitScore(gameId, score) {
 
 export async function setScoreName(entryId, displayName) {
   const res = await fetch(
-    `${API_BASE_URL}/leaderboard/scores/${entryId}/name`,
+    `${API_BASE_URL}/api/leaderboard/scores/${entryId}/name`,
     {
       method: "PATCH",
       credentials: "include", // auth cookies
@@ -31,7 +31,7 @@ export async function setScoreName(entryId, displayName) {
 
 export async function getTopScores(game_id, limit = 10) {
   const res = await fetch(
-    `${API_BASE_URL}/leaderboard/scores/${game_id}?limit=${limit}`,
+    `${API_BASE_URL}/api/leaderboard/scores/${game_id}?limit=${limit}`,
     {
       credentials: "include", // auth cookies
     }
