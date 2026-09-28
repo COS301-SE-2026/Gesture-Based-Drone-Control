@@ -294,9 +294,10 @@ export default function FlappyDroneGame() {
 
       // chuck the name prompt on screen and just hope the user does the thing
       submitScore("flappy", score)
-        .then((entry) => setPendingEntry({id:entry.id}))
-        .catch(() => {
+        .then((entry) => setPendingEntry({ id: entry.id }))
+        .catch((err) => {
           // dont care enough
+          console.error("Failed to submit score:", err)
         })
 
       k.add([
@@ -362,17 +363,17 @@ export default function FlappyDroneGame() {
 
   return (
     <div className="relative w-full">
-    <canvas
-      ref={canvasRef}
-      className="w-full rounded-xl"
-      style={{ aspectRatio: "16/9" }}
-    />
-    {pendingEntry && (
-      <ScoreNamePrompt
-      entryId={pendingEntry.id}
-      onDone={() => setPendingEntry(null)}
+      <canvas
+        ref={canvasRef}
+        className="w-full rounded-xl"
+        style={{ aspectRatio: "16/9" }}
       />
-    )}
+      {pendingEntry && (
+        <ScoreNamePrompt
+          entryId={pendingEntry.id}
+          onDone={() => setPendingEntry(null)}
+        />
+      )}
     </div>
   )
 }

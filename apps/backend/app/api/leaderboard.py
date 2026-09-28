@@ -86,7 +86,7 @@ async def submit_score(
 async def set_display_name(
 	entry_id: uuid.UUID,
 	body: SetNameRequest,
-	db: Annotated[AsyncSession, Depends(get_current_user_id)],
+	db: Annotated[AsyncSession, Depends(get_db)],
 	user_id: Annotated[uuid.UUID, Depends(get_current_user_id)],
 ):
 	"""

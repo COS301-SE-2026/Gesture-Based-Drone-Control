@@ -20,7 +20,7 @@ export async function setScoreName(entryId, displayName) {
       method: "PATCH",
       credentials: "include", // auth cookies
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ displayName: displayName }),
+      body: JSON.stringify({ display_name: displayName }),
     }
   )
   if (!res.ok) {
