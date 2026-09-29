@@ -80,7 +80,7 @@ export default function BasicManeuversSim({ running, onComplete }) {
     [onComplete]
   )
 
-  const { status, live } = useGestureCommands(handleCommand)
+  const { live } = useGestureCommands(handleCommand)
 
   useEffect(() => {
     const mount = mountRef.current

@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"
 import { Modal, Button } from "../atoms"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import BasicManeuversSim from "./BasicManeuversSim"
 import ObstacleBlocksSim from "./ObstacleBlocksSim"
 import GestureCameraFeed from "./GestureCameraFeed"
@@ -15,11 +15,14 @@ export default function ExerciseModal({ open, onClose, module, onComplete }) {
   const [running, setRunning] = useState(false)
   const [finished, setFinished] = useState(false)
 
-  useEffect(() => {
+  const resetKey = `${open}:${module?.id}`
+  const [prevResetKey, setPrevResetKey] = useState(resetKey)
+  if (resetKey !== prevResetKey) {
+    setPrevResetKey(resetKey)
     setRunning(false)
     setFinished(false)
     setRunId((r) => r + 1)
-  }, [open, module?.id])
+  }
 
   const handleStart = () => {
     setFinished(false)
