@@ -4,7 +4,7 @@ import { ModuleCard, ExerciseModal } from "../molecules"
 
 const MODULES = [
   {
-    id:"basic-maneuvers",
+    id: "basic-maneuvers",
     title: "Basic Maneuvers",
     description:
       "Fly up, down, left and right to get comfortable with the controls.",
@@ -12,7 +12,7 @@ const MODULES = [
   },
 
   {
-    
+    id: "obstacle-blocks",
     title: "Obstacle Blocks",
     description:
       "Navigate through a course of static blocks without touching them.",
@@ -35,7 +35,7 @@ const MODULES = [
 ]
 
 export default function Practical() {
-  const [completedModules,setCompletedModules] = useState([])
+  const [completedModules, setCompletedModules] = useState([])
   const [activeModule, setActiveModule] = useState(null)
 
   const getStatus = (idx) => {
@@ -50,7 +50,7 @@ export default function Practical() {
   }
 
   const handleComplete = (idx) => {
-      setCompletedModules((prev) => (prev.includes(idx) ? prev : [ ...prev,idx]))
+    setCompletedModules((prev) => (prev.includes(idx) ? prev : [...prev, idx]))
   }
 
   return (
