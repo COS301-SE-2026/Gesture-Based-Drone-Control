@@ -31,7 +31,7 @@ const METHODS = [
         id: "keyboard",
         label: "Keyboard",
         icon: Keyboard,
-        inputs: ["Up Key", "Down Key", "Left Key", "Right Key", "W", "S", "A", "D"]
+        inputs: ["Up Arrow", "Down Arrow", "Left Arrow", "Right Arrow", "W", "S", "A", "D"]
     },
     {
         id: "gamepad",
@@ -82,17 +82,23 @@ const GameControlGuide = memo(function GameControlGuide({
                 </div>
                 </div>
 
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,14rem),1fr))] gap-2">
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-2">
                     {ACTIONS.map(({ icon: Icon, label: action }, i) => (
                             <div
                                 key={action}
-                                className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0 bg-glass backdrop-blur-sm rounded-md px-2 py-1.5 border border-glass"
+                                className="flex flex-col justify-center gap-1 min-w-0 h-14 bg-glass backdrop-blur-sm rounded-md px-2.5 border border-glass"
                             >
+                                <div className="flex items-center gap-2 min-w-0">
                                 <Icon className="w-3.5 h-3.5 text-red shrink-0" />
-                                <span className="text-[11px] text-ink/70 flex-1 min-w-[4rem] text-left">
+                                <span 
+                                 className="text-[11px] text-ink/70 truncate text-left"
+                                >
                                     {action}
-                                </span>
-                                <span className="text-[11px] font-mono font-semibold text-ink bg-dim/20 px-1.5 py-0.5 rounded">
+                                    </span>
+                                </div>
+                                <span
+                                title={method.inputs[i]}
+                                 className="text-[11px] font-mono font-semibold text-ink truncate pl-[1.375rem]">
                                 {method.inputs[i]}
                                 </span>
                             </div>
