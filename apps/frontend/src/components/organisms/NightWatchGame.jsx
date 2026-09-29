@@ -30,7 +30,7 @@ import {
   hasLineOfSight,
 } from "../../constants/DroneSearchgameUtils"
 
-const GAME_TIME = 90 //sec
+const GAME_TIME = 5 //sec
 const DRONE_RADIUS = 15
 const DRONE_MOVE_SPEED = 200 //px/s
 const DRONE_ROT_SPEED = 100 //deg/s
@@ -58,6 +58,7 @@ const Z_HUD = 11
 const Z_PANEL = 12
 
 export default function NightWatchGame() {
+  const [pendingEntry, setPendingEntry] = useState(null)
   const canvasRef = useRef(null)
 
   //continuous flight input, written by keyboard polling and by ws/gampad
@@ -133,10 +134,9 @@ export default function NightWatchGame() {
     }
   })
 
-  const [pendingEntry, setPendingEntry] = useState(null)
 
   useKaplayCanvas(canvasRef, (k, fonts) =>
-    setupGame(k, fonts, { inputRef, actionRef, lastInputAtRef })
+    setupGame(k, fonts, { inputRef, actionRef, lastInputAtRef, setPendingEntry })
   )
 
   return (
@@ -157,7 +157,7 @@ export default function NightWatchGame() {
 }
 
 function setupGame(k, fonts, refs) {
-  const { inputRef, lastInputAtRef } = refs
+  const { inputRef, lastInputAtRef, setPendingEntry } = refs
   const obstacles = getObstacles()
   const col = (c) => k.rgb(...c) //color obj for outline() and .color reassignment
 
@@ -860,14 +860,6 @@ function setupGame(k, fonts, refs) {
   function showEndPanel(won) {
     clearPanel()
 
-  // chuck the name prompt on screen and just hope the user does the thing
-  submitScore("nightwatch", game.foundCount)
-    .then((entry) => setPendingEntry({ id: entry.id }))
-    .catch((err) => {
-      // dont care enough
-      console.error("Failed to submit score:", err)
-    })
-
     const w = 560
     const h = 260
     const x = (GAME_CANVAS.width - w) / 2
@@ -906,6 +898,14 @@ function setupGame(k, fonts, refs) {
   function endGame() {
     game.phase = "won"
     showEndPanel()
+  
+   // chuck the name prompt on screen and just hope the user does the thing
+  submitScore("nightwatch", game.foundCount)
+    .then((entry) => setPendingEntry({ id: entry.id }))
+    .catch((err) => {
+      // dont care enough
+      console.error("Failed to submit score:", err)
+    })
   }
 
   function resetGame() {
