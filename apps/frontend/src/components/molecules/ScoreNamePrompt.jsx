@@ -44,7 +44,6 @@ export function ScoreNamePrompt({ entryId, onDone }) {
       className="absolute inset-x-0 bottom-4 mx-auto w-fit flex items-center gap-2 bg-black/75 backdrop-blur px-3 py-2 rounded-md border border-white/10 z-50"
     >
       <input
-        autoFocus
         value={name}
         maxLength={24}
         onChange={(e) => setName(e.target.value)}
