@@ -28,7 +28,7 @@ import {
 const GAME_TIME = 90 //sec
 const DRONE_RADIUS = 15
 const DRONE_MOVE_SPEED = 200 //px/s
-const DRONE_ROT_SPEED = 140 //deg/s
+const DRONE_ROT_SPEED = 100 //deg/s
 const INTRUDER_RADIUS = 13
 const INTRUDER_SPEED = 70 //px/s
 const LIGHT_RANGE = 240
@@ -38,7 +38,7 @@ const INTRUDER_COUNT = 3
 const ANALOG_DEADZONE = 0.15
 const FLOOR_TILE = 64
 const WALL_TILE = 40
-const ROTATE_IDLE_MS = 180
+const INTRUDER_RESPAWN_DELAY = 1.2
 
 //Z layers
 const Z_FLOOR = 0
@@ -58,8 +58,7 @@ export default function NightWatchGame() {
   //continuous flight input, written by keyboard polling and by ws/gampad
   //gesture commands - kaplay scene reads every frame
   const inputRef = useRef({ forward: 0, strafe: 0, rotate: 0 })
-
-  const lastRotateAtRef = useRef(0)
+  const lastInputAtRef = useRef({ forward: 0, strafe: 0, rotate: 0 })
 
   //fires the start mission/ play again
   //once setupGame runes so takeoff can drive into intro and restart screens
@@ -68,32 +67,40 @@ export default function NightWatchGame() {
   useGameCommands((msg) => {
     const { command, left_x, left_y, right_x, ltrigger, rtrigger } = msg
     const input = inputRef.current
+    const t = performance.now()
 
     switch (command) {
-      // case "MOVE_FORWARD":
-      //     input.forward = 1
-      //     break
-      // case "MOVE_BACKWARD":
-      //     input.forward = -1
-      //     break
-      // case "MOVE_RIGHT":
-      //     input.strafe = 1
-      //     break
-      // case "MOVE_LEFT":
-      //     input.strafe = -1
-      //     break
-      // case "ROTATE_CW":
-      //     input.rotate = 1
-      //     lastRotateAtRef.current = performance.now()
-      //     break
-      // case "ROTATE_CCW":
-      //     input.rotate = -1
-      //     lastRotateAtRef.current = performance.now()
-      //     break
+      case "MOVE_FORWARD":
+        input.forward = 1
+        lastInputAtRef.current.forward = t
+        break
+      case "MOVE_BACKWARD":
+        input.forward = -1
+        lastInputAtRef.current.forward = t
+        break
+      case "MOVE_RIGHT":
+        input.strafe = 1
+        lastInputAtRef.current.strafe = t
+        break
+      case "MOVE_LEFT":
+        input.strafe = -1
+        lastInputAtRef.current.strafe = t
+        break
+      case "ROTATE_CW":
+        input.rotate = 1
+        lastInputAtRef.current.rotate = t
+        break
+      case "ROTATE_CCW":
+        input.rotate = -1
+        lastInputAtRef.current.rotate = t
+        break
       case "HOVER":
         input.forward = 0
         input.strafe = 0
         input.rotate = 0
+        lastInputAtRef.current.forward = t
+        lastInputAtRef.current.strafe = t
+        lastInputAtRef.current.rotate = t
         break
       case "TAKEOFF":
         actionRef.current?.()
@@ -101,6 +108,8 @@ export default function NightWatchGame() {
       case "LAND":
         input.forward = 0
         input.strafe = 0
+        lastInputAtRef.current.forward = t
+        lastInputAtRef.current.strafe = t
         break
       case "ANALOG": {
         const ly = left_y ?? 0
@@ -109,7 +118,9 @@ export default function NightWatchGame() {
         input.forward = Math.abs(ly) > ANALOG_DEADZONE ? -ly : 0
         input.strafe = Math.abs(lx) > ANALOG_DEADZONE ? lx : 0
         input.rotate = Math.abs(rotation) > ANALOG_DEADZONE ? rotation : 0
-        if (input.rotate !== 0) lastRotateAtRef.current = performance.now()
+        lastInputAtRef.current.forward = t
+        lastInputAtRef.current.strafe = t
+        lastInputAtRef.current.rotate = t
         break
       }
       default:
@@ -118,7 +129,7 @@ export default function NightWatchGame() {
   })
 
   useKaplayCanvas(canvasRef, (k, fonts) =>
-    setupGame(k, fonts, { inputRef, actionRef, lastRotateAtRef })
+    setupGame(k, fonts, { inputRef, actionRef, lastInputAtRef })
   )
 
   return (
@@ -131,7 +142,7 @@ export default function NightWatchGame() {
 }
 
 function setupGame(k, fonts, refs) {
-  const { inputRef, lastRotateAtRef } = refs
+  const { inputRef, lastInputAtRef } = refs
   const obstacles = getObstacles()
   const col = (c) => k.rgb(...c) //color obj for outline() and .color reassignment
 
@@ -392,6 +403,18 @@ function setupGame(k, fonts, refs) {
     }
   }
 
+  let lastFrameSeen = 0
+  function decayUnrefreshedInputs() {
+    const now = performance.now()
+    if (now - lastFrameSeen < 1) return
+    lastFrameSeen = now
+    const stamps = lastInputAtRef.current
+    const STALE_AFTER = 250
+    if (now - stamps.forward > STALE_AFTER) inputRef.current.forward = 0
+    if (now - stamps.strafe > STALE_AFTER) inputRef.current.strafe = 0
+    if (now - stamps.rotate > STALE_AFTER) inputRef.current.rotate = 0
+  }
+
   //keyboard stuff is polled like shavs other games, controller writes continuously into inputRef
   function readAxis(posKey, negKey) {
     let v = 0
@@ -409,11 +432,8 @@ function setupGame(k, fonts, refs) {
       return
     }
 
-    //controller rotate input only count while its being actively refreshed
-    //if nothign is touched within rotate_idle_ms, treat it as stale and force 0 so drone doesnt spin like toad on the chandellier
-    const stale = performance.now() - lastRotateAtRef.current > ROTATE_IDLE_MS
-    const rotateInput = stale ? 0 : clamp(inputRef.current.rotate, -1, 1)
-    if (stale) inputRef.current.rotate = 0
+    //ws/controller rotation -> adapter handles it w hover
+    const rotateInput = clamp(inputRef.current.rotate, -1, 1)
     drone.angle += rotateInput * DRONE_ROT_SPEED * dt
   }
 
@@ -424,12 +444,21 @@ function setupGame(k, fonts, refs) {
       kbforw !== 0 ? kbforw : clamp(inputRef.current.forward, -1, 1)
     const strafeInput =
       kbstrafe !== 0 ? kbstrafe : clamp(inputRef.current.strafe, -1, 1)
-    let mx = strafeInput
-    let my = -forwardInput
-    const len = Math.hypot(mx, my)
-    if (len > 1) {
-      mx /= len
-      my /= len
+    let mx = 0
+    let my = 0
+    if (forwardInput !== 0 || strafeInput !== 0) {
+      const rad = (drone.angle * Math.PI) / 180
+      const cos = Math.cos(rad)
+      const sin = Math.sin(rad)
+
+      mx = cos * forwardInput - sin * strafeInput
+      my = sin * forwardInput + cos * strafeInput
+
+      const len = Math.hypot(mx, my)
+      if (len > 1) {
+        mx /= len
+        my /= len
+      }
     }
 
     drone.pos.x += mx * DRONE_MOVE_SPEED * dt
@@ -440,50 +469,68 @@ function setupGame(k, fonts, refs) {
     drone.pos.y = clamp(drone.pos.y, HOUSE.y + 10, HOUSE.y + HOUSE.h - 10)
   }
 
+  function spawnOneIntruder(avoid) {
+    const spawn = randomSpawn(INTRUDER_RADIUS, avoid, 110)
+
+    const container = k.add([
+      k.pos(spawn.x, spawn.y),
+      k.anchor("center"),
+      k.z(Z_ENTITY),
+      "intruder",
+    ])
+    container.add([
+      k.pos(0, 0),
+      k.rect(18, 24, { radius: 6 }),
+      k.anchor("center"),
+      k.color(...GAME_COLORS.bg),
+      k.outline(2, col(GAME_COLORS.dim)),
+      k.opacity(0.95),
+    ])
+    const indicator = container.add([
+      k.pos(0, -4),
+      k.circle(3),
+      k.anchor("center"),
+      k.color(...GAME_COLORS.red),
+    ])
+
+    const iv = {
+      obj: container,
+      indicator,
+      pos: { x: spawn.x, y: spawn.y },
+      target: {
+        x: randRange(FLOOR.x, FLOOR.x + FLOOR.w),
+        y: randRange(FLOOR.y, FLOOR.y + FLOOR.h),
+      },
+      pauseTimer: randRange(0, 1),
+      dwell: 0,
+      frozen: false,
+      caught: false,
+      blinkT: Math.random() * 10, // NOSONAR
+    }
+    intruders.push(iv)
+    return iv
+  }
+
   //intruders pick a rng spot on floor, walk to it w collisions and along walls/furniture, pause to ponder, repeat
   function createIntruders() {
     intruders = []
     const avoid = [{ x: drone.pos.x, y: drone.pos.y }]
     for (let i = 0; i < INTRUDER_COUNT; i++) {
-      const spawn = randomSpawn(INTRUDER_RADIUS, avoid, 110)
-      avoid.push(spawn)
-
-      const container = k.add([
-        k.pos(spawn.x, spawn.y),
-        k.anchor("center"),
-        k.z(Z_ENTITY),
-        "intruder",
-      ])
-      container.add([
-        k.pos(0, 0),
-        k.rect(18, 24, { radius: 6 }),
-        k.anchor("center"),
-        k.color(...GAME_COLORS.bg),
-        k.outline(2, col(GAME_COLORS.dim)),
-        k.opacity(0.95),
-      ])
-      const indicator = container.add([
-        k.pos(0, -4),
-        k.circle(3),
-        k.anchor("center"),
-        k.color(...GAME_COLORS.red),
-      ])
-
-      intruders.push({
-        obj: container,
-        indicator,
-        pos: { x: spawn.x, y: spawn.y },
-        target: {
-          x: randRange(FLOOR.x, FLOOR.x + FLOOR.w),
-          y: randRange(FLOOR.y, FLOOR.y + FLOOR.h),
-        },
-        pauseTimer: randRange(0, 1),
-        dwell: 0,
-        frozen: false,
-        caught: false,
-        blinkT: Math.random() * 10, // NOSONAR
-      })
+      const iv = spawnOneIntruder(avoid)
+      avoid.push(iv.pos)
     }
+  }
+
+  function sceduleRespawn() {
+    k.wait(INTRUDER_RESPAWN_DELAY, () => {
+      if (game.phase !== "playing") return
+
+      const avoid = [{ x: drone.pos.x, y: drone.pos.y }]
+      for (const other of intruders) {
+        if (!other.caught) avoid.push(other.pos)
+      }
+      spawnOneIntruder(avoid)
+    })
   }
 
   function moveIntruder(iv, dt) {
@@ -568,9 +615,12 @@ function setupGame(k, fonts, refs) {
 
     k.wait(0.6, () => {
       iv.obj.destroy()
+      const idx = intruders.indexOf(iv)
+      if (idx >= 0) intruders.splice(idx, 1)
     })
 
-    if (game.foundCount >= INTRUDER_COUNT) endGame(true)
+    // if (game.foundCount >= INTRUDER_COUNT) endGame(true)
+    sceduleRespawn()
   }
 
   //detection effects and raccoons
@@ -705,14 +755,14 @@ function setupGame(k, fonts, refs) {
     ])
     hud.count = k.add([
       k.pos(GAME_CANVAS.width - 190, 74),
-      k.text(`0 / ${INTRUDER_COUNT}`, { size: 18, font: fonts.mono }),
+      k.text("0", { size: 18, font: fonts.mono }),
       k.color(...GAME_COLORS.red),
       k.fixed(),
       k.z(Z_HUD),
     ])
     hud.countLabel = k.add([
       k.pos(GAME_CANVAS.width - 190, 60),
-      k.text("INTRUDERS", { size: 11, font: fonts.mono }),
+      k.text("INTRUDERS CAUGHT", { size: 11, font: fonts.mono }),
       k.color(...GAME_COLORS.dim),
       k.fixed(),
       k.z(Z_HUD),
@@ -739,7 +789,7 @@ function setupGame(k, fonts, refs) {
     const ss = String(Math.floor(t % 60)).padStart(2, "0")
     hud.timer.text = `${mm}:${ss}`
     hud.timer.color = t <= 20 ? col(GAME_COLORS.red) : col(GAME_COLORS.ink)
-    hud.count.text = `${game.foundCount} / ${INTRUDER_COUNT}`
+    hud.count.text = `${game.foundCount}`
   }
 
   //Intro/win/lose screens
@@ -785,8 +835,8 @@ function setupGame(k, fonts, refs) {
     )
     panelLines(x, w, y + 34, [
       ["NIGHTWATCH", 24, GAME_COLORS.ink],
-      [`${INTRUDER_COUNT} INTRUDERS DETECTED`, 14, GAME_COLORS.red],
-      ["Locate all of them before time runs out.", 13, GAME_COLORS.dim],
+      ["INTRUDERS AT LARGE", 14, GAME_COLORS.red],
+      ["Catch as many as you can before time runs out.", 13, GAME_COLORS.dim],
       ["", 6, GAME_COLORS.dim],
       ["PRESS ENTER OR TAKEOFF TO START", 15, GAME_COLORS.success],
     ])
@@ -814,16 +864,11 @@ function setupGame(k, fonts, refs) {
     // const ss = String(Math.floor(t % 60)).padStart(2, "0")
     // const remaining = INTRUDER_COUNT - game.foundCount
 
-    const lines = won
-      ? [
-          ["MISSION COMPLETE", 22, GAME_COLORS.success],
-          ["PRESS R OR TAKEOFF TO PLAY AGAIN", 18, GAME_COLORS.success],
-        ]
-      : [
-          ["MISSION FAILED", 22, GAME_COLORS.red],
-          ["PRESS R OR TAKEOFF TO TRY AGAIN", 18, GAME_COLORS.red],
-        ]
-    panelLines(x, w, y + 34, lines)
+    panelLines(x, w, y + 34, [
+      ["MISSION COMPLETE", 22, GAME_COLORS.success],
+      [`CAUGHT ${game.foundCount}`, 18, GAME_COLORS.ink],
+      ["PRESS R OR TAKEOFF TO PLAY AGAIN", 18, GAME_COLORS.ink],
+    ])
   }
 
   //game flow
@@ -834,9 +879,9 @@ function setupGame(k, fonts, refs) {
   }
 
   //make end game function here
-  function endGame(won) {
-    game.phase = won ? "won" : "lost"
-    showEndPanel(won)
+  function endGame() {
+    game.phase = "won"
+    showEndPanel()
   }
 
   function resetGame() {
@@ -863,7 +908,7 @@ function setupGame(k, fonts, refs) {
   //primary actions ENTER, R and TAKEOFF
   function primaryAction() {
     if (game.phase === "intro") startGame()
-    else if (game.phase === "won" || game.phase === "lost") resetGame()
+    else if (game.phase === "won") resetGame()
   }
 
   //boot the thing
@@ -881,13 +926,14 @@ function setupGame(k, fonts, refs) {
       if (game.phase === "intro") startGame()
     })
     k.onKeyPress("r", () => {
-      if (game.phase === "won" || game.phase === "lost") resetGame()
+      if (game.phase === "won") resetGame()
     })
 
     k.onUpdate(() => {
       const dt = k.dt()
 
       if (game.phase === "playing") {
+        decayUnrefreshedInputs()
         handleRotation(dt)
         handleMovement(dt)
         updateIntruders(dt)
@@ -895,7 +941,7 @@ function setupGame(k, fonts, refs) {
         game.timeLeft -= dt
         if (game.timeLeft <= 0) {
           game.timeLeft = 0
-          endGame(false)
+          endGame()
         }
       }
 
