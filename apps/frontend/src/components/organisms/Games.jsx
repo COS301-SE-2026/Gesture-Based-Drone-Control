@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from "react"
 import { API_BASE_URL } from "@/lib/api"
 import { Card, Label } from "../atoms"
-import { GestureCameraFeed } from "../molecules"
+import { GestureCameraFeed, GameControlGuide } from "../molecules"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
 import { useGamepadControl } from "@/hooks/useGamepadControl"
 import { useGestureControl } from "@/hooks/useGestureControl"
@@ -270,7 +270,14 @@ const Games = () => {
         )}
       </div>
 
-      <LeaderboardPanel gameId={activeGameId} gameLabel={activeGame?.label} />
+      <div className="flex gap-md items-start">
+        <div className="flex-1 basis-0 min-w-0">
+          <LeaderboardPanel gameId={activeGameId} gameLabel={activeGame?.label} />
+        </div>
+        <div className="flex-1 basis-0 min-w-0">
+          <GameControlGuide activeInput={input} />
+        </div>
+      </div>
     </div>
   )
 }
