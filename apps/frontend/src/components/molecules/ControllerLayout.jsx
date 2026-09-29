@@ -214,20 +214,8 @@ const ControllerLayout = ({ className = "" }) => {
           )
         )}
 
-        {(isPressed(7) ? ["rb", "rt"] : ["rt", "rb"]).map((id) =>
-          id === "rt" ? (
-            <rect
-              key="rt"
-              data-testid="btn-rt"
-              x="520"
-              y="0"
-              width="150"
-              height="65"
-              rx="10"
-              strokeWidth="2"
-              className={btnFill(7)}
-            />
-          ) : (
+        {(isPressed(7) ? ["rt", "rb"] : ["rb", "rt"]).map((id) =>
+          id === "rb" ? (
             <rect
               key="rb"
               data-testid="btn-rb"
@@ -238,6 +226,18 @@ const ControllerLayout = ({ className = "" }) => {
               rx="10"
               strokeWidth="2"
               className={btnFill(5)}
+            />
+          ) : (
+            <rect
+              key="rt"
+              data-testid="btn-rt"
+              x="520"
+              y="0"
+              width="150"
+              height="65"
+              rx="10"
+              strokeWidth="2"
+              className={btnFill(7)}
             />
           )
         )}

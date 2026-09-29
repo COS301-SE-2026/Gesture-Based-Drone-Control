@@ -10,6 +10,7 @@ REST:
     POST game/disconnect
 
 WebSockets:
+    WS game/commands
 
 The game adapter is also implicitly reachable via POST /drone/connect
 which enforces mutual exclusivity. this file also provides POST /game/connect

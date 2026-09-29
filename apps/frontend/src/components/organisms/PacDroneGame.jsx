@@ -1,7 +1,11 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useGameCommands } from "@/hooks/useGameCommands"
 import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
 import { GAME_CANVAS } from "@/lib/gameTheme"
+
+import { submitScore } from "@/lib/leaderboard"
+
+import { ScoreNamePrompt } from "../molecules/ScoreNamePrompt"
 
 import eatSound from "@/assets/games/pac/eat.mp3"
 import powerSound from "@/assets/games/pac/power.mp3"
@@ -19,16 +23,16 @@ import margitSound from "@/assets/games/pac/margit.mp3"
 const MAZE_A = [
   "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
   "G......................................G",
-  "W..WWW..W..WWW.W.P.WWW.WWW.WW.W.WWW.W..W",
-  "W..Wo..W.W.WWW.WWW..W..W.W.WW..oW...W..W",
+  "W..WWW..W..WWW.W.P.WWW.WWW.WWWW.WWW.W..W",
+  "W..Wo..W.W.WWW.WWW..W..W W.W..WoW......W",
   "W..WWW.W.W.W.....W..W..WWW.W..W.WWW.W..W",
   "W......................................W",
   "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W..W",
-  "W.W......W..G..W.W.G..W..W..G...W...W..W",
+  "W.W......W.....W.W....W..W......W...W..W",
   "W.W.WWWW.W.WWW.W.W.WW..W.W.......WoW...W",
-  " ...Wo...............G...WWWWWW...W.... ",
+  " ...Wo...................WWWWWW...W.... ",
   "W.W.WWWW.W.WWW.W.W.WW..W.W.......W.W...W",
-  "W.W......W..G..W.W.G..W..W..G...W...W..W",
+  "W.W......W..G..W.W....W..W......W...W..W",
   "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W..W",
   "G......................................G",
   "W..WWWWW...WWW.W..W.W..W.W.WWWWW..WWW..W",
@@ -36,7 +40,7 @@ const MAZE_A = [
   "W.W..W..W.W.WW.WWWW.WoW..W.W.W.W..W....W",
   "W.W..W..W.WoWW.W..W.W..WoW.W.W.W...WW..W",
   "W.W..W..W.W....W..W.W...WW.W.W.W.W...W.W",
-  "W.W.GW..W..WWW.W..W.WGW..W.W.WGW..WWW..W",
+  "W.W..W..W..WWW.W..W.W.W..W.W.W.W..WWW..W",
   "G......................................G",
   "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
 ]
@@ -58,8 +62,6 @@ const col_power = [255, 255, 25]
 const col_player = [255, 220, 0]
 const col_ghost = [90, 5, 5]
 const col_scared = [12, 100, 12]
-
-// for font caching just a temp fix
 
 export default function PacDroneGame() {
   const canvasRef = useRef(null)
@@ -95,6 +97,8 @@ export default function PacDroneGame() {
       }
     }
   })
+
+  const [pendingEntry, setPendingEntry] = useState(null)
 
   useKaplayCanvas(canvasRef, (k, fonts) => {
     //asset imports
@@ -295,7 +299,7 @@ export default function PacDroneGame() {
       ])
 
       // actual player
-      const PLAYER_SPEED = tile * 7
+      const PLAYER_SPEED = tile * 6
       const GHOST_SPEED = tile * 3.5
       const ALIGN_THRESHOLD = 3
 
@@ -613,6 +617,14 @@ export default function PacDroneGame() {
         k.color(...col_power),
       ])
 
+      // chuck the name prompt on screen and just hope the user does the thing
+      submitScore("pacman", score)
+        .then((entry) => setPendingEntry({ id: entry.id }))
+        .catch((err) => {
+          // dont care enough
+          console.error("Failed to submit score:", err)
+        })
+
       k.add([
         k.text(`Score: ${score}`, { size: 38, font: fonts.mono }),
         k.anchor("center"),
@@ -634,6 +646,14 @@ export default function PacDroneGame() {
     k.scene("lose", (score = 0, mazeIndex = 0) => {
       k.play("margit")
 
+      // chuck the name prompt on screen and just hope the user does the thing
+      submitScore("pacman", score)
+        .then((entry) => setPendingEntry({ id: entry.id }))
+        .catch((err) => {
+          // dont care enough
+          console.error("Failed to submit score:", err)
+        })
+
       k.add([
         k.text("YOU DIED", { size: 122, font: fonts.heading }),
         k.anchor("center"),
@@ -643,7 +663,7 @@ export default function PacDroneGame() {
       k.add([
         k.text(`Score: ${score}`, { size: 38, font: fonts.mono }),
         k.anchor("center"),
-        k.pos(w / 2, h / 2 + 50),
+        k.pos(w / 2, h / 2 + 10),
         k.color(...col_wall),
       ])
       k.add([
@@ -652,7 +672,7 @@ export default function PacDroneGame() {
           font: fonts.mono,
         }),
         k.anchor("center"),
-        k.pos(w / 2, h / 2 + 270),
+        k.pos(w / 2, h / 2 + 170),
         k.color(120, 120, 140),
       ])
       k.wait(0.3, () => {
@@ -674,10 +694,18 @@ export default function PacDroneGame() {
     k.onLoad(() => k.go("title"))
   })
   return (
-    <canvas
-      ref={canvasRef}
-      className="w-full rounded-xl"
-      style={{ aspectRatio: "16/9" }}
-    />
+    <div className="relative w-full">
+      <canvas
+        ref={canvasRef}
+        className="w-full rounded-xl"
+        style={{ aspectRatio: "16/9" }}
+      />
+      {pendingEntry && (
+        <ScoreNamePrompt
+          entryId={pendingEntry.id}
+          onDone={() => setPendingEntry(null)}
+        />
+      )}
+    </div>
   )
 }

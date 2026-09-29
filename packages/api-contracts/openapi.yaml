@@ -848,6 +848,104 @@ paths:
               schema:
                 $ref: '#/components/schemas/FlightSummaryStats'
 
+  # --------------------------------------------------------------- leaderboard
+
+  /api/leaderboard/scores:
+    post:
+      summary: Submit a game score
+      description: |
+        Saves a score immediately when a game ends. The display name may be
+        attached later using the name endpoint.
+      tags:
+        - leaderboard
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitScoreRequest'
+      responses:
+        '201':
+          description: Score successfully submitted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardEntryResponse'
+        '401':
+          description: Not authenticated.
+
+  /api/leaderboard/scores/{entry_id}/name:
+    patch:
+      summary: Set the display name for a score
+      description: |
+        Attaches a display name to a score previously submitted by the
+        authenticated user.
+      tags:
+        - leaderboard
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: entry_id
+          in: path
+          required: true
+          description: ID of the leaderboard entry.
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetNameRequest'
+      responses:
+        '200':
+          description: Display name successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardEntryResponse'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Score not found.
+
+  /api/leaderboard/scores/{game_id}:
+    get:
+      summary: Get top scores
+      description: Returns the top scores for a game.
+      tags:
+        - leaderboard
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          description: Identifier of the game.
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of scores to return.
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Top scores for the specified game.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderboardEntryResponse'
+        '401':
+          description: Not authenticated.
+
 components:
   securitySchemes:
     refreshCookie:
@@ -1580,3 +1678,39 @@ components:
         - HOVER
         - EMERGENCY_STOP
         - ANALOG
+      
+    # ------------------------------------------------------------- leaderboard
+
+    SubmitScoreRequest:
+      type: object
+      required: [game_id, score]
+      properties:
+        game_id:
+          type: string
+        score:
+          type: integer
+
+    SetNameRequest:
+      type: object
+      required: [display_name]
+      properties:
+        display_name:
+          type: string
+
+    LeaderboardEntryResponse:
+      type: object
+      required: [id, game_id, score, display_name, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        game_id:
+          type: string
+        score:
+          type: integer
+        display_name:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
