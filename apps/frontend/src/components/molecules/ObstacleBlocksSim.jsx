@@ -81,5 +81,51 @@ function buildDrone(frame, red, geos) {
 
     drone.scale.setScalar(DRONE_SCALE)
     return { drone, props }
+}
 
+function buildWall(wall, fill, line, holeMat, geos){
+    const group = new THREE.Group()
+    const S = XY_STEP
+    const left = (BOUNDS.minX -0.5) *S
+    const right = (BOUNDS.maxX +0.5) *S
+    const bottom = (BOUNDS.minY -0.5) *S
+    const top = (BOUNDS.maxY +0.5) *S
+    const hx0= (wall.hole.x -0.5) *S
+    const hx1 = (wall.hole.x +0.5) * S
+    const hy0 = (wall.hole.y -0.5) *S
+    const hy1 = (wall.hole.y +0.5) *S
+
+    const addSlab = (x0,x1,y0,y1) =>
+    {
+        const w = x1-x0
+        const h = y1-y0
+
+        if (w <=0 || h<=0) return
+        const geo = new THREE.BoxGeometry(w,h, WALL_DEPTH)
+        const edges = new THREE.EdgesGeometry(geo)
+        geos.push(geo,edges)
+
+        const slab = new THREE.Mesh(geo,fill)
+        slab.position.set(x0 + w /2, y0 + h/2,0)
+        const outline = new THREE.LineSegments(edges,line)
+        outline.position.copy(slab.position)
+        group.add(slab, outline)
+    }
+
+    addSlab(left, hx0, bottom,top)
+    addSlab(hx1, right, bottom, top)
+    addSlab(hx0, hx1, bottom, hy0)
+    addSlab(hx0, hx1, hy1, top)
+
+    const holeGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(hx0, hy0, WALL_DEPTH/2+0.01),
+        new THREE.Vector3(hx1, hy0, WALL_DEPTH/2+0.01),
+        new THREE.Vector3(hx1, hy1, WALL_DEPTH/2+0.01),
+        new THREE.Vector3(hx0, hy1, WALL_DEPTH/2+0.01),
+    ])
+    geos.push(holeGeo)
+    group.add(new THREE.LineLoop(holeGeo.holeMat))
+
+    group.position.z = wall.z * Z_STEP
+    return group
 }
