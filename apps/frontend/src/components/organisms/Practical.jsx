@@ -4,6 +4,7 @@ import { ModuleCard, ExerciseModal } from "../molecules"
 
 const MODULES = [
   {
+    id: "basic-maneuvers",
     title: "Basic Maneuvers",
     description:
       "Fly up, down, left and right to get comfortable with the controls.",
@@ -11,6 +12,7 @@ const MODULES = [
   },
 
   {
+    id: "obstacle-blocks",
     title: "Obstacle Blocks",
     description:
       "Navigate through a course of static blocks without touching them.",
@@ -18,12 +20,14 @@ const MODULES = [
   },
 
   {
+    id: "figure-8",
     title: "Figure-8",
     description: "Trace a smooth figure-8 pattern around two markers.",
     difficulty: "Advanced",
   },
 
   {
+    id: "mock-test",
     title: "Mock test",
     description:
       "A timed run combining everything above - the closest thing to youur real skills test.",
@@ -33,25 +37,19 @@ const MODULES = [
 ]
 
 export default function Practical() {
-  //setCompletedModules , add it to the below when connecting
-  const [completedModules] = useState([])
+  const [completedModules, setCompletedModules] = useState([])
   const [activeModule, setActiveModule] = useState(null)
 
-  const getStatus = (idx) => {
-    if (completedModules.includes(idx)) return "completed"
-    if (idx === 0 || completedModules.includes(idx - 1)) return "available"
-    return "locked"
-  }
+  const getStatus = (idx) =>
+    completedModules.includes(idx) ? "completed" : "available"
 
   const handleStart = (idx) => {
-    if (getStatus(idx) === "locked") return
     setActiveModule(idx)
   }
 
-  // when the game is done this part can be wired up
-  // const handleComplete = (idx) => {
-  //     setCompletedModules((prev) => (prev.includes(idx) ? prev : [ ...prev,idx]))
-  // }
+  const handleComplete = (idx) => {
+    setCompletedModules((prev) => (prev.includes(idx) ? prev : [...prev, idx]))
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 md:px-6 py-10 flex flex-col gap-4">
@@ -111,6 +109,7 @@ export default function Practical() {
       <ExerciseModal
         open={activeModule !== null}
         onClose={() => setActiveModule(null)}
+        onComplete={() => handleComplete(activeModule)}
         module={activeModule !== null ? MODULES[activeModule] : null}
       />
     </div>
