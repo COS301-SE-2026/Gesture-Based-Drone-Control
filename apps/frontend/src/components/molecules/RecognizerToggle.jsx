@@ -32,28 +32,36 @@ export default function RecognizerToggle({ className = "" }) {
 
   return (
     <Card variant="glass" className={className}>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <Label size="md">Recognizer</Label>
-          <p className="text-sm text-dim max-w-sm">
+          <p className="text-sm text-dim min-h-[2.5rem] max-w-sm">
             {active
               ? active.blurb
               : "how the backend turns your hands into commands."}
           </p>
         </div>
-        <div className="=flex gap-3">
-          {modes.map((m) => (
+        <div className="flex w-full gap-1 rounded-lg bg-white/5 p-1">
+          {modes.map((m) => {
+            const isActive = mode === m.id
+            const isDisabled = loading || pending || !available.includes(m.id)
+
+            return (
             <Button
               key={m.id}
-              variant={mode === m.id ? "default" : "secondary"}
-              disabled={loading || pending || !available.includes(m.id)}
+              variant={isActive ? "default" : "ghost"}
+              disabled={isDisabled}
               onClick={() => switchMode(m.id)}
-              className="flex-1 h-10"
-              aria-pressed={mode === m.id}
+              aria-pressed={isActive}
+              title={isDisabled && !loading ? "not available" : m.blurb}
+              className={`h-9 flex-1 text-sm transition-colors ${
+                isDisabled ? "opacity-40" : ""
+              }`}
             >
               {m.label}
             </Button>
-          ))}
+           )
+        })}
         </div>
 
         {notice && debugMode && <p className="text-xs text-error">{notice}</p>}
