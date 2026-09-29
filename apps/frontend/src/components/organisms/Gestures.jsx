@@ -448,10 +448,11 @@ const GestureControl = () => {
               onKeyboardResp={handleKeyboardResp}
             />
           </div>
-          <div data-tour="sim-viewer">
+          <div className="flex-1 min-h-0" data-tour="sim-viewer">
             <DroneFeedPanel
               droneMode={droneMode}
               connectionStatus={connectionStatus}
+              className="h-full"
             />
           </div>
         </div>

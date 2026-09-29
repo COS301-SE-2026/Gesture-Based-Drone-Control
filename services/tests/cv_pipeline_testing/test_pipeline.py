@@ -149,10 +149,14 @@ class _FakeEngine:
 	def __init__(self):
 		self.process_calls = 0
 		self.recognizer = None
+		self.stabilizer = None
 		self.stabilizer_resets = 0
 
 	def set_recognizer(self, recognizer):
 		self.recognizer = recognizer
+
+	def set_stabilizer(self, stabilizer):
+		self.stabilizer = stabilizer
 
 	def reset_stabilizer(self):
 		self.stabilizer_resets += 1
