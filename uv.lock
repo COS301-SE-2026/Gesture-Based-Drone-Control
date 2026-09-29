@@ -233,6 +233,8 @@ dev = [
     { name = "pytest-asyncio", specifier = ">=1.3.0" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "pytest-timeout", specifier = ">=2.4.0" },
+    { name = "pyyaml", specifier = ">=6.0" },
+    { name = "radon", specifier = ">=6.0.1" },
     { name = "ruff", specifier = ">=0.15.12" },
     { name = "setuptools", specifier = ">=68" },
     { name = "wheel" },
