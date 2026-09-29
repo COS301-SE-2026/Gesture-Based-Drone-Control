@@ -59,7 +59,7 @@ async def _with_client(body):
 			return await body(client)
 
 
-# REST 
+# REST
 
 
 async def _load(client: httpx.AsyncClient, clients: int):
@@ -250,7 +250,7 @@ def test_command_round_trip(live_client: TestClient):
 	assert stats['p95'] <= TARGET_COMMAND_RTT_P95_MS, f'command RTT p95 {stats["p95"]} ms'
 
 
-# auth 
+# auth
 
 
 def test_login_latency():

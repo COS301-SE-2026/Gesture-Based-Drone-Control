@@ -1,6 +1,6 @@
 """
 QR-44 / NFR5.1 -> predicted time-to-first-flight for a novice, keystroke-level
-model built from the real forms, tutorial media, calibration constants and measured 
+model built from the real forms, tutorial media, calibration constants and measured
 system response times <= 5 min
 QR-45 / NFR5.1 -> observed: participants who finished the basic flight within
 5 minutes (from the usability study log)
@@ -35,11 +35,11 @@ TARGET_SUS = 85.0
 TARGET_WITHIN_5_MIN_PCT = 80.0
 
 # QR-44 keystroke-level model
-K = 0.28 # keystroke, average non-secretary typist (~40 wpm)
-P = 1.10 # point with the mouse
-B = 0.10 # mouse button press/release
-H = 0.40 # home hand between mouse and keyboard
-M = 1.35 # mental preparation
+K = 0.28  # keystroke, average non-secretary typist (~40 wpm)
+P = 1.10  # point with the mouse
+B = 0.10  # mouse button press/release
+H = 0.40  # home hand between mouse and keyboard
+M = 1.35  # mental preparation
 
 NOVICE_ALLOWANCE = 2.0
 
@@ -97,7 +97,7 @@ def test_predicted_time_to_first_flight():
 	video_s = sum(_clip_seconds(c) for c in clips)
 
 	phases = {
-		# launch: wait for the window 
+		# launch: wait for the window
 		'open app': cold_s,
 		# signup: first, last, email, password, confirm, terms tick, submit
 		'sign up': _field(6)
@@ -166,7 +166,7 @@ def test_predicted_time_to_first_flight():
 	assert passed, f'predicted {predicted} s to first flight: {phases}'
 
 
-#QR-45 / QR-46 usability study
+# QR-45 / QR-46 usability study
 
 SUS_ITEMS = [f'sus_q{i}' for i in range(1, 11)]
 
@@ -487,7 +487,7 @@ def test_error_messages_are_actionable():
 	assert passed, f'{len(audit) - len(good)} of {len(audit)} errors fail NFR5.3'
 
 
-# QR-48 input parity 
+# QR-48 input parity
 
 
 def test_every_command_reachable_without_gestures():
@@ -565,7 +565,7 @@ def _gamepad_emits() -> set:
 	return seen
 
 
-# QR-49 feedback noise 
+# QR-49 feedback noise
 
 
 def test_held_gesture_logs_once():
