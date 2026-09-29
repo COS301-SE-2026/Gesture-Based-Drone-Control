@@ -147,5 +147,91 @@ export default function FIGUREEightSim ({ running, onComplete}) {
     armB.rotation.y = -Math.PI /4
     drone.add(armA, armB)
 
+    const props = []
+    const rotorGeo = new THREE.TorusGeometry(0.52,0.035,6,26)
+    const bladeGeo = new THREE.BoxGeometry(0.95,0.015,0.07)
+
+    const d = 1.06
+
+    ;[[d,d], [d,-d], [-d,d] , [-d,-d]].forEach(([px , pz]) => {
+        const ring = new THREE.Mesh(rotorGeo , red)
+        ring.rotation.x = Math.PI /2
+        ring.position.set(px,0.22,pz)
+        drone.add(ring)
+        const prop = new THREE.Group()
+        const b1 = new THREE.Mesh(bladeGeo,frame)
+        const b2 = b1.clone()
+        b2.rotation.y = Math.PI / 2
+        prop.add(b1,b2)
+        prop.position.set(px,0.24,pz)
+        drone.add(prop)
+        props.push(prop)
+    })
+
+
+    const legGeo = new THREE.BoxGeometry(0.06,0.5,0.06)
+    ;[-0.45,0.45].forEach((lx) => {
+        const leg = new THREE.Mesh(legGeo,frame)
+        leg.position.set(lx,-0.42,0)
+        drone.add(leg)
+    })
+
+    drone.scale.setScalar(0.32)
+    scene.add(drone)
+    droneRef.current = drone
+
+    const ringGeo = new THREE.TorusGeometry(0.32,0.02,6,28)
+    mats.current.rings = WAYPOINTS.map((wp) => {
+        const m = new THREE.MeshBasicMaterial({ transparent: true})
+        const mesh = new THREE.Mesh(ringGeo, m)
+        mesh.position.copy(toWorld(wp.x,wp.y,wp.z))
+        scene.add(mesh)
+        return {mesh,m}
+    })
+
+
+    const markerGeo = new THREE.CylinderGeometry(0.18,0.18,2.6,10,1,true)
+    mats.current.markers = MARKERS.map((mk) => {
+        const m = new THREE.MeshBasicMaterial({wireframe: true, transparent:true, opacity:0.8})
     
+
+
+    const mesh = new THREE.Mesh(markerGeo, m )
+    const world = toWorld(mk.x,1,mk.z)
+    mesh.position.set(world.x,world.y,world.z)
+    scene.add(mesh)
+    return { mesh, m}
+})
+
+const resize = () => {
+    const w = Math.max(1,mount.clientWidth)
+    const h = Math.max(1, mount.clientHeight)
+    camera.aspect = w/h 
+    camera.updateProjectionMatrix()
+    renderer.reSize(w,h)
+
+}
+
+resize()
+const ro = new ResizeObserver(resize)
+ro.observe(mount)
+
+
+let raf = 0
+let t = 0
+const prev = new THREE.Vector3()
+const tick = () => {
+    t += 0.016
+    prev.copy(drone.position)
+    drone.position.lerp(targetRef.current, reduced ? 1: 0.12)
+    const vx = drone.position.x - prev.x
+    const vy = drone.position.y - prev.y
+    const vz = drone.position.z - prev.z
+    if (!reduced) {
+        drone.position.y += Math.sin(t * 1.7) * 0.002
+        drone.rotation.z = THREE.MathUtils.lerp(drone.rotation.z, -vx * 6, 0.12)
+        drone.rotation.x = THTREE.MathUtils.lerp(drone.rotation.x, vz * 6 , 0.12
+            
+        )
+    }
 }
