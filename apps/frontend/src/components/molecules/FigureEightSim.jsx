@@ -230,8 +230,108 @@ const tick = () => {
     if (!reduced) {
         drone.position.y += Math.sin(t * 1.7) * 0.002
         drone.rotation.z = THREE.MathUtils.lerp(drone.rotation.z, -vx * 6, 0.12)
-        drone.rotation.x = THTREE.MathUtils.lerp(drone.rotation.x, vz * 6 , 0.12
-            
-        )
+        drone.rotation.x = THREE.MathUtils.lerp(drone.rotation.x, vz * 6 , 0.12)
+        void vy 
+        props.forEach((pr, i) => (pr.rotation.y += 0.55 + i * 0.03))
+        const current = mats.current.rings[idxRef.current]
+        if(current) current.mesh.scale.setScalar(1+ Math.sin(t * 4) * 0.06)
     }
+
+    renderer.render(scene, camera)
+    raf = requestAnimationFrame(tick)
 }
+
+raf = requestAnimationFrame(tick)
+
+
+return() => {
+    cancelAnimationFrame(raf)
+    ro.disconnect()
+    renderer.dispose()
+    if (renderer.domElement.parentNode === mount) renderer.domElement.remove()
+
+}
+},[])
+
+useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+        const css = getComputedStyle(document.documentElement)
+        const ink = css.getPropertyValue("--ink").trim()
+        const redToken = css.getPropertyValue("--red").trim()
+        const dim = css.getPropertyValue("--dim").trim()
+
+
+        mats.current.frame?.color.set(ink)
+        mats.current.red?.color.set(redToken) 
+        mats.current.markers.forEach(({m}) => m.color.set(dim))
+        mats.current.rings.forEach(({m , mesh}, i) => {
+            mesh.scale.setScalar(1)
+            if ( i === idx) {
+                m.color.set(redToken)
+                m.opacity = i < idx ? 0.12 : 0.35
+            }
+        })
+    })
+    return () => cancelAnimationFrame(raf)
+},[theme, idx])
+
+const linkLive = status == "open"
+const current = WAYPOINTS[idx]
+
+
+return (
+    <div className="relative flex-1 min-h-0 rounded-lg border-glassBrd bg-surface overflow-hidden">
+        <div ref={mountRef} className="absolute inset-0" aria-hidden="true"/>
+
+        <div className="absolute top-3 left-3 right-3 flex flex-col gap-1.5">
+            <span className="text-[10px] uppercase tracking-widest text-dim font-mono">
+                Step {Math.min(idx + 1,WAYPOINTS.length)} / {WAYPOINTS.length}
+            </span>
+
+            <span className="text-sm font-semibold text-ink flex items-center gap-2">
+                {done ? (
+                    <>
+                    <CheckCircle2 className="w-4 h-4 text-success"/> Figure-8 Complete
+                    </>
+                ):(
+                    current?.label
+                )}
+            </span>
+            <div className="flex gap-1">
+                {WAYPOINTS.map((wp,i) => (
+                    <span
+                    key={wp.label + i}
+                    className={`h-1 flex-1 rounded-full ${
+                        i < idx ? "bg-red" : i === idx ? "bg-ink" : "bg-line"
+                    }`}
+                    />
+                ))}
+            </div>
+        </div>
+
+        <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3 font-mono text-xs text-dim">
+            <div className="flex flex-col gap-0.5">
+                <span>Last command: {lastCmd ?? "none yet"}</span>
+                <span>Moves: {moves}</span>
+            </div>
+            <span className={linkLive ? "text-ink" : "text-dim"}>
+                {linkLive ? "Gesture link live" : "Connection to gestures"}
+            </span>
+        </div>
+
+        {(!running || done) && (
+            <div className="absolute inset-x-0 top-20 flex justify-center pointer-events-none">
+                <span className="rounded-full border border-glassBrd bg-glass px-3 py-1 text-xs text-ink">
+                    {done ? "Module complete" : "Press Start Exercise to begin"}
+                </span>
+            </div>
+
+        )}
+    </div>
+)
+}
+
+
+
+
+
