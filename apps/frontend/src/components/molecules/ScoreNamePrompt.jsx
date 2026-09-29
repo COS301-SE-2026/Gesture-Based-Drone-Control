@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react"
 import { setScoreName } from "@/lib/leaderboard"
 
-const AUTO_DISMISS_MS = 60000
+const AUTO_DISMISS_MS = 8000 // 8 seconds
 
 export function ScoreNamePrompt({ entryId, onDone }) {
   const [name, setName] = useState("")
