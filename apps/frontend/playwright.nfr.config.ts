@@ -15,7 +15,7 @@ export default defineConfig({
         ["html", {outputFolder: "playwright-report-nfr", open: "never"}],
     ],
     use: {
-        baseURL: "htpps://localhost:4173",
+        baseURL: "http://localhost:4173",
         trace: "retain-on-failure",
         screenshot: "only-on-failure",
     },
@@ -31,7 +31,7 @@ export default defineConfig({
     ],
     webServer: {
         command: "yarn build && yarn preview --port 4173 --strictPort",
-        url: "https://localhost:4173",
+        url: "http://localhost:4173",
         reuseExistingServer: !process.env.CI,
         timeout: 180 * 1000,
         env: {BACKENDPORT: "3001"},
