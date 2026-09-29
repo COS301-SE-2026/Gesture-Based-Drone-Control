@@ -12,87 +12,26 @@ import {
   ResponsiveContainer,
 } from "recharts"
 import { useTelemetry } from "@/context/TelemetryContext"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
-const MAX_LIVE_POINTS = 10
 //might change this depending
 const MS_TO_KMH = 3.6
 const API_BASE = "http://localhost:3001/api/analytics"
 
 const Analytics = () => {
-  const { telemetry } = useTelemetry()
 
-  //live, in sess charts, built client side from websocket
-  const [flightTelemetryData, setFlightTelemetryData] = useState([])
-  const [batteryHealthData, setBatteryHealthData] = useState([])
-  const startTimeRef = useRef(null)
-  const lastUpdateRef = useRef(0)
-  const [maxAltitude, setMaxAltitude] = useState(0)
-  const [maxSpeedKmh, setMaxSpeedKmh] = useState(0)
-  const [totalDistanceKm, setTotalDistanceKm] = useState(0)
-  const lastDisplacementRef = useRef(null)
-  const totalDistanceMetersRef = useRef(0)
 
-  useEffect(() => {
-    if (!telemetry) return
+  //live, in sess charts, built client side from websocket in telemProvider so it survives the switches
+  const {
+    telemetry,
+    speedSeries: flightTelemetryData,
+    batterySeries: batteryHealthData,
+    maxAltitude,
+    maxSpeedKmh,
+    totalDistanceM,
+  } = useTelemetry()
 
-    const now = Date.now()
-    if (now - lastUpdateRef.current < 1000) {
-      return
-    }
-    lastUpdateRef.current = now
-
-    if (startTimeRef.current === null) {
-      startTimeRef.current = Date.now()
-    }
-    const elapsedSec = (Date.now() - startTimeRef.current) / 1000
-    const label = `${elapsedSec.toFixed(1)}s`
-
-    Promise.resolve().then(() => {
-      if (typeof telemetry.altitude_m === "number") {
-        setMaxAltitude((prev) => Math.max(prev, telemetry.altitude_m))
-      }
-      if (typeof telemetry.speed_ms === "number") {
-        setMaxSpeedKmh((prev) => Math.max(prev, telemetry.speed_ms * MS_TO_KMH))
-      }
-
-      if (
-        typeof telemetry.x_displacement === "number" &&
-        typeof telemetry.y_displacement === "number"
-      ) {
-        if (lastDisplacementRef.current) {
-          const dx = telemetry.x_displacement - lastDisplacementRef.current.x
-          const dy = telemetry.y_displacement - lastDisplacementRef.current.y
-          const deltaMeters = Math.sqrt(dx * dx + dy * dy)
-          if (deltaMeters > 0.05) {
-            totalDistanceMetersRef.current += deltaMeters
-            setTotalDistanceKm(totalDistanceMetersRef.current / 1000)
-          }
-        }
-        lastDisplacementRef.current = {
-          x: telemetry.x_displacement,
-          y: telemetry.y_displacement,
-        }
-      }
-
-      setFlightTelemetryData((prev) => {
-        const next = [...prev, { time: label, value: telemetry.speed_ms ?? 0 }]
-        return next.length > MAX_LIVE_POINTS
-          ? next.slice(-MAX_LIVE_POINTS)
-          : next
-      })
-
-      setBatteryHealthData((prev) => {
-        const next = [
-          ...prev,
-          { time: label, health: telemetry.battery_pct ?? 0 },
-        ]
-        return next.length > MAX_LIVE_POINTS
-          ? next.slice(-MAX_LIVE_POINTS)
-          : next
-      })
-    })
-  }, [telemetry])
+  const totalDistanceKm = totalDistanceM / 1000
 
   //history data from db via backend
   const [flights, setFlights] = useState([])
@@ -229,7 +168,7 @@ const Analytics = () => {
                     borderRadius: "6px",
                     fontSize: "12px",
                   }}
-                  formatter={(value) => [`${value} m/s`, "Speed"]}
+                  formatter={(value) => [`${value} km/h`, "Speed"]}
                 />
                 <Line
                   type="monotone"
