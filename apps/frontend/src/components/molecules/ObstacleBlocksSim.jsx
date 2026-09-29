@@ -154,5 +154,61 @@ export default function ObstacleBlocksSim({ running, onComplete }){
     const [moving, setMoving] = useState(null)
     const done = idx >= STEPS.length
 
-    
+    useEffect( () => {
+        runningRef.current = running
+    }, [running])
+
+    useEffect(() => () => clearTimeout(flashTimerRef.current), [])
+
+    const showFlash = useCallback((msg) => {
+        setFlash(msg)
+        clearTimeout(flashTimerRef.current)
+        flashTimerRef.current = setTimeout(() => setFlash(null), 1200)
+    }, [])
+
+    const stop = useCallback(() => {
+        dirRef.current = null
+        setMoving(null)
+    },[])
+
+    const step = useCallback(
+        (delta) => {
+            const cur = posRef.current
+            const next = {
+                x: clamp(cur.x + delta[0], BOUNDS.minX, BOUNDS.maxX),
+                y: clamp(cur.y + delta[0], BOUNDS.minY, BOUNDS.maxY),
+                z: clamp(cur.z + delta[0], BOUNDS.minZ, BOUNDS.maxZ)
+            }
+
+            if (next.x === cur.x && next.y === cur.y && next.z === cur.z) return false
+
+            const hit = blockingWall(next)
+            if (hit !== -1){
+                setBumps((b) => b+1)
+                bumpRef.current = performance.now()
+                showFlash(`Hit wall ${hit+1}`)
+                return false
+            }
+
+            posRef.current = next
+            lastStepRef.current = performance.now()
+            targetRef.current.copy(toWorld(next.x, next.y, next.z))
+            setMoves((m) => m+1)
+
+            let i = idxRef.current
+            while (i<WALLS.length && next.z < WALLS[i].z) i+=1
+            if (i=== WALLS.length && next.z <= FINISH_Z) i = STEPS.length
+
+            if (i !== idxRef.current){
+                idxRef.current = i
+                setIdx(i)
+                if (i >= STEPS.length){
+                    doneRef.current = true
+                    onComplete?.()
+                    return false
+                }
+            }
+            return true
+
+        }, [onComplete, showFlash])
 }
