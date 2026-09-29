@@ -693,7 +693,7 @@ export default function PacDroneGame() {
 
     k.onLoad(() => k.go("title"))
   })
-    return (
+  return (
     <div className="relative w-full">
       <canvas
         ref={canvasRef}

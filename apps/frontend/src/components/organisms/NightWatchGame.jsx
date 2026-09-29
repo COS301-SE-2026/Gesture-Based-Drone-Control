@@ -134,13 +134,17 @@ export default function NightWatchGame() {
     }
   })
 
-
   useKaplayCanvas(canvasRef, (k, fonts) =>
-    setupGame(k, fonts, { inputRef, actionRef, lastInputAtRef, setPendingEntry })
+    setupGame(k, fonts, {
+      inputRef,
+      actionRef,
+      lastInputAtRef,
+      setPendingEntry,
+    })
   )
 
   return (
-      <div className="relative w-full">
+    <div className="relative w-full">
       <canvas
         ref={canvasRef}
         className="w-full rounded-xl"
@@ -898,14 +902,14 @@ function setupGame(k, fonts, refs) {
   function endGame() {
     game.phase = "won"
     showEndPanel()
-  
-   // chuck the name prompt on screen and just hope the user does the thing
-  submitScore("nightwatch", game.foundCount)
-    .then((entry) => setPendingEntry({ id: entry.id }))
-    .catch((err) => {
-      // dont care enough
-      console.error("Failed to submit score:", err)
-    })
+
+    // chuck the name prompt on screen and just hope the user does the thing
+    submitScore("nightwatch", game.foundCount)
+      .then((entry) => setPendingEntry({ id: entry.id }))
+      .catch((err) => {
+        // dont care enough
+        console.error("Failed to submit score:", err)
+      })
   }
 
   function resetGame() {
