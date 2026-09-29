@@ -672,7 +672,7 @@ export default function PacDroneGame() {
           font: fonts.mono,
         }),
         k.anchor("center"),
-        k.pos(w / 2, h / 2 + 270),
+        k.pos(w / 2, h / 2 + 170),
         k.color(120, 120, 140),
       ])
       k.wait(0.3, () => {

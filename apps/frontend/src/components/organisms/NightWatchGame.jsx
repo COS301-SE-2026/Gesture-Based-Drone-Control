@@ -30,7 +30,7 @@ import {
   hasLineOfSight,
 } from "../../constants/DroneSearchgameUtils"
 
-const GAME_TIME = 5 //sec
+const GAME_TIME = 90 //sec
 const DRONE_RADIUS = 15
 const DRONE_MOVE_SPEED = 200 //px/s
 const DRONE_ROT_SPEED = 100 //deg/s
