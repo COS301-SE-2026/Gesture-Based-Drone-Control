@@ -147,10 +147,10 @@ def _make_handler(state: AppState):
 
 
 @router.post(
-    '/connect', 
-    response_model=ConnectInputResponse,
-    responses={503: {'description': 'Camera unavailable, the gesture pipeline could not start'}}
-    )
+	'/connect',
+	response_model=ConnectInputResponse,
+	responses={503: {'description': 'Camera unavailable, the gesture pipeline could not start'}},
+)
 async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, Depends(get_state)]):
 	"""
 	Connect an input adapter and wire it to the active drone.
