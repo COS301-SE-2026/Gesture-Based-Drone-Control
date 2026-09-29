@@ -48,7 +48,7 @@ PALM_POINTS = (WRIST, INDEX_MCP, MIDDLE_MCP, RING_MCP, PINKY_MCP)
 FRAME_ASPECT = 640 / 480
 SWIPE_WINDOW_SECONDS = 0.45
 # how much trajectory history to classify over
-BUFFER_SECONDS = 1.2
+BUFFER_SECONDS = 2.0
 # hand gone for longer than this and track is thrwon away not resumed
 STALE_SECONDS = 0.4
 # keep reporting a detected motion for this long so consumer sees its
@@ -84,6 +84,16 @@ CONTINUOUS_RANGE = 2.0
 
 # min samples before any classification is attempted
 MIN_SAMPLES = 5
+
+CLUTCH_MIN_FINGERS = 4
+
+# a swipe ends, a circle doesnt, before a swipe is accepted the hand must have
+# come to rest, the last SWIPE_SETTLE_SECONDS of the path must be slower
+# than SWIPE_SETTLE_SPEED palm widths per second. The opening quarter of a
+# circle os a fast straight move and is otherwise indsitinguishable from a swip,
+# but hand never stops there, so it held back and the loop closes
+SWIPE_SETTLE_SECONDS = 0.14
+SWIPE_SETTLE_SPEED = 1.6
 
 
 @dataclass(frozen=True)
@@ -126,6 +136,11 @@ class _HandTrack:
 	def clear_buffer(self) -> None:
 		"""Toss trajecotry histroy w/o losing nuetral origin"""
 		self.points.clear()
+
+	def disengage(self) -> None:
+		self.points.clear()
+		self.origin = None
+		self.latched = Gesture.UNKNOWN
 
 
 class MotionBasedRecognizer(GestureRecognizer):
@@ -188,6 +203,21 @@ class MotionBasedRecognizer(GestureRecognizer):
 		point = self._sample(hand, now)
 		track.last_seen = now
 
+		finger_state = self._finger_helper.interpret_gesture(hand).finger_state
+
+		# clutch: a closed hand stops all tracking. The buffer and origin are
+		# dropped, so moving back to the centre of frame with a fist costs
+		# nothing and the next open-palm gesture starts from a clean slate
+		if finger_state.count < CLUTCH_MIN_FINGERS:
+			track.disengage()
+			return GestureResult(
+				gesture=Gesture.UNKNOWN,
+				finger_state=finger_state,
+				handedness=hand.handedness,
+				confidence=hand.confidence,
+				motion=MotionVector(),
+			)
+
 		if track.origin is None:
 			track.origin = point
 
@@ -196,7 +226,6 @@ class MotionBasedRecognizer(GestureRecognizer):
 
 		gesture = self._resolve(track, now)
 		motion = self._continuous(track, point)
-		finger_state = self._finger_helper.interpret_gesture(hand).finger_state
 
 		return GestureResult(
 			gesture=gesture,
@@ -309,7 +338,7 @@ class MotionBasedRecognizer(GestureRecognizer):
 				return circle
 
 		recent = [p for p in points if (last.t - p.t) <= SWIPE_WINDOW_SECONDS]
-		if len(recent) >= MIN_SAMPLES:
+		if self._has_settled(points, scale) and len(recent) >= MIN_SAMPLES:
 			swipe = self._classify_swipe_window(recent, scale)
 			if swipe is not Gesture.UNKNOWN:
 				return swipe
@@ -361,6 +390,30 @@ class MotionBasedRecognizer(GestureRecognizer):
 				return Gesture.SWIPE_DOWN if dy > 0 else Gesture.SWIPE_UP
 
 		return Gesture.UNKNOWN
+
+	@staticmethod
+	def _has_settled(points: list[Trackpoint], scale: float) -> bool:
+		"""
+		True when the hand has stopped moving at the end of the path
+
+		This is what separates a swipe from the first quarter of a circle. Both
+		cover the same ground at the same speed, but a swipe finishes and the
+		hand holds still, while a circle carries straight on into the next arc
+		"""
+		last = points[-1]
+		tail = [p for p in points if (last.t - p.t) <= SWIPE_SETTLE_SECONDS]
+		if len(tail) < 2:
+			return False
+
+		elapsed = tail[-1].t - tail[0].t
+		if elapsed <= 0:
+			return False
+
+		travelled = 0.0
+		for a, b in zip(tail, tail[1:]):
+			travelled += math.hypot(b.x - a.x, b.y - a.y)
+
+		return (travelled / scale) / elapsed < SWIPE_SETTLE_SPEED
 
 	def _classify_swipe_window(self, points: list[Trackpoint], scale: float) -> Gesture:
 		"""Measure a swipe over the recent slice, then classify it"""

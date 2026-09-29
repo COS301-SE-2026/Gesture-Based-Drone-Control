@@ -82,7 +82,7 @@ class MotionAdapter(GestureAdapter):
 	TWO_HAND_MAP = MOTION_TWO_HAND_MAP
 	ASYMMETRICAL_TWO_HAND_MAP = MOTION_ASYMMETRICAL_TWO_HAND_MAP
 	SINGLE_HAND_MAP = MOTION_SINGLE_HAND_MAP
- 
+
 	ENABLE_ANALOG = False
 
 	def __init__(self, idle_timeout_s=MOTION_IDLE_TIMEOUT_S, **kwargs: Any):
