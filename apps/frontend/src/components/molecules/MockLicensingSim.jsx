@@ -24,6 +24,8 @@ const DRONE_SCALE = 0.22
 const WALL_FILL = "#3a3f44"
 const WALL_EDGE = "#6b7178"
 
+const TIME_LIMIT_S = 60
+
 const WALLS = [
   { z: -3, hole: { x: -2, y: 1 }, label: "Clear wall 1" },
   { z: -6, hole: { x: 2, y: -1 }, label: "Clear wall 2" },
@@ -170,11 +172,36 @@ export default function MockLicensing({ running, onComplete }) {
   const [moving, setMoving] = useState(null)
   const done = idx >= STEPS.length
 
+  const failedRef = useRef(false)
+  const [timeLeft, setTimeLeft] = useState(TIME_LIMIT_S)
+  const [failed, setFailed] = useState(false)
+
   useEffect(() => {
     runningRef.current = running
   }, [running])
 
   useEffect(() => () => clearTimeout(flashTimerRef.current), [])
+
+  useEffect( () => {
+
+    if (!running || done || failed) return undefined
+
+    const start = performance.now()
+    const id = setInterval (() => {
+      const remaining = TIME_LIMIT_S - (performance.now() - start) / 1000
+      if (remaining <= 0){
+        clearInterval(id)
+        failedRef.current = true
+        setTimeLeft(0)
+        setFailed(true)
+        dirRef.current = null
+        setMoving(null)
+        return
+      }
+      setTimeLeft(Math.ceil(remaining))
+    }, 250)
+    return () => clearInterval(id)
+  }, [running, done, failed])
 
   const showFlash = useCallback((msg) => {
     setFlash(msg)
@@ -231,7 +258,7 @@ export default function MockLicensing({ running, onComplete }) {
 
   const handleCommand = useCallback(
     (event) => {
-      if (!runningRef.current || doneRef.current) return
+      if (!runningRef.current || doneRef.current || failedRef.current) return
 
       setLastCmd(commandLabel(event.command))
 
@@ -257,7 +284,7 @@ export default function MockLicensing({ running, onComplete }) {
 
     const id = setInterval(() => {
       const dir = dirRef.current
-      if (!dir || doneRef.current) return
+      if (!dir || doneRef.current || failedRef.current) return
 
       if (performance.now() - lastStepRef.current < STEP_MS) return
       if (!step(dir)) stop()
@@ -499,6 +526,9 @@ export default function MockLicensing({ running, onComplete }) {
 
       <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3 font-mono text-xs text-dim">
         <div className="flex flex-col gap-0.5">
+          <span className={timeLeft<=10? "text-red font-semibold" : "text-ink"}>
+            Time left: {timeLeft}s
+          </span>
           <span>Last command: {lastCmd ?? "none yet"}</span>
           <span>Moves: {moves}</span>
           <span className={bumps > 0 ? "text-red" : undefined}>
@@ -513,10 +543,10 @@ export default function MockLicensing({ running, onComplete }) {
         </span>
       </div>
 
-      {(!running || done) && (
+      {(!running || done || failed) && (
         <div className="absolute inset-x-0 top-3 flex justify-center pointer-events-none">
           <span className="rounded-full border border-glassBrd bg-glass px-3 py-1 text-xs text-ink">
-            {done ? "Module complete" : "Press start exercise to begin"}
+            {done ? "Module complete" : failed ? "Times up - mock test failed" : "Press start exercise to begin"}
           </span>
         </div>
       )}

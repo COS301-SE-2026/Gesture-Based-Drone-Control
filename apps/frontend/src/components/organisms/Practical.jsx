@@ -43,7 +43,6 @@ export default function Practical() {
   
 
   const handleStart = (idx) => {
-    if (getStatus(idx) === "locked") return
     setActiveModule(idx)
   }
 
