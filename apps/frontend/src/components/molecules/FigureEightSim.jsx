@@ -153,8 +153,8 @@ export default function FigureEightSim ({ running, onComplete}) {
 
         const scene = new THREE.Scene()
         const camera = new THREE.PerspectiveCamera(52,1,0.1,100)
-        camera.position.set(0,1.5,8.5)
-        camera.lookAt(0,0.55,0)
+        camera.position.set(0,4.8,3.6)
+        camera.lookAt(0,0,-0.7)
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha:true })
         renderer.setPixelRatio(Math.min(window.devicePixelRatio,2))
@@ -209,32 +209,49 @@ export default function FigureEightSim ({ running, onComplete}) {
         drone.add(leg)
     })
 
-    drone.scale.setScalar(0.32)
+    drone.scale.setScalar(DRONE_SCALE)
     scene.add(drone)
     droneRef.current = drone
 
-    const ringGeo = new THREE.TorusGeometry(0.32,0.02,6,28)
-    mats.current.rings = WAYPOINTS.map((wp) => {
+    mats.current.rings = WAYPOINTS.map((wp,i) => {
+        const ringGeo = new THREE.TorusGeometry(i === WAYPOINTS.length -1 ? 0.5 : 0.36,0.025,6,32)
         const m = new THREE.MeshBasicMaterial({ transparent: true})
         const mesh = new THREE.Mesh(ringGeo, m)
-        mesh.position.copy(toWorld(wp.x,wp.y,wp.z))
+        mesh.rotation.x = Math.PI /2
+        mesh.position.copy(toWorld(wp.x,wp.z))
         scene.add(mesh)
         return {mesh,m}
     })
 
 
-    const markerGeo = new THREE.CylinderGeometry(0.18,0.18,2.6,10,1,true)
+    const markerGeo = new THREE.CylinderGeometry(0.14,0.14,1.1,10,1,true)
     mats.current.markers = MARKERS.map((mk) => {
         const m = new THREE.MeshBasicMaterial({wireframe: true, transparent:true, opacity:0.8})
     
 
 
     const mesh = new THREE.Mesh(markerGeo, m )
-    const world = toWorld(mk.x,1,mk.z)
-    mesh.position.set(world.x,world.y,world.z)
+    const world = toWorld(mk.x,mk.z)
+    mesh.position.set(world.x,FLOOR_Y + 0.55,world.z)
     scene.add(mesh)
     return { mesh, m}
 })
+
+
+const curvePts = figureEightPoints()
+const per = CURVE_POINTS / WAYPOINTS.lengthmats.current.legs = WAYPOINTS.map((_,i) => {
+    const pts = curvePts.slice(i * per, (i + 1) * per + 1)
+    const geo new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),24,0.03,6,false)
+    const m = new THREE.MeshBasicMaterial({transparent:true})
+    scene.add(new THREE.Mesh(geo,m))
+    return m
+})
+
+const grid = new THREE.GridHelper(10 * STEP,10 , 0xffffff , 0xffffff)
+grid.material.transparent = true
+grid.position.y = FLOOR_Y
+mats.current.grid = grid.material
+scene.add(grid)
 
 const resize = () => {
     const w = Math.max(1,mount.clientWidth)
