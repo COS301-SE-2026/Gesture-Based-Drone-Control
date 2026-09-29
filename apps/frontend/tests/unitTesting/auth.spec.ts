@@ -28,13 +28,13 @@ test.describe('Authentication' , () => {
         test('should render login form with email and the password fields man', async ({page}) => {
             await expect(page.getByText(/sign in to your account/i)).toBeVisible()
             await expect(page.getByLabel(/email address/i)).toBeVisible()
-            await expect(page.getByLabel(/password/i)).toBeVisible()
+            await expect(page.getByRole('textbox', {name: /^password$/i})).toBeVisible()
             await expect(page.getByRole('button' , {name: /sign in/i })).toBeVisible()
         })
     })
 
     test('should show the error when there is nothing in the email thingie',async ({page}) => {
-        await page.getByLabel(/password/i).fill('password123')
+        await page.getByRole('textbox', {name: /^password$/i}).fill('password123')
         await page.getByRole('button' ,  {name: /sign in/i }).click()
         await expect(page.getByText(/email is required/i)).toBeVisible()
     })
@@ -48,7 +48,7 @@ test.describe('Authentication' , () => {
 
     test('an error must show if the password is less than 8 characters3',async ({page}) => {
         await page.getByLabel(/email address/i).fill('Coffeeee@faah.com')
-        await page.getByLabel(/password/i).fill('lolYeah')
+        await page.getByRole('textbox', {name: /^password$/i}).fill('lolYeah')
         await page.getByRole('button',{name: /sign in/i }).click()
     })
 
