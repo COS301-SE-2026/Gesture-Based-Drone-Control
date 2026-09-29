@@ -1,4 +1,4 @@
-import { useState, memo } from "react"
+import { useState, memo, useEffect } from "react"
 import PropTypes from "prop-types"
 import { Card, Label, Button, StatusDot } from "../atoms"
 import {
@@ -6,6 +6,7 @@ import {
   Keyboard,
   Gamepad2,
   Hand,
+  Move,
   ArrowUp,
   ArrowDown,
   ArrowLeft,
@@ -23,12 +24,14 @@ import { useDroneControls } from "../../hooks/useDroneControls"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
 import { useGamepadControl } from "@/hooks/useGamepadControl"
 import { useGestureControl } from "@/hooks/useGestureControl"
+import { useRecognizerMode } from "@/context/RecognizerContext"
 import { useDebug } from "@/context/DebugContext"
 import ControllerLayout from "./ControllerLayout" //visual part of the controller which will show when it is swutched to the controller tab
 
 const tabs = [
   { id: "onscreen", label: "On Screen", icon: Monitor },
   { id: "gestures", label: "Gestures", icon: Hand },
+  { id: "motion", label: "Motion", icon: Move },
   { id: "keyboard", label: "Keyboard", icon: Keyboard },
   { id: "controller", label: "Controller", icon: Gamepad2 },
 ]
@@ -139,6 +142,20 @@ const inputMapping = {
     "Circle",
     "Triangle",
   ],
+  motion: [
+    "Push toward camera",
+    "Pull away from camera",
+    "Swipe left",
+    "Swipe right",
+    "Swipe up",
+    "Swipe down",
+    "Circle anticlockwise",
+    "Circle clockwise",
+    "Swipe up + Swipe up",
+    "Hands still",
+    "Swipe down + Swipe down",
+    "Pull + Pull",
+  ],
   gestures: [
     "1 finger + 1 finger",
     "2 fingers + 2 fingers",
@@ -172,6 +189,10 @@ const controls = {
     ...control,
     input: inputMapping.gestures[index] || "",
   })),
+  motion: commonControls.map((control, index) => ({
+    ...control,
+    input: inputMapping.motion[index] || "",
+  })),
 }
 
 const GestureGuide = memo(function GestureGuide({
@@ -203,7 +224,15 @@ const GestureGuide = memo(function GestureGuide({
     connected: gestureConnected,
     status: gestureStatus,
     wsStatus: gestureWsStatus,
-  } = useGestureControl(activeTab === "gestures")
+  } = useGestureControl(activeTab === "gestures" || activeTab === "motion")
+
+  const { mode, switchMode } = useRecognizerMode()
+
+  useEffect(() => {
+    if (mode === null) return
+    if (activeTab === "motion" && mode !== "motion") switchMode("motion")
+    if (activeTab === "gestures" && mode === "motion") switchMode("rule")
+  }, [activeTab, mode, switchMode])
 
   const adapterInfo = {
     keyboard: {
@@ -220,6 +249,11 @@ const GestureGuide = memo(function GestureGuide({
       name: "Gestures is active",
       connected: gestureConnected,
       debugText: `adapter: ${gestureConnected ? "connected" : "disconnected"}  status-ws: ${gestureWsStatus}`,
+    },
+    motion: {
+      name: "Motion is active",
+      connected: gestureConnected,
+      debugText: `adapter: ${gestureConnected ? "connected" : "disconnected"} status-ws: ${gestureWsStatus} recognizer: ${mode}`,
     },
   }[activeTab]
 
@@ -421,7 +455,7 @@ const GestureGuide = memo(function GestureGuide({
           </div>
         )}
 
-        {activeTab === "gestures" && (
+        {(activeTab === "gestures" || activeTab === "motion") && (
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
             {debugMode && (
               <span className="font-mono text-dim break-words">
