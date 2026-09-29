@@ -111,9 +111,12 @@ export default function FlappyDroneGame() {
 
       // fallback controls
       k.onKeyPress("enter", () => k.go("game"))
+      upRef.current = () => k.go("game")
+      k.onKeyPress("w", () => k.go("game"))
+      k.onMousePress(() => k.go("game"))
 
       k.add([
-        k.text("Enter or FLY UP to start", {
+        k.text("Enter, A, or THUMB UP to start", {
           size: 35,
         }),
         k.anchor("center"),
