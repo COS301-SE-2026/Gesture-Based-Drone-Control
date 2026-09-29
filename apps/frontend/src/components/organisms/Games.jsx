@@ -208,15 +208,22 @@ const Games = () => {
 
       {/* main content */}
       <div className="flex gap-md items-start">
-        <Card variant="glass" className="flex-1 !p-0 overflow-hidden">
-          {ActiveGame ? (
-            <ActiveGame />
-          ) : (
-            <div className="h-[400px] flex items-center justify-center">
-              <Label>No game selected</Label>
-            </div>
-          )}
-        </Card>
+        <div className="flex-1 flex flex-col gap-md">
+          <Card variant="glass" className="flex-1 !p-0 overflow-hidden">
+            {ActiveGame ? (
+              <ActiveGame />
+            ) : (
+              <div className="h-[400px] flex items-center justify-center">
+                <Label>No game selected</Label>
+              </div>
+            )}
+          </Card>
+
+          <LeaderboardPanel
+            gameId={selectedGame}
+            gameLabel={GAMES.find((g) => g.id === selectedGame)?.label}
+          />
+        </div>
 
         {input === "gesture" && (
           <Card variant="glass" className="flex-1 flex flex-col">
@@ -226,12 +233,6 @@ const Games = () => {
             <GestureCameraFeed className="flex-1 rounded-md overflow-hidden" />
           </Card>
         )}
-    <div className="flex flex-col gap-md w-72 shrink-0">
-    <LeaderboardPanel
-      gameId={selectedGame}
-      gameLabel={GAMES.find((g) => g.id === selectedGame)?.label}
-    />
-    </div>
       </div>
     </div>
   )

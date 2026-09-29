@@ -1,8 +1,10 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { Card, Label } from "../atoms"
 import { getTopScores } from "@/lib/leaderboard"
+import { ChevronDown } from "lucide-react"
 
 const POLL_MS = 10000 // every 10 seconds update the leaderboard
+const PREVIEW_COUNT = 3
 
 // top 3 different colour
 const RANK_STYLE = {
@@ -22,6 +24,27 @@ function timeAgo(iso) {
   return `${Math.floor(hrs / 24)}d ago`
 }
 
+function ScoreRow({ entry, rank }) {
+  return (
+    <li className="flex items-center gap-2 text-sm py-1 px-1.5 rounded-md odd:bg-black/10">
+      <span
+        className={`w-5 shrink-0 font-semibold tabular-nums ${
+          RANK_STYLE[rank] ?? "text-dim"
+        }`}
+      >
+        {rank + 1}
+      </span>
+      <span className="flex-1 truncate">
+        {entry.display_name || "Anonymous"}
+      </span>
+      <span className="font-semibold tabular-nums">{entry.score}</span>
+      <span className="text-[10px] text-dim/70 w-14 text-right shrink-0">
+        {timeAgo(entry.created_at)}
+      </span>
+    </li>
+  )
+}
+
 // show the top n scores for a single game
 // polls in the background to stay up to date
 export function LeaderboardPanel({
@@ -32,6 +55,8 @@ export function LeaderboardPanel({
 }) {
   const [scores, setScores] = useState(null) // null = loading, [] = loaded empty
   const [error, setError] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const listRef = useRef(null)
 
   const load = useCallback(async () => {
     try {
@@ -45,16 +70,40 @@ export function LeaderboardPanel({
 
   useEffect(() => {
     setScores(null) // will show a loading state when switching games
+    setIsOpen(false)
     load()
     const interval = setInterval(load, POLL_MS)
     return () => clearInterval(interval)
   }, [load])
 
+  const handleCardClick = (e) => {
+    if (listRef.current?.contains(e.target)) {
+      return
+    }
+    setIsOpen((prev) => !prev)
+  }
+
+  // always show the preview scores then rest when expanded
+  const preview = scores?.slice(0, PREVIEW_COUNT) ?? []
+  const rest = scores?.slice(PREVIEW_COUNT) ?? []
+
   return (
-    <Card variant="glass" className={`flex flex-col !p-sm ${className}`}>
-      <Label size="sm" className="mb-sm">
-        {gameLabel ?? gameId} - Top Scores
-      </Label>
+    <Card
+      variant="glass"
+      className={`flex flex-col !p-sm cursor-pointer hover:!scale-100 hover:!bg-transparant hover:!shadow-xl ${className}`}
+      clickable={true}
+      onClick={handleCardClick}
+    >
+      <div className="flex items-center justify-between w-full mb-sm">
+        <Label size="sm">{gameLabel ?? gameId} - Top Scores</Label>
+        {scores?.length > PREVIEW_COUNT && (
+          <ChevronDown
+            className={`w-4 h-4 text-ink transition-transform duration-300 ease-in-out ${
+              isOpen ? "rotate-180" : "rotate-0"
+            }`}
+          />
+        )}
+      </div>
 
       {error && (
         <Label size="sm" className="text-[var(--red)]">
@@ -75,29 +124,34 @@ export function LeaderboardPanel({
       )}
 
       {!error && scores?.length > 0 && (
-        <ol className="flex flex-col gap-1 overflow-y-auto max-h-72">
-          {scores.map((entry, i) => (
-            <li
-              key={entry.id}
-              className="flex items-center gap-2 text-sm py-1 px-1.5 rounded-md odd:bg-black/10"
+        <>
+          <ol className="flex flex-col gap-1">
+            {preview.map((entry, i) => (
+              <ScoreRow key={entry.id} entry={entry} rank={i} />
+            ))}
+          </ol>
+
+          {rest.length > 0 && (
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                isOpen ? "max-h-48 opacity-100 mt-1" : "max-h-0 opacity-0"
+              }`}
             >
-              <span
-                className={`w-5 shrink-0 font-semibold tabular-nums ${
-                  RANK_STYLE[i] ?? "text-dim"
-                }`}
+              <ol
+                ref={listRef}
+                className="flex flex-col gap-1 overflow-y-auto max-h-48 pr-1"
               >
-                {i + 1}
-              </span>
-              <span className="flex-1 truncate">
-                {entry.display_name || "Anonymous"}
-              </span>
-              <span className="font-semibold tabular-nums">{entry.score}</span>
-              <span className="text-[10px] text-dim/70 w-14 text-right shrink-0">
-                {timeAgo(entry.created_at)}
-              </span>
-            </li>
-          ))}
-        </ol>
+                {rest.map((entry, i) => (
+                  <ScoreRow
+                    key={entry.id}
+                    entry={entry}
+                    rank={i + PREVIEW_COUNT}
+                  />
+                ))}
+              </ol>
+            </div>
+          )}
+        </>
       )}
     </Card>
   )
