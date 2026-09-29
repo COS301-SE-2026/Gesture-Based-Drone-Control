@@ -104,9 +104,11 @@ class MotionAdapter(GestureAdapter):
 		if not confident:
 			return confident
 
-		self._process_motion(confident)
+		resolved = [h for h in confident if h.gesture != 'UNKNOWN']
+		if not resolved:
+			self._process_motion(confident)
 
-		return [h for h in confident if h.gesture != 'UNKNOWN']
+		return resolved
 
 	def _process_motion(self, hands: list[Any]) -> None:
 		"""
