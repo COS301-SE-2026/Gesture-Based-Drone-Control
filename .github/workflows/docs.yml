@@ -8,6 +8,7 @@ on:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
+      - 'packages/api-contracts/**'
       - 'landing_page/**'
       - '.github/workflows/docs.yml'
 

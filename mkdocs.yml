@@ -62,6 +62,10 @@ extra_css:
 
 extra_javascript:
   - javascripts/extra.js
+  - javascripts/api-viewers.js
+
+hooks:
+  - docs/hooks/contracts.py
 
 plugins:
   - search:
@@ -156,9 +160,13 @@ nav:
     - Testing Manual: testing/TESTING.md
     - NFR Verification: nfr/NFR.md
 
-  - Reference:
-    - API Reference: api/API_REFERENCE.md
+  - API:
+    - Overview: api/API_REFERENCE.md
+    - REST (Swagger UI): api/SWAGGER.md
+    - WebSockets (AsyncAPI): api/ASYNCAPI.md
     - Service Contracts: contracts/CONTRACTS.md
+
+  - Reference:
     - Frontend Components:
       - Atoms: frontend/atoms.md
       - Molecules: frontend/molecules.md
