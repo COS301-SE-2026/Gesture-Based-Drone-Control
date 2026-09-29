@@ -3,11 +3,13 @@ import { Modal, Button } from "../atoms"
 import { useState } from "react"
 import BasicManeuversSim from "./BasicManeuversSim"
 import ObstacleBlocksSim from "./ObstacleBlocksSim"
+import MockLicensingSim from "./MockLicensingSim"
 import GestureCameraFeed from "./GestureCameraFeed"
 
 const SIMULATIONS = {
   "basic-maneuvers": BasicManeuversSim,
   "obstacle-blocks": ObstacleBlocksSim,
+  "mock-test": MockLicensingSim,
 }
 export default function ExerciseModal({ open, onClose, module, onComplete }) {
   const Simulation = module?.id ? SIMULATIONS[module.id] : undefined

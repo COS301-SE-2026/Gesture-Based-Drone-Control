@@ -26,6 +26,7 @@ const MODULES = [
   },
 
   {
+    id: "mock-test",
     title: "Mock test",
     description:
       "A timed run combining everything above - the closest thing to youur real skills test.",
@@ -38,11 +39,8 @@ export default function Practical() {
   const [completedModules, setCompletedModules] = useState([])
   const [activeModule, setActiveModule] = useState(null)
 
-  const getStatus = (idx) => {
-    if (completedModules.includes(idx)) return "completed"
-    if (idx === 0 || completedModules.includes(idx - 1)) return "available"
-    return "locked"
-  }
+  const getStatus = (idx) => completedModules.includes(idx) ? "completed": "available"
+  
 
   const handleStart = (idx) => {
     if (getStatus(idx) === "locked") return
