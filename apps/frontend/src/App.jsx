@@ -23,11 +23,13 @@ import { CameraConsentProvider } from "./context/CameraConsentProvider.jsx"
 import { RecognizerProvider } from "./context/RecognizerProvider.jsx"
 import { OverlayProvider } from "./context/OverlayProvider.jsx"
 import { AuthProvider } from "./context/AuthProvider.jsx"
+import { DroneConnectionProvider } from "./context/DroneConnectionProvider.jsx"
 
 function App() {
   return (
     <ThemeProvider>
       <TelemetryProvider>
+        <DroneConnectionProvider>
         <CommandsProvider>
           <DebugProvider>
             <CursorGlow />
@@ -63,6 +65,7 @@ function App() {
             </CameraConsentProvider>
           </DebugProvider>
         </CommandsProvider>
+        </DroneConnectionProvider>
       </TelemetryProvider>
     </ThemeProvider>
   )
