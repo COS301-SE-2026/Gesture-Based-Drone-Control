@@ -33,6 +33,7 @@ export function useKaplayCanvas(canvasRef, onReady) {
     initRef.current = true
 
     let cancelled = false
+    let ro = null
 
     // create a unique id per instance mounted
     const suffix = `${Date.now()}-${mountCounter++}`
@@ -61,11 +62,19 @@ export function useKaplayCanvas(canvasRef, onReady) {
       k.loadFont(fonts.mono, jetbrainsMono)
 
       kRef.current = k
+      const parent = canvas.parentElement
+      if (parent) {
+        ro = new ResizeObserver(() => {
+          window.dispatchEvent(new Event("resize"))
+        })
+        ro.observe(parent)
+      }
       onReadyRef.current?.(k, fonts)
     })
 
     return () => {
       cancelled = true
+      ro?.disconnect()
       kRef.current?.quit()
       kRef.current = null
       initRef.current = false

@@ -775,7 +775,7 @@ function setupGame(k, fonts, refs) {
       k.z(Z_HUD),
     ])
     hud.controls2 = k.add([
-      k.pos(24, GAME_CANVAS.height - 40),
+      k.pos(24, GAME_CANVAS.height - 24),
       k.text("QE/ RT/LT", { size: 12, font: fonts.mono }),
       k.color(...GAME_COLORS.dim),
       k.fixed(),
