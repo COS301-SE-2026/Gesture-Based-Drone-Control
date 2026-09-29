@@ -1,4 +1,4 @@
-import {useeCallback, useEffect,useRef,useState} from "react"
+import {useCallback, useEffect,useRef,useState} from "react"
 import PropTypes from "prop-types"
 import * as THREE from "three"
 import {CheckCircle2} from "lucide-react"
@@ -8,7 +8,7 @@ import{commandLabel} from "@/constants/GestureCommands"
 
 
 const STEP_DELTA = {
-    MOVE:UP:[0,1,0],
+    MOVE_UP:[0,1,0],
     MOVE_DOWN:[0,-1,0],
     MOVE_LEFT:[-1,0,0],
     MOVE_RIGHT:[1,0,0],
@@ -16,26 +16,26 @@ const STEP_DELTA = {
     MOVE_BACKWARD:[0,0,1],
 }
 
-const BOUNDS ={minX:-4, maxX:4 , minY:3, maxY:3, minZ:-3,maxZ:3}
+const BOUNDS ={minX:-4, maxX:4 , minY:-1, maxY:3, minZ:-3,maxZ:3}
 const WORLD_STEP = 0.55
 
 const WAYPOINTS=[
-    {X:-3, Y:0 , Z:0 , label: "Head toward Marker A"},
-    {X:-3, Y:0 , Z:-2 , label: "Swing in front of A"},
-    {X:-3, Y:1 , Z:-2 , label: "Climb into the loop"},
-    {X:-1, Y:1 , Z:-2 , label: "Circle past Marker A"},
-    {X:-1, Y:1 , Z:2 , label: "Loop behind Marker A"},
-    {X:-1, Y:2 , Z:2 , label: "Climb higher"},
-    {X:-1, Y:2 , Z:0 , label: "Head back toward center"},
-    {X:0, Y:2 , Z:0 , label: "Reach the high point"},
-    {X:3, Y:2 , Z:0 , label: "Head toward Marker B"},
-    {X:3, Y:2 , Z:-2 , label: "Swing n front of Marker B"},
-    {X:3, Y:1 , Z:-2 , label: "Dive into the loop"},
-    {X:1, Y:1 , Z:-2 , label: "Circle past Marker B"},
-    {X:1, Y:1 , Z:2 , label: "Loop behind Marker B"},
-    {X:1, Y:0 , Z:2 , label: "Dive Lower"},
-    {X:1, Y:0 , Z:0 , label: "Head back towards center"},
-    {X:0, Y:0 , Z:0 , label: "Complete the figure-8"},
+    {x:-3, y:0 , z:0 , label: "Head toward Marker A"},
+    {x:-3, y:0 , z:-2 , label: "Swing in front of Marker A"},
+    {x:-3, y:1 , z:-2 , label: "Climb into the loop"},
+    {x:-1, y:1 , z:-2 , label: "Circle past Marker A"},
+    {x:-1, y:1 , z:2 , label: "Loop behind Marker A"},
+    {x:-1, y:2 , z:2 , label: "Climb higher"},
+    {x:-1, y:2 , z:0 , label: "Head back toward center"},
+    {x:0, y:2 , z:0 , label: "Reach the high point"},
+    {x:3, y:2 , z:0 , label: "Head toward Marker B"},
+    {x:3, y:2 , z:-2 , label: "Swing in front of Marker B"},
+    {x:3, y:1 , z:-2 , label: "Dive into the loop"},
+    {x:1, y:1 , z:-2 , label: "Circle past Marker B"},
+    {x:1, y:1 , z:2 , label: "Loop behind Marker B"},
+    {x:1, y:0 , z:2 , label: "Dive Lower"},
+    {x:1, y:0 , z:0 , label: "Head back towards center"},
+    {x:0, y:0 , z:0 , label: "Complete the figure-8"},
 ]
 
 
@@ -48,7 +48,7 @@ const clamp = (v, lo , hi) => Math.min(hi,Math.max(lo,v))
 const toWorld =(gx,gy,gz) =>
     new THREE.Vector3(gx * WORLD_STEP,gy * WORLD_STEP, gz* WORLD_STEP)
 
-export default function FIGUREEightSim ({ running, onComplete}) {
+export default function FigureEightSim ({ running, onComplete}) {
     const {theme} = useTheme()
     const mountRef = useRef(null)
     const droneRef = useRef(null)
@@ -69,7 +69,7 @@ export default function FIGUREEightSim ({ running, onComplete}) {
         runningRef.current = running
     },[running])
 
-    const handleCommand = useCallBack(
+    const handleCommand = useCallback(
         (event) => {
             if(!runningRef.current || doneRef.current) return
             setLastCmd(commandLabel(event.command))
@@ -98,11 +98,12 @@ export default function FIGUREEightSim ({ running, onComplete}) {
 
 
             const wp = WAYPOINTS[idxRef.current]
-            if (wp && wp.x === next.x && wp.y && wp.z === next.z) {
+            if (wp && wp.x === next.x && wp.y===next.y && wp.z === next.z) {
                 idxRef.current += 1
-                setIdx(idx.current)
+                setIdx(idxRef.current)
                 if (idxRef.current >= WAYPOINTS.length) {
-                    doneRef.current = trueonComplete?.()
+                    doneRef.current = true
+                    onComplete?.()
                 }
             }
         },
@@ -129,7 +130,7 @@ export default function FIGUREEightSim ({ running, onComplete}) {
 
         const frame = new THREE.MeshBasicMaterial({ wireframe: true , transparent: true,opacity :0.9})
 
-    })
+    
 
 
     const red = new THREE.MeshBasicMaterial({ wireframe: true})
@@ -208,7 +209,7 @@ const resize = () => {
     const h = Math.max(1, mount.clientHeight)
     camera.aspect = w/h 
     camera.updateProjectionMatrix()
-    renderer.reSize(w,h)
+    renderer.setSize(w,h)
 
 }
 
@@ -268,19 +269,22 @@ useEffect(() => {
             mesh.scale.setScalar(1)
             if ( i === idx) {
                 m.color.set(redToken)
-                m.opacity = i < idx ? 0.12 : 0.35
+                m.opacity = 1
+            }else{
+                m.color.set(ink)
+                m.opacity = i < idx ? 0.12 :0.35
             }
         })
     })
     return () => cancelAnimationFrame(raf)
 },[theme, idx])
 
-const linkLive = status == "open"
+const linkLive = status === "open"
 const current = WAYPOINTS[idx]
 
 
 return (
-    <div className="relative flex-1 min-h-0 rounded-lg border-glassBrd bg-surface overflow-hidden">
+    <div className="relative flex-1 min-h-0 rounded-lg border border-glassBrd bg-surface overflow-hidden">
         <div ref={mountRef} className="absolute inset-0" aria-hidden="true"/>
 
         <div className="absolute top-3 left-3 right-3 flex flex-col gap-1.5">
@@ -315,7 +319,7 @@ return (
                 <span>Moves: {moves}</span>
             </div>
             <span className={linkLive ? "text-ink" : "text-dim"}>
-                {linkLive ? "Gesture link live" : "Connection to gestures"}
+                {linkLive ? "Gesture link live" : "Connecting to gestures"}
             </span>
         </div>
 
@@ -329,6 +333,16 @@ return (
         )}
     </div>
 )
+}
+
+FigureEightSim.propTypes = {
+    running: PropTypes.bool,
+    onComplete: PropTypes.func,
+}
+
+FigureEightSim.defaultProps = {
+    running: false,
+    onComplete: undefined,
 }
 
 
