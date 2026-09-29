@@ -187,3 +187,19 @@ verbatim so this page always reflects the last measured run.
   run and structured.
 - [`SAS.md`](../SAS.md), the architectural decisions that realise each
   quality requirement, including the external availability monitor.
+
+## Tooling
+
+Industry-standard tools are used where they apply:
+
+- **Lighthouse** (`task nfr-lighthouse`) — Core Web Vitals and accessibility
+  scores per screen, corroborating QR-51 and QR-53/54.
+- **Apache JMeter** (`task nfr-jmeter`) — concurrent REST load against the
+  running backend, corroborating QR-35.
+
+Neither tool can instrument the real-time gesture pipeline, which is where
+most of this system's quality requirements live: frame-to-command latency,
+dropped frames, hand-detection cost, WebSocket fan-out and two-hand command
+resolution. Those are measured by the purpose-built harness in `tests/nfr/`,
+which exercises the production code path with only the camera and the hand
+detector substituted (`tests/nfr/_perf.py`).
