@@ -20,6 +20,7 @@ from apps.backend.app.api.drone import ConnectRequest, _build_adapter, _record_t
 from apps.backend.app.dependencies import get_state
 from apps.backend.app.state import AppState
 from services.drone_control.adapters.drone_adapter import CameraFrame, TelemetryData
+from services.drone_control.sim_process import SimLaunchError
 
 # helpers
 
@@ -48,6 +49,21 @@ def make_mock_adapter(connect_returns: bool = True) -> MagicMock:
 	)
 	adapter.execute = AsyncMock()
 	return adapter
+
+
+@pytest.fixture(autouse=True)
+def mock_sim_launcher():
+	"""
+	never boot the real simulator - /drone/connect launches it for projectairsim.
+	patched by path, not via drone_api: api/__init__ imports drone as app.api.drone,
+	so drone_api is a second copy of the module that the router never reads from
+	"""
+	launcher = MagicMock()
+	launcher.start = AsyncMock()
+	launcher.stop = AsyncMock(return_value=False)
+	launcher.is_running = False
+	with patch('apps.backend.app.api.drone.sim_launcher', launcher):
+		yield launcher
 
 
 def connected_state(adapter_name: str = 'dummy') -> AppState:
@@ -207,6 +223,38 @@ async def test_connect_adapter_connect_fails():  # NOSONAR
 	assert response.status_code == 200
 	body = response.json()
 	assert body['connected'] is False
+	assert state.is_connected is False
+
+
+async def test_connect_sim_launch_fails(mock_sim_launcher):
+	"""a sim that cannot start is reported, and the adapter is never tried"""
+	state = AppState()
+	client = TestClient(make_app(state))
+	mock_adapter = make_mock_adapter()
+	mock_sim_launcher.start.side_effect = SimLaunchError('PAS_PATH is not set')
+
+	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
+		response = client.post('/drone/connect', json={'adapter': 'projectairsim'})
+
+	body = response.json()
+	assert body['connected'] is False
+	assert 'PAS_PATH is not set' in body['message']
+	mock_adapter.connect.assert_not_awaited()
+	assert state.is_connected is False
+
+
+async def test_connect_sim_starts_but_adapter_fails(mock_sim_launcher):
+	"""the sim is stopped again if the client cannot attach to it"""
+	state = AppState()
+	client = TestClient(make_app(state))
+	mock_adapter = make_mock_adapter(connect_returns=False)
+
+	with patch('apps.backend.app.api.drone._build_adapter', return_value=mock_adapter):
+		response = client.post('/drone/connect', json={'adapter': 'projectairsim'})
+
+	assert response.json()['connected'] is False
+	mock_sim_launcher.start.assert_awaited_once()
+	mock_sim_launcher.stop.assert_awaited_once()
 	assert state.is_connected is False
 
 
