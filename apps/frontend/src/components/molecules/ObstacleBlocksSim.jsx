@@ -39,3 +39,47 @@ const toWorld = (gx, gy,gz) => new THREE.Vector3(gx*XY_STEP, gy*XY_STEP, gz*Z_ST
 const blockingWall = (p) => 
     WALLS.findIndex( (w) => w.z === p.z && (w.hole.x !== p.x || w.hole.y !== p.y))
 
+function buildDrone(frame, red, geos) {
+    const drone = new THREE.Group()
+    const bodyGeo = new THREE.BoxGeometry(1.35, 0.42, 1.35, 2, 1, 2)
+    const canopyGeo = new THREE.BoxGeometry(0.6, 0.28, 0.9, 1,1,1)
+    const armGeo = new THREE.BoxGeometry(3.0, 0.1, 0.12)
+    const rotorGeo = new THREE.TorusGeometry(0.52, 0.036, 6, 26)
+    const bladeGeo = new THREE.BoxGeometry(0.95, 0.015, 0.07)
+    const legGeo = new THREE.BoxGeometry(0.06, 0.5, 0.06)
+    geos.push(bodyGeo, canopyGeo, armGeo, rotorGeo, bladeGeo, legGeo)
+
+    drone.add(new THREE(bodyGeo, frame))
+    const armA = new THREE.Mesh(armGeo, frame)
+    armA.rotation.y = Math.PI / 4
+    const armB = armA.clone()
+    armB.rotation.y = -Math.PI / 4
+    drone.add (armA, armB)
+
+    const props = []
+    const d = 1.06
+    ;[[d,d], [d,-d], [-d,d], [-d,-d]].forEach(([px , pz]) => {
+        const ring = new THREE.Mesh(rotorGeo, red)
+        ring.rotation.x = Math.PI/2
+        ring.position.set(px,0.22, pz)
+        drone.add(ring)
+        const prop = new THREE.Group()
+        const b1 = new THREE.Mesh(bladeGeo, frame)
+        const b2 = b1.clone()
+        b2.rotation.y = Math.PI /2
+        prop.add(b1,b2)
+        prop.position.set(px,0,24,pz)
+        drone.add(prop)
+        props.push(prop)
+    })
+
+    ;[-0.45, 0.45].forEach( (lx) => {
+        const leg = new THREE.Mesh(legGeo, frame)
+        leg.position.set(lx, -0.42,0)
+        drone.add (leg)
+    })
+
+    drone.scale.setScalar(DRONE_SCALE)
+    return { drone, props }
+
+}
