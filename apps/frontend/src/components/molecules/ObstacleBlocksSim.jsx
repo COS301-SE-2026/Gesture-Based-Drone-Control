@@ -129,3 +129,30 @@ function buildWall(wall, fill, line, holeMat, geos){
     group.position.z = wall.z * Z_STEP
     return group
 }
+
+export default function ObstacleBlocksSim({ running, onComplete }){
+
+    const { theme } = useTheme()
+    const mountRef = useRef(null)
+    const targetRef = useRef(new THREE.Vector3(0,0,0))
+    const mats = useRef({ frame: null, red: null, walls: [], finish: null, grid: null})
+
+    const posRef = useRef({x: 0, y:0, z: 0})
+    const idxRef = useRef(0)
+    const runningRef = useRef(running)
+    const doneRef = useRef(false)
+    const bumpRef = useRef(0)
+    const flashTimerRef = useRef(null)
+    const dirRef = useRef(null)
+    const lastStepRef = useRef(0)
+
+    const [idx, setIdx] = useState(0)
+    const [lastCmd, setLastCmd] = useState(null)
+    const [moves, setMoves] = useState(0)
+    const [bumps, setBumps] = useState(0)
+    const [flash, setFlash] = useState(null)
+    const [moving, setMoving] = useState(null)
+    const done = idx >= STEPS.length
+
+    
+}
