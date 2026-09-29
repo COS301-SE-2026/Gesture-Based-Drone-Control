@@ -617,6 +617,14 @@ export default function PacDroneGame() {
         k.color(...col_power),
       ])
 
+      // chuck the name prompt on screen and just hope the user does the thing
+      submitScore("pacman", score)
+        .then((entry) => setPendingEntry({ id: entry.id }))
+        .catch((err) => {
+          // dont care enough
+          console.error("Failed to submit score:", err)
+        })
+
       k.add([
         k.text(`Score: ${score}`, { size: 38, font: fonts.mono }),
         k.anchor("center"),
@@ -655,7 +663,7 @@ export default function PacDroneGame() {
       k.add([
         k.text(`Score: ${score}`, { size: 38, font: fonts.mono }),
         k.anchor("center"),
-        k.pos(w / 2, h / 2 + 50),
+        k.pos(w / 2, h / 2 + 10),
         k.color(...col_wall),
       ])
       k.add([

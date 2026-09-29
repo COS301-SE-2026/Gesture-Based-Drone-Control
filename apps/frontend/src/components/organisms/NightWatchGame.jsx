@@ -1,7 +1,12 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useGameCommands } from "@/hooks/useGameCommands"
 import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
 import { GAME_CANVAS, GAME_COLORS } from "@/lib/gameTheme"
+
+import { submitScore } from "@/lib/leaderboard"
+
+import { ScoreNamePrompt } from "../molecules/ScoreNamePrompt"
+
 import {
   HOUSE,
   WALLS,
@@ -128,16 +133,26 @@ export default function NightWatchGame() {
     }
   })
 
+  const [pendingEntry, setPendingEntry] = useState(null)
+
   useKaplayCanvas(canvasRef, (k, fonts) =>
     setupGame(k, fonts, { inputRef, actionRef, lastInputAtRef })
   )
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="w-full rounded-xl"
-      style={{ aspectRatio: `${GAME_CANVAS.width} / ${GAME_CANVAS.height}` }}
-    />
+      <div className="relative w-full">
+      <canvas
+        ref={canvasRef}
+        className="w-full rounded-xl"
+        style={{ aspectRatio: "16/9" }}
+      />
+      {pendingEntry && (
+        <ScoreNamePrompt
+          entryId={pendingEntry.id}
+          onDone={() => setPendingEntry(null)}
+        />
+      )}
+    </div>
   )
 }
 
@@ -844,6 +859,15 @@ function setupGame(k, fonts, refs) {
 
   function showEndPanel(won) {
     clearPanel()
+
+  // chuck the name prompt on screen and just hope the user does the thing
+  submitScore("nightwatch", game.foundCount)
+    .then((entry) => setPendingEntry({ id: entry.id }))
+    .catch((err) => {
+      // dont care enough
+      console.error("Failed to submit score:", err)
+    })
+
     const w = 560
     const h = 260
     const x = (GAME_CANVAS.width - w) / 2
