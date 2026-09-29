@@ -1,7 +1,11 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useGameCommands } from "@/hooks/useGameCommands"
 import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
 import { GAME_CANVAS } from "@/lib/gameTheme"
+
+import { submitScore } from "@/lib/leaderboard"
+
+import { ScoreNamePrompt } from "../molecules/ScoreNamePrompt"
 
 import eatSound from "@/assets/games/pac/eat.mp3"
 import powerSound from "@/assets/games/pac/power.mp3"
@@ -93,6 +97,8 @@ export default function PacDroneGame() {
       }
     }
   })
+
+  const [pendingEntry, setPendingEntry] = useState(null)
 
   useKaplayCanvas(canvasRef, (k, fonts) => {
     //asset imports
@@ -632,6 +638,14 @@ export default function PacDroneGame() {
     k.scene("lose", (score = 0, mazeIndex = 0) => {
       k.play("margit")
 
+      // chuck the name prompt on screen and just hope the user does the thing
+      submitScore("pacman", score)
+        .then((entry) => setPendingEntry({ id: entry.id }))
+        .catch((err) => {
+          // dont care enough
+          console.error("Failed to submit score:", err)
+        })
+
       k.add([
         k.text("YOU DIED", { size: 122, font: fonts.heading }),
         k.anchor("center"),
@@ -671,11 +685,19 @@ export default function PacDroneGame() {
 
     k.onLoad(() => k.go("title"))
   })
-  return (
-    <canvas
-      ref={canvasRef}
-      className="w-full rounded-xl"
-      style={{ aspectRatio: "16/9" }}
-    />
+    return (
+    <div className="relative w-full">
+      <canvas
+        ref={canvasRef}
+        className="w-full rounded-xl"
+        style={{ aspectRatio: "16/9" }}
+      />
+      {pendingEntry && (
+        <ScoreNamePrompt
+          entryId={pendingEntry.id}
+          onDone={() => setPendingEntry(null)}
+        />
+      )}
+    </div>
   )
 }
