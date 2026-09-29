@@ -79,7 +79,7 @@ export default function BasicManeuversSim({running,onComplete}) {
         [onComplete]
     )
 
-    const {status} = useGestureCommands(handleCommand)
+    const {status, live} = useGestureCommands(handleCommand)
 
 
     useEffect(() => {
@@ -223,7 +223,7 @@ useEffect(() => {
     return () => cancelAnimationFrame(raf)
 },[theme,idx])
 
-const linkLive = status === "open"
+const linkLive = live
 
 return (
     <div className="relative flex-1 min-h-0 rounded-lg border border-glassBrd bg-surface overflow-hidden">
