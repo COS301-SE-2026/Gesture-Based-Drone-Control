@@ -835,7 +835,7 @@ def build_evidence(counts: Counter) -> list[str]:
 				'|---|---|---|---|---|',
 			]
 			for f in data['failing']:
-				yes = {True: '✅', False: '❌'}
+				yes = {True: 'right', False: 'wrong'}
 				lines.append(
 					f'| `{_cell(f["where"])}` | {_cell(f["text"][:90])} | '
 					f'{yes[f["states_cause"]]} | '
@@ -878,8 +878,8 @@ def write_ci_summary(matrix: list[str], counts: Counter) -> None:
 	head = [
 		'## NFR evidence',
 		'',
-		f'✅ {counts["PASS"]} pass · ❌ {counts["FAIL"]} fail · ⏳ {counts["PENDING"]} pending · '
-		f'ℹ️ {counts["INFO"]} info · ⚪ {counts["MISSING"]} not measured',
+		f'right {counts["PASS"]} pass · wrong {counts["FAIL"]} fail · timing {counts["PENDING"]} pending · '
+		f'info {counts["INFO"]} info · waiting {counts["MISSING"]} not measured',
 		'',
 		'The full evidence (JSON, raw samples, charts, screenshots, EVIDENCE.md) is attached to '
 		'this run as the **nfr-evidence** artifact.',

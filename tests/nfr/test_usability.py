@@ -446,6 +446,7 @@ def _backend_strings() -> list[ShownError]:
 		)
 	return shown
 
+
 # QR-48 input parity
 
 

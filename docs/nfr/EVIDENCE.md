@@ -28,7 +28,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-03
 
-**Recognition p95 < 50 ms (rule)** · SRS `NFR1.1` · tactic: Pure-geometry classifier · **✅ PASS**
+**Recognition p95 < 50 ms (rule)** · SRS `NFR1.1` · tactic: Pure-geometry classifier · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -51,7 +51,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-25
 
-**Recognition p95 < 50 ms (ML)** · SRS `NFR1.1` · tactic: 63-feature MLP · **✅ PASS**
+**Recognition p95 < 50 ms (ML)** · SRS `NFR1.1` · tactic: 63-feature MLP · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -69,7 +69,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-26
 
-**Hand detection p95 <= 100 ms, live** · SRS `NFR1.1` · tactic: MediaPipe lite model · **✅ PASS**
+**Hand detection p95 <= 100 ms, live** · SRS `NFR1.1` · tactic: MediaPipe lite model · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -87,7 +87,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-27
 
-**Frame serialization p95 <= 20 ms** · SRS `NFR1.1` · tactic: Encode once, fan out · **✅ PASS**
+**Frame serialization p95 <= 20 ms** · SRS `NFR1.1` · tactic: Encode once, fan out · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -109,7 +109,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-28
 
-**Resolve + dispatch p95 <= 30 ms** · SRS `NFR1.1` · tactic: Dict command maps · **✅ PASS**
+**Resolve + dispatch p95 <= 30 ms** · SRS `NFR1.1` · tactic: Dict command maps · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -127,7 +127,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-29
 
-**Frame -> drone command p95 <= 200 ms** · SRS `NFR1.1` · tactic: Bounded queue, one consumer · **✅ PASS**
+**Frame -> drone command p95 <= 200 ms** · SRS `NFR1.1` · tactic: Bounded queue, one consumer · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -149,7 +149,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-30
 
-**Gesture onset -> command p95 <= 200 ms** · SRS `NFR1.1` · tactic: 3-of-5 vote + 2-frame hold · **❌ FAIL**
+**Gesture onset -> command p95 <= 200 ms** · SRS `NFR1.1` · tactic: 3-of-5 vote + 2-frame hold · **FAIL**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -172,7 +172,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-35
 
-**REST p95 <= 100 ms, 10 clients** · SRS `NFR1.1` · tactic: Async FastAPI · **✅ PASS**
+**REST p95 <= 100 ms, 10 clients** · SRS `NFR1.1` · tactic: Async FastAPI · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -201,7 +201,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-37
 
-**Command round trip p95 <= 100 ms** · SRS `NFR1.1` · tactic: Persistent WebSocket · **✅ PASS**
+**Command round trip p95 <= 100 ms** · SRS `NFR1.1` · tactic: Persistent WebSocket · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -223,7 +223,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-38
 
-**Login p95 <= 1 s** · SRS `NFR1.1` · tactic: bcrypt cost 13 · **✅ PASS**
+**Login p95 <= 1 s** · SRS `NFR1.1` · tactic: bcrypt cost 13 · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -248,7 +248,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-40
 
-**Analytics query p95 <= 250 ms** · SRS `NFR1.1` · tactic: Aggregates in SQL · **✅ PASS**
+**Analytics query p95 <= 250 ms** · SRS `NFR1.1` · tactic: Aggregates in SQL · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -266,7 +266,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-41
 
-**Cold start <= 10 s, first frame <= 3 s** · SRS `NFR1.1` · tactic: Lazy camera start · **✅ PASS**
+**Cold start <= 10 s, first frame <= 3 s** · SRS `NFR1.1` · tactic: Lazy camera start · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -286,7 +286,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-51
 
-**Every screen LCP <= 2.5 s** · SRS `NFR1.1` · tactic: Static production bundle · **✅ PASS**
+**Every screen LCP <= 2.5 s** · SRS `NFR1.1` · tactic: Static production bundle · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -305,7 +305,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-52
 
-**Click -> command confirmed <= 200 ms** · SRS `NFR1.1` · tactic: WS ack + history · **✅ PASS**
+**Click -> command confirmed <= 200 ms** · SRS `NFR1.1` · tactic: WS ack + history · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -328,7 +328,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-18
 
-**Pipeline stays bounded under load** · SRS `NFR1.2` · tactic: Drop-oldest frame queue · **✅ PASS**
+**Pipeline stays bounded under load** · SRS `NFR1.2` · tactic: Drop-oldest frame queue · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -344,37 +344,37 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 ### QR-31
 
-**Capacity >= 30 fps** · SRS `NFR1.2` · tactic: Camera thread + async consumer · **⚪ MISSING**
+**Capacity >= 30 fps** · SRS `NFR1.2` · tactic: Camera thread + async consumer · **MISSING**
 
 Not measured in the committed run. Test: [`test_realtime_performance.py`](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/HEAD/tests/nfr/test_realtime_performance.py).
 
 ### QR-32
 
-**CPU <= 70 % at 30 fps** · SRS `NFR1.2` · tactic: Lite model, JPEG once · **⚪ MISSING**
+**CPU <= 70 % at 30 fps** · SRS `NFR1.2` · tactic: Lite model, JPEG once · **MISSING**
 
 Not measured in the committed run. Test: [`test_realtime_performance.py`](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/HEAD/tests/nfr/test_realtime_performance.py).
 
 ### QR-33
 
-**Frames dropped <= 1 % at 30 fps** · SRS `NFR1.2` · tactic: Consumer keeps pace · **⚪ MISSING**
+**Frames dropped <= 1 % at 30 fps** · SRS `NFR1.2` · tactic: Consumer keeps pace · **MISSING**
 
 Not measured in the committed run. Test: [`test_realtime_performance.py`](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/HEAD/tests/nfr/test_realtime_performance.py).
 
 ### QR-42
 
-**No per-frame memory growth** · SRS `NFR1.2` · tactic: Bounded buffers · **⚪ MISSING**
+**No per-frame memory growth** · SRS `NFR1.2` · tactic: Bounded buffers · **MISSING**
 
 Not measured in the committed run. Test: [`test_resources.py`](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/HEAD/tests/nfr/test_resources.py).
 
 ### QR-34
 
-**Every client >= 24 fps (+1 stalled)** · SRS `NFR1.3` · tactic: Per-client 1-slot queues · **⚪ MISSING**
+**Every client >= 24 fps (+1 stalled)** · SRS `NFR1.3` · tactic: Per-client 1-slot queues · **MISSING**
 
 Not measured in the committed run. Test: [`test_realtime_performance.py`](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/HEAD/tests/nfr/test_realtime_performance.py).
 
 ### QR-36
 
-**Telemetry >= 9 Hz** · SRS `NFR1.3` · tactic: 100 ms push loop · **✅ PASS**
+**Telemetry >= 9 Hz** · SRS `NFR1.3` · tactic: 100 ms push loop · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -393,7 +393,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-39
 
-**Telemetry write p95 <= 50 ms** · SRS `NFR1.3` · tactic: Write every 10th tick · **✅ PASS**
+**Telemetry write p95 <= 50 ms** · SRS `NFR1.3` · tactic: Write every 10th tick · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -415,7 +415,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-50
 
-**Dashboard renders >= 24 fps** · SRS `NFR1.3` · tactic: Canvas + ImageBitmap · **✅ PASS**
+**Dashboard renders >= 24 fps** · SRS `NFR1.3` · tactic: Canvas + ImageBitmap · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -447,7 +447,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-07
 
-**Session token <= 30 min** · SRS `NFR2.1` · tactic: Short-lived JWT · **✅ PASS**
+**Session token <= 30 min** · SRS `NFR2.1` · tactic: Short-lived JWT · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -457,7 +457,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-12
 
-**Invalid tokens rejected** · SRS `NFR2.1` · tactic: JWT exp/aud/iss/sig checks · **✅ PASS**
+**Invalid tokens rejected** · SRS `NFR2.1` · tactic: JWT exp/aud/iss/sig checks · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -467,7 +467,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-08
 
-**Password hash cost >= 12 rounds** · SRS `NFR2.2` · tactic: Configurable bcrypt rounds · **✅ PASS**
+**Password hash cost >= 12 rounds** · SRS `NFR2.2` · tactic: Configurable bcrypt rounds · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -481,7 +481,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-09
 
-**Weak passwords rejected** · SRS `NFR2.2` · tactic: Strength policy regexes · **✅ PASS**
+**Weak passwords rejected** · SRS `NFR2.2` · tactic: Strength policy regexes · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -495,7 +495,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-10
 
-**Password hashes salted** · SRS `NFR2.2` · tactic: bcrypt gensalt · **✅ PASS**
+**Password hashes salted** · SRS `NFR2.2` · tactic: bcrypt gensalt · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -513,7 +513,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-01
 
-**Gesture accuracy >= 95% (ML)** · SRS `NFR3.1` · tactic: ML recognizer (MLP) · **✅ PASS**
+**Gesture accuracy >= 95% (ML)** · SRS `NFR3.1` · tactic: ML recognizer (MLP) · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -529,7 +529,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-02
 
-**Every gesture >= 95% (ML)** · SRS `NFR3.1` · tactic: ML recognizer (MLP) · **✅ PASS**
+**Every gesture >= 95% (ML)** · SRS `NFR3.1` · tactic: ML recognizer (MLP) · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -544,7 +544,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-01-rule
 
-**Rule-based accuracy (informational)** · SRS `NFR3.1` · tactic: Rule-based ceiling · **ℹ️ INFO**
+**Rule-based accuracy (informational)** · SRS `NFR3.1` · tactic: Rule-based ceiling · **INFO**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -560,7 +560,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-06
 
-**Confidence gate >= 0.85** · SRS `NFR3.2` · tactic: MIN_CONFIDENCE filter · **✅ PASS**
+**Confidence gate >= 0.85** · SRS `NFR3.2` · tactic: MIN_CONFIDENCE filter · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -570,7 +570,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-19
 
-**Single-frame noise suppressed** · SRS `NFR3.2` · tactic: GestureStabilizer voting · **✅ PASS**
+**Single-frame noise suppressed** · SRS `NFR3.2` · tactic: GestureStabilizer voting · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -586,7 +586,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-04
 
-**All single-hand gestures mapped** · SRS `NFR3.2` · tactic: SINGLE_HAND_MAP · **✅ PASS**
+**All single-hand gestures mapped** · SRS `NFR3.2` · tactic: SINGLE_HAND_MAP · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -600,7 +600,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-05
 
-**All two-hand combos resolve** · SRS `NFR3.2` · tactic: Two-hand maps + _resolve · **✅ PASS**
+**All two-hand combos resolve** · SRS `NFR3.2` · tactic: Two-hand maps + _resolve · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -610,7 +610,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-13
 
-**E-stop always critical priority** · SRS `NFR3.3` · tactic: Command priority elevation · **✅ PASS**
+**E-stop always critical priority** · SRS `NFR3.3` · tactic: Command priority elevation · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -620,7 +620,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-14
 
-**E-stop grounds the drone** · SRS `NFR3.3` · tactic: Adapter emergency_stop · **✅ PASS**
+**E-stop grounds the drone** · SRS `NFR3.3` · tactic: Adapter emergency_stop · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -634,7 +634,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-44
 
-**Predicted first flight <= 5 min (KLM)** · SRS `NFR5.1` · tactic: Keystroke-Level Model · **✅ PASS**
+**Predicted first flight <= 5 min (KLM)** · SRS `NFR5.1` · tactic: Keystroke-Level Model · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -661,7 +661,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-45
 
-**>= 80% fly within 5 min (study)** · SRS `NFR5.1` · tactic: Moderated usability study · **⏳ PENDING**
+**>= 80% fly within 5 min (study)** · SRS `NFR5.1` · tactic: Moderated usability study · **PENDING**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -673,7 +673,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-56
 
-**Basic flight <= 6 confirmed clicks** · SRS `NFR5.1` · tactic: On-screen flight pad · **✅ PASS**
+**Basic flight <= 6 confirmed clicks** · SRS `NFR5.1` · tactic: On-screen flight pad · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -693,7 +693,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-46
 
-**Mean SUS >= 85, >= 5 external users** · SRS `NFR5.2` · tactic: System Usability Scale · **⏳ PENDING**
+**Mean SUS >= 85, >= 5 external users** · SRS `NFR5.2` · tactic: System Usability Scale · **PENDING**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -705,7 +705,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-55
 
-**Gesture + command visible, no scrolling** · SRS `R1.1.2` · tactic: Dashboard layout · **✅ PASS**
+**Gesture + command visible, no scrolling** · SRS `R1.1.2` · tactic: Dashboard layout · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -727,7 +727,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-49
 
-**One history entry per held gesture** · SRS `R1.1.2` · tactic: Transition-only event log · **✅ PASS**
+**One history entry per held gesture** · SRS `R1.1.2` · tactic: Transition-only event log · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -745,7 +745,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-48
 
-**Keyboard + gamepad reach every command** · SRS `R7 / US-A-02` · tactic: Shared Command vocabulary · **✅ PASS**
+**Keyboard + gamepad reach every command** · SRS `R7 / US-A-02` · tactic: Shared Command vocabulary · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -765,7 +765,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-53
 
-**Every control has an accessible name** · SRS `U3 / WCAG 4.1.2` · tactic: Labelled controls · **✅ PASS**
+**Every control has an accessible name** · SRS `U3 / WCAG 4.1.2` · tactic: Labelled controls · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -787,7 +787,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-54
 
-**Keyboard focus always visible** · SRS `U3 / WCAG 2.4.7` · tactic: Focus styles · **✅ PASS**
+**Keyboard focus always visible** · SRS `U3 / WCAG 2.4.7` · tactic: Focus styles · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -810,7 +810,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-20
 
-**Drone adapters implement interface** · SRS `NFR6.1` · tactic: DroneAdapter ABC · **✅ PASS**
+**Drone adapters implement interface** · SRS `NFR6.1` · tactic: DroneAdapter ABC · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -824,7 +824,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-21
 
-**Input adapters implement interface** · SRS `NFR6.1` · tactic: InputAdapter ABC · **✅ PASS**
+**Input adapters implement interface** · SRS `NFR6.1` · tactic: InputAdapter ABC · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -838,7 +838,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 ### QR-22
 
-**No function above complexity 15** · SRS `NFR6.2` · tactic: Small functions · **⚪ MISSING**
+**No function above complexity 15** · SRS `NFR6.2` · tactic: Small functions · **MISSING**
 
 Not measured in the committed run. Test: [`test_maintainabiility.py`](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/HEAD/tests/nfr/test_maintainabiility.py).
 
@@ -848,7 +848,7 @@ Not measured in the committed run. Test: [`test_maintainabiility.py`](https://gi
 
 ### QR-23
 
-**Every subsystem has a liveness probe** · SRS `NFR7.1` · tactic: /health per router · **✅ PASS**
+**Every subsystem has a liveness probe** · SRS `NFR7.1` · tactic: /health per router · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
@@ -862,7 +862,7 @@ Not measured in the committed run. Test: [`test_maintainabiility.py`](https://gi
 
 ### QR-24
 
-**Health probes need no auth** · SRS `NFR7.2` · tactic: Open health routes · **✅ PASS**
+**Health probes need no auth** · SRS `NFR7.2` · tactic: Open health routes · **PASS**
 
 | Metric | Target | Actual |
 |---|---|---|
