@@ -10,17 +10,17 @@ Every row links to its full evidence (method, raw numbers, chart) on the [eviden
 
 | ID | Result | SRS | Requirement | Actual | Target | Tactic | Test |
 |----|--------|-----|-------------|--------|--------|--------|------|
-| [QR-03](EVIDENCE.md#qr-03) | ✅ PASS | NFR1.1 | Recognition p95 < 50 ms (rule) | 0.0037 | < 50.0 | Pure-geometry classifier | `test_latency.py` |
-| [QR-25](EVIDENCE.md#qr-25) | ✅ PASS | NFR1.1 | Recognition p95 < 50 ms (ML) | 0.0997 | < 50.0 | 63-feature MLP | `test_latency.py` |
-| [QR-26](EVIDENCE.md#qr-26) | ✅ PASS | NFR1.1 | Hand detection p95 <= 100 ms, live | 14.272 | <= 100.0 | MediaPipe lite model | `test_realtime_performance.py` |
-| [QR-27](EVIDENCE.md#qr-27) | ✅ PASS | NFR1.1 | Frame serialization p95 <= 20 ms | 0.897 | <= 20.0 | Encode once, fan out | `test_latency.py` |
-| [QR-28](EVIDENCE.md#qr-28) | ✅ PASS | NFR1.1 | Resolve + dispatch p95 <= 30 ms | 0.005 | <= 30.0 | Dict command maps | `test_latency.py` |
-| [QR-29](EVIDENCE.md#qr-29) | ✅ PASS | NFR1.1 | Frame -> drone command p95 <= 200 ms | 15.968 | <= 200.0 | Bounded queue, one consumer | `test_realtime_performance.py` |
-| [QR-30](EVIDENCE.md#qr-30) | ❌ FAIL | NFR1.1 | Gesture onset -> command p95 <= 200 ms | 116.053 | <= 200.0, no missed gestures | 3-of-5 vote + 2-frame hold | `test_realtime_performance.py` |
-| [QR-35](EVIDENCE.md#qr-35) | ✅ PASS | NFR1.1 | REST p95 <= 100 ms, 10 clients | 12.764 | <= 100.0, 0 errors | Async FastAPI | `test_backend_performance.py` |
+| [QR-03](EVIDENCE.md#qr-03) | ✅ PASS | NFR1.1 | Recognition p95 < 50 ms (rule) | 0.0031 | < 50.0 | Pure-geometry classifier | `test_latency.py` |
+| [QR-25](EVIDENCE.md#qr-25) | ✅ PASS | NFR1.1 | Recognition p95 < 50 ms (ML) | 0.137 | < 50.0 | 63-feature MLP | `test_latency.py` |
+| [QR-26](EVIDENCE.md#qr-26) | ✅ PASS | NFR1.1 | Hand detection p95 <= 100 ms, live | 17.744 | <= 100.0 | MediaPipe lite model | `test_realtime_performance.py` |
+| [QR-27](EVIDENCE.md#qr-27) | ✅ PASS | NFR1.1 | Frame serialization p95 <= 20 ms | 0.939 | <= 20.0 | Encode once, fan out | `test_latency.py` |
+| [QR-28](EVIDENCE.md#qr-28) | ✅ PASS | NFR1.1 | Resolve + dispatch p95 <= 30 ms | 0.0048 | <= 30.0 | Dict command maps | `test_latency.py` |
+| [QR-29](EVIDENCE.md#qr-29) | ✅ PASS | NFR1.1 | Frame -> drone command p95 <= 200 ms | 20.5 | <= 200.0 | Bounded queue, one consumer | `test_realtime_performance.py` |
+| [QR-30](EVIDENCE.md#qr-30) | ❌ FAIL | NFR1.1 | Gesture onset -> command p95 <= 200 ms | 122.301 | <= 200.0, no missed gestures | 3-of-5 vote + 2-frame hold | `test_realtime_performance.py` |
+| [QR-35](EVIDENCE.md#qr-35) | ✅ PASS | NFR1.1 | REST p95 <= 100 ms, 10 clients | 13.216 | <= 100.0, 0 errors | Async FastAPI | `test_backend_performance.py` |
 | [QR-37](EVIDENCE.md#qr-37) | ✅ PASS | NFR1.1 | Command round trip p95 <= 100 ms | 0.205 | <= 100.0 | Persistent WebSocket | `test_backend_performance.py` |
-| [QR-38](EVIDENCE.md#qr-38) | ✅ PASS | NFR1.1 | Login p95 <= 1 s | 565.203 | <= 1000.0 | bcrypt cost 13 | `test_backend_performance.py` |
-| [QR-40](EVIDENCE.md#qr-40) | ✅ PASS | NFR1.1 | Analytics query p95 <= 250 ms | 2.646 | <= 250.0 | Aggregates in SQL | `test_backend_performance.py` |
+| [QR-38](EVIDENCE.md#qr-38) | ✅ PASS | NFR1.1 | Login p95 <= 1 s | 478.212 | <= 1000.0 | bcrypt cost 13 | `test_backend_performance.py` |
+| [QR-40](EVIDENCE.md#qr-40) | ✅ PASS | NFR1.1 | Analytics query p95 <= 250 ms | 3.359 | <= 250.0 | Aggregates in SQL | `test_backend_performance.py` |
 | [QR-41](EVIDENCE.md#qr-41) | ✅ PASS | NFR1.1 | Cold start <= 10 s, first frame <= 3 s | 1.37 | <= 10.0 s; first gesture frame <= 3.0 s | Lazy camera start | `test_resources.py` |
 | [QR-51](EVIDENCE.md#qr-51) | ✅ PASS | NFR1.1 | Every screen LCP <= 2.5 s | 812 | LCP <= 2500, FCP <= 1800 on every screen | Static production bundle | `performance.nfr.spec.ts` |
 | [QR-52](EVIDENCE.md#qr-52) | ✅ PASS | NFR1.1 | Click -> command confirmed <= 200 ms | 53.7 | <= 200, every click confirmed | WS ack + history | `performance.nfr.spec.ts` |
@@ -30,8 +30,8 @@ Every row links to its full evidence (method, raw numbers, chart) on the [eviden
 | [QR-33](EVIDENCE.md#qr-33) | ⚪ MISSING | NFR1.2 | Frames dropped <= 1 % at 30 fps | not measured | - | Consumer keeps pace | `test_realtime_performance.py` |
 | [QR-42](EVIDENCE.md#qr-42) | ⚪ MISSING | NFR1.2 | No per-frame memory growth | not measured | - | Bounded buffers | `test_resources.py` |
 | [QR-34](EVIDENCE.md#qr-34) | ⚪ MISSING | NFR1.3 | Every client >= 24 fps (+1 stalled) | not measured | - | Per-client 1-slot queues | `test_realtime_performance.py` |
-| [QR-36](EVIDENCE.md#qr-36) | ✅ PASS | NFR1.3 | Telemetry >= 9 Hz | 9.78 | >= 9.0 Hz, p95 gap <= 150.0 ms | 100 ms push loop | `test_backend_performance.py` |
-| [QR-39](EVIDENCE.md#qr-39) | ✅ PASS | NFR1.3 | Telemetry write p95 <= 50 ms | 0.816 | <= 50.0 | Write every 10th tick | `test_backend_performance.py` |
+| [QR-36](EVIDENCE.md#qr-36) | ✅ PASS | NFR1.3 | Telemetry >= 9 Hz | 9.81 | >= 9.0 Hz, p95 gap <= 150.0 ms | 100 ms push loop | `test_backend_performance.py` |
+| [QR-39](EVIDENCE.md#qr-39) | ✅ PASS | NFR1.3 | Telemetry write p95 <= 50 ms | 1.5 | <= 50.0 | Write every 10th tick | `test_backend_performance.py` |
 | [QR-50](EVIDENCE.md#qr-50) | ✅ PASS | NFR1.3 | Dashboard renders >= 24 fps | 30 | >= 24 fps and >= 99% of received frames painted | Canvas + ImageBitmap | `performance.nfr.spec.ts` |
 
 ### NFR2 Security

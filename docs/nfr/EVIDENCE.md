@@ -14,9 +14,10 @@
 
 | Machine | Commit | Runner | Requirements |
 |---|---|---|---|
-| Darwin arm64, 8 cores | [`f63bc74b70`](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/commit/f63bc74b70) | local | 45 |
+| Darwin arm64, 8 cores | [`f63bc74b70`](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/commit/f63bc74b70) | local | 34 |
+| Darwin arm64, 8 cores | [`a8c0e38fd9`](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/commit/a8c0e38fd9) | local | 11 |
 
-Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:42:36+00:00** (UTC).
+Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:47:30+00:00** (UTC).
 
 !!! note "Reference machine"
     SRS NFR1.1 sets the reference machine as a 4-core x86_64 laptop with 8 GB RAM. Numbers measured on a slower machine than that are conservative; numbers from a faster machine should be re-confirmed on the reference laptop before a demo.
@@ -31,22 +32,22 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Metric | Target | Actual |
 |---|---|---|
-| p95 single-frame recognition latency (ms) | < 50.0 | **0.0037** |
+| p95 single-frame recognition latency (ms) | < 50.0 | **0.0031** |
 
 **How it was measured.** RuleBaedRecognizer.intepret_gesture timed on every sample of the labelled dataset
 
 | n | min | mean | p50 | p95 | p99 | max |
 |---|---|---|---|---|---|---|
-| 5837 | 0.0025 | 0.0031 | 0.003 | 0.0037 | 0.0041 | 0.0443 |
+| 5837 | 0.0025 | 0.0029 | 0.0029 | 0.0031 | 0.0034 | 0.0469 |
 
 ![QR-03 chart](evidence/charts/QR-03.svg)
 
 | Detail | Value |
 |---|---|
 | `frames` | 5837 |
-| `mean_ms` | 0.0031 |
+| `mean_ms` | 0.0029 |
 
-<small>Recorded 2026-09-29T01:41:56+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-03.json) · [raw samples CSV](evidence/raw/QR-03.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_latency.py)</small>
+<small>Recorded 2026-09-29T01:46:50+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-03.json) · [raw samples CSV](evidence/raw/QR-03.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_latency.py)</small>
 
 ### QR-25
 
@@ -54,17 +55,17 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Metric | Target | Actual |
 |---|---|---|
-| p95 single-frame recognition latency, ML engine (ms) | < 50.0 | **0.0997** |
+| p95 single-frame recognition latency, ML engine (ms) | < 50.0 | **0.137** |
 
 **How it was measured.** MLBasedRecognizer.interpret_gesture (feature extraction + MLP predict_proba + finger-state helper) timed on every sample of the labelled dataset.
 
 | n | min | mean | p50 | p95 | p99 | max |
 |---|---|---|---|---|---|---|
-| 5837 | 0.0707 | 0.0807 | 0.0758 | 0.0997 | 0.1922 | 1.0785 |
+| 5837 | 0.0692 | 0.0876 | 0.0757 | 0.137 | 0.371 | 0.9127 |
 
 ![QR-25 chart](evidence/charts/QR-25.svg)
 
-<small>Recorded 2026-09-29T01:41:57+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-25.json) · [raw samples CSV](evidence/raw/QR-25.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_latency.py)</small>
+<small>Recorded 2026-09-29T01:46:51+00:00 on Darwin arm64, 8 cores · commit `a8c0e38fd9` (local) · [JSON](evidence/QR-25.json) · [raw samples CSV](evidence/raw/QR-25.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a8c0e38fd9/tests/nfr/test_latency.py)</small>
 
 ### QR-26
 
@@ -72,17 +73,17 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Metric | Target | Actual |
 |---|---|---|
-| p95 MediaPipe hand-detection time per frame, live at 30 fps (ms) | <= 100.0 | **14.272** |
+| p95 MediaPipe hand-detection time per frame, live at 30 fps (ms) | <= 100.0 | **17.744** |
 
 **How it was measured.** MediaPipe Hands (model_complexity=0) timed on every 640x480 frame of real footage while the full pipeline, broadcast and 11 clients run. No hand is in the footage, so the palm detector runs on every frame (its slowest path).
 
 | n | min | mean | p50 | p95 | p99 | max |
 |---|---|---|---|---|---|---|
-| 900 | 11.698 | 13.912 | 13.812 | 14.272 | 17.298 | 56.701 |
+| 897 | 11.671 | 14.557 | 13.705 | 17.744 | 35.744 | 102.876 |
 
 ![QR-26 chart](evidence/charts/QR-26.svg)
 
-<small>Recorded 2026-09-29T01:42:36+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-26.json) · [raw samples CSV](evidence/raw/QR-26.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_realtime_performance.py)</small>
+<small>Recorded 2026-09-29T01:47:30+00:00 on Darwin arm64, 8 cores · commit `a8c0e38fd9` (local) · [JSON](evidence/QR-26.json) · [raw samples CSV](evidence/raw/QR-26.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a8c0e38fd9/tests/nfr/test_realtime_performance.py)</small>
 
 ### QR-27
 
@@ -90,13 +91,13 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Metric | Target | Actual |
 |---|---|---|
-| p95 frame serialization for broadcast (JPEG + landmarks) (ms) | <= 20.0 | **0.897** |
+| p95 frame serialization for broadcast (JPEG + landmarks) (ms) | <= 20.0 | **0.939** |
 
 **How it was measured.** serialize_event(include_frame=True) on real 640x480 frames with 1-2 hands: JPEG q60 encode, base64 and the pydantic model the WebSocket sends.
 
 | n | min | mean | p50 | p95 | p99 | max |
 |---|---|---|---|---|---|---|
-| 580 | 0.736 | 0.826 | 0.818 | 0.897 | 0.989 | 2.287 |
+| 580 | 0.698 | 0.808 | 0.789 | 0.939 | 1.154 | 1.94 |
 
 ![QR-27 chart](evidence/charts/QR-27.svg)
 
@@ -104,7 +105,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 |---|---|
 | `mean_payload_kb` | 55.3 |
 
-<small>Recorded 2026-09-29T01:41:59+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-27.json) · [raw samples CSV](evidence/raw/QR-27.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_latency.py)</small>
+<small>Recorded 2026-09-29T01:46:53+00:00 on Darwin arm64, 8 cores · commit `a8c0e38fd9` (local) · [JSON](evidence/QR-27.json) · [raw samples CSV](evidence/raw/QR-27.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a8c0e38fd9/tests/nfr/test_latency.py)</small>
 
 ### QR-28
 
@@ -112,17 +113,17 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Metric | Target | Actual |
 |---|---|---|
-| p95 gesture payload -> command resolved and executed (ms) | <= 30.0 | **0.005** |
+| p95 gesture payload -> command resolved and executed (ms) | <= 30.0 | **0.0048** |
 
 **How it was measured.** GestureAdapter confidence gate, two-hand/one-hand resolution, stability hold and history log, then DroneAdapter.execute() on the dummy drone.
 
 | n | min | mean | p50 | p95 | p99 | max |
 |---|---|---|---|---|---|---|
-| 2900 | 0.0027 | 0.0041 | 0.0035 | 0.005 | 0.0113 | 0.2312 |
+| 2900 | 0.0027 | 0.0037 | 0.0034 | 0.0048 | 0.0059 | 0.0411 |
 
 ![QR-28 chart](evidence/charts/QR-28.svg)
 
-<small>Recorded 2026-09-29T01:41:59+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-28.json) · [raw samples CSV](evidence/raw/QR-28.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_latency.py)</small>
+<small>Recorded 2026-09-29T01:46:53+00:00 on Darwin arm64, 8 cores · commit `a8c0e38fd9` (local) · [JSON](evidence/QR-28.json) · [raw samples CSV](evidence/raw/QR-28.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a8c0e38fd9/tests/nfr/test_latency.py)</small>
 
 ### QR-29
 
@@ -130,21 +131,21 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Metric | Target | Actual |
 |---|---|---|
-| p95 frame timestamp -> command dispatched to drone (ms) | <= 200.0 | **15.968** |
+| p95 frame timestamp -> command dispatched to drone (ms) | <= 200.0 | **20.5** |
 
 **How it was measured.** Latency from CapturedFrame.timestamp to DroneAdapter.execute() returning, for every command the GestureAdapter emitted in a 30 s window at 30 fps. Includes queue wait, detection, ML recognition, stabilizer, JPEG encode, fan-out, adapter resolution and dispatch.
 
 | n | min | mean | p50 | p95 | p99 | max |
 |---|---|---|---|---|---|---|
-| 855 | 13.323 | 15.588 | 15.391 | 15.968 | 19.902 | 86.167 |
+| 841 | 13.108 | 17.33 | 15.309 | 20.5 | 89.134 | 219.944 |
 
 ![QR-29 chart](evidence/charts/QR-29.svg)
 
 | Detail | Value |
 |---|---|
-| `commands_dispatched` | 855 |
+| `commands_dispatched` | 841 |
 
-<small>Recorded 2026-09-29T01:42:36+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-29.json) · [raw samples CSV](evidence/raw/QR-29.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_realtime_performance.py)</small>
+<small>Recorded 2026-09-29T01:47:30+00:00 on Darwin arm64, 8 cores · commit `a8c0e38fd9` (local) · [JSON](evidence/QR-29.json) · [raw samples CSV](evidence/raw/QR-29.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a8c0e38fd9/tests/nfr/test_realtime_performance.py)</small>
 
 ### QR-30
 
@@ -152,13 +153,13 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Metric | Target | Actual |
 |---|---|---|
-| p95 new gesture shown -> its command dispatched (ms) | <= 200.0, no missed gestures | **116.053** |
+| p95 new gesture shown -> its command dispatched (ms) | <= 200.0, no missed gestures | **122.301** |
 
 **How it was measured.** What the operator feels: time from the first frame showing a new gesture to its command reaching the drone. Includes the deliberate 3-of-5 stabilizer vote and the 2-frame adapter hold that suppress false positives (NFR3.2).
 
 | n | min | mean | p50 | p95 | p99 | max |
 |---|---|---|---|---|---|---|
-| 24 | 112.835 | 115.298 | 115.359 | 116.053 | 116.859 | 116.859 |
+| 24 | 110.712 | 116.385 | 115.858 | 122.301 | 124.834 | 124.834 |
 
 ![QR-30 chart](evidence/charts/QR-30.svg)
 
@@ -167,7 +168,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 | `transitions` | 30 |
 | `missed` | ["segment 8: ROTATE_CW", "segment 13: ROTATE_CW", "segment 18: ROTATE_CW", "segment 23: ROTATE_CW", "segment 28: ROTATE_CW", "segment 33: ROTATE_CW"] |
 
-<small>Recorded 2026-09-29T01:42:36+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-30.json) · [raw samples CSV](evidence/raw/QR-30.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_realtime_performance.py)</small>
+<small>Recorded 2026-09-29T01:47:30+00:00 on Darwin arm64, 8 cores · commit `a8c0e38fd9` (local) · [JSON](evidence/QR-30.json) · [raw samples CSV](evidence/raw/QR-30.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a8c0e38fd9/tests/nfr/test_realtime_performance.py)</small>
 
 ### QR-35
 
@@ -175,13 +176,13 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Metric | Target | Actual |
 |---|---|---|
-| REST p95 latency, 10 concurrent clients (ms) | <= 100.0, 0 errors | **12.764** |
+| REST p95 latency, 10 concurrent clients (ms) | <= 100.0, 0 errors | **13.216** |
 
 **How it was measured.** 10 simulated clients (several dashboard tabs polling at once) each fire 20 requests back to back at random read endpoints through the real ASGI app and sqlite database. Repeated at 50 clients as an ungated stress run.
 
 | n | min | mean | p50 | p95 | p99 | max |
 |---|---|---|---|---|---|---|
-| 200 | 0.115 | 2.801 | 0.198 | 12.764 | 17.841 | 21.624 |
+| 200 | 0.116 | 2.899 | 0.206 | 13.216 | 16.964 | 21.945 |
 
 ![QR-35 chart](evidence/charts/QR-35.svg)
 
@@ -191,12 +192,12 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 | Detail | Value |
 |---|---|
 | `requests` | 200 |
-| `throughput_rps` | 3110.4 |
+| `throughput_rps` | 3030.8 |
 | `error_count` | 0 |
-| `per_endpoint_p95_ms` | {"/api/health": 0.14, "/api/drone/status": 3.874, "/api/input/status": 3.156, "/api/gestures/status": 0.19, "/api/gestures/recognizer": 0.196, "/api/calibration/status": 0.208, "/api/input/gesture/events": 0.214, "/api/analytics/flights": 13.604, "/api/analytics/summary": 18.151} |
-| `stress_test` | {"clients": 50, "gated": false, "stats": {"n": 1000, "min": 0.113, "mean": 11.657, "p50": 0.192, "p95": 64.757, "p99": 110.774, "max": 126.207}, "throughput_rps": 3284.0, "errors": 0, "per_endpoint_p95_ms": {"/api/health": 0.156, "/api/drone/status": 15.044, "/api/input/status": 17.851, "/api/gestures/status": 0.179, "/api/gestures/recognizer": 0.2, "/api/calibration/status": 0.234, "/api/input/ge… |
+| `per_endpoint_p95_ms` | {"/api/health": 0.137, "/api/drone/status": 3.507, "/api/input/status": 3.26, "/api/gestures/status": 0.167, "/api/gestures/recognizer": 0.2, "/api/calibration/status": 0.221, "/api/input/gesture/events": 0.205, "/api/analytics/flights": 14.271, "/api/analytics/summary": 19.381} |
+| `stress_test` | {"clients": 50, "gated": false, "stats": {"n": 1000, "min": 0.116, "mean": 13.594, "p50": 0.23, "p95": 71.492, "p99": 114.432, "max": 183.152}, "throughput_rps": 2659.4, "errors": 0, "per_endpoint_p95_ms": {"/api/health": 0.206, "/api/drone/status": 17.969, "/api/input/status": 17.462, "/api/gestures/status": 0.216, "/api/gestures/recognizer": 0.263, "/api/calibration/status": 0.315, "/api/input/g… |
 
-<small>Recorded 2026-09-29T01:41:31+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-35.json) · [raw samples CSV](evidence/raw/QR-35.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
+<small>Recorded 2026-09-29T01:46:25+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-35.json) · [raw samples CSV](evidence/raw/QR-35.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
 
 ### QR-37
 
@@ -210,7 +211,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | n | min | mean | p50 | p95 | p99 | max |
 |---|---|---|---|---|---|---|
-| 202 | 0.137 | 0.193 | 0.156 | 0.205 | 0.335 | 3.328 |
+| 202 | 0.138 | 0.193 | 0.157 | 0.205 | 0.37 | 3.1 |
 
 ![QR-37 chart](evidence/charts/QR-37.svg)
 
@@ -218,7 +219,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 |---|---|
 | `commands` | 202 |
 
-<small>Recorded 2026-09-29T01:41:47+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-37.json) · [raw samples CSV](evidence/raw/QR-37.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
+<small>Recorded 2026-09-29T01:46:41+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-37.json) · [raw samples CSV](evidence/raw/QR-37.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
 
 ### QR-38
 
@@ -226,13 +227,13 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Metric | Target | Actual |
 |---|---|---|
-| p95 login response time (ms) | <= 1000.0 | **565.203** |
+| p95 login response time (ms) | <= 1000.0 | **478.212** |
 
 **How it was measured.** POST /api/auth/login with a registered user, 8 sequential logins timed end to end.
 
 | n | min | mean | p50 | p95 | p99 | max |
 |---|---|---|---|---|---|---|
-| 8 | 468.071 | 481.095 | 468.659 | 565.203 | 565.203 | 565.203 |
+| 8 | 470.327 | 475.174 | 474.875 | 478.212 | 478.212 | 478.212 |
 
 ![QR-38 chart](evidence/charts/QR-38.svg)
 
@@ -241,9 +242,9 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Detail | Value |
 |---|---|
-| `event_loop_stall_ms` | 467.8 |
+| `event_loop_stall_ms` | 474.6 |
 
-<small>Recorded 2026-09-29T01:41:53+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-38.json) · [raw samples CSV](evidence/raw/QR-38.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
+<small>Recorded 2026-09-29T01:46:47+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-38.json) · [raw samples CSV](evidence/raw/QR-38.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
 
 ### QR-40
 
@@ -251,7 +252,7 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Metric | Target | Actual |
 |---|---|---|
-| slowest analytics query p95 over 200 flights / 20000 rows (ms) | <= 250.0 | **2.646** |
+| slowest analytics query p95 over 200 flights / 20000 rows (ms) | <= 250.0 | **3.359** |
 
 **How it was measured.** The queries behind the Analytics page (summary stats, recent flights) and the aggregate run when a flight ends, against a seeded history.
 
@@ -259,9 +260,9 @@ Measurements recorded between **2026-09-29T01:35:42+00:00** and **2026-09-29T01:
 
 | Detail | Value |
 |---|---|
-| `per_query` | {"summary": {"n": 20, "min": 0.632, "mean": 0.697, "p50": 0.663, "p95": 0.769, "p99": 1.184, "max": 1.184}, "recent flights": {"n": 20, "min": 0.278, "mean": 0.309, "p50": 0.291, "p95": 0.335, "p99": 0.5, "max": 0.5}, "end flight": {"n": 5, "min": 2.51, "mean": 2.571, "p50": 2.552, "p95": 2.646, "p99": 2.646, "max": 2.646}} |
+| `per_query` | {"summary": {"n": 20, "min": 0.675, "mean": 0.812, "p50": 0.751, "p95": 1.013, "p99": 1.124, "max": 1.124}, "recent flights": {"n": 20, "min": 0.304, "mean": 0.388, "p50": 0.357, "p95": 0.532, "p99": 0.575, "max": 0.575}, "end flight": {"n": 5, "min": 2.461, "mean": 2.839, "p50": 2.69, "p95": 3.359, "p99": 3.359, "max": 3.359}} |
 
-<small>Recorded 2026-09-29T01:41:56+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-40.json) · [raw samples CSV](evidence/raw/QR-40.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
+<small>Recorded 2026-09-29T01:46:50+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-40.json) · [raw samples CSV](evidence/raw/QR-40.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
 
 ### QR-41
 
@@ -377,7 +378,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 | Metric | Target | Actual |
 |---|---|---|
-| telemetry updates pushed per second during a recorded flight (Hz) | >= 9.0 Hz, p95 gap <= 150.0 ms | **9.78** |
+| telemetry updates pushed per second during a recorded flight (Hz) | >= 9.0 Hz, p95 gap <= 150.0 ms | **9.81** |
 
 **How it was measured.** Dummy drone connected, TAKEOFF sent so a flight is being recorded (every 10th tick also writes a telemetry row to sqlite), then 150 consecutive telemetry messages timed on the client side. Design rate is 10 Hz.
 
@@ -385,10 +386,10 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 | Detail | Value |
 |---|---|
-| `gap_stats_ms` | {"n": 149, "min": 100.148, "mean": 102.3, "p50": 101.553, "p95": 106.229, "p99": 111.055, "max": 115.478} |
+| `gap_stats_ms` | {"n": 149, "min": 100.147, "mean": 101.94, "p50": 101.377, "p95": 104.829, "p99": 108.957, "max": 118.124} |
 | `messages` | 150 |
 
-<small>Recorded 2026-09-29T01:41:47+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-36.json) · [raw samples CSV](evidence/raw/QR-36.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
+<small>Recorded 2026-09-29T01:46:41+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-36.json) · [raw samples CSV](evidence/raw/QR-36.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
 
 ### QR-39
 
@@ -396,13 +397,13 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 | Metric | Target | Actual |
 |---|---|---|
-| p95 telemetry row write, with 20k rows of history (ms) | <= 50.0 | **0.816** |
+| p95 telemetry row write, with 20k rows of history (ms) | <= 50.0 | **1.5** |
 
 **How it was measured.** FlightManager.record_telemetry (new session, insert, commit) on the real sqlite file, the call the telemetry WebSocket makes every 10th 100 ms tick. Must stay far below 100 ms or the live telemetry stream stutters.
 
 | n | min | mean | p50 | p95 | p99 | max |
 |---|---|---|---|---|---|---|
-| 200 | 0.616 | 0.706 | 0.687 | 0.816 | 0.881 | 1.018 |
+| 200 | 0.593 | 0.877 | 0.766 | 1.5 | 2.945 | 4.492 |
 
 ![QR-39 chart](evidence/charts/QR-39.svg)
 
@@ -410,7 +411,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 |---|---|
 | `history_rows` | 20000 |
 
-<small>Recorded 2026-09-29T01:41:56+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-39.json) · [raw samples CSV](evidence/raw/QR-39.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
+<small>Recorded 2026-09-29T01:46:50+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-39.json) · [raw samples CSV](evidence/raw/QR-39.csv) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_backend_performance.py)</small>
 
 ### QR-50
 
@@ -474,9 +475,9 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 
 | Detail | Value |
 |---|---|
-| `hash_time_ms` | 543.35 |
+| `hash_time_ms` | 538.5 |
 
-<small>Recorded 2026-09-29T01:42:00+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-08.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_password_security.py)</small>
+<small>Recorded 2026-09-29T01:46:54+00:00 on Darwin arm64, 8 cores · commit `a8c0e38fd9` (local) · [JSON](evidence/QR-08.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a8c0e38fd9/tests/nfr/test_password_security.py)</small>
 
 ### QR-09
 
@@ -490,7 +491,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 |---|---|
 | `strong_password_accepted` | True |
 
-<small>Recorded 2026-09-29T01:42:00+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-09.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_password_security.py)</small>
+<small>Recorded 2026-09-29T01:46:54+00:00 on Darwin arm64, 8 cores · commit `a8c0e38fd9` (local) · [JSON](evidence/QR-09.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a8c0e38fd9/tests/nfr/test_password_security.py)</small>
 
 ### QR-10
 
@@ -504,7 +505,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 |---|---|
 | `both_verify` | True |
 
-<small>Recorded 2026-09-29T01:42:02+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-10.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_password_security.py)</small>
+<small>Recorded 2026-09-29T01:46:56+00:00 on Darwin arm64, 8 cores · commit `a8c0e38fd9` (local) · [JSON](evidence/QR-10.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a8c0e38fd9/tests/nfr/test_password_security.py)</small>
 
 ---
 
@@ -524,7 +525,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 | `samples` | 5837 |
 | `top_confusions` | [["TWO_FINGERS->THREE_FINGERS", 3], ["FIST->ONE_FINGER", 2], ["TWO_FINGERS->ONE_FINGER", 2], ["THREE_FINGERS->TWO_FINGERS", 2], ["FIST->TWO_FINGERS", 1]] |
 
-<small>Recorded 2026-09-29T01:41:30+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-01.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_accuracy.py)</small>
+<small>Recorded 2026-09-29T01:46:24+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-01.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_accuracy.py)</small>
 
 ### QR-02
 
@@ -539,7 +540,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 | `engine` | ml |
 | `per_gesture` | {"FIST": 99.0, "OPEN_PALM": 100.0, "ONE_FINGER": 99.9, "TWO_FINGERS": 99.5, "THREE_FINGERS": 99.7, "FOUR_FINGERS": 99.8} |
 
-<small>Recorded 2026-09-29T01:41:30+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-02.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_accuracy.py)</small>
+<small>Recorded 2026-09-29T01:46:24+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-02.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_accuracy.py)</small>
 
 ### QR-01-rule
 
@@ -555,7 +556,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 | `lowest_per_gesture` | 37.5 |
 | `per_gesture` | {"FIST": 56.4, "OPEN_PALM": 98.3, "ONE_FINGER": 37.5, "TWO_FINGERS": 52.3, "THREE_FINGERS": 65.8, "FOUR_FINGERS": 61.5} |
 
-<small>Recorded 2026-09-29T01:41:30+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-01-rule.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_accuracy.py)</small>
+<small>Recorded 2026-09-29T01:46:25+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-01-rule.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_accuracy.py)</small>
 
 ### QR-06
 
@@ -565,7 +566,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 |---|---|---|
 | minimum confidence threshold for command emission | >= 0.85 | **0.85** |
 
-<small>Recorded 2026-09-29T01:41:56+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-06.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_command_mapping.py)</small>
+<small>Recorded 2026-09-29T01:46:50+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-06.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_command_mapping.py)</small>
 
 ### QR-19
 
@@ -595,7 +596,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 |---|---|
 | `mapped` | {"OPEN_PALM": "HOVER", "ONE_FINGER": "MOVE_UP", "TWO_FINGERS": "MOVE_DOWN"} |
 
-<small>Recorded 2026-09-29T01:41:56+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-04.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_command_mapping.py)</small>
+<small>Recorded 2026-09-29T01:46:50+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-04.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_command_mapping.py)</small>
 
 ### QR-05
 
@@ -605,7 +606,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 |---|---|---|
 | two-hand combinations resolving correctly | all resolve | **9/9** |
 
-<small>Recorded 2026-09-29T01:41:56+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-05.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_command_mapping.py)</small>
+<small>Recorded 2026-09-29T01:46:50+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-05.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_command_mapping.py)</small>
 
 ### QR-13
 
@@ -819,7 +820,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 |---|---|
 | `interface_methods` | ["analog", "connect", "disconnect", "emergency_stop", "get_telemetry", "hover", "land", "move", "takeoff"] |
 
-<small>Recorded 2026-09-29T01:41:59+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-20.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_maintainabiility.py)</small>
+<small>Recorded 2026-09-29T01:46:53+00:00 on Darwin arm64, 8 cores · commit `a8c0e38fd9` (local) · [JSON](evidence/QR-20.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a8c0e38fd9/tests/nfr/test_maintainabiility.py)</small>
 
 ### QR-21
 
@@ -833,7 +834,7 @@ Not measured in the committed run. Test: [`test_realtime_performance.py`](https:
 |---|---|
 | `interface_methods` | ["handle_message", "start"] |
 
-<small>Recorded 2026-09-29T01:41:59+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-21.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_maintainabiility.py)</small>
+<small>Recorded 2026-09-29T01:46:53+00:00 on Darwin arm64, 8 cores · commit `a8c0e38fd9` (local) · [JSON](evidence/QR-21.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a8c0e38fd9/tests/nfr/test_maintainabiility.py)</small>
 
 ### QR-22
 
@@ -857,7 +858,7 @@ Not measured in the committed run. Test: [`test_maintainabiility.py`](https://gi
 |---|---|
 | `health_routes` | ["/api/auth/health", "/api/drone/health", "/api/gestures/health", "/api/health"] |
 
-<small>Recorded 2026-09-29T01:41:31+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-23.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_availability.py)</small>
+<small>Recorded 2026-09-29T01:46:25+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-23.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_availability.py)</small>
 
 ### QR-24
 
@@ -867,5 +868,5 @@ Not measured in the committed run. Test: [`test_maintainabiility.py`](https://gi
 |---|---|---|
 | health probes reachable without authentication | all unauthenticated | **4/4** |
 
-<small>Recorded 2026-09-29T01:41:31+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-24.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_availability.py)</small>
+<small>Recorded 2026-09-29T01:46:25+00:00 on Darwin arm64, 8 cores · commit `f63bc74b70` (local) · [JSON](evidence/QR-24.json) · [test source](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/tests/nfr/test_availability.py)</small>
 

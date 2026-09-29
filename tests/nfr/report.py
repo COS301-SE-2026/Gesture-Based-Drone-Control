@@ -408,11 +408,11 @@ GROUPS: dict[str, dict[str, tuple[str, str, str, str, bool]]] = {
 }
 
 ICON = {
-	'PASS': '✅ PASS',
-	'FAIL': '❌ FAIL',
-	'PENDING': '⏳ PENDING',
-	'INFO': 'ℹ️ INFO',
-	'MISSING': '⚪ MISSING',
+	'PASS': 'PASS',
+	'FAIL': 'FAIL',
+	'PENDING': 'PENDING',
+	'INFO': 'INFO',
+	'MISSING': 'MISSING',
 }
 
 

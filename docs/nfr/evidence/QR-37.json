@@ -5,7 +5,7 @@
   "actual": 0.205,
   "target": "<= 100.0",
   "pass": true,
-  "recorded_at": "2026-09-29T01:41:47+00:00",
+  "recorded_at": "2026-09-29T01:46:41+00:00",
   "machine": "Darwin arm64, 8 cores",
   "python": "3.11.15",
   "commit": "f63bc74b70",
@@ -13,12 +13,12 @@
   "runner": "local",
   "stats": {
     "n": 202,
-    "min": 0.137,
+    "min": 0.138,
     "mean": 0.193,
-    "p50": 0.156,
+    "p50": 0.157,
     "p95": 0.205,
-    "p99": 0.335,
-    "max": 3.328
+    "p99": 0.37,
+    "max": 3.1
   },
   "commands": 202,
   "failures": [],
