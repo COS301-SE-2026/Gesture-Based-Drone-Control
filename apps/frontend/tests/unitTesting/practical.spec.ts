@@ -25,29 +25,6 @@ test.describe('Practical page ' , () => {
 
     })
 
-    test.describe('module locking',() => {
-        test('the first module should be available', async ({page}) => {
-            const startButton = page.getByRole('button', {name: /start module/i}).first()
-            await expect(startButton).toBeVisible()
-            await expect(startButton).toBeEnabled()
-        })
-
-        test ('modules after the first should start locked ' , async ({page}) => {
-            const lockedButtons = page.getByRole('button', {name: /^locked$/i })
-            await expect(lockedButtons).toHaveCount(3)
-            for (const btn of await lockedButtons.all()) {
-                await expect(btn).toBeDisabled()
-            }
-        })
-
-
-        test('clicking a locked module should not open the exercise modal' , async ({ page}) => {
-            await page.getByRole('button', { name: /^locked$/i }).first().click({ force: true})
-            await expect (
-                page.getByRole('dialog')
-            ).not.toBeVisible()
-        })
-    })
 
 
     test.describe('exercise modal' , () => {

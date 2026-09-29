@@ -40,8 +40,8 @@ export default function Practical() {
   const [completedModules, setCompletedModules] = useState([])
   const [activeModule, setActiveModule] = useState(null)
 
-  const getStatus = (idx) => completedModules.includes(idx) ? "completed": "available"
-  
+  const getStatus = (idx) =>
+    completedModules.includes(idx) ? "completed" : "available"
 
   const handleStart = (idx) => {
     setActiveModule(idx)

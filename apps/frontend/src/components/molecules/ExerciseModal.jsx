@@ -10,7 +10,7 @@ import FigureEightSim from "./FigureEightSim"
 const SIMULATIONS = {
   "basic-maneuvers": BasicManeuversSim,
   "obstacle-blocks": ObstacleBlocksSim,
-  "figure-8":FigureEightSim,
+  "figure-8": FigureEightSim,
   "mock-test": MockLicensingSim,
 }
 export default function ExerciseModal({ open, onClose, module, onComplete }) {

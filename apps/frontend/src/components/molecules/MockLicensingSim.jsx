@@ -182,14 +182,13 @@ export default function MockLicensing({ running, onComplete }) {
 
   useEffect(() => () => clearTimeout(flashTimerRef.current), [])
 
-  useEffect( () => {
-
+  useEffect(() => {
     if (!running || done || failed) return undefined
 
     const start = performance.now()
-    const id = setInterval (() => {
+    const id = setInterval(() => {
       const remaining = TIME_LIMIT_S - (performance.now() - start) / 1000
-      if (remaining <= 0){
+      if (remaining <= 0) {
         clearInterval(id)
         failedRef.current = true
         setTimeLeft(0)
@@ -526,7 +525,9 @@ export default function MockLicensing({ running, onComplete }) {
 
       <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3 font-mono text-xs text-dim">
         <div className="flex flex-col gap-0.5">
-          <span className={timeLeft<=10? "text-red font-semibold" : "text-ink"}>
+          <span
+            className={timeLeft <= 10 ? "text-red font-semibold" : "text-ink"}
+          >
             Time left: {timeLeft}s
           </span>
           <span>Last command: {lastCmd ?? "none yet"}</span>
@@ -546,7 +547,11 @@ export default function MockLicensing({ running, onComplete }) {
       {(!running || done || failed) && (
         <div className="absolute inset-x-0 top-3 flex justify-center pointer-events-none">
           <span className="rounded-full border border-glassBrd bg-glass px-3 py-1 text-xs text-ink">
-            {done ? "Module complete" : failed ? "Times up - mock test failed" : "Press start exercise to begin"}
+            {done
+              ? "Module complete"
+              : failed
+                ? "Times up - mock test failed"
+                : "Press start exercise to begin"}
           </span>
         </div>
       )}
