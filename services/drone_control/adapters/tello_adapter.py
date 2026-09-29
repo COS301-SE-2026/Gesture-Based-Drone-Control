@@ -253,7 +253,9 @@ class TelloAdapter(DroneAdapter):
 			return True  # already on do nothing
 
 		try:
-			await asyncio.to_thread(self._tello.streamon)
+			async with self._command_lock:
+				await asyncio.to_thread(self._tello.streamon)
+
 			self._frame_read = await asyncio.to_thread(self._tello.get_frame_read)
 			self._video_on = True
 			logger.info('Tello Drone: video stream started')
@@ -275,8 +277,8 @@ class TelloAdapter(DroneAdapter):
 				stop = getattr(self._frame_read, 'stop', None)
 				if stop is not None:
 					await asyncio.to_thread(stop)
-
-			await asyncio.to_thread(self._tello.streamoff)
+			async with self._command_lock:
+				await asyncio.to_thread(self._tello.streamoff)
 		except Exception as ex:
 			logger.warning('Tello streamoff failed with %s', ex, exc_info=True)
 
