@@ -5,11 +5,11 @@
   "actual": 13,
   "target": ">= 12",
   "pass": true,
-  "recorded_at": "2026-09-29T01:46:54+00:00",
+  "recorded_at": "2026-09-29T22:16:56+00:00",
   "machine": "Darwin arm64, 8 cores",
   "python": "3.11.15",
-  "commit": "a8c0e38fd9",
+  "commit": "a088db842f",
   "branch": "testing/NFRPerformance",
   "runner": "local",
-  "hash_time_ms": 538.5
+  "hash_time_ms": 491.79
 }

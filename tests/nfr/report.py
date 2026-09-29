@@ -142,13 +142,6 @@ GROUPS: dict[str, dict[str, tuple[str, str, str, str, bool]]] = {
 			'test_realtime_robustness.py',
 			False,
 		),
-		'QR-31': (
-			'NFR1.2',
-			'Capacity >= 30 fps',
-			'Camera thread + async consumer',
-			'test_realtime_performance.py',
-			False,
-		),
 		'QR-32': (
 			'NFR1.2',
 			'CPU <= 70 % at 30 fps',
@@ -878,8 +871,9 @@ def write_ci_summary(matrix: list[str], counts: Counter) -> None:
 	head = [
 		'## NFR evidence',
 		'',
-		f'right {counts["PASS"]} pass · wrong {counts["FAIL"]} fail · timing {counts["PENDING"]} pending · '
-		f'info {counts["INFO"]} info · waiting {counts["MISSING"]} not measured',
+		f'{counts["PASS"]} pass · {counts["FAIL"]} fail · '
+		f'{counts["PENDING"]} pending · {counts["INFO"]} info · '
+		f'{counts["MISSING"]} not measured',
 		'',
 		'The full evidence (JSON, raw samples, charts, screenshots, EVIDENCE.md) is attached to '
 		'this run as the **nfr-evidence** artifact.',

@@ -96,11 +96,11 @@ def test_ml_recognition_latency_p95():
 
 def test_frame_serialization_latency():
 	from app.cv.serialization import serialize_event
-	from tests.nfr._perf import LandmarkScript, PacedVideoCamera, clip_config
 
 	from services.cv_pipeline.gestures.gesture_engine import GestureEngine
 	from services.cv_pipeline.hand_detection.mediapipe_detector import HandDetectionResult
 	from services.cv_pipeline.processing.pipeline import HandMetrics, PipelineEvent
+	from tests.nfr._perf import LandmarkScript, PacedVideoCamera, clip_config
 
 	camera = PacedVideoCamera(clip_config(fps=1000))
 	camera.open()
@@ -151,11 +151,11 @@ def test_frame_serialization_latency():
 
 def test_command_resolution_and_dispatch_latency():
 	from app.cv.serialization import GestureFramePayload, HandOut, LandmarkOut
-	from tests.nfr._perf import SCRIPT
 
 	from services.drone_control.adapters.dummy_drone_adapter import DummyDroneAdapter
 	from services.input.gesture_events import GestureEventLog
 	from services.input.sources.gesture_adapter import GestureAdapter
+	from tests.nfr._perf import SCRIPT
 
 	lm = [LandmarkOut(x=0.5, y=0.5, z=0.0)] * 21
 

@@ -5,10 +5,10 @@
   "actual": "4/4 loaded",
   "target": "all loaded adapters complete",
   "pass": true,
-  "recorded_at": "2026-09-29T01:46:53+00:00",
+  "recorded_at": "2026-09-29T22:19:15+00:00",
   "machine": "Darwin arm64, 8 cores",
   "python": "3.11.15",
-  "commit": "a8c0e38fd9",
+  "commit": "a088db842f",
   "branch": "testing/NFRPerformance",
   "runner": "local",
   "interface_methods": [

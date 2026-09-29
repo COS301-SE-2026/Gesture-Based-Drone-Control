@@ -128,7 +128,7 @@ tasks:
     desc: Backend NFR tests (performance, usability, security, reliability) - pytest
     cmds:
       # radon is only needed for the complexity check (QR-22), so it is pulled in for this run only
-      - uv run --with radon pytest tests/nfr -q -m "not slow"
+      - uv run pytest tests/nfr -q -m "not slow"
 
   nfr-frontend:
     desc: Frontend NFR tests (render rate, page load, accessibility, layout) - Playwright

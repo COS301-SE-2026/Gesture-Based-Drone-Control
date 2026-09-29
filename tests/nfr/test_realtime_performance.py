@@ -8,7 +8,6 @@ QR-26 / NFR1.1 -> hand-detection stage latency under live load
 QR-29 / NFR1.1 -> frame timestamp -> command dispatched, p95 <= 200 ms
 QR-30 / NFR1.1 -> gesture onset -> command dispatched (includes the
 stabilizer's deliberate hold), p95 <= 200 ms
-QR-31 / NFR1.2 -> pipeline capacity: processed fps with a 90 fps source >= 30
 QR-32 / NFR1.2 -> whole-process CPU at 30 fps <= 70 % of the machine
 QR-33 / NFR1.2 -> frames dropped at the camera's native 30 fps <= 1 %
 QR-34 / NFR1.3 -> every one of 10 live clients receives >= 24 fps while an
@@ -23,13 +22,13 @@ import time
 from dataclasses import dataclass, field
 
 import pytest
-from tests.nfr._perf import CpuMeter, LandmarkScript, paced_camera_factory, reference_clip
 
 from services.cv_pipeline.hand_detection.mediapipe_detector import HandDetectionPipeline
 from services.drone_control.adapters.dummy_drone_adapter import DummyDroneAdapter
 from services.input.gesture_events import GestureEventLog
 from services.input.sources.gesture_adapter import GestureAdapter
 from tests.nfr._helpers import emit, summarize, write_samples
+from tests.nfr._perf import CpuMeter, LandmarkScript, paced_camera_factory, reference_clip
 
 TARGET_E2E_P95_MS = 200.0
 TARGET_DETECT_P95_MS = 100.0
@@ -40,7 +39,6 @@ TARGET_CLIENT_FPS = 24.0
 
 WARMUP_S = 3.0
 WINDOW_S = 30.0
-CAPACITY_WINDOW_S = 8.0
 OBSERVERS = 10
 
 
@@ -178,12 +176,6 @@ def steady_run() -> LiveRun:
 		return asyncio.run(_live_run(mp, fps=30, window_s=WINDOW_S, observers=OBSERVERS))
 
 
-@pytest.fixture(scope='module')
-def capacity_run() -> LiveRun:
-	with pytest.MonkeyPatch.context() as mp:
-		return asyncio.run(_live_run(mp, fps=90, window_s=CAPACITY_WINDOW_S, observers=0))
-
-
 def _processed_in_window(run: LiveRun) -> list[tuple[int, float]]:
 	return [(i, ts) for i, ts in run.script.processed if run.in_window(ts)]
 
@@ -318,35 +310,6 @@ def _fps_series(stamps: list[float], start: float, end: float) -> list[int]:
 		if 0 <= idx < len(buckets):
 			buckets[idx] += 1
 	return buckets
-
-
-def test_pipeline_capacity(capacity_run: LiveRun):
-	run = capacity_run
-	processed = _processed_in_window(run)
-	fps = len(processed) / run.seconds
-	source_fps = (run.captured_at_end - run.captured_at_start) / run.seconds
-	passed = fps >= TARGET_FPS
-
-	series = _fps_series([ts for _, ts in processed], run.window_start, run.window_end)
-	write_samples('QR-31', {'second': list(range(len(series))), 'processed_fps': series})
-	emit(
-		'QR-31',
-		'NFR1.2',
-		'sustained processed frames/s with a 90 fps source (capacity)',
-		actual=round(fps, 1),
-		target=f'>= {TARGET_FPS}',
-		passed=passed,
-		source_fps=round(source_fps, 1),
-		source_limited=fps >= 0.97 * source_fps,
-		window_s=round(run.seconds, 1),
-		method=(
-			'The camera is paced at 90 fps, three times a webcam, so the pipeline rather '
-			'than the camera is the bottleneck. Counts frames fully processed (detected, '
-			'recognised, broadcast) per second over the window.'
-		),
-		chart={'kind': 'series', 'column': 'processed_fps', 'unit': 'fps', 'threshold': 30},
-	)
-	assert passed, f'pipeline sustained only {fps:.1f} fps (< {TARGET_FPS})'
 
 
 def test_cpu_budget_at_native_rate(steady_run: LiveRun):

@@ -5,10 +5,10 @@
   "actual": "keyboard 12/12, gamepad 12/12",
   "target": "all, including EMERGENCY_STOP",
   "pass": true,
-  "recorded_at": "2026-09-29T01:40:41+00:00",
+  "recorded_at": "2026-09-29T22:17:55+00:00",
   "machine": "Darwin arm64, 8 cores",
   "python": "3.11.15",
-  "commit": "f63bc74b70",
+  "commit": "a088db842f",
   "branch": "testing/NFRPerformance",
   "runner": "local",
   "missing": {

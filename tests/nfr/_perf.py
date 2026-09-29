@@ -88,6 +88,7 @@ class PacedVideoCamera(CameraFeed):
 		frame = super().capture_image()
 		if frame is None and self._cap is not None:
 			self._cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+			frame = super().capture_image()
 		if frame is not None:
 			self.frames_delivered += 1
 		return frame
@@ -111,7 +112,7 @@ SCRIPT = (
 	(('OPEN_PALM', None), 'HOVER'),
 	(('ONE_FINGER', None), 'MOVE_UP'),
 	(('THREE_FINGERS', 'THREE_FINGERS'), 'TAKEOFF'),
-	(('TWO_FINGERS', 'OPEN_PALM'), 'ROTATE_CW'),
+	(('ONE_FINGER', 'OPEN_PALM'), 'ROTATE_CW'),
 	(('FIST', 'FIST'), 'LAND'),
 )
 HOLD_FRAMES = 30

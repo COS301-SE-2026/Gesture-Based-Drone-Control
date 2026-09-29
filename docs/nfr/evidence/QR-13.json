@@ -5,10 +5,10 @@
   "actual": 999,
   "target": "== 999",
   "pass": true,
-  "recorded_at": "2026-09-29T01:40:40+00:00",
+  "recorded_at": "2026-09-29T22:17:54+00:00",
   "machine": "Darwin arm64, 8 cores",
   "python": "3.11.15",
-  "commit": "f63bc74b70",
+  "commit": "a088db842f",
   "branch": "testing/NFRPerformance",
   "runner": "local",
   "other_types_elevated": []

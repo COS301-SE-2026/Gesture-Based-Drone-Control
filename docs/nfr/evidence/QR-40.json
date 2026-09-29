@@ -2,42 +2,42 @@
   "id": "QR-40",
   "requirement": "NFR1.1",
   "metric": "slowest analytics query p95 over 200 flights / 20000 rows (ms)",
-  "actual": 3.359,
+  "actual": 3.545,
   "target": "<= 250.0",
   "pass": true,
-  "recorded_at": "2026-09-29T01:46:50+00:00",
+  "recorded_at": "2026-09-29T22:16:52+00:00",
   "machine": "Darwin arm64, 8 cores",
   "python": "3.11.15",
-  "commit": "f63bc74b70",
+  "commit": "a088db842f",
   "branch": "testing/NFRPerformance",
   "runner": "local",
   "per_query": {
     "summary": {
       "n": 20,
-      "min": 0.675,
-      "mean": 0.812,
-      "p50": 0.751,
-      "p95": 1.013,
-      "p99": 1.124,
-      "max": 1.124
+      "min": 0.629,
+      "mean": 0.724,
+      "p50": 0.666,
+      "p95": 0.736,
+      "p99": 1.765,
+      "max": 1.765
     },
     "recent flights": {
       "n": 20,
-      "min": 0.304,
-      "mean": 0.388,
-      "p50": 0.357,
-      "p95": 0.532,
-      "p99": 0.575,
-      "max": 0.575
+      "min": 0.272,
+      "mean": 0.314,
+      "p50": 0.296,
+      "p95": 0.38,
+      "p99": 0.553,
+      "max": 0.553
     },
     "end flight": {
       "n": 5,
-      "min": 2.461,
-      "mean": 2.839,
-      "p50": 2.69,
-      "p95": 3.359,
-      "p99": 3.359,
-      "max": 3.359
+      "min": 2.453,
+      "mean": 2.705,
+      "p50": 2.483,
+      "p95": 3.545,
+      "p99": 3.545,
+      "max": 3.545
     }
   },
   "method": "The queries behind the Analytics page (summary stats, recent flights) and the aggregate run when a flight ends, against a seeded history.",
