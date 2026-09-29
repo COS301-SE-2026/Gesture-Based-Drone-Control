@@ -1,0 +1,15 @@
+{
+  "id": "QR-24",
+  "requirement": "NFR7.2",
+  "metric": "health probes reachable without authentication",
+  "actual": "4/4",
+  "target": "all unauthenticated",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:46:25+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "auth_gated": []
+}

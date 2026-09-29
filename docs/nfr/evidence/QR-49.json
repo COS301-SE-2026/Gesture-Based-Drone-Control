@@ -1,0 +1,21 @@
+{
+  "id": "QR-49",
+  "requirement": "R1.1.2",
+  "metric": "command-history entries for 2 holds (10 s + 3 s, with a dropout)",
+  "actual": 2,
+  "target": "2 (one per hold)",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:40:41+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "history": [
+    "MOVE_UP",
+    "HOVER"
+  ],
+  "frames": 392,
+  "commands_sent_to_drone": 387,
+  "method": "Feeds 392 frames through the real GestureAdapter: the drone still receives a command every frame, but the operator-facing history must show one row per hold."
+}

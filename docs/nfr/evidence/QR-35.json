@@ -1,0 +1,73 @@
+{
+  "id": "QR-35",
+  "requirement": "NFR1.1",
+  "metric": "REST p95 latency, 10 concurrent clients (ms)",
+  "actual": 13.216,
+  "target": "<= 100.0, 0 errors",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:46:25+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "stats": {
+    "n": 200,
+    "min": 0.116,
+    "mean": 2.899,
+    "p50": 0.206,
+    "p95": 13.216,
+    "p99": 16.964,
+    "max": 21.945
+  },
+  "requests": 200,
+  "throughput_rps": 3030.8,
+  "error_count": 0,
+  "errors": [],
+  "per_endpoint_p95_ms": {
+    "/api/health": 0.137,
+    "/api/drone/status": 3.507,
+    "/api/input/status": 3.26,
+    "/api/gestures/status": 0.167,
+    "/api/gestures/recognizer": 0.2,
+    "/api/calibration/status": 0.221,
+    "/api/input/gesture/events": 0.205,
+    "/api/analytics/flights": 14.271,
+    "/api/analytics/summary": 19.381
+  },
+  "stress_test": {
+    "clients": 50,
+    "gated": false,
+    "stats": {
+      "n": 1000,
+      "min": 0.116,
+      "mean": 13.594,
+      "p50": 0.23,
+      "p95": 71.492,
+      "p99": 114.432,
+      "max": 183.152
+    },
+    "throughput_rps": 2659.4,
+    "errors": 0,
+    "per_endpoint_p95_ms": {
+      "/api/health": 0.206,
+      "/api/drone/status": 17.969,
+      "/api/input/status": 17.462,
+      "/api/gestures/status": 0.216,
+      "/api/gestures/recognizer": 0.263,
+      "/api/calibration/status": 0.315,
+      "/api/input/gesture/events": 0.315,
+      "/api/analytics/flights": 136.805,
+      "/api/analytics/summary": 113.434
+    }
+  },
+  "finding": "At 50 simultaneous clients (stress, not gated) the analytics endpoints dominate the tail: every request queues for the single sqlite connection. A single-operator desktop app never generates that load, but a short-lived cache on /analytics/summary would remove it.",
+  "method": "10 simulated clients (several dashboard tabs polling at once) each fire 20 requests back to back at random read endpoints through the real ASGI app and sqlite database. Repeated at 50 clients as an ungated stress run.",
+  "chart": {
+    "kind": "bars",
+    "column": "p95_ms",
+    "label": "endpoint",
+    "unit": "ms",
+    "threshold": 100.0
+  }
+}

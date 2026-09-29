@@ -1,0 +1,29 @@
+{
+  "id": "QR-28",
+  "requirement": "NFR1.1",
+  "metric": "p95 gesture payload -> command resolved and executed (ms)",
+  "actual": 0.005,
+  "target": "<= 30.0",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:41:59+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "stats": {
+    "n": 2900,
+    "min": 0.0027,
+    "mean": 0.0041,
+    "p50": 0.0035,
+    "p95": 0.005,
+    "p99": 0.0113,
+    "max": 0.2312
+  },
+  "method": "GestureAdapter confidence gate, two-hand/one-hand resolution, stability hold and history log, then DroneAdapter.execute() on the dummy drone.",
+  "chart": {
+    "kind": "histogram",
+    "column": "dispatch_ms",
+    "unit": "ms"
+  }
+}

@@ -2,11 +2,30 @@
   "id": "QR-03",
   "requirement": "NFR1.1",
   "metric": "p95 single-frame recognition latency (ms)",
-  "actual": 0.003,
+  "actual": 0.0037,
   "target": "< 50.0",
   "pass": true,
-  "recorded_at": "2026-09-03T20:40:02+00:00",
+  "recorded_at": "2026-09-29T01:41:56+00:00",
   "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
   "frames": 5837,
-  "mean_ms": 0.0028
+  "mean_ms": 0.0031,
+  "stats": {
+    "n": 5837,
+    "min": 0.0025,
+    "mean": 0.0031,
+    "p50": 0.003,
+    "p95": 0.0037,
+    "p99": 0.0041,
+    "max": 0.0443
+  },
+  "method": "RuleBaedRecognizer.intepret_gesture timed on every sample of the labelled dataset",
+  "chart": {
+    "kind": "histogram",
+    "column": "recognition_ms",
+    "unit": "ms"
+  }
 }

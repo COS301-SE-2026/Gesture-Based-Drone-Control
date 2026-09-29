@@ -233,6 +233,7 @@ const GestureGuide = memo(function GestureGuide({
             variant={isControlActive("Move Forward") ? "default" : "secondary"}
             icon={ArrowUp}
             onClick={() => handlePress("moveForward", "Move Forward")}
+            aria-label="Move forward"
             disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
@@ -244,6 +245,7 @@ const GestureGuide = memo(function GestureGuide({
             variant={isControlActive("Move Left") ? "default" : "secondary"}
             icon={ArrowLeft}
             onClick={() => handlePress("moveLeft", "Move Left")}
+            aria-label="Move left"
             disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
@@ -253,6 +255,7 @@ const GestureGuide = memo(function GestureGuide({
             variant={isControlActive("Hover") ? "default" : "secondary"}
             icon={CircleDot}
             onClick={() => handlePress("hover", "Hover")}
+            aria-label="Hover"
             disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
@@ -262,6 +265,7 @@ const GestureGuide = memo(function GestureGuide({
             variant={isControlActive("Move Right") ? "default" : "secondary"}
             icon={ArrowRight}
             onClick={() => handlePress("moveRight", "Move Right")}
+            aria-label="Move right"
             disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
@@ -273,6 +277,7 @@ const GestureGuide = memo(function GestureGuide({
             variant={isControlActive("Move Backward") ? "default" : "secondary"}
             icon={ArrowDown}
             onClick={() => handlePress("moveBackward", "Move Backward")}
+            aria-label="Move backward"
             disabled={!isFlying}
             className="h-16 w-full rounded-lg"
             size="lg"
@@ -291,6 +296,7 @@ const GestureGuide = memo(function GestureGuide({
             }
             icon={ChevronUp}
             onClick={() => handlePress("goUp", "Increase Altitude")}
+            aria-label="Increase altitude"
             disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
@@ -302,6 +308,7 @@ const GestureGuide = memo(function GestureGuide({
             }
             icon={ChevronDown}
             onClick={() => handlePress("goDown", "Decrease Altitude")}
+            aria-label="Decrease altitude"
             disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
@@ -311,6 +318,7 @@ const GestureGuide = memo(function GestureGuide({
             variant={isControlActive("Rotate Left") ? "default" : "secondary"}
             icon={RotateCcw}
             onClick={() => handlePress("rotateLeft", "Rotate Left")}
+            aria-label="Rotate left"
             disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
@@ -320,6 +328,7 @@ const GestureGuide = memo(function GestureGuide({
             variant={isControlActive("Rotate Right") ? "default" : "secondary"}
             icon={RotateCw}
             onClick={() => handlePress("rotateRight", "Rotate Right")}
+            aria-label="Rotate right"
             disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
@@ -332,6 +341,7 @@ const GestureGuide = memo(function GestureGuide({
             variant={isControlActive("Take Off") ? "default" : "secondary"}
             icon={PlaneTakeoff}
             onClick={() => handlePress("takeoff", "Take Off")}
+            aria-label="Take off"
             disabled={isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"
@@ -340,6 +350,7 @@ const GestureGuide = memo(function GestureGuide({
             variant={isControlActive("Land") ? "default" : "secondary"}
             icon={PlaneLanding}
             onClick={() => handlePress("land", "Land")}
+            aria-label="Land"
             disabled={!isFlying}
             className="flex-1 h-12 rounded-lg"
             size="md"

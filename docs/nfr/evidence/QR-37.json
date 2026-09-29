@@ -1,0 +1,32 @@
+{
+  "id": "QR-37",
+  "requirement": "NFR1.1",
+  "metric": "p95 command round trip over /api/drone/ws/commands (ms)",
+  "actual": 0.205,
+  "target": "<= 100.0",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:41:47+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "stats": {
+    "n": 202,
+    "min": 0.137,
+    "mean": 0.193,
+    "p50": 0.156,
+    "p95": 0.205,
+    "p99": 0.335,
+    "max": 3.328
+  },
+  "commands": 202,
+  "failures": [],
+  "method": "Send a command the way the on-screen pad does, wait for the backend ack after DroneAdapter.execute(). TAKEOFF and LAND also open/close a flight row in sqlite.",
+  "chart": {
+    "kind": "histogram",
+    "column": "rtt_ms",
+    "unit": "ms",
+    "threshold": 100.0
+  }
+}

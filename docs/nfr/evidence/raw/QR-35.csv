@@ -1,0 +1,10 @@
+endpoint,p95_ms,stress_p95_ms
+/api/health,0.137,0.206
+/api/drone/status,3.507,17.969
+/api/input/status,3.26,17.462
+/api/gestures/status,0.167,0.216
+/api/gestures/recognizer,0.2,0.263
+/api/calibration/status,0.221,0.315
+/api/input/gesture/events,0.205,0.315
+/api/analytics/flights,14.271,136.805
+/api/analytics/summary,19.381,113.434

@@ -1,0 +1,6 @@
+stage,seconds
+cold start 1,1.375
+cold start 2,0.891
+cold start 3,0.887
+first gesture frame,0.053
+ML model load,0.005

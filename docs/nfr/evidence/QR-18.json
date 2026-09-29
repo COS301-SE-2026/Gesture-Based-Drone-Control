@@ -5,8 +5,12 @@
   "actual": 2,
   "target": "<= 2",
   "pass": true,
-  "recorded_at": "2026-09-03T20:40:05+00:00",
+  "recorded_at": "2026-09-29T01:40:35+00:00",
   "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
   "pushes": 100,
   "drop_count": 98,
   "expected_drops": 98

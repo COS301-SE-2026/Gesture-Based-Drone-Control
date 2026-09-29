@@ -1,0 +1,31 @@
+{
+  "id": "QR-39",
+  "requirement": "NFR1.3",
+  "metric": "p95 telemetry row write, with 20k rows of history (ms)",
+  "actual": 0.816,
+  "target": "<= 50.0",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:41:56+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "stats": {
+    "n": 200,
+    "min": 0.616,
+    "mean": 0.706,
+    "p50": 0.687,
+    "p95": 0.816,
+    "p99": 0.881,
+    "max": 1.018
+  },
+  "history_rows": 20000,
+  "method": "FlightManager.record_telemetry (new session, insert, commit) on the real sqlite file, the call the telemetry WebSocket makes every 10th 100 ms tick. Must stay far below 100 ms or the live telemetry stream stutters.",
+  "chart": {
+    "kind": "histogram",
+    "column": "write_ms",
+    "unit": "ms",
+    "threshold": 50.0
+  }
+}

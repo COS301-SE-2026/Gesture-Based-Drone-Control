@@ -39,8 +39,8 @@ def reference_clip() -> Path:
 		raise FileNotFoundError(f'no reference footage in {CLIP_DIR}')
 
 	partial = target.with_suffix('.partial.avi')
-	writer = cv2.VideoCapture(
-		str(partial), cv2.VideoWriter_fourcc('*MJPG'), CLIP_FPS, (CLIP_W, CLIP_H)
+	writer = cv2.VideoWriter(
+		str(partial), cv2.VideoWriter_fourcc(*'MJPG'), CLIP_FPS, (CLIP_W, CLIP_H)
 	)
 	try:
 		for src in sources:
@@ -141,7 +141,7 @@ class LandmarkScript:
 		(right, left), _ = SCRIPT[self.segment(frame_index) % len(SCRIPT)]
 		out = [hand(self._sample(right, frame_index))]
 		if left is not None:
-			out.append(mirrored_hand(self._sammple(left, frame_index + 7)))
+			out.append(mirrored_hand(self._sample(left, frame_index + 7)))
 		return out
 
 	def _sample(self, label: str, i: int) -> list[float]:

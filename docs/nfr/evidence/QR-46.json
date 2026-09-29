@@ -1,0 +1,16 @@
+{
+  "id": "QR-46",
+  "requirement": "NFR5.2",
+  "metric": "mean System Usability Scale score (0-100)",
+  "actual": "0/5 participants logged",
+  "target": ">= 85.0 with >= 5 external participants",
+  "pass": false,
+  "recorded_at": "2026-09-29T01:40:41+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "status": "pending",
+  "method": "Awaiting the usability study; see docs/nfr/usability/PROTOCOL.md."
+}

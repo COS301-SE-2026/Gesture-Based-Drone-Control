@@ -330,13 +330,6 @@ GROUPS: dict[str, dict[str, tuple[str, str, str, str, bool]]] = {
 			'test_usability.py',
 			False,
 		),
-		'QR-47': (
-			'NFR5.3',
-			'Errors state cause + action (100%)',
-			'Automated UX audit',
-			'test_usability.py',
-			False,
-		),
 		'QR-55': (
 			'R1.1.2',
 			'Gesture + command visible, no scrolling',

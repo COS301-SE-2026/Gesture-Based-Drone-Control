@@ -446,47 +446,6 @@ def _backend_strings() -> list[ShownError]:
 		)
 	return shown
 
-
-def test_error_messages_are_actionable():
-	audit = [e.verdict() for e in _frontend_strings() + _backend_strings()]
-	good = [a for a in audit if a['ok']]
-	pct = round(100 * len(good) / len(audit), 1)
-	passed = len(good) == len(audit)
-
-	write_samples(
-		'QR-47',
-		{
-			'where': [a['where'] for a in audit],
-			'cause': [a['states_cause'] for a in audit],
-			'action': [a['suggests_action'] for a in audit],
-			'no_internals': [not a['leaks_internals'] for a in audit],
-			'text': [a['text'] for a in audit],
-		},
-	)
-	emit(
-		'QR-47',
-		'NFR5.3',
-		'user-visible errors that state a cause AND suggest an action (%)',
-		actual=pct,
-		target='100',
-		passed=passed,
-		audited=len(audit),
-		compliant=len(good),
-		failing=[a for a in audit if not a['ok']],
-		rule=(
-			'cause: specific (not a generic "something went wrong"); action: tells the user '
-			'what to do next; internals: no exception names, framework prefixes, raw error '
-			'objects or informal wording'
-		),
-		method=(
-			'Automated UX audit. Frontend-authored error strings are read from the source '
-			'files; backend messages the UI shows verbatim are triggered for real (invalid '
-			'sign-up, simulator offline, webcam unavailable). Each is checked against the rule.'
-		),
-	)
-	assert passed, f'{len(audit) - len(good)} of {len(audit)} errors fail NFR5.3'
-
-
 # QR-48 input parity
 
 

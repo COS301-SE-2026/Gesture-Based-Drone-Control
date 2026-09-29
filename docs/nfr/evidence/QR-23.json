@@ -1,0 +1,21 @@
+{
+  "id": "QR-23",
+  "requirement": "NFR7.1",
+  "metric": "subsystems exposing a liveness probe",
+  "actual": "4/4",
+  "target": "all present",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:46:25+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "health_routes": [
+    "/api/auth/health",
+    "/api/drone/health",
+    "/api/gestures/health",
+    "/api/health"
+  ],
+  "missing": []
+}
