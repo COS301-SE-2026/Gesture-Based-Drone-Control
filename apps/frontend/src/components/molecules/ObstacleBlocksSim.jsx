@@ -5,6 +5,7 @@ import { CheckCircle2, CIrcle, CircleDot } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { useGestureCommands } from "@/hooks/useGestureCommands";
 import { commandLabel } from "@/constants/GestureCommands";
+import { request } from "node:http";
 
 const STEP_DELTA = {
     MOVE_UP: [0,1,0],
@@ -211,4 +212,152 @@ export default function ObstacleBlocksSim({ running, onComplete }){
             return true
 
         }, [onComplete, showFlash])
+
+        const handleCommand = useCallback( (event) =>
+        {
+            if (!runningRef.current || doneRef.current) return
+
+            setLastCmd(commandLabel(event.command))
+
+            if (STOP_COMMANDS.has(event.command)){
+                stop()
+                return
+            }
+            const delta = STEP_DELTA[event.command]
+            if (!delta) return
+
+            dirRef.current = delta
+            setMoving(commandLabel(event.command))
+            if (!step(delta)) stop()
+        }, [step, stop])
+
+        const { live } = useGestureCommands(handleCommand)
+
+        useEffect( () => {
+            if (!running){
+                stop()
+                return undefined
+            }
+            const id = setInterval (() => {
+                const dir = dirRef.current
+                if (!dir || doneRef.current) return
+
+                if (performance.now() - lastStepRef.current < STEP_MS) return
+                if (!step(dir)) stop()
+            }, 50)
+        return () => clearInterval(id)
+        }, [running, step, stop])
+
+        useEffect( () => {
+            const mount = mountRef.current
+            if (!mount) return 
+            const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            const geos = []
+            const materials = []
+
+            const scene = new THREE.Scene()
+            const camera = new THREE.PerspectiveCamera(55,1,0.1,100)
+            camera.position.set(0,1.2,3.6)
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true})
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+            mount.appendChild(renderer.domElement)
+
+            const frame = new THREE.MeshBasicMaterial({wireframe: true, transparent:true, opacity: 0.9})
+            const red = new THREE.MeshBasicMaterial({wireframe:true})
+            mats.current.frame = frame
+            mats.current.red = red
+            materials.push(frame, red)
+
+            const { drone, props }= buildDrone(frame, red, geos)
+            scene.add(drone)
+
+            mats.current.walls = WALLS.map((wall) => {
+                const fill = new THREE.MeshBasicMaterial({transparent: true, depthWrite: false, side: THREE.DoubleSide})
+                const line = new THREE.LineBasicMaterial({transparent: true})
+                const hole = new THREE.LineBasicMaterial({transparent: true})
+                materials.push(fill, line, hole)
+                scene.add(buildWall(wall, fill, line, hole, geos))
+                return{fill, line, hole}
+            })
+
+            const S = XY_STEP
+            const fz = FINISH_Z * Z_STEP
+            const finishGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3((BOUNDS.minX-0.5) *S, (BOUNDS.minY-0.5) *S, fz),
+                new THREE.Vector3((BOUNDS.maxX+0.5) *S, (BOUNDS.minY-0.5) *S, fz),
+                new THREE.Vector3((BOUNDS.maxX+0.5) *S, (BOUNDS.maxY+0.5) *S, fz),
+                new THREE.Vector3((BOUNDS.minX-0.5) *S, (BOUNDS.maxY+0.5) *S, fz),
+            ])
+            const finish = new THREE.LineBasicMaterial({ transparent: true })
+            geos.push(finishGeo)
+            materials.push(finish)
+            mats.current.finish = finish
+            scene.add(new THREE.LineLoop(finishGeo, finish))
+
+            const courseLen = (BOUNDS.maxZ - BOUNDS.minZ) *Z_STEP+2
+            const grid = new THREE.GridHelper(courseLen, 16, 0xffffff, 0xffffff)
+            grid.material.transparent = true
+            grid.position.set(0, (BOUNDS.minY-0.5) * S -0.05, -courseLen/2 +1)
+            geos.push(grid.material)
+            mats.current.grid = grid.material 
+            scene.add(grid)
+
+            const resize = () => {
+                const w = Math.max(1, mount.clientWidth)
+                const h = Math.max(1, mount.clientHeight)
+                camera.aspect = w/h
+                camera.updateProjectionMatrix()
+                renderer.setSize(w,h)
+            }
+
+            resize()
+            const ro = new ResizeObserver(resize)
+            ro.observer(mount)
+
+            let raf = 0
+            let t =0
+            const prev = new THREE.Vector3()
+            const camGoal = new THREE.Vector3()
+            const look = new THREE.Vector3()
+
+            const tick = () => {
+                t += 0.016
+                prev.copy(drone.position)
+                drone.position.lerp(targetRef.current, reduced ? 1: 0.12)
+                const vx = drone.position.x - prev.x
+                const vy = drone.position.y - prev.y
+                const vz = drone.position.z - prev.z
+
+                if (!reduced){
+                    drone.position.y += Math.sin(t * 1.7) * 0.002
+                    drone.rotation.z = THREE.MathUtils.lerp(drone.rotation.z, -vx * 6, 0.12)
+                    drone.rotation.x = THREE.MathUtils.lerp(drone.rotation.x, vz * 5 - vy * 4, 0.12)
+                    props.forEach((pr, i) => (pr.rotation.y += 0.55 + i * 0.03))
+
+                    const sinceBump = performance.now() - bumpRef.current
+                    if (sinceBump < 350){
+                        drone.position.x += Math.sin(sinceBump * 0.09) * 0.03
+                    }
+                }
+
+                camGoal.set(drone.position.x *0.5, drone.position.y * 0.5 + 1.2, drone.position.z + 3.6)
+                camera.position.lerp(camGoal, reduced ? 1 : 0.08)
+                look.set(drone.position.x *0.5, drone.position.y * 0.5, drone.position.z -3)
+                camera.lookAt(look)
+
+                renderer.render(scene, camera)
+                raf = requestAnimationFrame(tick)
+            }
+            raf = requestAnimationFrame(tick)
+
+            return () => {
+                cancelAnimationFrame(raf)
+                ro.disconnect()
+                geos.forEach((m) => m.dispose())
+                renderer.dispose()
+                if (renderer.domElement.parentNode === mount) renderer.domElement.remove()
+            }
+        }, [])
+
 }
