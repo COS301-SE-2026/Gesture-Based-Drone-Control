@@ -5,6 +5,7 @@ import { GestureCameraFeed } from "../molecules"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
 import { useGamepadControl } from "@/hooks/useGamepadControl"
 import { useGestureControl } from "@/hooks/useGestureControl"
+import { LeaderboardPanel } from "../molecules/LeaderboardPanel"
 
 import FlappyDroneGame from "./FlappyDroneGame"
 import PacDroneGame from "./PacDroneGame"
@@ -207,15 +208,22 @@ const Games = () => {
 
       {/* main content */}
       <div className="flex gap-md items-start">
-        <Card variant="glass" className="flex-1 !p-0 overflow-hidden">
-          {ActiveGame ? (
-            <ActiveGame />
-          ) : (
-            <div className="h-[400px] flex items-center justify-center">
-              <Label>No game selected</Label>
-            </div>
-          )}
-        </Card>
+        <div className="flex-1 flex flex-col gap-md">
+          <Card variant="glass" className="flex-1 !p-0 overflow-hidden">
+            {ActiveGame ? (
+              <ActiveGame />
+            ) : (
+              <div className="h-[400px] flex items-center justify-center">
+                <Label>No game selected</Label>
+              </div>
+            )}
+          </Card>
+
+          <LeaderboardPanel
+            gameId={selectedGame}
+            gameLabel={GAMES.find((g) => g.id === selectedGame)?.label}
+          />
+        </div>
 
         {input === "gesture" && (
           <Card variant="glass" className="flex-1 flex flex-col">

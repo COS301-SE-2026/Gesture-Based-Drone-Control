@@ -19,8 +19,8 @@ import margitSound from "@/assets/games/pac/margit.mp3"
 const MAZE_A = [
   "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
   "G......................................G",
-  "W..WWW..W..WWW.W.P.WWW.WWW.WW.W.WWW.W..W",
-  "W..Wo..W.W.WWW.WWW..W..W.W.WW..oW...W..W",
+  "W..WWW..W..WWW.W.P.WWW.WWW.WWWW.WWW.W..W",
+  "W..Wo..W.W.WWW.WWW..W..W W.W..WoW......W",
   "W..WWW.W.W.W.....W..W..WWW.W..W.WWW.W..W",
   "W......................................W",
   "W.WWWWWW.WWW.WWW.WWWWW....WWWWW.W.W.W..W",
@@ -58,8 +58,6 @@ const col_power = [255, 255, 25]
 const col_player = [255, 220, 0]
 const col_ghost = [90, 5, 5]
 const col_scared = [12, 100, 12]
-
-// for font caching just a temp fix
 
 export default function PacDroneGame() {
   const canvasRef = useRef(null)
@@ -295,7 +293,7 @@ export default function PacDroneGame() {
       ])
 
       // actual player
-      const PLAYER_SPEED = tile * 7
+      const PLAYER_SPEED = tile * 6
       const GHOST_SPEED = tile * 3.5
       const ALIGN_THRESHOLD = 3
 

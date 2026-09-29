@@ -1,11 +1,16 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
+import { useGameCommands } from "@/hooks/useGameCommands"
+import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
+
+import { submitScore } from "@/lib/leaderboard"
+import { GAME_COLORS } from "@/lib/gameTheme"
+
+import { ScoreNamePrompt } from "../molecules/ScoreNamePrompt"
+
 import droneSprite from "@/assets/games/flappy/drone.png"
 import background from "@/assets/games/flappy/sky_cropped.png"
 import pipe from "@/assets/games/flappy/towerr.png"
 import pipeFlipped from "@/assets/games/flappy/towerr_flipped.png"
-import { useGameCommands } from "@/hooks/useGameCommands"
-import { useKaplayCanvas } from "@/hooks/useKaplayCanvas"
-import { GAME_COLORS } from "@/lib/gameTheme"
 import loseSound from "@/assets/games/flappy/fahhh.mp3"
 import pointSound from "@/assets/games/flappy/point.mp3"
 /**
@@ -77,6 +82,8 @@ export default function FlappyDroneGame() {
     }
   })
 
+  const [pendingEntry, setPendingEntry] = useState(null)
+
   useKaplayCanvas(canvasRef, (k, fonts) => {
     k.loadSprite("drone", droneSprite)
     k.loadSprite("backSprite", background)
@@ -132,7 +139,10 @@ export default function FlappyDroneGame() {
         // position (x,y)
         k.pos(k.width() / 8, k.height() / 2),
         // enable collision checking
-        k.area({ isSensor: true }),
+        k.area({
+          shape: new k.Rect(k.vec2(0, 16), 64, 32),
+          isSensor: true,
+        }),
         //it will respond to gravity
         k.body(),
         "player",
@@ -261,7 +271,7 @@ export default function FlappyDroneGame() {
       // so when the pipe passes the player, give them a point
       k.onUpdate("pipe", (p) => {
         if (p.pos.x + BUILDING_WIDTH <= player.pos.x && !p.passed) {
-          k.play("point")
+          k.play("point", { volume: 0.2 })
           score++
           scoreLabel.text = score.toString()
           p.passed = true
@@ -281,6 +291,14 @@ export default function FlappyDroneGame() {
       goLoseRef.current = null
 
       k.play("lose")
+
+      // chuck the name prompt on screen and just hope the user does the thing
+      submitScore("flappy", score)
+        .then((entry) => setPendingEntry({ id: entry.id }))
+        .catch((err) => {
+          // dont care enough
+          console.error("Failed to submit score:", err)
+        })
 
       k.add([
         k.sprite("backSprite", { width: k.width(), height: k.height() }),
@@ -344,10 +362,18 @@ export default function FlappyDroneGame() {
   })
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="w-full rounded-xl"
-      style={{ aspectRatio: "16/9" }}
-    />
+    <div className="relative w-full">
+      <canvas
+        ref={canvasRef}
+        className="w-full rounded-xl"
+        style={{ aspectRatio: "16/9" }}
+      />
+      {pendingEntry && (
+        <ScoreNamePrompt
+          entryId={pendingEntry.id}
+          onDone={() => setPendingEntry(null)}
+        />
+      )}
+    </div>
   )
 }
