@@ -168,7 +168,7 @@ const Analytics = () => {
                     borderRadius: "6px",
                     fontSize: "12px",
                   }}
-                  formatter={(value) => [`${value} km/h`, "Speed"]}
+                  formatter={(value) => [`${value} m/s`, "Speed"]}
                 />
                 <Line
                   type="monotone"

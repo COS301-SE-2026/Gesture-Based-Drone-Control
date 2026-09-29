@@ -1,4 +1,4 @@
-import { creatContext, useContext } from "react"
+import { createContext, useContext } from "react"
 
-export const DroneConnectionContext = creatContext(null)
+export const DroneConnectionContext = createContext(null)
 export const useDroneConnection = () => useContext(DroneConnectionContext)
