@@ -118,7 +118,7 @@ class CameraFeed:
 				if self._warmup(cap):
 					self._cap = cap
 					logger.info(
-						'Camera opened, device=%s, api=%s, target=%d%d @ %dfps (attempt %d)',
+						'Camera opened, device=%s, api=%s, target=%dx%d @ %dfps (attempt %d)',
 						self._config.device_index,
 						api,
 						self._config.frame_width,
@@ -131,15 +131,15 @@ class CameraFeed:
 			else:
 				last_reason = 'device is busy or doesnt exist'
 
-		cap.release()
-		logger.warning(
-			'Camera open attempt %d/%d failef (%s), retrying in %.2fs',
-			attempt,
-			self._config.open_attempts,
-			last_reason,
-			self._config.open_retry_delay,
-		)
-		time.sleep(self._config.open_retry_delay)
+			cap.release()
+			logger.warning(
+				'Camera open attempt %d/%d failed (%s), retrying in %.2fs',
+				attempt,
+				self._config.open_attempts,
+				last_reason,
+				self._config.open_retry_delay,
+			)
+			time.sleep(self._config.open_retry_delay)
 
 		raise CameraError(
 			f'Failed to open camera index {self._config.device_index} after '

@@ -3,8 +3,10 @@ import type { APIRequestContext } from "@playwright/test"
 const BACKEND_PORT = process.env.BACKENDPORT ?? "3001"
 export const API_BASE = `http://localhost:${BACKEND_PORT}`
 
-export const CALIBRATION_ROUTE = process.env.E2E_CALIBRATION_ROUTE ?? "/gestures"
-export const CAMERA_FEED_ROUTE = process.env.E2E_CAMERA_FEED_ROUTE ?? "/gestures"
+export const CALIBRATION_ROUTE = process.env.E2E_CALIBRATION_ROUTE ?? "/#/app/gestures"
+export const CAMERA_FEED_ROUTE = process.env.E2E_CAMERA_FEED_ROUTE ?? "/#/app/gestures"
+export const SETTINGS_ROUTE = process.env.E2E_SETTINGS_ROUTE ?? "/#/app/settings"
+export const MOTION_ROUTE = process.env.E2E_MOTION_ROUTE ?? "/#/app/gestures"
 
 export const hasScriptedCamera = process.env.GBDC_TESTS_SCRIPTED_CAMERA === '1'
 
@@ -66,4 +68,61 @@ export async function waitForPipelineStopped(
 export function backendHasCamera(): boolean {
     return process.env.GBDC_E2E_NO_CAMERA !== "1"
 
+}
+
+export interface RecognizerMode {
+    mode: string
+    requested: string
+    available: string[]
+    warning: string | null
+}
+
+export interface ConnectInputResult {
+    connected: boolean
+    message: string
+    adapter: string
+    recognizer: string | null
+}
+
+export async function getRecognizerMode(
+    request: APIRequestContext
+): Promise<RecognizerMode> {
+    const res = await request.get(`${API_BASE}/api/gestures/recognizer`)
+    return (await res.json()) as RecognizerMode
+}
+
+export async function setRecognizerMode(
+    request: APIRequestContext,
+    mode: string
+): Promise<RecognizerMode> {
+    const res = await request.post(`${API_BASE}/api/gestures/recognizer`, {
+        data: {mode},
+    })
+    return (await res.json()) as RecognizerMode
+}
+
+export async function connectInput(
+    request: APIRequestContext,
+    adapter: string
+): Promise<ConnectInputResult> {
+    const res = await request.post(`${API_BASE}/api/input/connect`, {
+        data: {adapter},
+    })
+    return (await res.json()) as ConnectInputResult
+}
+
+export async function disconnectInput(request: APIRequestContext): Promise<void> {
+    await request.post(`${API_BASE}/api/input/disconnect`)
+}
+
+export interface InputStatus {
+    connected: boolean
+    adapter: string
+}
+
+export async function getInputStatus(
+    request: APIRequestContext
+): Promise<InputStatus> {
+    const res = await request.get(`${API_BASE}/api/input/status`)
+    return (await res.json()) as InputStatus
 }
