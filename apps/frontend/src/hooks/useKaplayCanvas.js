@@ -16,6 +16,8 @@ import jetbrainsMono from "@/assets/games/fonts/jetbrains-mono-v24-latin-regular
  * before the assets and fonts are ready
  */
 
+let mountCounter = 0
+
 export function useKaplayCanvas(canvasRef, onReady) {
   const initRef = useRef(false)
   const kRef = useRef(null)
@@ -31,30 +33,54 @@ export function useKaplayCanvas(canvasRef, onReady) {
     initRef.current = true
 
     let cancelled = false
+    let ro = null
 
-    import("kaplay").then(({ default: kaplay }) => {
-      if (cancelled) return
+    // create a unique id per instance mounted
+    const suffix = `${Date.now()}-${mountCounter++}`
+    const fonts = {
+      heading: `heading-${suffix}`,
+      body: `body-${suffix}`,
+      mono: `mono-${suffix}`,
+    }
 
-      const k = kaplay({
-        canvas: canvas,
-        width: GAME_CANVAS.width,
-        height: GAME_CANVAS.height,
-        stretch: true,
-        letterbox: true,
-        background: GAME_COLORS.bg,
-        global: false,
+    import("kaplay")
+      .then(({ default: kaplay }) => {
+        if (cancelled) return
+
+        const k = kaplay({
+          canvas: canvas,
+          width: GAME_CANVAS.width,
+          height: GAME_CANVAS.height,
+          stretch: true,
+          letterbox: true,
+          background: GAME_COLORS.bg,
+          global: false,
+          font: fonts.body,
+        })
+
+        k.loadFont(fonts.heading, chakraPetch)
+        k.loadFont(fonts.body, spaceGrotesk)
+        k.loadFont(fonts.mono, jetbrainsMono)
+
+        kRef.current = k
+        const parent = canvas.parentElement
+        if (parent) {
+          ro = new ResizeObserver(() => {
+            window.dispatchEvent(new Event("resize"))
+          })
+          ro.observe(parent)
+        }
+        onReadyRef.current?.(k, fonts)
       })
-
-      k.loadFont("heading", chakraPetch)
-      k.loadFont("body", spaceGrotesk)
-      k.loadFont("mono", jetbrainsMono)
-
-      kRef.current = k
-      onReadyRef.current?.(k)
-    })
+      .catch((error) => {
+        if (!cancelled) {
+          console.error("Failed to load Kaplay: ", error)
+        }
+      })
 
     return () => {
       cancelled = true
+      ro?.disconnect()
       kRef.current?.quit()
       kRef.current = null
       initRef.current = false
