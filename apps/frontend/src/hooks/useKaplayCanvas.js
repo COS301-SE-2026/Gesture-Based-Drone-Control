@@ -43,7 +43,8 @@ export function useKaplayCanvas(canvasRef, onReady) {
       mono: `mono-${suffix}`,
     }
 
-    import("kaplay").then(({ default: kaplay }) => { // NOSONAR
+    import("kaplay").then(({ default: kaplay }) => {
+      // NOSONAR
       if (cancelled) return
 
       const k = kaplay({
