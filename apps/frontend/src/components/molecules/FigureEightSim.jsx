@@ -1,41 +1,36 @@
 import {useCallback, useEffect,useRef,useState} from "react"
 import PropTypes from "prop-types"
 import * as THREE from "three"
-import {CheckCircle2} from "lucide-react"
+import {CheckCircle2, Circle, CircleDot} from "lucide-react"
 import {useTheme} from "@/context/ThemeContext"
 import {useGestureCommands} from "@/hooks/useGestureCommands"
 import{commandLabel} from "@/constants/GestureCommands"
 
 
 const STEP_DELTA = {
-    MOVE_UP:[0,1,0],
-    MOVE_DOWN:[0,-1,0],
     MOVE_LEFT:[-1,0,0],
     MOVE_RIGHT:[1,0,0],
     MOVE_FORWARD:[0,0,-1],
     MOVE_BACKWARD:[0,0,1],
 }
 
-const BOUNDS ={minX:-4, maxX:4 , minY:-1, maxY:3, minZ:-3,maxZ:3}
-const WORLD_STEP = 0.55
+const BOUNDS ={minX:-4, maxX:4 , minZ:-3,maxZ:3}
+const STEP =0.9
+const DRONE_SCALE=0.2
+const FLOOR_Y = -0.5
+const STEP_MS =300
+const STOP_COMMANDS = new Set(["HOVER","LAND","EMERGENCY_STOP"])
 
 const WAYPOINTS=[
-    {x:-3, y:0 , z:0 , label: "Head toward Marker A"},
-    {x:-3, y:0 , z:-2 , label: "Swing in front of Marker A"},
-    {x:-3, y:1 , z:-2 , label: "Climb into the loop"},
-    {x:-1, y:1 , z:-2 , label: "Circle past Marker A"},
-    {x:-1, y:1 , z:2 , label: "Loop behind Marker A"},
-    {x:-1, y:2 , z:2 , label: "Climb higher"},
-    {x:-1, y:2 , z:0 , label: "Head back toward center"},
-    {x:0, y:2 , z:0 , label: "Reach the high point"},
-    {x:3, y:2 , z:0 , label: "Head toward Marker B"},
-    {x:3, y:2 , z:-2 , label: "Swing in front of Marker B"},
-    {x:3, y:1 , z:-2 , label: "Dive into the loop"},
-    {x:1, y:1 , z:-2 , label: "Circle past Marker B"},
-    {x:1, y:1 , z:2 , label: "Loop behind Marker B"},
-    {x:1, y:0 , z:2 , label: "Dive Lower"},
-    {x:1, y:0 , z:0 , label: "Head back towards center"},
-    {x:0, y:0 , z:0 , label: "Complete the figure-8"},
+    {x:2, z:-2,label:"Right loop:front"},
+    {x:3, z:0,label:"Right loop:outside"},
+    {x:2, z:2,label:"Right loop:back"},
+    {x:0, z:0,label:"Cross the center"},
+    {x:-2, z:-2,label:"Left loop:front"},
+    {x:-3, z:0,label:"Left loop:outside"},
+    {x:-2, z:2,label:"Left loop:back"},
+    {x:0, z:0,label:"Return to center"},
+
 ]
 
 
@@ -45,73 +40,110 @@ const MARKERS =[
 ]
 
 const clamp = (v, lo , hi) => Math.min(hi,Math.max(lo,v))
-const toWorld =(gx,gy,gz) =>
-    new THREE.Vector3(gx * WORLD_STEP,gy * WORLD_STEP, gz* WORLD_STEP)
+const toWorld = (gx,gz) => new THREE.Vector3(gx * STEP,0,gz * STEP)
 
+const CURVE_POINTS =128
+const figureEightPoints = () => 
+    Array.from({ length: CURVE_POINTS +1 }, (_,i) => {
+        const t = (i/ CURVE_POINTS) * Math.PI * 2
+        return new THREE.Vector3(3 * Math.sin(t) * STEP,0 , -2 * Math.sin(2*t) * STEP)
+    })
 export default function FigureEightSim ({ running, onComplete}) {
     const {theme} = useTheme()
     const mountRef = useRef(null)
     const droneRef = useRef(null)
     const targetRef = useRef(new THREE.Vector3(0,0,0))
-    const mats = useRef({frame: null , red: null,rings:[] , markers:[] })
+    const mats = useRef({frame: null , red: null,rings:[] , markers:[], legs:[] ,grid:null })
 
-    const posRef = useRef({x:0 , y:0, z:0 })
+    const posRef = useRef({x:0 , z:0 })
     const idxRef = useRef(0)
     const runningRef = useRef(running)
     const doneRef = useRef(false)
+    const dirRef = useRef(null)
+    const lastStepRef = useRef(0)
 
     const[idx,setIdx] = useState(0)
     const [lastCmd,setLastCmd] = useState(null)
     const[moves,setMoves] = useState(0)
+    const [moving,setMoving] =useState(null)
     const done = idx >= WAYPOINTS.length
 
     useEffect(() => {
         runningRef.current = running
     },[running])
 
-    const handleCommand = useCallback(
-        (event) => {
-            if(!runningRef.current || doneRef.current) return
-            setLastCmd(commandLabel(event.command))
+    const stop = useCallback(() => {
+        dirRef.current = nullsetMoving(null)
+    },[])
 
-            const delta = STEP_DELTA[event.command]
-            if (!delta) return
-
+    const step = useCallback(
+        (delta) => {
+            const cur = posRef.current
             const next = {
-                x: clamp(posRef.current.x + delta[0], BOUNDS.minX, BOUNDS.maxX),
-                y: clamp(posRef.current.y + delta[1], BOUNDS.minY , BOUNDS.maxY),
-                z: clamp(posRef.current.z + delta[2], BOUNDS.minZ , BOUNDS.maxZ),
-
+                x: clamp(cur.x + delta[0], BOUNDS.minX, BOUNDS.maxX),
+                z: clamp(cur.z + delta[2], BOUNDS.minZ, BOUNDS.maxZ),
             }
 
-            if(
-                next.x === posRef.current.x &&
-                next.y === posRef.current.y &&
-                next.z === posRef.current.z
-            )
-
-            return
+            if (next.x === cur.x && next.z === cur.z) return false
 
             posRef.current = next
-            targetRef.current.copy(toWorld(next.x,next.y,next.z))
-            setMoves((m) => m+1)
+            lastStepRef.current = performance.now()
+            targetRef.current.copy(toWorld(next.x, next.z))
+            setMoves((m) => m +1)
 
 
             const wp = WAYPOINTS[idxRef.current]
-            if (wp && wp.x === next.x && wp.y===next.y && wp.z === next.z) {
+            if(wp && wp.x === next.x && wp.z === next.z) {
                 idxRef.current += 1
                 setIdx(idxRef.current)
                 if (idxRef.current >= WAYPOINTS.length) {
                     doneRef.current = true
                     onComplete?.()
+                    return false
+
                 }
             }
+            return true
         },
         [onComplete]
     )
 
+    const handleCommand = useCallback(
+        (event) => {
+            if(!runningRef.current || doneRef.current) return
+            setLastCmd(commandLabel(event.command))
 
-    const {status} = useGestureCommands(handleCommand)
+            if (STOP_COMMANDS.has(event.command)){
+                stop()
+                return
+            }
+
+            const delta = STEP_DELTA[event.command]
+            if (!delta) return
+
+            dirRef.current = delta
+            setMoving(commandLabel(event.command))
+            if (!step(delta)) stop()
+        },
+        [step,stop]
+    )
+
+
+    const {live} = useGestureCommands(handleCommand)
+
+    useEffect(() => {
+        if (!running) return undefined
+        const id = setInterval(() => {
+            const dir = dirRef.current
+            if (!dir || doneRef.current) return
+            if(performance.now() - lastStepRef.current < STEP_MS) return
+            if (!step(dir)) stop()
+        },50)
+    return () => {
+        clearInterval(id)
+        dirRef.current = null
+    }
+    }, [running, step, stop])
 
     useEffect(() => {
         const mount = mountRef.current
