@@ -82,6 +82,8 @@ class MotionAdapter(GestureAdapter):
 	TWO_HAND_MAP = MOTION_TWO_HAND_MAP
 	ASYMMETRICAL_TWO_HAND_MAP = MOTION_ASYMMETRICAL_TWO_HAND_MAP
 	SINGLE_HAND_MAP = MOTION_SINGLE_HAND_MAP
+ 
+	ENABLE_ANALOG = False
 
 	def __init__(self, idle_timeout_s=MOTION_IDLE_TIMEOUT_S, **kwargs: Any):
 		super().__init__(idle_timeout_s=idle_timeout_s, **kwargs)
@@ -105,7 +107,7 @@ class MotionAdapter(GestureAdapter):
 			return confident
 
 		resolved = [h for h in confident if h.gesture != 'UNKNOWN']
-		if not resolved:
+		if self.ENABLE_ANALOG and not resolved:
 			self._process_motion(confident)
 
 		return resolved
