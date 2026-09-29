@@ -22,13 +22,13 @@ const STEP_MS =300
 const STOP_COMMANDS = new Set(["HOVER","LAND","EMERGENCY_STOP"])
 
 const WAYPOINTS=[
-    {x:2, z:-2,label:"Right loop:front"},
-    {x:3, z:0,label:"Right loop:outside"},
-    {x:2, z:2,label:"Right loop:back"},
+    {x:2, z:-2,label:"Right loop:top"},
+    {x:3, z:0,label:"Right loop:middle right"},
+    {x:2, z:2,label:"Right loop:bottom"},
     {x:0, z:0,label:"Cross the center"},
-    {x:-2, z:-2,label:"Left loop:front"},
-    {x:-3, z:0,label:"Left loop:outside"},
-    {x:-2, z:2,label:"Left loop:back"},
+    {x:-2, z:-2,label:"Left loop:top"},
+    {x:-3, z:0,label:"Left loop:middle left"},
+    {x:-2, z:2,label:"Left loop:bottom"},
     {x:0, z:0,label:"Return to center"},
 
 ]
