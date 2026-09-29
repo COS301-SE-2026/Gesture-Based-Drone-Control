@@ -14,7 +14,7 @@ const STEP_DELTA = {
     MOVE_BACKWARD:[0,0,1],
 }
 
-const BOUNDS ={minX:-4, maxX:4 , minZ:-3,maxZ:3}
+const BOUNDS ={minX:-3, maxX:3 , minZ:-2,maxZ:2}
 const STEP =0.9
 const DRONE_SCALE=0.2
 const FLOOR_Y = -0.5
@@ -154,8 +154,8 @@ export default function FigureEightSim ({ running, onComplete}) {
 
         const scene = new THREE.Scene()
         const camera = new THREE.PerspectiveCamera(52,1,0.1,100)
-        camera.position.set(0,4.8,3.6)
-        camera.lookAt(0,0,-0.7)
+        camera.position.set(0,5.6,4.6)
+        camera.lookAt(0,0,-0.4)
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha:true })
         renderer.setPixelRatio(Math.min(window.devicePixelRatio,2))
