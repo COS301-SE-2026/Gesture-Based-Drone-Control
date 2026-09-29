@@ -97,8 +97,55 @@ export default function FIGUREEightSim ({ running, onComplete}) {
             setMoves((m) => m+1)
 
 
-            
-        }
+            const wp = WAYPOINTS[idxRef.current]
+            if (wp && wp.x === next.x && wp.y && wp.z === next.z) {
+                idxRef.current += 1
+                setIdx(idx.current)
+                if (idxRef.current >= WAYPOINTS.length) {
+                    doneRef.current = trueonComplete?.()
+                }
+            }
+        },
+        [onComplete]
     )
 
+
+    const {status} = useGestureCommands(handleCommand)
+
+    useEffect(() => {
+        const mount = mountRef.current
+        if(!mount) return
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+
+        const scene = new THREE.Scene()
+        const camera = new THREE.PerspectiveCamera(52,1,0.1,100)
+        camera.position.set(0,1.5,8.5)
+        camera.lookAt(0,0.55,0)
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha:true })
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio,2))
+        mount.appendChild(renderer.domElement)
+
+        const frame = new THREE.MeshBasicMaterial({ wireframe: true , transparent: true,opacity :0.9})
+
+    })
+
+
+    const red = new THREE.MeshBasicMaterial({ wireframe: true})
+    mats.current.frame = frame
+    mats.current.red = red
+
+    const drone = new THREE.Group()
+    drone.add(new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.42, 1.35, 2, 1, 2), frame))
+    const canopy = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.28, 0.9 ,1,1,1), red)
+    canopy.position.y = 0.32
+    drone.add(canopy)
+    const armA = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.1, 0.12),frame)
+    armA.rotation.y =Math.PI / 4
+    const armB = armA.clone()
+    armB.rotation.y = -Math.PI /4
+    drone.add(armA, armB)
+
+    
 }
