@@ -7,7 +7,7 @@ import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
 
 export default defineConfig([
-  globalIgnores(['dist', '**/*config*']),
+  globalIgnores(['dist', '**/*config*', 'playwright-report', 'test-results', 'blob-report']),
 
   {
     files: ['electron/**/*.{js,jsx,ts,tsx}'],

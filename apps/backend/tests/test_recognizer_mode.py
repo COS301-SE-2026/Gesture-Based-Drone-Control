@@ -8,6 +8,7 @@ from app.cv.stream import GestureStream
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from apps.backend.app.state import AppState
 from services.cv_pipeline.processing.pipeline import RECOGNIZER_MODES, PipelineConfig
 
 pytestmark = pytest.mark.asyncio
@@ -150,6 +151,7 @@ def client(patch_pipeline):
 
 	app = FastAPI()
 	app.include_router(gestures_module.router, prefix='/api')
+	app.state.app = AppState()
 	with TestClient(app) as test_client:
 		yield test_client
 

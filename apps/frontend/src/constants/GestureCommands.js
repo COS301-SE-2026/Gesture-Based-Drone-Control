@@ -17,6 +17,16 @@ export const GESTURE_LABELS = {
   TWO_FINGERS: "two fingers",
   THREE_FINGERS: "three fingers",
   FOUR_FINGERS: "four fingers",
+
+  //motion recognizer
+  SWIPE_LEFT: "swipe left",
+  SWIPE_RIGHT: "swipe right",
+  SWIPE_UP: "swipe up",
+  SWIPE_DOWN: "swipe down",
+  PUSH: "push",
+  PULL: "pull",
+  CIRCLE_CW: "circle clockwise",
+  CIRCLE_CCW: "circle anticlockwise",
   UNKNOWN: "unknown",
 }
 

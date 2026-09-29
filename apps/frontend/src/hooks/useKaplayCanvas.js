@@ -43,34 +43,40 @@ export function useKaplayCanvas(canvasRef, onReady) {
       mono: `mono-${suffix}`,
     }
 
-    import("kaplay").then(({ default: kaplay }) => {
-      if (cancelled) return
+    import("kaplay")
+      .then(({ default: kaplay }) => {
+        if (cancelled) return
 
-      const k = kaplay({
-        canvas: canvas,
-        width: GAME_CANVAS.width,
-        height: GAME_CANVAS.height,
-        stretch: true,
-        letterbox: true,
-        background: GAME_COLORS.bg,
-        global: false,
-        font: fonts.body,
-      })
-
-      k.loadFont(fonts.heading, chakraPetch)
-      k.loadFont(fonts.body, spaceGrotesk)
-      k.loadFont(fonts.mono, jetbrainsMono)
-
-      kRef.current = k
-      const parent = canvas.parentElement
-      if (parent) {
-        ro = new ResizeObserver(() => {
-          window.dispatchEvent(new Event("resize"))
+        const k = kaplay({
+          canvas: canvas,
+          width: GAME_CANVAS.width,
+          height: GAME_CANVAS.height,
+          stretch: true,
+          letterbox: true,
+          background: GAME_COLORS.bg,
+          global: false,
+          font: fonts.body,
         })
-        ro.observe(parent)
-      }
-      onReadyRef.current?.(k, fonts)
-    })
+
+        k.loadFont(fonts.heading, chakraPetch)
+        k.loadFont(fonts.body, spaceGrotesk)
+        k.loadFont(fonts.mono, jetbrainsMono)
+
+        kRef.current = k
+        const parent = canvas.parentElement
+        if (parent) {
+          ro = new ResizeObserver(() => {
+            window.dispatchEvent(new Event("resize"))
+          })
+          ro.observe(parent)
+        }
+        onReadyRef.current?.(k, fonts)
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          console.error("Failed to load Kaplay: ", error)
+        }
+      })
 
     return () => {
       cancelled = true
