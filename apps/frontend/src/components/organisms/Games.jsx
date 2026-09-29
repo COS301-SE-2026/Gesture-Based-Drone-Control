@@ -272,7 +272,10 @@ const Games = () => {
 
       <div className="flex gap-md items-start">
         <div className="flex-1 basis-0 min-w-0">
-          <LeaderboardPanel gameId={activeGameId} gameLabel={activeGame?.label} />
+          <LeaderboardPanel
+            gameId={activeGameId}
+            gameLabel={activeGame?.label}
+          />
         </div>
         <div className="flex-1 basis-0 min-w-0">
           <GameControlGuide activeInput={input} />
