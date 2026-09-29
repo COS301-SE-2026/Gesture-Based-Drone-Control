@@ -56,6 +56,8 @@ function App() {
                           <Route path="tutorial" element={<Tutorial />} />
                           <Route path="test" element={<TestPage />} />
                           <Route path="games" element={<Games />} />
+                          <Route path="license" element={<License />} />
+                          <Route path="license/practical" element={<Practical />} />
                         </Route>
                       </Routes>
                     </AuthProvider>
