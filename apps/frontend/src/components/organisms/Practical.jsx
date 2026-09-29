@@ -20,6 +20,7 @@ const MODULES = [
   },
 
   {
+    id: "figure-8",
     title: "Figure-8",
     description: "Trace a smooth figure-8 pattern around two markers.",
     difficulty: "Advanced",

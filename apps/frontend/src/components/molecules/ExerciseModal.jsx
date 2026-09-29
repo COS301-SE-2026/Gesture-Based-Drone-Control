@@ -4,10 +4,12 @@ import { useState } from "react"
 import BasicManeuversSim from "./BasicManeuversSim"
 import ObstacleBlocksSim from "./ObstacleBlocksSim"
 import GestureCameraFeed from "./GestureCameraFeed"
+import FigureEightSim from "./FigureEightSim"
 
 const SIMULATIONS = {
   "basic-maneuvers": BasicManeuversSim,
   "obstacle-blocks": ObstacleBlocksSim,
+  "figure-8":FigureEightSim,
 }
 export default function ExerciseModal({ open, onClose, module, onComplete }) {
   const Simulation = module?.id ? SIMULATIONS[module.id] : undefined
