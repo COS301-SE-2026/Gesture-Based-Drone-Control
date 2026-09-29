@@ -73,7 +73,8 @@ export default function FigureEightSim ({ running, onComplete}) {
     },[running])
 
     const stop = useCallback(() => {
-        dirRef.current = nullsetMoving(null)
+        dirRef.current = null
+        setMoving(null)
     },[])
 
     const step = useCallback(
@@ -239,9 +240,10 @@ export default function FigureEightSim ({ running, onComplete}) {
 
 
 const curvePts = figureEightPoints()
-const per = CURVE_POINTS / WAYPOINTS.lengthmats.current.legs = WAYPOINTS.map((_,i) => {
+const per = CURVE_POINTS / WAYPOINTS.length
+mats.current.legs = WAYPOINTS.map((_,i) => {
     const pts = curvePts.slice(i * per, (i + 1) * per + 1)
-    const geo new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),24,0.03,6,false)
+    const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),24,0.03,6,false)
     const m = new THREE.MeshBasicMaterial({transparent:true})
     scene.add(new THREE.Mesh(geo,m))
     return m
@@ -314,6 +316,24 @@ useEffect(() => {
         mats.current.frame?.color.set(ink)
         mats.current.red?.color.set(redToken) 
         mats.current.markers.forEach(({m}) => m.color.set(dim))
+
+        mats.current.legs.forEach((m,i) => {
+            if (i<idx) {
+                m.color.set(ink)
+                m.opacity = 0.9
+            } else if (i === idx) {
+                m.color.set(redToken)
+                m.opacity = 1
+            } else {
+                m.color.set(ink)
+                m.opacity = 0.25
+            }
+        })
+        if (mats.current.grid){
+            mats.current.grid.color.set(ink)
+            mats.current.grid.opacity = 0.12
+        }
+
         mats.current.rings.forEach(({m , mesh}, i) => {
             mesh.scale.setScalar(1)
             if ( i === idx) {
@@ -328,52 +348,65 @@ useEffect(() => {
     return () => cancelAnimationFrame(raf)
 },[theme, idx])
 
-const linkLive = status === "open"
-const current = WAYPOINTS[idx]
-
 
 return (
     <div className="relative flex-1 min-h-0 rounded-lg border border-glassBrd bg-surface overflow-hidden">
         <div ref={mountRef} className="absolute inset-0" aria-hidden="true"/>
 
-        <div className="absolute top-3 left-3 right-3 flex flex-col gap-1.5">
-            <span className="text-[10px] uppercase tracking-widest text-dim font-mono">
-                Step {Math.min(idx + 1,WAYPOINTS.length)} / {WAYPOINTS.length}
-            </span>
-
-            <span className="text-sm font-semibold text-ink flex items-center gap-2">
-                {done ? (
-                    <>
-                    <CheckCircle2 className="w-4 h-4 text-success"/> Figure-8 Complete
-                    </>
-                ):(
-                    current?.label
-                )}
-            </span>
-            <div className="flex gap-1">
-                {WAYPOINTS.map((wp,i) => (
-                    <span
-                    key={wp.label + i}
-                    className={`h-1 flex-1 rounded-full ${
-                        i < idx ? "bg-red" : i === idx ? "bg-ink" : "bg-line"
+        <ol className ="absolute top-3 left-3 flex flex-col gap-1 text-xs">
+            {WAYPOINTS.map((wp,i) => {
+                const state = i < idx ? "done" : i === idx ? "current" : "pending"
+                return (
+                    <li
+                    key ={wp.label}
+                    className={`flex items-center gap-2 ${
+                        state === "done"
+                        ? "text-success"
+                        : state === "current"
+                        ? "text-ink font-semibold"
+                        : "text-dim"
                     }`}
-                    />
-                ))}
-            </div>
-        </div>
+                    >
+                        {state === "done" ? (
+                            <CheckCircle2 className ="w-3.5 h-3.5" />
+                        ): state === "current" ? (
+                            <CircleDot className="w-3.5 h-3.5 text-red" />
+                        ): (
+                            <Circle className="w-3.5 h-3.5" />
+                        )}
+                        {wp.label}
+                    </li>
+                )
+            })}
+        </ol>
+        <ul className="absolute top-3 right-3 flex flex-col gap-0.5 rounded-md border border-glassBrd bg-glass px-2.5 py-2 text-[11px] text-dim">
+            <li>
+                <span className="text-ink">Forward:</span> both hands one finger
+            </li>
+            <li>
+                <span className="text-ink">Back:</span> both hands two fingers
+            </li>
+            <li>
+                <span className="text-ink">Left / right:</span> palm + two fingers
+            </li>
+            <li className="pt-1">Open palm to hover / stop</li>
+        </ul>
 
         <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3 font-mono text-xs text-dim">
             <div className="flex flex-col gap-0.5">
                 <span>Last command: {lastCmd ?? "none yet"}</span>
                 <span>Moves: {moves}</span>
+                <span className={moving ? "text-ink" : undefined} >
+                    {moving ? `Moving: ${moving}` : "Hovering"}
+                </span>
             </div>
-            <span className={linkLive ? "text-ink" : "text-dim"}>
-                {linkLive ? "Gesture link live" : "Connecting to gestures"}
+            <span className ={live ? "text-ink" : "text-dim"}>
+                {live ? "Gesture link live" : "Connecting to gestures"}
             </span>
         </div>
 
         {(!running || done) && (
-            <div className="absolute inset-x-0 top-20 flex justify-center pointer-events-none">
+            <div className="absolute inset-x-0 top-3 flex justify-center pointer-events-none">
                 <span className="rounded-full border border-glassBrd bg-glass px-3 py-1 text-xs text-ink">
                     {done ? "Module complete" : "Press Start Exercise to begin"}
                 </span>
