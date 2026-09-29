@@ -12,7 +12,7 @@ const MODULES = [
   },
 
   {
-    
+    id: "obstacle-blocks",
     title: "Obstacle Blocks",
     description:
       "Navigate through a course of static blocks without touching them.",

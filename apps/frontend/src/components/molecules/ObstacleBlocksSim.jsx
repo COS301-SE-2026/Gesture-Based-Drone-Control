@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import * as THREE from "three"
-import { CheckCircle2, CIrcle, CircleDot } from "lucide-react";
+import { CheckCircle2, Circle, CircleDot } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { useGestureCommands } from "@/hooks/useGestureCommands";
 import { commandLabel } from "@/constants/GestureCommands";
-import { request } from "node:http";
 
 const STEP_DELTA = {
     MOVE_UP: [0,1,0],
@@ -31,10 +30,10 @@ const WALLS = [
 const FINISH_Z = BOUNDS.minZ
 const STEPS = [...WALLS.map((w) => w.label), "Reach the finish gate"]
 
-const STEP_MS = 300 //how far drone goes in one move
+const STEP_MS = 300 // ms between steps while a direction is held
 const STOP_COMMANDS = new Set(["HOVER", "LAND", "EMERGENCY_STOP"])
 
-const clamp = (v, lo, hi) = Math.min(hi, Math.max(lo,v))
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo,v))
 const toWorld = (gx, gy,gz) => new THREE.Vector3(gx*XY_STEP, gy*XY_STEP, gz*Z_STEP)
 
 const blockingWall = (p) => 
@@ -50,7 +49,10 @@ function buildDrone(frame, red, geos) {
     const legGeo = new THREE.BoxGeometry(0.06, 0.5, 0.06)
     geos.push(bodyGeo, canopyGeo, armGeo, rotorGeo, bladeGeo, legGeo)
 
-    drone.add(new THREE(bodyGeo, frame))
+    drone.add(new THREE.Mesh(bodyGeo, frame))
+    const canopy = new THREE.Mesh(canopyGeo, red)
+    canopy.position.y = 0.32
+    drone.add(canopy)
     const armA = new THREE.Mesh(armGeo, frame)
     armA.rotation.y = Math.PI / 4
     const armB = armA.clone()
@@ -69,7 +71,7 @@ function buildDrone(frame, red, geos) {
         const b2 = b1.clone()
         b2.rotation.y = Math.PI /2
         prop.add(b1,b2)
-        prop.position.set(px,0,24,pz)
+        prop.position.set(px, 0.24, pz)
         drone.add(prop)
         props.push(prop)
     })
@@ -125,7 +127,7 @@ function buildWall(wall, fill, line, holeMat, geos){
         new THREE.Vector3(hx0, hy1, WALL_DEPTH/2+0.01),
     ])
     geos.push(holeGeo)
-    group.add(new THREE.LineLoop(holeGeo.holeMat))
+    group.add(new THREE.LineLoop(holeGeo, holeMat))
 
     group.position.z = wall.z * Z_STEP
     return group
@@ -177,8 +179,8 @@ export default function ObstacleBlocksSim({ running, onComplete }){
             const cur = posRef.current
             const next = {
                 x: clamp(cur.x + delta[0], BOUNDS.minX, BOUNDS.maxX),
-                y: clamp(cur.y + delta[0], BOUNDS.minY, BOUNDS.maxY),
-                z: clamp(cur.z + delta[0], BOUNDS.minZ, BOUNDS.maxZ)
+                y: clamp(cur.y + delta[1], BOUNDS.minY, BOUNDS.maxY),
+                z: clamp(cur.z + delta[2], BOUNDS.minZ, BOUNDS.maxZ)
             }
 
             if (next.x === cur.x && next.y === cur.y && next.z === cur.z) return false
@@ -234,10 +236,9 @@ export default function ObstacleBlocksSim({ running, onComplete }){
         const { live } = useGestureCommands(handleCommand)
 
         useEffect( () => {
-            if (!running){
-                stop()
-                return undefined
-            }
+            // commands are ignored while not running, so there is no direction to clear here
+            if (!running) return undefined
+
             const id = setInterval (() => {
                 const dir = dirRef.current
                 if (!dir || doneRef.current) return
@@ -245,7 +246,10 @@ export default function ObstacleBlocksSim({ running, onComplete }){
                 if (performance.now() - lastStepRef.current < STEP_MS) return
                 if (!step(dir)) stop()
             }, 50)
-        return () => clearInterval(id)
+        return () => {
+            clearInterval(id)
+            dirRef.current = null
+        }
         }, [running, step, stop])
 
         useEffect( () => {
@@ -299,7 +303,8 @@ export default function ObstacleBlocksSim({ running, onComplete }){
             const grid = new THREE.GridHelper(courseLen, 16, 0xffffff, 0xffffff)
             grid.material.transparent = true
             grid.position.set(0, (BOUNDS.minY-0.5) * S -0.05, -courseLen/2 +1)
-            geos.push(grid.material)
+            geos.push(grid.geometry)
+            materials.push(grid.material)
             mats.current.grid = grid.material 
             scene.add(grid)
 
@@ -313,7 +318,7 @@ export default function ObstacleBlocksSim({ running, onComplete }){
 
             resize()
             const ro = new ResizeObserver(resize)
-            ro.observer(mount)
+            ro.observe(mount)
 
             let raf = 0
             let t =0
@@ -354,10 +359,139 @@ export default function ObstacleBlocksSim({ running, onComplete }){
             return () => {
                 cancelAnimationFrame(raf)
                 ro.disconnect()
-                geos.forEach((m) => m.dispose())
+                geos.forEach((g) => g.dispose())
+                materials.forEach((m) => m.dispose())
                 renderer.dispose()
                 if (renderer.domElement.parentNode === mount) renderer.domElement.remove()
             }
         }, [])
 
+        useEffect( () => {
+
+            const raf = requestAnimationFrame(() => {
+                const css = getComputedStyle(document.documentElement)
+                const ink = css.getPropertyValue("--ink").trim()
+                const redToken = css.getPropertyValue("--red").trim()
+                const m = mats.current
+
+                m.frame?.color.set(ink)
+                m.red?.color.set(redToken)
+
+                m.walls.forEach(({ fill, line, hole}, i) => {
+                    fill.color.set(ink)
+                    line.color.set(ink)
+                    if (i< idx){
+                        fill.opacity = 0.03
+                        line.opacity = 0.12
+                        hole.color.set(ink)
+                        hole.opacity = 0.12
+                    }
+                    else if (i === idx)
+                    {
+                        fill.opacity = 0.12
+                        line.opacity = 0.7
+                        hole.color.set(redToken)
+                        hole.opacity = 1
+                    }
+                    else
+                    {
+                        fill.opacity = 0.06
+                        line.opacity = 0.3
+                        hole.color.set(ink)
+                        hole.opacity = 0.3
+                    }
+                })
+
+                if (m.finish){
+                    const finishActive = idx >= WALLS.length
+                    m.finish.color.set(finishActive ? redToken : ink)
+                    m.finish.opacity = finishActive ? 1: 0.25
+                }
+
+                if (m.grid) {
+                    m.grid.color.set(ink)
+                    m.grid.opacity = 0.15
+                }
+            })
+
+            return () => cancelAnimationFrame(raf)
+        }, [theme, idx])
+
+        return (
+            <div className="relative flex-1 min-h-0 rounded-lg border border-glassBrd bg-surface overflow-hidden">
+            <div ref={mountRef} className="absolute inset-0" aria-hidden="true" />
+
+            <ol className="absolute top-3 left-3 flex flex-col gap-1.5 text-xs">
+                {STEPS.map((label, i) => {
+                    const state = i < idx ? "done" : i === idx ? "current" : "pending"
+                    return (
+                        <li
+                            key={label}
+                            className={`flex items-center gap-2 ${
+                                state === "done" ? "text-success" : state === "current" ? "text-ink font-semibold" : "text-dim"
+                            }`}
+                        >
+                            {state === "done" ? (
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                            ) : state === "current" ? (
+                                <CircleDot className="w-3.5 h-3.5 text-red" />
+                            ) : (
+                                <Circle className="w-3.5 h-3.5" />
+                            )}
+                            {label}
+                        </li>
+                    )
+                })}
+            </ol>
+
+            <ul className="absolute top-3 right-3 flex flex-col gap-0.5 rounded-md border border-glassBrd bg-glass px-2.5 py-2 text-[11px] text-dim">
+                <li><span className="text-ink">Forward:</span> both hands one finger</li>
+                <li><span className="text-ink">Back:</span> both hands two fingers</li>
+                <li><span className="text-ink">Up / down:</span> one / two fingers</li>
+                <li><span className="text-ink">Left / right:</span> palm + two fingers</li>
+                <li className="pt-1">Open palm to hover / stop</li>
+            </ul>
+
+            <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3 font-mono text-xs text-dim">
+                <div className="flex flex-col gap-0.5">
+                    <span>Last command: {lastCmd ?? "none yet"}</span>
+                    <span>Moves: {moves}</span>
+                    <span className={bumps > 0 ? "text-red" : undefined}>Wall hits: {bumps}</span>
+                    <span className={moving ? "text-ink" : undefined}>
+                        {moving ? `Moving: ${moving}` : "Hovering"}
+                    </span>
+                </div>
+                <span className={live ? "text-ink" : "text-dim"}>
+                    {live ? "Gesture link live" : "Connecting to gestures"}
+                </span>
+            </div>
+
+            {(!running || done) && (
+                <div className="absolute inset-x-0 top-3 flex justify-center pointer-events-none">
+                    <span className="rounded-full border border-glassBrd bg-glass px-3 py-1 text-xs text-ink">
+                        {done ? "Module complete" : "Press start exercise to begin"}
+                    </span>
+                </div>
+            )}
+
+            {flash && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span className="rounded-full border border-red bg-glass px-3 py-1 text-xs font-semibold text-red">
+                        {flash}
+                    </span>
+                </div>
+            )}
+        </div>
+
+        )
+}
+
+ObstacleBlocksSim.propTypes = {
+    running: PropTypes.bool,
+    onComplete: PropTypes.func,
+}
+
+ObstacleBlocksSim.defaultProps = {
+    running: false,
+    onComplete: undefined,
 }
