@@ -54,6 +54,7 @@ export function LeaderboardPanel({
   className = "",
 }) {
   const [scores, setScores] = useState(null) // null = loading, [] = loaded empty
+  const [loadedGameId, setLoadedGameId] = useState(null)
   const [error, setError] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const listRef = useRef(null)
@@ -62,6 +63,7 @@ export function LeaderboardPanel({
     try {
       const data = await getTopScores(gameId, limit)
       setScores(data)
+      setLoadedGameId(gameId)
       setError(false)
     } catch {
       setError(true)
@@ -69,11 +71,12 @@ export function LeaderboardPanel({
   }, [gameId, limit])
 
   useEffect(() => {
-    setScores(null) // will show a loading state when switching games
-    setIsOpen(false)
-    load()
+    const timeout = setTimeout(load, 0)
     const interval = setInterval(load, POLL_MS)
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      clearTimeout(timeout)
+    }
   }, [load])
 
   const handleCardClick = (e) => {
@@ -83,20 +86,24 @@ export function LeaderboardPanel({
     setIsOpen((prev) => !prev)
   }
 
+  const currentScores = loadedGameId === gameId ? scores : null
+
   // always show the preview scores then rest when expanded
-  const preview = scores?.slice(0, PREVIEW_COUNT) ?? []
-  const rest = scores?.slice(PREVIEW_COUNT) ?? []
+  const preview = currentScores?.slice(0, PREVIEW_COUNT) ?? []
+  const rest = currentScores?.slice(PREVIEW_COUNT) ?? []
 
   return (
     <Card
       variant="glass"
+      const
+      prev
       className={`flex flex-col !p-sm cursor-pointer hover:!scale-100 hover:!bg-transparant hover:!shadow-xl ${className}`}
       clickable={true}
       onClick={handleCardClick}
     >
       <div className="flex items-center justify-between w-full mb-sm">
         <Label size="sm">{gameLabel ?? gameId} - Top Scores</Label>
-        {scores?.length > PREVIEW_COUNT && (
+        {currentScores?.length > PREVIEW_COUNT && (
           <ChevronDown
             className={`w-4 h-4 text-ink transition-transform duration-300 ease-in-out ${
               isOpen ? "rotate-180" : "rotate-0"
