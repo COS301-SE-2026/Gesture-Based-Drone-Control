@@ -86,6 +86,7 @@ class MotionAdapter(GestureAdapter):
 	ENABLE_ANALOG = False
 
 	def __init__(self, idle_timeout_s=MOTION_IDLE_TIMEOUT_S, **kwargs: Any):
+		kwargs.setdefault('min_stable_frames', 3)
 		super().__init__(idle_timeout_s=idle_timeout_s, **kwargs)
 
 	def _select_hands(self, hands: list[Any]) -> list[Any]:

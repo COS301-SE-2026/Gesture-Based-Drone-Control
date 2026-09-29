@@ -54,24 +54,25 @@ STALE_SECONDS = 0.4
 # keep reporting a detected motion for this long so consumer sees its
 LATCH_SECONDS = 0.25
 # after latch expires ignore all motion for this long
-REFACTORY_SECONDS = 0.5
+REFACTORY_SECONDS = 1.0
 
 # swipe must cover this much ground in palm widths
-MIN_SWIPE_DISTANCE = 0.65
+MIN_SWIPE_DISTANCE = 0.50
 # move atleast this fast, in palm widths per second
-MIN_SWIPE_SPEED = 1.6
+MIN_SWIPE_SPEED = 1.0
 # the winning axis must beat the other one by this ratio, stops diagonal executing both
-AXIS_DOMINACE = 1.8
+AXIS_DOMINACE = 2.5
 # net displacement/path length, a swipe is a straight line, an arc isnt
 # half circle =0.64
 # circle in prgoress from exe a swipe before loop closes
 MIN_SWIPE_STRAIGHTNESS = 0.93
 
 # palm has to grow/shrink by theis ratio for push/pull
-PUSH_SCALE_RATIO = 1.35
-PULL_SCALE_RATIO = 0.74
+PUSH_SCALE_RATIO = 1.18
+PULL_SCALE_RATIO = 0.85
+DEPTH_WINDOW_SECONDS = 0.6
 # push/pull is a dpeth move, so reject if hand also travelled sideways
-MAX_PUSH_LATERAL = 0.7
+MAX_PUSH_LATERAL = 0.6
 
 # acirlce must sweep at least this much agnle
 MIN_CIRCLE_RADIANS = 1.25 * math.pi
@@ -86,6 +87,7 @@ CONTINUOUS_RANGE = 2.0
 MIN_SAMPLES = 5
 
 CLUTCH_MIN_FINGERS = 4
+CLUTCH_RELEASE_FRAMES = 4
 
 # a swipe ends, a circle doesnt, before a swipe is accepted the hand must have
 # come to rest, the last SWIPE_SETTLE_SECONDS of the path must be slower
@@ -127,6 +129,7 @@ class _HandTrack:
 		self.latch_until: float = 0.0
 		self.refactory_until: float = 0.0
 		self.last_seen: float = 0.0
+		self.closed_frames: int = 0
 
 	def trim(self, now: float, window: float) -> None:
 		"""Drop samples that have aged out of the classification window"""
@@ -209,14 +212,18 @@ class MotionBasedRecognizer(GestureRecognizer):
 		# dropped, so moving back to the centre of frame with a fist costs
 		# nothing and the next open-palm gesture starts from a clean slate
 		if finger_state.count < CLUTCH_MIN_FINGERS:
-			track.disengage()
-			return GestureResult(
-				gesture=Gesture.UNKNOWN,
-				finger_state=finger_state,
-				handedness=hand.handedness,
-				confidence=hand.confidence,
-				motion=MotionVector(),
-			)
+			track.closed_frames += 1
+			if track.closed_frames >= CLUTCH_RELEASE_FRAMES:
+				track.disengage()
+				return GestureResult(
+					gesture=Gesture.UNKNOWN,
+					finger_state=finger_state,
+					handedness=hand.handedness,
+					confidence=hand.confidence,
+					motion=MotionVector(),
+				)
+		else:
+			track.closed_frames = 0
 
 		if track.origin is None:
 			track.origin = point
@@ -343,7 +350,14 @@ class MotionBasedRecognizer(GestureRecognizer):
 			if swipe is not Gesture.UNKNOWN:
 				return swipe
 
-		return self._classify_depth(first, last, dx, dy)
+		depth_points = [p for p in points if (last.t - p.t) <= DEPTH_WINDOW_SECONDS]
+		if len(depth_points) < MIN_SAMPLES:
+			return Gesture.UNKNOWN
+
+		d_first = depth_points[0]
+		ddx = (last.x - d_first.x) / scale
+		ddy = (last.y - d_first.y) / scale 
+		return self._classify_depth(d_first, last, ddx, ddy)
 
 	def _straightness(
 		self,
