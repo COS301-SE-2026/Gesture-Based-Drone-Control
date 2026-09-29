@@ -21,6 +21,9 @@ const Z_STEP =0.8
 const WALL_DEPTH = 0.12
 const DRONE_SCALE = 0.22
 
+const WALL_FILL = "#3a3f44"
+const WALL_EDGE = "#6b7178"
+
 const WALLS = [
     {z: -3, hole: { x: -2, y:1}, label: "Clear wall 1"},
     {z: -6, hole: {x: 2, y:-1}, label: "Clear wall 2"},
@@ -378,8 +381,8 @@ export default function ObstacleBlocksSim({ running, onComplete }){
                 m.red?.color.set(redToken)
 
                 m.walls.forEach(({ fill, line, hole}, i) => {
-                    fill.color.set(ink)
-                    line.color.set(ink)
+                    fill.color.set(WALL_FILL)
+                    line.color.set(WALL_EDGE)
                     if (i< idx){
                         fill.opacity = 0.03
                         line.opacity = 0.12
@@ -388,8 +391,8 @@ export default function ObstacleBlocksSim({ running, onComplete }){
                     }
                     else if (i === idx)
                     {
-                        fill.opacity = 0.12
-                        line.opacity = 0.7
+                        fill.opacity = 0.85
+                        line.opacity = 1
                         hole.color.set(redToken)
                         hole.opacity = 1
                     }
