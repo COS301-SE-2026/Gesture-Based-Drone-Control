@@ -424,7 +424,7 @@ function setupGame(k, fonts, refs) {
   }
 
   function handleRotation(dt) {
-    const kb = readAxis("e", "q")
+    const kb = readAxis("d", "a")
     if (kb !== 0) {
       //keyboard polls live every frame so we dont need to watch it
       //naturally stops when key is released
@@ -438,8 +438,8 @@ function setupGame(k, fonts, refs) {
   }
 
   function handleMovement(dt) {
-    const kbforw = readAxis("w", "s")
-    const kbstrafe = readAxis("d", "a")
+    const kbforw = readAxis("up", "down")
+    const kbstrafe = readAxis("right", "left")
     const forwardInput =
       kbforw !== 0 ? kbforw : clamp(inputRef.current.forward, -1, 1)
     const strafeInput =
@@ -450,9 +450,10 @@ function setupGame(k, fonts, refs) {
       const rad = (drone.angle * Math.PI) / 180
       const cos = Math.cos(rad)
       const sin = Math.sin(rad)
-
       mx = cos * forwardInput - sin * strafeInput
       my = sin * forwardInput + cos * strafeInput
+      // mx = strafeInput
+      // my = -forwardInput
 
       const len = Math.hypot(mx, my)
       if (len > 1) {
@@ -769,14 +770,14 @@ function setupGame(k, fonts, refs) {
     ])
     hud.controls1 = k.add([
       k.pos(24, GAME_CANVAS.height - 40),
-      k.text("WASD/ LEFT STICK", { size: 12, font: fonts.mono }),
+      k.text("ARROWS OR LEFT STICK", { size: 12, font: fonts.mono }),
       k.color(...GAME_COLORS.dim),
       k.fixed(),
       k.z(Z_HUD),
     ])
     hud.controls2 = k.add([
       k.pos(24, GAME_CANVAS.height - 24),
-      k.text("QE/ RT/LT", { size: 12, font: fonts.mono }),
+      k.text("A/D OR RIGHT STRICK", { size: 12, font: fonts.mono }),
       k.color(...GAME_COLORS.dim),
       k.fixed(),
       k.z(Z_HUD),
@@ -881,7 +882,7 @@ function setupGame(k, fonts, refs) {
   //make end game function here
   function endGame() {
     game.phase = "won"
-    showEndPanel()
+    showEndPanel(true)
   }
 
   function resetGame() {
