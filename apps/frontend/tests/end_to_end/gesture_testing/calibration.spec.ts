@@ -90,7 +90,9 @@ test.describe("gesture calibration (any camera", () => {
             timeout: 20_000,
         })
 
-        await page.getByText("Skip calibration").click()
+        const skip = page.getByRole("button", {name: /skip calibration/i})
+        await skip.scrollIntoViewIfNeeded()
+        await skip.click()
 
         await expect 
             .poll(async () => (await getCalibrationStatus(request)).status, {
