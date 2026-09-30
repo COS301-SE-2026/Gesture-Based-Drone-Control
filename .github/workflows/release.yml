@@ -21,10 +21,6 @@ jobs:
       SIM_URL: https://github.com/iamaisim/ProjectAirSim/releases/download/v1.0.1
     steps:
 
-      - name: Free disk space
-        if: runner.os == 'Linux'
-        run: usdo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc 
-
       - uses: actions/checkout@v4
         with:
           submodules: true
