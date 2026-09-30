@@ -52,9 +52,9 @@ BUFFER_SECONDS = 2.0
 # hand gone for longer than this and track is thrwon away not resumed
 STALE_SECONDS = 0.4
 # keep reporting a detected motion for this long so consumer sees its
-LATCH_SECONDS = 0.25
+LATCH_SECONDS = 0.20
 # after latch expires ignore all motion for this long
-REFACTORY_SECONDS = 1.0
+REFACTORY_SECONDS = 0.25
 
 # swipe must cover this much ground in palm widths
 MIN_SWIPE_DISTANCE = 0.50
@@ -97,6 +97,12 @@ CLUTCH_RELEASE_FRAMES = 4
 SWIPE_SETTLE_SECONDS = 0.14
 SWIPE_SETTLE_SPEED = 1.6
 
+SAFETY_POSES: dict[int, tuple[Gesture, float]] = {
+	0: (Gesture.FIST, 1.5),
+	1: (Gesture.ONE_FINGER, 0.6),
+	2: (Gesture.TWO_FINGERS, 1.5),
+}
+
 
 @dataclass(frozen=True)
 class Trackpoint:
@@ -130,6 +136,8 @@ class _HandTrack:
 		self.refactory_until: float = 0.0
 		self.last_seen: float = 0.0
 		self.closed_frames: int = 0
+		self.hold_pose: Optional[Gesture] = None
+		self.hold_since: float = 0.0
 
 	def trim(self, now: float, window: float) -> None:
 		"""Drop samples that have aged out of the classification window"""
@@ -216,7 +224,7 @@ class MotionBasedRecognizer(GestureRecognizer):
 			if track.closed_frames >= CLUTCH_RELEASE_FRAMES:
 				track.disengage()
 				return GestureResult(
-					gesture=Gesture.UNKNOWN,
+					gesture=self._resolve_hold(track, finger_state.count, now),
 					finger_state=finger_state,
 					handedness=hand.handedness,
 					confidence=hand.confidence,
@@ -224,6 +232,7 @@ class MotionBasedRecognizer(GestureRecognizer):
 				)
 		else:
 			track.closed_frames = 0
+			track.hold_pose = None
 
 		if track.origin is None:
 			track.origin = point
@@ -245,6 +254,31 @@ class MotionBasedRecognizer(GestureRecognizer):
 	def reset(self) -> None:
 		"""Drop every track, called on recognizer swap and on pipeline restart"""
 		self._tracks.clear()
+
+	def _resolve_hold(self, track: _HandTrack, fingers: int, now: float) -> Gesture:
+		"""
+		Recognise a safety pose that has been deliberately held
+
+		Only reachable while the hand is clutched, so a held pose and a flight
+		swipe can never be the same input. Keeps returning the pose once the
+		hold matures; the adapter is edge triggered so it still fires once
+		"""
+		entry = SAFETY_POSES.get(fingers)
+		if entry is None:
+			track.hold_pose = None
+			return Gesture.UNKNOWN
+
+		pose, required = entry
+
+		if track.hold_pose is not pose:
+			track.hold_pose = pose
+			track.hold_since = now
+			return Gesture.UNKNOWN
+
+		if (now - track.hold_since) < required:
+			return Gesture.UNKNOWN
+
+		return pose
 
 	# track management
 	def _get_track(self, handedness: Handedness, now: float) -> _HandTrack:
@@ -356,7 +390,7 @@ class MotionBasedRecognizer(GestureRecognizer):
 
 		d_first = depth_points[0]
 		ddx = (last.x - d_first.x) / scale
-		ddy = (last.y - d_first.y) / scale 
+		ddy = (last.y - d_first.y) / scale
 		return self._classify_depth(d_first, last, ddx, ddy)
 
 	def _straightness(

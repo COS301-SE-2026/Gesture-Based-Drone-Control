@@ -31,9 +31,9 @@ logger = logging.getLogger(__name__)
 # frozensets collapse duplicates, same as the pose maps, and the lookup in
 # _resolve collapses the same way so this still matchrs
 MOTION_TWO_HAND_MAP: dict[frozenset, CommandType] = {
-	frozenset({'SWIPE_UP', 'SWIPE_UP'}): CommandType.TAKEOFF,  # NOSONAR
-	frozenset({'SWIPE_DOWN', 'SWIPE_DOWN'}): CommandType.LAND,  # NOSONAR
-	frozenset({'PULL', 'PULL'}): CommandType.EMERGENCY_STOP,  # NOSONAR
+	frozenset({'TWO_FINGERS', 'TWO_FINGERS'}): CommandType.TAKEOFF,  # NOSONAR
+	frozenset({'FIST', 'FIST'}): CommandType.LAND,  # NOSONAR
+	frozenset({'ONE_FINGER', 'ONE_FINGER'}): CommandType.EMERGENCY_STOP,  # NOSONAR
 }
 
 # nothing asymmetric yet, but _resolve still checks this map first so it has
@@ -86,7 +86,8 @@ class MotionAdapter(GestureAdapter):
 	ENABLE_ANALOG = False
 
 	def __init__(self, idle_timeout_s=MOTION_IDLE_TIMEOUT_S, **kwargs: Any):
-		kwargs.setdefault('min_stable_frames', 3)
+		kwargs.setdefault('min_stable_frames', 2)
+		kwargs.setdefault('release_frames', 3)
 		super().__init__(idle_timeout_s=idle_timeout_s, **kwargs)
 
 	def _select_hands(self, hands: list[Any]) -> list[Any]:
@@ -112,6 +113,17 @@ class MotionAdapter(GestureAdapter):
 			self._process_motion(confident)
 
 		return resolved
+
+	def _emit(self, command: Command) -> None:
+		"""
+		Fire once per gesture instead of once per stable frame
+		"""
+		if command.type is not CommandType.ANALOG and self._active_key is not None:
+			if self._active_key.split('|', 1)[0] == command.type.name:
+				logger.debug('MotionAdapter: suppressed repeat %s', command.type.name)
+				return
+
+		super()._emit(command)
 
 	def _process_motion(self, hands: list[Any]) -> None:
 		"""
