@@ -240,12 +240,6 @@ const GestureControl = () => {
       )}
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_18rem] gap-4 xl:gap-6 items-stretch">
         <Card variant="glass" data-tour="stats-card" className="min-w-0 h-full">
-          <div className="flex items-center justify-between">
-            <Label size="md" className="shrink-0">
-              {" "}
-              Stats{" "}
-            </Label>
-          </div>
           <div className="flex items-center justify-between gap-4 flex-wrap h-full">
             <div className="flex items-center gap-3">
               <Battery className="w-6 h-6 text-red" />
@@ -305,7 +299,7 @@ const GestureControl = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch lg:h-[calc(100vh_-_22rem)] lg:grid-rows-1">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
         <div className="h-full" data-tour="gesture-camera">
           {calibrated === false ? (
             <GestureCalibration
@@ -342,7 +336,7 @@ const GestureControl = () => {
             </Card>
           )}
         </div>
-        <div className="flex flex-col gap-6 lg:min-h-0 lg:h-full lg:overflow-y-auto">
+        <div className="flex flex-col gap-6 h-full">
           <div className="flex-1" data-tour="gesture-guide">
             <GestureGuide
               className="h-full"
@@ -350,11 +344,10 @@ const GestureControl = () => {
               onKeyboardResp={handleKeyboardResp}
             />
           </div>
-          <div className="flex-1 min-h-0" data-tour="sim-viewer">
+          <div data-tour="sim-viewer">
             <DroneFeedPanel
               droneMode={droneMode}
               connectionStatus={connectionStatus}
-              className="h-full"
             />
           </div>
         </div>
@@ -366,5 +359,4 @@ const GestureControl = () => {
     </div>
   )
 }
-
 export default GestureControl
