@@ -27,3 +27,7 @@ deploy/
 serve_root/
 release
 GestureBasedDroneControl-Backend.spec
+docs/nfr/evidence/jmeter/results.jtl
+docs/nfr/evidence/lighthouse/*.report.json
+docs/nfr/evidence/jmeter/
+docs/nfr/evidence/lighthouse/

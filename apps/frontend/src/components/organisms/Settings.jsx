@@ -59,7 +59,11 @@ const Settings = () => {
                 Show live connection status for drone, telemetry and commands.
               </p>
             </div>
-            <Toggle checked={debugMode} onChange={toggle} />
+            <Toggle
+              checked={debugMode}
+              onChange={toggle}
+              aria-label="Debug Mode"
+            />
           </div>
         </Card>
       </SettingsSection>

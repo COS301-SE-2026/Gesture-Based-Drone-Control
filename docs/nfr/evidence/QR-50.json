@@ -1,0 +1,51 @@
+{
+  "id": "QR-50",
+  "requirement": "NFR1.3",
+  "metric": "dashboard live-feed frames painted per second (fps)",
+  "actual": 30,
+  "target": ">= 24 fps and >= 99% of received frames painted",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:35:42+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "browser": "Chromium 149.0.7827.55",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "suite": "frontend (Playwright)",
+  "window_s": 30,
+  "frames_sent": 901,
+  "frames_received": 901,
+  "arrival_gap_ms": {
+    "n": 900,
+    "min": 3.8,
+    "mean": 33.33,
+    "p50": 33.3,
+    "p95": 35.4,
+    "p99": 36.6,
+    "max": 63.7
+  },
+  "back_to_back_arrivals": 1,
+  "frames_painted": 900,
+  "painted_pct": 99.89,
+  "frame_gap_ms": {
+    "n": 899,
+    "min": 3.2,
+    "mean": 33.33,
+    "p50": 33.3,
+    "p95": 35.6,
+    "p99": 37.1,
+    "max": 65.5
+  },
+  "long_tasks": {
+    "count": 1,
+    "worst_ms": 67
+  },
+  "screenshot": "screenshots/QR-50-dashboard-live-feed.jpg",
+  "method": "The real dashboard receives 30 fps GestureFramePayload messages (real 640x480 JPEG frames + hand landmarks) over the gesture WebSocket. Every canvas drawImage of a frame is counted, and every message is timestamped as it reaches page. Painted $ = frames painted / frames recieved in the same window. ",
+  "chart": {
+    "kind": "series",
+    "column": "rendered_fps",
+    "unit": "fps",
+    "threshold": 24
+  }
+}

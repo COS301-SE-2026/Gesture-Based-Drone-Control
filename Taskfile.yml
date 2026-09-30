@@ -108,7 +108,8 @@ tasks:
   integration-test:
     desc: Runs Integration Tests
     cmds:
-      - uv run pytest tests --cov --cov-report=term-missing
+      # tests/nfr has its own job (task nfr-test); its timing runs must not run twice
+      - uv run pytest tests --ignore=tests/nfr --cov --cov-report=term-missing
 
   contracts:
     desc: Validates API service contracts
@@ -122,9 +123,38 @@ tasks:
       - yarn e2e-test
 
   nfr-test:
-    desc: Runs NFR tests and regenerates docs/nfr/Matrix.md
+    desc: Runs every NFR test (backend + frontend) and regenerates docs/nfr (matrix + evidence page)
     cmds:
-      - cmd: uv run pytest tests/nfr -q
+      - defer: uv run python tests/nfr/report.py
+      - task: nfr-backend
+      - task: nfr-frontend
+
+  nfr-backend:
+    desc: Backend NFR tests (performance, usability, security, reliability) - pytest
+    cmds:
+      - uv run pytest tests/nfr -q -m "not slow"
+
+  nfr-frontend:
+    desc: Frontend NFR tests (render rate, page load, accessibility, layout) - Playwright
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn nfr-test
+
+  nfr-lighthouse:
+    desc: Lighthouse audit of the production build (needs a preview server on 4173)
+    cmds:
+      - ./tests/nfr/lighthouse/run-lighthouse.sh
+
+  nfr-jmeter:
+    desc: JMeter REST load test (needs the backend on 3001)
+    cmds:
+      - rm -rf docs/nfr/evidence/jmeter/report docs/nfr/evidence/jmeter/results.jtl
+      - mkdir -p docs/nfr/evidence/jmeter
+      - jmeter -n -t tests/nfr/jmeter/gbdc-rest-load.jmx -l docs/nfr/evidence/jmeter/results.jtl -e -o docs/nfr/evidence/jmeter/report
+
+  nfr-report:
+    desc: Rebuilds docs/nfr/MATRIX.md and docs/nfr/EVIDENCE.md from the evidence already recorded
+    cmds:
       - uv run python tests/nfr/report.py
 
   lint:

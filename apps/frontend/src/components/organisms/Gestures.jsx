@@ -305,7 +305,7 @@ const GestureControl = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch lg:h-[calc(100vh_-_22rem)] lg:grid-rows-1">
         <div className="h-full" data-tour="gesture-camera">
           {calibrated === false ? (
             <GestureCalibration
@@ -342,7 +342,7 @@ const GestureControl = () => {
             </Card>
           )}
         </div>
-        <div className="flex flex-col gap-6 h-full">
+        <div className="flex flex-col gap-6 lg:min-h-0 lg:h-full lg:overflow-y-auto">
           <div className="flex-1" data-tour="gesture-guide">
             <GestureGuide
               className="h-full"

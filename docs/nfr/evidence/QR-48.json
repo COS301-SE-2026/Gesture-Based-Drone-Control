@@ -1,0 +1,25 @@
+{
+  "id": "QR-48",
+  "requirement": "R7 / US-A-02",
+  "metric": "gesture commands also reachable from keyboard and gamepad",
+  "actual": "keyboard 12/12, gamepad 12/12",
+  "target": "all, including EMERGENCY_STOP",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:17:55+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "missing": {
+    "keyboard": [],
+    "gamepad": []
+  },
+  "one_handed_gesture_commands": [
+    "HOVER",
+    "MOVE_DOWN",
+    "MOVE_UP"
+  ],
+  "finding": "Only 3 of 12 commands work with a single hand (HOVER, MOVE_DOWN, MOVE_UP); take-off and land need both hands. US-A-01 and the U3 description in SRS 3.1.2.4 expect full one-handed gesture control, so a one-handed operator relies on keyboard or gamepad (which this row confirms).",
+  "method": "Compares the real mapping tables of GestureAdapter, KeyboardAdapter and GamepadAdapter."
+}

@@ -1,60 +1,77 @@
-# API Documentation
+# API Reference
 
-Documentation related to the API is handled through Swagger docs. These
-can be accessed by hosting the project locally and accessing the docs
-through the following instructions.
+<div class="tx-badges">
+  <span class="tx-status"><span class="tx-status__dot"></span>Hosted on this site</span>
+  <span class="tx-status">No clone required</span>
+  <span class="tx-status">OpenAPI 3.0.3 · AsyncAPI 3.0</span>
+</div>
 
-The REST surface shown here is also specified as a static, reviewable
-contract — see [Service Contracts](../contracts/CONTRACTS.md) for the
-`openapi.yaml` / `asyncapi.yaml` specifications and the validator that
-keeps them in step with the running service.
+The complete API surface is published here, on this site. Nothing needs to be
+installed, cloned or started to read it.
 
----
+<div class="grid cards" markdown>
 
-## Prerequisites
+-   :material-api:{ .lg .middle } **[REST — Swagger UI](SWAGGER.md)**
 
-Ensure you have cloned the repository on your local device and run the
-installation using
-`task install`
+    ---
 
----
+    Every request–response endpoint under `/api`: authentication, drone
+    lifecycle, gesture recognition, calibration, input adapters and analytics.
+    Full schemas, examples and response codes.
 
-## Usage
+-   :material-transit-connection-variant:{ .lg .middle } **[WebSockets — AsyncAPI](ASYNCAPI.md)**
 
-Start the development server in the project root by running
-`task dev`
+    ---
 
-You will then be able to access the Swagger Docs at
-<http://127.0.0.1:3001/docs>.
+    The continuous streams OpenAPI cannot express: camera frames, live
+    telemetry, calibration progress and the command feed.
 
-The raw generated schema is served alongside it at
-<http://127.0.0.1:3001/openapi.json> — this is the exact document the
-contract drift check compares against.
+</div>
 
-### Sections
+Both views are rendered from the version-controlled contracts in
+[`packages/api-contracts/`](https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/tree/dev/packages/api-contracts),
+which CI checks against the running backend on every push — see
+[Service Contracts](../contracts/CONTRACTS.md). The raw machine-readable
+documents are served alongside the pages:
 
-The WebSockets section is displayed in plain text, as these endpoints
-cannot be tested in the Web UI. They are specified in full in
-[`asyncapi.yaml`](../contracts/CONTRACTS.md#22-asyncapiyaml-websocket-asyncapi-30).
-
-The REST API section is displayed in the standard interactable format of
-Swagger Docs. These endpoints can be tested directly in the browser.
+- [`openapi.yaml`](openapi.yaml) — import into Postman, Insomnia or a client generator.
+- [`asyncapi.yaml`](asyncapi.yaml) — import into AsyncAPI Studio.
 
 ---
 
-## Live docs vs. the authored contract
+## Executing requests
 
-Two views of the same REST surface exist, and they are meant to agree:
+Reading the API needs nothing. **Executing** a request against it does, because
+the service is not publicly hosted — the drone control backend talks to a local
+simulator and a local camera pipeline, so there is no public instance to point
+at, and the contract's server block names the local development server
+(`http://127.0.0.1:3001`).
 
-- **Swagger (`/docs`)** — generated at runtime from the Pydantic models.
-  Interactive, always reflects the code as it is *right now*. Best for
-  trying endpoints out.
-- **[`openapi.yaml`](../contracts/CONTRACTS.md)** — the hand-authored
-  contract. Version-controlled and reviewable, it states what the
-  boundary is *meant* to be.
+To make Swagger's **Try it out** button live, run the backend yourself:
 
-The [contract validator](../contracts/CONTRACTS.md#3-the-validator)
-(`task contracts`) checks the two against each other, so the interactive
-docs and the published specification cannot silently drift apart.
+```bash
+task install   # once
+task dev
+```
+
+The backend then also serves its own runtime-generated Swagger UI at
+<http://127.0.0.1:3001/docs>, with the raw generated schema at
+<http://127.0.0.1:3001/openapi.json>. That generated document is what the
+[contract drift check](../contracts/CONTRACTS.md#3-the-validator) compares the
+authored `openapi.yaml` against.
 
 ---
+
+## Two views of the same surface
+
+| | [Published contracts](SWAGGER.md) (this site) | Runtime `/docs` (local backend) |
+| --- | --- | --- |
+| **Source** | Authored `openapi.yaml` / `asyncapi.yaml` | Generated from the Pydantic models at runtime |
+| **Availability** | Always, publicly, no setup | Only while the backend is running locally |
+| **Covers WebSockets** | Yes, in full | No — listed as plain text only |
+| **Try it out works** | Only against your own local backend | Yes |
+| **Best for** | Reading, reviewing, client generation | Exercising endpoints while developing |
+
+They are meant to agree, and `task contracts` fails the build if they drift
+apart, so the published specification cannot quietly fall out of step with the
+running service.
