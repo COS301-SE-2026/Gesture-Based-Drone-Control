@@ -21,9 +21,10 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
+import uuid
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 from apps.backend.app.dependencies import get_state
@@ -39,6 +40,10 @@ router = APIRouter(prefix='/input', tags=['input'])
 
 class ConnectInputRequest(BaseModel):
 	adapter: str = 'dummy'  # dummy, keyboard...
+	# caller-chosen id for this connection. The caller knows it before the
+	# response lands, so its teardown can name the connection it owns even if
+	# the two requests cross on the wire
+	session: Optional[str] = None
 
 
 class ConnectInputResponse(BaseModel):
@@ -47,6 +52,8 @@ class ConnectInputResponse(BaseModel):
 	adapter: str
 	# CV recognizer in effect, null if not applicable
 	recognizer: Optional[str] = None
+	# echo of the accepted session id, to be passed back to /disconnect
+	session: Optional[str] = None
 
 
 def _build_input_adapter(body: ConnectInputRequest) -> InputAdapter:
@@ -182,8 +189,10 @@ async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, De
 	except CameraError as exc:
 		raise HTTPException(status_code=503, detail=str(exc)) from exc
 
+	session = body.session or uuid.uuid4().hex
 	state.input = adapter
 	state.input_name = body.adapter
+	state.input_session = session
 
 	message = f'{state.input_name} input adapter connected'
 	if recognizer is not None:
@@ -191,7 +200,11 @@ async def connect_input(body: ConnectInputRequest, state: Annotated[AppState, De
 
 	logger.info('input/connect: connected to the adapter successfully')
 	return ConnectInputResponse(
-		connected=True, adapter=body.adapter, message=message, recognizer=recognizer
+		connected=True,
+		adapter=body.adapter,
+		message=message,
+		recognizer=recognizer,
+		session=session,
 	)
 
 
@@ -201,12 +214,32 @@ class DisconnectInputResponse(BaseModel):
 
 
 @router.post('/disconnect', response_model=DisconnectInputResponse)
-async def disconnect_input(state: Annotated[AppState, Depends(get_state)]):
+async def disconnect_input(
+	state: Annotated[AppState, Depends(get_state)],
+	session: Annotated[Optional[str], Query()] = None,
+):
 	"""
 	disconnect active input adapter. does nothing if nothing connected
+
+	Pass the session from /connect to disconnect only that connection. A page
+	switch unmounts one page and mounts the next, and the teardown request can
+	reach us after the new page's connect - without a session we would take
+	down the adapter that just replaced ours and release the camera under it.
+	Omitting it keeps the unconditional behaviour, which is what a page
+	unload wants.
 	"""
 	if state.input is None:
 		return DisconnectInputResponse(success=False, message='No input adapter is connected')
+
+	if session is not None and session != state.input_session:
+		logger.info(
+			'input/disconnect: ignoring stale request for session %s, current is %s',
+			session,
+			state.input_session,
+		)
+		return DisconnectInputResponse(
+			success=False, message='That input connection has already been superseded'
+		)
 
 	name = state.input_name
 	adapter = state.input
