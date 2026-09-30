@@ -1,0 +1,32 @@
+{
+  "id": "QR-30",
+  "requirement": "NFR1.1",
+  "metric": "p95 new gesture shown -> its command dispatched (ms)",
+  "actual": 115.728,
+  "target": "<= 200.0, no missed gestures",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:17:33+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "stats": {
+    "n": 30,
+    "min": 114.838,
+    "mean": 115.35,
+    "p50": 115.295,
+    "p95": 115.728,
+    "p99": 117.024,
+    "max": 117.024
+  },
+  "transitions": 30,
+  "missed": [],
+  "method": "What the operator feels: time from the first frame showing a new gesture to its command reaching the drone. Includes the deliberate 3-of-5 stabilizer vote and the 2-frame adapter hold that suppress false positives (NFR3.2).",
+  "chart": {
+    "kind": "histogram",
+    "column": "onset_to_command_ms",
+    "unit": "ms",
+    "threshold": 200.0
+  }
+}

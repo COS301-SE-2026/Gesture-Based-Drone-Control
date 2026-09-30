@@ -158,7 +158,10 @@ nav:
     - Git Conventions: GIT.md
     - CI/CD Pipeline: CICD.md
     - Testing Manual: testing/TESTING.md
-    - NFR Verification: nfr/NFR.md
+    - NFR Verification:
+      - Overview & Matrix: nfr/NFR.md
+      - Evidence: nfr/EVIDENCE.md
+      - Usability Study Protocol: nfr/usability/PROTOCOL.md
 
   - API:
     - Overview: api/API_REFERENCE.md

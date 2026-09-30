@@ -1,0 +1,32 @@
+{
+  "id": "QR-38",
+  "requirement": "NFR1.1",
+  "metric": "p95 login response time (ms)",
+  "actual": 516.477,
+  "target": "<= 1000.0",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:16:49+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "stats": {
+    "n": 8,
+    "min": 469.225,
+    "mean": 493.042,
+    "p50": 493.669,
+    "p95": 516.477,
+    "p99": 516.477,
+    "max": 516.477
+  },
+  "event_loop_stall_ms": 522.7,
+  "finding": "bcrypt.checkpw runs directly on the asyncio event loop, so while a login is verified every other request, telemetry tick and gesture broadcast waits. event_loop_stall_ms is the longest the loop was frozen during a login. Moving the hash into a worker thread (asyncio.to_thread) would remove it.",
+  "method": "POST /api/auth/login with a registered user, 8 sequential logins timed end to end.",
+  "chart": {
+    "kind": "bars",
+    "column": "login_ms",
+    "unit": "ms",
+    "threshold": 1000.0
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "QR-45",
+  "requirement": "NFR5.1",
+  "metric": "participants completing the basic flight within 5 minutes (%)",
+  "actual": "0/5 participants logged",
+  "target": ">= 80.0% of >= 5 external participants",
+  "pass": false,
+  "recorded_at": "2026-09-29T22:17:55+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "status": "pending",
+  "method": "Awaiting the usability study; see docs/nfr/usability/PROTOCOL.md."
+}

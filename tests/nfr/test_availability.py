@@ -1,6 +1,6 @@
 """
-QR-17 / NFR7.1 -> a liveness probe exists for every major subsystem
-QR-18 / NFR7.2 -> health probes require no authentication
+QR-23 / NFR7.1 -> a liveness probe exists for every major subsystem
+QR-24 / NFR7.2 -> health probes require no authentication
 
 this is tested by looking whether each subsystem exposes a liveness endpoint,
 and that those endpoints are eachable without a session
@@ -47,7 +47,7 @@ def test_every_subsystem_exposes_a_health_probe():
 	missing = sorted(EXPECTED_HEALTH_ROUTES - present)
 
 	emit(
-		'QR-17',
+		'QR-23',
 		'NFR7.1',
 		'subsystems exposing a liveness probe',
 		actual=f'{len(EXPECTED_HEALTH_ROUTES) - len(missing)}/{len(EXPECTED_HEALTH_ROUTES)}',
@@ -72,7 +72,7 @@ def test_health_probes_need_no_authentication():
 			gated.append(route)
 
 	emit(
-		'QR-18',
+		'QR-24',
 		'NFR7.2',
 		'health probes reachable without authentication',
 		actual=f'{len(EXPECTED_HEALTH_ROUTES) - len(gated)}/{len(EXPECTED_HEALTH_ROUTES)}',

@@ -58,6 +58,7 @@ export default function Input({
           <button
             type="button"
             onClick={togglePassVisibility}
+            aria-label={showPass ? "Hide password" : "Show password"}
             className="absolute right-3 text-dim hover:text-red"
           >
             {showPass ? (

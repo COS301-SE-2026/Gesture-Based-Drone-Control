@@ -1,6 +1,7 @@
 """
-QR-14 / NFR6.1 -> every concrete adapter implements its interface completely
-QR-15 / NFR6.2 -> code complexity stays within a maintainable bound
+QR-20 / NFR6.1 -> every concrete DroneAdapter implements its interface completely
+QR-21 / NFR6.2 -> every concrete InputAdapter implements its interface completely
+QR-16 / NFR6.2 -> code cpmplexity stays within a maintainable bound
 """
 
 from __future__ import annotations
@@ -69,11 +70,11 @@ def _check_adapters(specs, base, qr_id):
 
 
 def test_drone_adapters_implement_interface():
-	_check_adapters(DRONE_ADAPTERS, DroneAdapter, 'QR-14')
+	_check_adapters(DRONE_ADAPTERS, DroneAdapter, 'QR-20')
 
 
 def test_input_adapters_implement_interface():
-	_check_adapters(INPUT_ADAPTERS, InputAdapter, 'QR-15')
+	_check_adapters(INPUT_ADAPTERS, InputAdapter, 'QR-21')
 
 
 def test_no_function_exceeds_complexity_budget():
@@ -93,7 +94,7 @@ def test_no_function_exceeds_complexity_budget():
 				offenders.append(f'{rel}:{block.lineno} {block.name} (CC={block.complexity})')
 
 	emit(
-		'QR-16',
+		'QR-22',
 		'NFR6.2',
 		f'functions above cyclomatic complexity {MAX_COMPLEXITY}',
 		actual=len(offenders),
