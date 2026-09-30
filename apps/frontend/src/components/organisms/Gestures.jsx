@@ -345,13 +345,13 @@ const GestureControl = () => {
         <div className="flex flex-col gap-6 h-full">
           <div className="flex-1" data-tour="gesture-guide">
             <GestureGuide
-              className="h-full"
               sendCommand={handleControlAction}
               onKeyboardResp={handleKeyboardResp}
             />
           </div>
-          <div data-tour="sim-viewer">
+          <div className="flex-1 min-h-0" data-tour="sim-viewer">
             <DroneFeedPanel
+              className="h-full"
               droneMode={droneMode}
               connectionStatus={connectionStatus}
             />
