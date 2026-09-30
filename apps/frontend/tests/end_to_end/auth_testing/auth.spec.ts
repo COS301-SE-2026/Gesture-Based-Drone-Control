@@ -57,7 +57,7 @@ test.describe('Signup then Login flow',() => {
         await page.getByRole('button', {name:/sign up/i}).click()
         await expect(page).toHaveURL(/\/login/)
         await page.getByLabel(/email address/i).fill(uniqueEmail)
-        await page.getByLabel(/password/i).fill(password)
+        await page.getByLabel(/^password$/i).fill(password)
         await page.getByRole('button',{name:/sign in/i}).click()
 
         await expect(page).toHaveURL('/#/app')
@@ -83,7 +83,7 @@ test.describe('Signup then Login flow',() => {
         await expect(page).toHaveURL(/\/login/)
 
         await page.getByLabel(/email address/i).fill(uniqueEmail)
-        await page.getByLabel(/password/i).fill('WrongPassword@123')
+        await page.getByLabel(/^password$/i).fill('WrongPassword@123')
         await page.getByRole('button', {name:/sign in/i}).click()
 
         await expect(page.getByText(/invalid email or password/i)).toBeVisible()

@@ -140,7 +140,7 @@
     <br/>
     <b>Ayush Beekum</b><br/>
     <sub><code>u23596351</code></sub><br/>
-    <sub>Team Lead. Full stack</sub><br/><br/>
+    <sub>Team Lead, Computer Vision</sub><br/><br/>
     <a href="https://github.com/Ayush-B99"><img src="https://img.shields.io/badge/-Ayush--B99-161A1D?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D"/></a>
     <a href="https://www.linkedin.com/in/ayush-beekum-6423862b4/"><img src="https://img.shields.io/badge/-LinkedIn-A4161A?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/></a>
   </td>
@@ -151,7 +151,7 @@
     <br/>
     <b>Shavir Vallabh</b><br/>
     <sub><code>u23718146</code></sub><br/>
-    <sub>AI. Optimization. HPC</sub><br/><br/>
+    <sub>Backend, Game Dev, HID integration</sub><br/><br/>
     <a href="https://github.com/ShavirV"><img src="https://img.shields.io/badge/-ShavirV-161A1D?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D"/></a>
     <a href="https://www.linkedin.com/in/shavir-vallabh-a0284026a/"><img src="https://img.shields.io/badge/-LinkedIn-A4161A?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/></a>
   </td>
@@ -162,7 +162,7 @@
     <br/>
     <b>Jaitin Moodally</b><br/>
     <sub><code>u23621372</code></sub><br/>
-    <sub>Systems. DevOps. Low level</sub><br/><br/>
+    <sub>Systems, DevOps, Low level</sub><br/><br/>
     <a href="https://github.com/Wave2055"><img src="https://img.shields.io/badge/-Wave2055-161A1D?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D"/></a>
     <a href="https://www.linkedin.com/in/jaitin-moodally/"><img src="https://img.shields.io/badge/-LinkedIn-A4161A?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/></a>
   </td>
@@ -173,7 +173,7 @@
     <br/>
     <b>Diya Narotam</b><br/>
     <sub><code>u23533596</code></sub><br/>
-    <sub>UI/UX. Frontend. Testing</sub><br/><br/>
+    <sub>UI/UX, Data Analysis, Game Dev</sub><br/><br/>
     <a href="https://github.com/deexglitch"><img src="https://img.shields.io/badge/-deexglitch-161A1D?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D"/></a>
     <a href="https://www.linkedin.com/in/diya-narotam-062222412/"><img src="https://img.shields.io/badge/-LinkedIn-A4161A?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/></a>
   </td>
@@ -184,9 +184,9 @@
     <br/>
     <b>Chinmayi Santhosh</b><br/>
     <sub><code>u24585671</code></sub><br/>
-    <sub>Frontend. Data analysis</sub><br/><br/>
+    <sub>Frontend, Testing, Training</sub><br/><br/>
     <a href="https://github.com/ChinmayiSanthosh"><img src="https://img.shields.io/badge/-ChinmayiSanthosh-161A1D?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <img src="https://img.shields.io/badge/-LinkedIn-B1A7A6?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/>
+    <a href="https://www.linkedin.com/in/chinmayi-santhosh-b53b09438"><img src="https://img.shields.io/badge/-LinkedIn-A4161A?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/></a>
   </td>
 </tr>
 </table>
@@ -194,7 +194,7 @@
 <br/>
 
 <details>
-<summary><b>Why each member is here. Click to expand individual profiles.</b></summary>
+<summary><b>Why each member is here, click to expand individual profiles.</b></summary>
 
 <br/>
 
