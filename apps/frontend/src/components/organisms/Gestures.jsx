@@ -16,6 +16,7 @@ import { useDebug } from "@/context/DebugContext"
 import { fetchCalibrationStatus } from "@/hooks/useCalibrationStream"
 import { useGestureCommandLog } from "@/hooks/useGestureCommandLog"
 import { useTelemetryAlerts } from "@/hooks/useTelemetryAlerts"
+import { useDroneConnection } from "@/context/DroneConnectionContext"
 
 const MS_TO_KMH = 3.6
 const MAX_HISTORY = 50
@@ -63,6 +64,16 @@ const GestureControl = () => {
 
   const { telemetry, status } = useTelemetry()
   const { sendCommand, status: commandStatus, lastResp } = useCommands()
+  const { debugMode } = useDebug()
+
+  const {
+    droneMode,
+    connectionStatus,
+    isConnecting,
+    connectionError,
+    handleModeChange,
+    handleDisconnect,
+  } = useDroneConnection()
 
   // one entry per gesture change, straight from gesture adapter
   const { entries: gestureCommands } = useGestureCommandLog()
@@ -107,10 +118,6 @@ const GestureControl = () => {
   //   signal: 71,
   // }
 
-  const [droneMode, setDroneMode] = useState("None")
-  const [isConnecting, setIsConnecting] = useState(false)
-  const [connectionStatus, setConnectionStatus] = useState("disconnected")
-  const [connectionError, setConnectionError] = useState("")
   const [eventAlerts, setEventAlerts] = useState([])
 
   //added this so emergency stop is persistant but other alerts are trigger based and persist for a time period
@@ -158,94 +165,6 @@ const GestureControl = () => {
     dismissTelemetryAlert(key)
   }
 
-  //auto connect to airsim when the component is mounted
-
-  const connectToDrone = async (adapterType) => {
-    setIsConnecting(true)
-    setConnectionError("")
-    try {
-      let requestBody = {
-        adapter: adapterType,
-        host: "127.0.0.1",
-      }
-
-      if (adapterType === "projectairsim") {
-        requestBody = {
-          ...requestBody,
-          vehicle_name: "Drone1",
-          topics_port: 8989,
-          services_port: 8990,
-        }
-      } else if (adapterType === "dummy") {
-        requestBody = {
-          ...requestBody,
-          vehicle_name: "Drone-1",
-        }
-      } else if (adapterType === "tello") {
-        requestBody = {
-          ...requestBody,
-          vehicle_name: "Tello-1",
-        }
-      }
-      //add xfly adapter later here
-
-      const response = await fetch("http://localhost:3001/api/drone/connect", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      })
-      const data = await response.json()
-      // setConnectionStatus(data.connected ? "connected" : "failed")
-      console.log("drone connection: ", data)
-
-      if (data.connected) {
-        setConnectionStatus("connected")
-        console.log(`connected to ${adapterType} adapter`)
-      } else {
-        setConnectionStatus("failed")
-        setConnectionError(data.message || "connection failed")
-        console.error("connection failed: ", data.message)
-      }
-    } catch (error) {
-      console.error("failed to connect to drone:", error)
-      setConnectionStatus("failed")
-    } finally {
-      setIsConnecting(false)
-    }
-  }
-
-  //handle mode changes
-  const handleModeChange = async (mode) => {
-    setDroneMode(mode)
-
-    //disconnec curr adapter
-    try {
-      await fetch("http://localhost:3001/api/drone/disconnect", {
-        method: "POST",
-      })
-      console.log("disconnected from current adapter")
-    } catch (error) {
-      console.warn("error disconnecting:", error)
-    }
-
-    if (mode === "DroneSim") {
-      await connectToDrone("projectairsim")
-    } else if (mode === "Manual" || mode === "Autonomous") {
-      await connectToDrone("dummy")
-    } else if (mode === "Tello" || mode === "Hardware") {
-      await connectToDrone("tello")
-    }
-  }
-  //add hardware mode when drone works
-
-  const hasConnected = useRef(false)
-
-  useEffect(() => {
-    if (hasConnected.current) return
-    hasConnected.current = true
-    //connectToDrone("dummy")
-  }, [])
-
   //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
   useEffect(() => {
     if (lastResp?.ok && lastResp.command) {
@@ -267,23 +186,6 @@ const GestureControl = () => {
       }
     }
   }, [lastResp, pushManualCommand, pushEventAlert])
-
-  const { debugMode } = useDebug()
-
-  const handleDisconnect = async () => {
-    try {
-      await fetch("http://localhost:3001/api/drone/disconnect", {
-        method: "POST",
-      })
-      console.log("disconnected from current adapter")
-    } catch (error) {
-      console.warn("error disconnecting:", error)
-    } finally {
-      setDroneMode("None")
-      setConnectionStatus("disconnected")
-      setConnectionError("")
-    }
-  }
 
   return (
     <div className="w-full min-w-0 max-w-[120rem] mx-auto space-y-4 xl:space-y-6">
