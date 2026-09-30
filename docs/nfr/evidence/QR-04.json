@@ -1,0 +1,19 @@
+{
+  "id": "QR-04",
+  "requirement": "NFR3.2",
+  "metric": "single-hand gestures resloving to command",
+  "actual": "3/3",
+  "target": "all mapped",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:16:52+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "mapped": {
+    "OPEN_PALM": "HOVER",
+    "ONE_FINGER": "MOVE_UP",
+    "TWO_FINGERS": "MOVE_DOWN"
+  }
+}

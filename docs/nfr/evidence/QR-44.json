@@ -1,0 +1,41 @@
+{
+  "id": "QR-44",
+  "requirement": "NFR5.1",
+  "metric": "KLM-predicted time from opening the app to completing the basic flight (s)",
+  "actual": 219.8,
+  "target": "<= 300.0",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:17:55+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "phases_s": {
+    "open app": 1.3,
+    "sign up": 35.5,
+    "log in": 17.9,
+    "tutorial": 104.9,
+    "calibration": 40.6,
+    "connect drone": 3.6,
+    "fly: take-off, hover, move, land": 15.9
+  },
+  "onboarding_before_takeoff_s": 203.9,
+  "with_x2_novice_allowance_s": 439.6,
+  "finding": "Feasible, but tight: 203.9 s of the 300 s budget goes on sign-up, log-in, the full tutorial and calibration before the first take-off. With a x2 allowance for a first-time user the estimate is 439.6 s, over the limit, so the real-participant timing (QR-45) is the deciding evidence. Shortening the path (skippable tutorial steps, calibration offered after the first flight) would add margin.",
+  "tutorial_steps": 12,
+  "tutorial_video_s": 55.6,
+  "calibration_gestures": 6,
+  "inputs": {
+    "login": "QR-38 measured",
+    "gesture onset": "QR-30 measured",
+    "cold start": "QR-41 measured"
+  },
+  "method": "Keystroke-Level Model (Card, Moran & Newell): K=0.28, P=1.10, B=0.10, H=0.40, M=1.35 s. Form fields, tutorial clip lengths, calibration sequence and window are read from the product itself; system response times come from this run. An error-free prediction: a feasibility check, confirmed or refuted by QR-45.",
+  "chart": {
+    "kind": "bars",
+    "column": "seconds",
+    "label": "phase",
+    "unit": "s"
+  }
+}

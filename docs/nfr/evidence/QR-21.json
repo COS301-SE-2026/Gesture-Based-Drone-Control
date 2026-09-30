@@ -1,0 +1,20 @@
+{
+  "id": "QR-21",
+  "requirement": "NFR6.1",
+  "metric": "InputAdapter adapters fully implementing the interface",
+  "actual": "4/4 loaded",
+  "target": "all loaded adapters complete",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:19:15+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "interface_methods": [
+    "handle_message",
+    "start"
+  ],
+  "incomplete": {},
+  "skipped_optional": {}
+}

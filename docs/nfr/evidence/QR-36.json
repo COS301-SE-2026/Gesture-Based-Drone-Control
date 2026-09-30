@@ -1,0 +1,31 @@
+{
+  "id": "QR-36",
+  "requirement": "NFR1.3",
+  "metric": "telemetry updates pushed per second during a recorded flight (Hz)",
+  "actual": 9.79,
+  "target": ">= 9.0 Hz, p95 gap <= 150.0 ms",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:16:43+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "gap_stats_ms": {
+    "n": 149,
+    "min": 100.076,
+    "mean": 102.142,
+    "p50": 101.585,
+    "p95": 105.68,
+    "p99": 106.637,
+    "max": 107.497
+  },
+  "messages": 150,
+  "method": "Dummy drone connected, TAKEOFF sent so a flight is being recorded (every 10th tick also writes a telemetry row to sqlite), then 150 consecutive telemetry messages timed on the client side. Design rate is 10 Hz.",
+  "chart": {
+    "kind": "histogram",
+    "column": "gap_ms",
+    "unit": "ms",
+    "threshold": 150.0
+  }
+}

@@ -1,0 +1,292 @@
+<svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Codex Merchants. Gesture Based Drone Control.">
+  <defs>
+    <!-- Palette: 0B090A, 161A1D, 660708, A4161A, BA181B, E5383B, B1A7A6, D3D3D3, F5F3F4, FFFFFF -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B090A"/>
+      <stop offset="1" stop-color="#161A1D"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E5383B">
+        <animate attributeName="stop-color" values="#E5383B;#A4161A;#BA181B;#E5383B" dur="6s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="0.5" stop-color="#F5F3F4">
+        <animate attributeName="stop-color" values="#F5F3F4;#D3D3D3;#FFFFFF;#F5F3F4" dur="6s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="1" stop-color="#A4161A">
+        <animate attributeName="stop-color" values="#A4161A;#660708;#BA181B;#A4161A" dur="6s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#E5383B" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#E5383B" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="scanline" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#A4161A" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#E5383B" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#A4161A" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="360" fill="url(#bg)"/>
+
+  <!-- Grid -->
+  <g stroke="#B1A7A6" stroke-opacity="0.06" stroke-width="0.5">
+    <path d="M0 80 H1200 M0 160 H1200 M0 240 H1200 M0 320 H1200"/>
+    <path d="M120 0 V360 M280 0 V360 M440 0 V360 M600 0 V360 M760 0 V360 M920 0 V360 M1080 0 V360"/>
+  </g>
+
+  <!-- Ambient particles -->
+  <g fill="#E5383B">
+    <circle cx="80" cy="60" r="1.4" opacity="0.6">
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="220" cy="290" r="1.0" opacity="0.5">
+      <animate attributeName="opacity" values="0.1;0.6;0.1" dur="4s" begin="0.4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="640" cy="40" r="1.2" opacity="0.6">
+      <animate attributeName="opacity" values="0.2;0.7;0.2" dur="3.4s" begin="0.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1040" cy="300" r="1.6" opacity="0.55">
+      <animate attributeName="opacity" values="0.2;0.7;0.2" dur="2.8s" begin="1.2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="940" cy="70" r="1" opacity="0.5">
+      <animate attributeName="opacity" values="0.1;0.6;0.1" dur="3.6s" begin="1.6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="380" cy="50" r="1.2" opacity="0.6">
+      <animate attributeName="opacity" values="0.2;0.7;0.2" dur="3.2s" begin="0.2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Horizontal scan line -->
+  <rect x="0" y="160" width="1200" height="1.2" fill="url(#scanline)" opacity="0.7">
+    <animate attributeName="y" values="20;340;20" dur="9s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Status pill: LIVE -->
+  <g transform="translate(40,30)">
+    <rect x="0" y="0" width="170" height="26" rx="13" fill="#161A1D" stroke="#A4161A" stroke-opacity="0.8"/>
+    <circle cx="14" cy="13" r="4" fill="#E5383B">
+      <animate attributeName="opacity" values="1;0.3;1" dur="1.4s" repeatCount="indefinite"/>
+    </circle>
+    <text x="26" y="17" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#F5F3F4" letter-spacing="2">LIVE  ·  COS 301  ·  2026</text>
+  </g>
+
+  <!-- Top-right corner label -->
+  <g transform="translate(1010,30)" font-family="ui-monospace, monospace" font-size="10" fill="#B1A7A6" letter-spacing="2">
+    <text x="0" y="17">[ EPI-USE  ·  CAPSTONE ]</text>
+  </g>
+
+  <!-- Left side: hand with landmark tracking (MediaPipe style) -->
+  <g transform="translate(110,90)">
+    <!-- Glow behind hand -->
+    <circle cx="60" cy="80" r="80" fill="url(#glow)" opacity="0.5"/>
+
+    <!-- Palm + finger skeleton lines -->
+    <g stroke="#A4161A" stroke-width="1.4" fill="none" opacity="0.85">
+      <!-- Wrist to palm center -->
+      <path d="M60 150 L60 100"/>
+      <!-- Thumb -->
+      <path d="M60 100 L30 90 L18 70"/>
+      <!-- Index -->
+      <path d="M60 100 L45 70 L40 40 L38 18"/>
+      <!-- Middle -->
+      <path d="M60 100 L60 65 L60 30 L60 8"/>
+      <!-- Ring -->
+      <path d="M60 100 L75 70 L78 38 L80 18"/>
+      <!-- Pinky -->
+      <path d="M60 100 L88 88 L96 62 L100 44"/>
+    </g>
+
+    <!-- Landmark dots -->
+    <g fill="#E5383B">
+      <circle cx="60" cy="150" r="3.2"/>
+      <circle cx="60" cy="100" r="3"/>
+      <circle cx="30" cy="90" r="2.8"/>
+      <circle cx="18" cy="70" r="2.8"/>
+      <circle cx="45" cy="70" r="2.8"/>
+      <circle cx="40" cy="40" r="2.8"/>
+      <circle cx="38" cy="18" r="2.8"/>
+      <circle cx="60" cy="65" r="2.8"/>
+      <circle cx="60" cy="30" r="2.8"/>
+      <circle cx="60" cy="8" r="3.2">
+        <animate attributeName="r" values="3.2;5;3.2" dur="1.8s" repeatCount="indefinite"/>
+        <animate attributeName="fill" values="#E5383B;#F5F3F4;#E5383B" dur="1.8s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="75" cy="70" r="2.8"/>
+      <circle cx="78" cy="38" r="2.8"/>
+      <circle cx="80" cy="18" r="2.8"/>
+      <circle cx="88" cy="88" r="2.8"/>
+      <circle cx="96" cy="62" r="2.8"/>
+      <circle cx="100" cy="44" r="2.8"/>
+    </g>
+
+    <!-- Tracking label -->
+    <g transform="translate(-30,180)">
+      <rect x="0" y="0" width="160" height="20" rx="10" fill="#161A1D" stroke="#A4161A" stroke-opacity="0.7"/>
+      <circle cx="11" cy="10" r="3" fill="#E5383B">
+        <animate attributeName="opacity" values="1;0.3;1" dur="1.4s" repeatCount="indefinite"/>
+      </circle>
+      <text x="20" y="13" font-family="ui-monospace, monospace" font-size="9" fill="#D3D3D3" letter-spacing="1.5">TRACKING  ·  21 landmarks</text>
+    </g>
+  </g>
+
+  <!-- Dashed signal beam: hand to computer -->
+  <path d="M240 170 Q360 150 480 160" stroke="#A4161A" stroke-width="1.4" stroke-dasharray="3 5" fill="none" opacity="0.7">
+    <animate attributeName="stroke-dashoffset" values="0;-30" dur="1.2s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- Center: Computer monitor with code -->
+  <g transform="translate(460,80)">
+    <!-- Monitor body -->
+    <rect x="0" y="0" width="240" height="150" rx="6" fill="#161A1D" stroke="#A4161A" stroke-width="1.8"/>
+    <!-- Inner screen -->
+    <rect x="8" y="8" width="224" height="134" rx="3" fill="#0B090A" stroke="#660708" stroke-width="0.5"/>
+    <!-- Monitor stand -->
+    <rect x="105" y="150" width="30" height="14" fill="#161A1D" stroke="#A4161A" stroke-width="1.4"/>
+    <rect x="80" y="164" width="80" height="6" rx="2" fill="#161A1D" stroke="#A4161A" stroke-width="1.4"/>
+
+    <!-- Code lines -->
+    <g font-family="ui-monospace, monospace" font-size="9">
+      <!-- Line 1: function def -->
+      <text x="18" y="28" fill="#BA181B">def</text>
+      <text x="38" y="28" fill="#F5F3F4"> detect_gesture(</text>
+      <text x="115" y="28" fill="#E5383B">frame</text>
+      <text x="142" y="28" fill="#F5F3F4">):</text>
+
+      <!-- Line 2: assignment -->
+      <text x="26" y="46" fill="#B1A7A6">landmarks</text>
+      <text x="72" y="46" fill="#F5F3F4"> = </text>
+      <text x="88" y="46" fill="#BA181B">mp</text>
+      <text x="100" y="46" fill="#F5F3F4">.hands(frame)</text>
+
+      <!-- Line 3: if -->
+      <text x="26" y="64" fill="#BA181B">if</text>
+      <text x="40" y="64" fill="#F5F3F4"> landmarks:</text>
+
+      <!-- Line 4: return -->
+      <text x="34" y="82" fill="#BA181B">return</text>
+      <text x="68" y="82" fill="#F5F3F4"> classify(landmarks)</text>
+
+      <!-- Line 5: typing line (animated) -->
+      <text x="18" y="100" fill="#D3D3D3"># dispatching command</text>
+      <rect x="138" y="92" width="1.5" height="10" fill="#E5383B">
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.45;0.55;1" dur="1s" repeatCount="indefinite"/>
+      </rect>
+
+      <!-- Line 6: subtle log line shimmer -->
+      <text x="18" y="118" fill="#660708">› drone.send(cmd)</text>
+    </g>
+
+    <!-- Screen highlight scan -->
+    <rect x="8" y="8" width="224" height="2" fill="#E5383B" opacity="0.35">
+      <animate attributeName="y" values="8;140;8" dur="3s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- Dashed signal beam: computer to drone -->
+  <path d="M720 170 Q830 145 970 160" stroke="#E5383B" stroke-width="1.4" stroke-dasharray="3 5" fill="none" opacity="0.8">
+    <animate attributeName="stroke-dashoffset" values="0;-30" dur="1.2s" begin="0.6s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- Drone on the right -->
+  <g transform="translate(1000,150)">
+    <!-- Hover ring glow -->
+    <circle cx="0" cy="0" r="60" fill="url(#glow)" opacity="0.55">
+      <animate attributeName="r" values="60;72;60" dur="2.6s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Ring -->
+    <circle cx="0" cy="0" r="48" fill="none" stroke="#A4161A" stroke-width="1" stroke-dasharray="4 4" opacity="0.55">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="20s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Whole drone bob -->
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 0; 0 -6; 0 0" dur="2.6s" repeatCount="indefinite"/>
+      <!-- Arms -->
+      <line x1="-32" y1="-22" x2="32" y2="22" stroke="#A4161A" stroke-width="3" stroke-linecap="round"/>
+      <line x1="-32" y1="22" x2="32" y2="-22" stroke="#A4161A" stroke-width="3" stroke-linecap="round"/>
+      <!-- Central body -->
+      <rect x="-14" y="-9" width="28" height="18" rx="3" fill="#161A1D" stroke="#E5383B" stroke-width="1.4"/>
+      <!-- Camera dot -->
+      <circle cx="0" cy="0" r="3.4" fill="#E5383B">
+        <animate attributeName="fill" values="#E5383B;#F5F3F4;#E5383B" dur="1.4s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- Propellers (spinning ellipses) -->
+      <g transform="translate(-32,-22)">
+        <ellipse cx="0" cy="0" rx="12" ry="2.2" fill="#B1A7A6" opacity="0.85">
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.18s" repeatCount="indefinite"/>
+        </ellipse>
+      </g>
+      <g transform="translate(32,-22)">
+        <ellipse cx="0" cy="0" rx="12" ry="2.2" fill="#B1A7A6" opacity="0.85">
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.18s" begin="0.05s" repeatCount="indefinite"/>
+        </ellipse>
+      </g>
+      <g transform="translate(-32,22)">
+        <ellipse cx="0" cy="0" rx="12" ry="2.2" fill="#B1A7A6" opacity="0.85">
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.18s" begin="0.1s" repeatCount="indefinite"/>
+        </ellipse>
+      </g>
+      <g transform="translate(32,22)">
+        <ellipse cx="0" cy="0" rx="12" ry="2.2" fill="#B1A7A6" opacity="0.85">
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.18s" begin="0.15s" repeatCount="indefinite"/>
+        </ellipse>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bird (Codex Merchants logo style): off-screen left, flies in -->
+  <g transform="translate(-200,80)">
+    <animateTransform attributeName="transform" type="translate" values="-200 80; 320 120; 320 120" keyTimes="0;0.4;1" dur="4s" begin="0s" fill="freeze"/>
+
+    <!-- Wing flap -->
+    <g>
+      <!-- Body -->
+      <ellipse cx="0" cy="0" rx="24" ry="20" fill="#161A1D" stroke="#F5F3F4" stroke-width="1.4"/>
+      <!-- Chest wave pattern (matching logo) -->
+      <path d="M-14 6 Q-9 1 -4 6 T6 6 T14 6" stroke="#F5F3F4" stroke-width="1.2" fill="none"/>
+      <path d="M-14 12 Q-9 7 -4 12 T6 12 T14 12" stroke="#F5F3F4" stroke-width="1.2" fill="none"/>
+      <!-- Head -->
+      <circle cx="14" cy="-12" r="13" fill="#161A1D" stroke="#F5F3F4" stroke-width="1.4"/>
+      <!-- Eye -->
+      <circle cx="18" cy="-14" r="2.4" fill="#F5F3F4"/>
+      <circle cx="19" cy="-14" r="1.1" fill="#0B090A"/>
+      <!-- Beak -->
+      <polygon points="26,-12 36,-10 26,-8" fill="#E5383B" stroke="#A4161A" stroke-width="0.6"/>
+      <!-- Headphones band -->
+      <path d="M2 -22 Q14 -32 26 -22" stroke="#A4161A" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <!-- Headphone earcup -->
+      <ellipse cx="2" cy="-18" rx="4" ry="5" fill="#A4161A" stroke="#F5F3F4" stroke-width="0.8"/>
+      <ellipse cx="26" cy="-18" rx="4" ry="5" fill="#A4161A" stroke="#F5F3F4" stroke-width="0.8"/>
+      <!-- Headphone signal indicator -->
+      <circle cx="2" cy="-18" r="1.4" fill="#E5383B">
+        <animate attributeName="opacity" values="1;0.3;1" dur="1.4s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- Wing (flapping) -->
+      <g transform="translate(-6,-2)">
+        <path d="M0 0 Q-18 -8 -22 6 Q-12 4 0 6 Z" fill="#161A1D" stroke="#F5F3F4" stroke-width="1.2">
+          <animateTransform attributeName="transform" type="rotate" values="0;-22;0" dur="0.7s" repeatCount="indefinite" additive="sum"/>
+        </path>
+      </g>
+
+      <!-- Tail feet -->
+      <path d="M-22 14 L-26 18 M-18 16 L-18 22 M-14 14 L-10 20" stroke="#E5383B" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Title -->
+  <g transform="translate(600,295)" text-anchor="middle">
+    <text font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-weight="800" font-size="38" fill="url(#title)" letter-spacing="8">CODEX MERCHANTS</text>
+    <text y="26" font-family="ui-monospace, monospace" font-size="11" fill="#B1A7A6" letter-spacing="6">GESTURE  ·  BASED  ·  DRONE  ·  CONTROL</text>
+  </g>
+
+  <!-- Edge accent bars -->
+  <rect x="0" y="0" width="3" height="360" fill="#A4161A" opacity="0.7"/>
+  <rect x="1197" y="0" width="3" height="360" fill="#A4161A" opacity="0.7"/>
+</svg>

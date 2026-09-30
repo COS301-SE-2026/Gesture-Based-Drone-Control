@@ -1,0 +1,24 @@
+{
+  "id": "QR-33",
+  "requirement": "NFR1.2",
+  "metric": "frames dropped by the bounded queue at 30 fps (%)",
+  "actual": 0.0,
+  "target": "<= 1.0",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:17:33+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "captured": 900,
+  "processed": 900,
+  "effective_fps": 30.0,
+  "method": "Frames the camera delivered vs frames the consumer processed in the window. The queue drops the oldest frame when the consumer falls behind (QR-18), so any shortfall here is lost frames.",
+  "chart": {
+    "kind": "series",
+    "column": "processed_fps",
+    "unit": "fps",
+    "threshold": 30
+  }
+}

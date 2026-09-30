@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 8" width="1000" height="8" preserveAspectRatio="none" role="img" aria-label="divider">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#A4161A" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#E5383B" stop-opacity="1"/>
+      <stop offset="1" stop-color="#A4161A" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="b" x="-5%" y="-200%" width="110%" height="500%">
+      <feGaussianBlur stdDeviation="1.2"/>
+    </filter>
+  </defs>
+  <!-- Soft glow halo -->
+  <rect x="0" y="2" width="1000" height="4" fill="url(#g)" filter="url(#b)" opacity="0.7">
+    <animate attributeName="opacity" values="0.35;0.9;0.35" dur="2.4s" repeatCount="indefinite"/>
+  </rect>
+  <!-- Crisp center line -->
+  <rect x="0" y="3.4" width="1000" height="1.2" fill="url(#g)">
+    <animate attributeName="opacity" values="0.8;1;0.8" dur="2.4s" repeatCount="indefinite"/>
+  </rect>
+  <!-- Travelling highlight -->
+  <circle cx="0" cy="4" r="3" fill="#E5383B" opacity="0.85">
+    <animate attributeName="cx" values="-20;1020" dur="3.6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0.9;0.9;0" keyTimes="0;0.1;0.9;1" dur="3.6s" repeatCount="indefinite"/>
+  </circle>
+</svg>

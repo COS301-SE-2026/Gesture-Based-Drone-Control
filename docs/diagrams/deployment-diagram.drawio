@@ -1,0 +1,157 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="BU1eVCX0WrTi6IeloPR9">
+    <mxGraphModel dx="1414" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-23" edge="1" parent="1" source="9iBUf0S6N1NR1-g8xW8L-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="9iBUf0S6N1NR1-g8xW8L-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="510" width="720" x="40" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-2" parent="1" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;" value="&lt;div&gt;&amp;lt;&amp;lt;device&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;Github Ci runner&amp;nbsp;&lt;/div&gt;&lt;div&gt;Ubuntu Latest&lt;/div&gt;" vertex="1">
+          <mxGeometry height="420" width="280" x="80" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-3" parent="1" style="html=1;align=center;verticalAlign=middle;dashed=0;whiteSpace=wrap;" value="&amp;lt;&amp;lt;artifact&amp;gt;&amp;gt;&lt;br&gt;&lt;br&gt;&lt;div&gt;&lt;b&gt;source-code.git&lt;/b&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="140" x="145" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-4" parent="1" style="html=1;align=center;verticalAlign=middle;dashed=0;whiteSpace=wrap;" value="&amp;lt;&amp;lt;artifact&amp;gt;&amp;gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;GestureBasedDroneControl.AppImage&lt;/b&gt;" vertex="1">
+          <mxGeometry height="80" width="230" x="100" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-5" parent="1" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;" value="&lt;div&gt;&amp;lt;&amp;lt;device&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;Github Ci runner&amp;nbsp;&lt;/div&gt;&lt;div&gt;Windows Latest&lt;/div&gt;" vertex="1">
+          <mxGeometry height="420" width="280" x="390" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-6" parent="1" style="html=1;align=center;verticalAlign=middle;dashed=0;whiteSpace=wrap;" value="&amp;lt;&amp;lt;artifact&amp;gt;&amp;gt;&lt;br&gt;&lt;br&gt;&lt;div&gt;&lt;b&gt;source-code.git&lt;/b&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="140" x="450" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-7" parent="1" style="html=1;align=center;verticalAlign=middle;dashed=0;whiteSpace=wrap;" value="&amp;lt;&amp;lt;artifact&amp;gt;&amp;gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;GestureBasedDroneControl.exe&lt;/b&gt;" vertex="1">
+          <mxGeometry height="80" width="230" x="410" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;Build Environment CI/CD&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="150" x="40" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-9" edge="1" parent="1" source="9iBUf0S6N1NR1-g8xW8L-3" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="9iBUf0S6N1NR1-g8xW8L-4" value="">
+          <mxGeometry height="60" relative="1" width="60" as="geometry">
+            <mxPoint x="230" y="380" as="sourcePoint" />
+            <mxPoint x="290" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-10" edge="1" parent="1" style="html=1;labelBackgroundColor=#ffffff;startArrow=none;startFill=0;startSize=6;endArrow=classic;endFill=1;endSize=6;jettySize=auto;orthogonalLoop=1;strokeWidth=1;dashed=1;fontSize=14;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry height="60" relative="1" width="60" as="geometry">
+            <mxPoint x="524.5" y="320" as="sourcePoint" />
+            <mxPoint x="524.5" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-11" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="task build" vertex="1">
+          <mxGeometry height="30" width="60" x="216" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-12" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="task build" vertex="1">
+          <mxGeometry height="30" width="60" x="530" y="345" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="410" width="720" x="40" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-15" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;Distribution Platform&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="130" x="50" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-16" parent="1" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;" value="&lt;div&gt;&amp;lt;&amp;lt;device&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;Github Releases&lt;/div&gt;" vertex="1">
+          <mxGeometry height="280" width="290" x="60" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-17" parent="1" style="html=1;whiteSpace=wrap;" value="&lt;div&gt;&amp;lt;&amp;lt;artifact&amp;gt;&amp;gt;&amp;nbsp;&lt;/div&gt;&lt;div&gt;GestureBasedDroneControl.exe&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="220" x="80" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-18" parent="1" style="html=1;whiteSpace=wrap;" value="&lt;div&gt;&amp;lt;&amp;lt;artifact&amp;gt;&amp;gt;&amp;nbsp;&lt;/div&gt;&lt;div&gt;GestureBasedDroneControl.AppImage&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="220" x="80" y="950" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-19" parent="1" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;" value="Block" vertex="1">
+          <mxGeometry height="290" width="300" x="420" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-20" parent="1" style="html=1;whiteSpace=wrap;" value="&lt;div&gt;&amp;lt;&amp;lt;artifact&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;Landing page&lt;/div&gt;&lt;div&gt;/docs (MKdocs)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="240" x="450" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-21" edge="1" parent="1" source="9iBUf0S6N1NR1-g8xW8L-20" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="9iBUf0S6N1NR1-g8xW8L-17" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="905" />
+            </Array>
+            <mxPoint x="370" y="930" as="sourcePoint" />
+            <mxPoint x="420" y="880" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-22" edge="1" parent="1" source="9iBUf0S6N1NR1-g8xW8L-20" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="9iBUf0S6N1NR1-g8xW8L-18" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="350" y="980" as="sourcePoint" />
+            <mxPoint x="400" y="930" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-24" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="930" width="720" x="40" y="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-25" parent="1" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;" value=" " vertex="1">
+          <mxGeometry height="590" width="660" x="70" y="1260" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-26" parent="1" style="html=1;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="230" width="556" x="132" y="1320" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-27" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&amp;lt;&amp;lt;artifact&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;GestureBasedDroneControl.exe&lt;/div&gt;&lt;div&gt;or&lt;/div&gt;&lt;div&gt;GestureBasedDroneControl.AppImage&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="299.75" x="132" y="1320" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-28" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;execution-environment&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;Pyinstaller backend&lt;/div&gt;" vertex="1">
+          <mxGeometry height="85" width="240" x="412.12" y="1330" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-30" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;execution-environment&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;chromium render frontend&lt;/div&gt;" vertex="1">
+          <mxGeometry height="85" width="240" x="412.12" y="1445" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-31" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;artifact&amp;gt;&amp;gt; .secret&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="129.88" y="1605" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-32" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;artifact&amp;gt;&amp;gt; app.db&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="276" y="1605" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-33" edge="1" parent="1" source="9iBUf0S6N1NR1-g8xW8L-26" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="9iBUf0S6N1NR1-g8xW8L-31" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="200" y="1600" as="sourcePoint" />
+            <mxPoint x="250" y="1550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-34" edge="1" parent="1" source="9iBUf0S6N1NR1-g8xW8L-26" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="9iBUf0S6N1NR1-g8xW8L-32" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="330" y="1590" as="sourcePoint" />
+            <mxPoint x="380" y="1540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-35" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&amp;lt;&amp;lt;optional&amp;gt;&amp;gt; Project Airsim Instance" vertex="1">
+          <mxGeometry height="60" width="560" x="132" y="1760" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-37" edge="1" parent="1" source="9iBUf0S6N1NR1-g8xW8L-26" style="endArrow=classic;html=1;rounded=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" target="9iBUf0S6N1NR1-g8xW8L-35" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="540" y="1660" as="sourcePoint" />
+            <mxPoint x="590" y="1610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-38" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&amp;lt;&amp;lt;device&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;User Personal Computer&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="150" x="70" y="1270" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-39" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&amp;lt;&amp;lt;package&amp;gt;&amp;gt; End user Environment" vertex="1">
+          <mxGeometry height="30" width="240" x="40" y="1210" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-40" parent="1" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;" value="&amp;lt;&amp;lt;device&amp;gt;&amp;gt; Wifi Drone" vertex="1">
+          <mxGeometry height="100" width="170" x="310" y="1930" as="geometry" />
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-41" edge="1" parent="1" source="9iBUf0S6N1NR1-g8xW8L-25" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0;exitDx=590;exitDy=335;exitPerimeter=0;entryX=0;entryY=0;entryDx=0;entryDy=80;entryPerimeter=0;" target="9iBUf0S6N1NR1-g8xW8L-40" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="450" y="1930" as="sourcePoint" />
+            <mxPoint x="500" y="1880" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9iBUf0S6N1NR1-g8xW8L-42" edge="1" parent="1" source="9iBUf0S6N1NR1-g8xW8L-14" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="9iBUf0S6N1NR1-g8xW8L-24" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="460" y="1190" as="sourcePoint" />
+            <mxPoint x="510" y="1140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
