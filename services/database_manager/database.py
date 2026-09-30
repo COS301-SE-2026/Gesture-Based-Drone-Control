@@ -1,5 +1,7 @@
 from collections.abc import AsyncGenerator
+from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL, event
 from sqlalchemy.ext.asyncio import (
@@ -15,6 +17,17 @@ class Settings(BaseSettings):
 	sqlite_db_path: str = 'app.db'
 
 	model_config = SettingsConfigDict(env_file='.env', extra='ignore')
+
+	@field_validator('sqlite_db_path')
+	@classmethod
+	def _ensure_parent_dir(cls, value: str) -> str:
+		if value == ':memory:':
+			return value
+
+		path = Path(value).expanduser()
+		path.parent.mkdir(parents=True, exist_ok=True)
+
+		return str(path)
 
 	@property
 	def database_url(self) -> URL:

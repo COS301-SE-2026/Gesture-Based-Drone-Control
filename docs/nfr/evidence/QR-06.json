@@ -5,6 +5,10 @@
   "actual": 0.85,
   "target": ">= 0.85",
   "pass": true,
-  "recorded_at": "2026-09-03T20:40:02+00:00",
-  "machine": "Darwin arm64, 8 cores"
+  "recorded_at": "2026-09-29T22:16:52+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local"
 }

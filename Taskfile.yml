@@ -37,10 +37,13 @@ tasks:
 
   build:
     desc: Builds and packages app into a single executable
+    deps:
+      - sim-stage
     cmds:
       - | 
-          uv run pyinstaller --onefile --name backend \
+          uv run pyinstaller --onefile --name GestureBasedDroneControl-Backend \
           --paths . \
+          --icon packaging/app-icon.ico \
           --collect-all mediapipe \
           --collect-all airsim \
           --collect-all projectairsim \
@@ -65,6 +68,9 @@ tasks:
           --hidden-import uvicorn.protocols.websockets.auto \
           --hidden-import uvicorn.lifespan.on \
           --hidden-import aiosqlite \
+          --hidden-import win32api \
+          --hidden-import win32con \
+          --hidden-import win32job \
           apps/backend/app/main.py
     
       - cd apps/frontend && yarn electron-build
@@ -73,7 +79,7 @@ tasks:
   clean:
     desc: removes all folders related to packaged executable
     cmds: 
-      - rm -r release dist apps/frontend/dist
+      - rm -r release dist apps/frontend/dist build
 
   test:
     desc: Runs Unit Tests, Integration and End to End tests
@@ -102,7 +108,8 @@ tasks:
   integration-test:
     desc: Runs Integration Tests
     cmds:
-      - uv run pytest tests --cov --cov-report=term-missing
+      # tests/nfr has its own job (task nfr-test); its timing runs must not run twice
+      - uv run pytest tests --ignore=tests/nfr --cov --cov-report=term-missing
 
   contracts:
     desc: Validates API service contracts
@@ -116,9 +123,38 @@ tasks:
       - yarn e2e-test
 
   nfr-test:
-    desc: Runs NFR tests and regenerates docs/nfr/Matrix.md
+    desc: Runs every NFR test (backend + frontend) and regenerates docs/nfr (matrix + evidence page)
     cmds:
-      - cmd: uv run pytest tests/nfr -q
+      - defer: uv run python tests/nfr/report.py
+      - task: nfr-backend
+      - task: nfr-frontend
+
+  nfr-backend:
+    desc: Backend NFR tests (performance, usability, security, reliability) - pytest
+    cmds:
+      - uv run pytest tests/nfr -q -m "not slow"
+
+  nfr-frontend:
+    desc: Frontend NFR tests (render rate, page load, accessibility, layout) - Playwright
+    dir: "{{.FRONTEND_DIR}}"
+    cmds:
+      - yarn nfr-test
+
+  nfr-lighthouse:
+    desc: Lighthouse audit of the production build (needs a preview server on 4173)
+    cmds:
+      - ./tests/nfr/lighthouse/run-lighthouse.sh
+
+  nfr-jmeter:
+    desc: JMeter REST load test (needs the backend on 3001)
+    cmds:
+      - rm -rf docs/nfr/evidence/jmeter/report docs/nfr/evidence/jmeter/results.jtl
+      - mkdir -p docs/nfr/evidence/jmeter
+      - jmeter -n -t tests/nfr/jmeter/gbdc-rest-load.jmx -l docs/nfr/evidence/jmeter/results.jtl -e -o docs/nfr/evidence/jmeter/report
+
+  nfr-report:
+    desc: Rebuilds docs/nfr/MATRIX.md and docs/nfr/EVIDENCE.md from the evidence already recorded
+    cmds:
       - uv run python tests/nfr/report.py
 
   lint:
@@ -177,6 +213,11 @@ tasks:
     cmds:
       - uv run python -m services.cv_pipeline.processing.pipeline
 
+  cv-motion:
+    desc: camera and detector and motion recognizer
+    cmds: 
+      - uv run python -m services.cv_pipeline.gestures.recognizers.motion_based
+
   landing:
     desc: Runs the landing page (seperate port from frontend)
     dir: landing_page
@@ -220,3 +261,42 @@ tasks:
           curl -LsSf https://astral.sh/uv/install.sh | sh
           npm install -g yarn
         platforms: [linux]
+
+  sim-stage:
+    desc: Stage sim + signalling server into the build
+    vars: 
+      PROJ: Blocks
+    requires:
+      vars: [SIM_SRC]
+    cmds:
+      - cmd: | 
+          set -e 
+          rm -rf build/sim build/signalling
+          mkdir -p build/sim
+
+          if [ -d "{{.SIM_SRC}}" ]; then
+            cp -a "{{.SIM_SRC}}/." build/sim/
+          else
+            unzip -q "{{.SIM_SRC}}" -d build/sim
+          fi
+          [ -d "build/sim/{{.PROJ}}" ] || { echo "no {{.PROJ}}/ at the root of {{.SIM_SRC}}"; exit 1; }
+
+          WS="build/sim/{{.PROJ}}/Samples/PixelStreaming/WebServers"
+          [ -d "$WS/SignallingWebServer" ] || (cd "$WS" && ./get_ps_servers.sh)
+          (cd "$WS/SignallingWebServer" && npm install --omit=dev)
+
+          mv "$WS/SignallingWebServer" build/signalling
+          test -f build/signalling/Public/player.html || { echo "player.html missing"; exit 1; }
+
+          rm -rf "build/sim/{{.PROJ}}/Samples"
+          find build/sim -name 'libonnxruntime_providers_cuda.so' -delete
+          find build/sim -name 'libonnxruntime_providers_tensorrt.so' -delete
+          find build/sim -name '*.pdb' -delete
+
+          BIN="build/sim/{{.PROJ}}/Binaries/Linux/{{.PROJ}}-Linux-Shipping"
+          chmod +x "$BIN"
+          test -x "$BIN" || { echo "not executable: $BIN"; exit 1; }
+          echo "staged: build/sim + build/signalling"
+        platforms: [linux, darwin]
+      - cmd: powershell -NoProfile -ExecutionPolicy Bypass -File packaging/sim-stage.ps1 -SimSrc "{{.SIM_SRC}}" -Proj "{{.PROJ}}"
+        platforms: [windows]

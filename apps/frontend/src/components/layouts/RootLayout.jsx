@@ -8,6 +8,7 @@ import {
   HelpSideContent,
   SettingsSideContent,
   GamesSideContent,
+  LicenseSideContent,
 } from "../molecules"
 import {
   Home,
@@ -16,6 +17,7 @@ import {
   Settings,
   HelpCircle,
   Gamepad,
+  Award,
 } from "lucide-react"
 // import bgLight from "../../assets/Lightbackground.png"
 // import bgDark from "../../assets/darkbackground.png"
@@ -40,6 +42,7 @@ const RootLayout = () => {
     },
     { id: "gps", label: "GPS", icon: MapPin, path: "/app/gps" },
     { id: "games", label: "Games", icon: Gamepad, path: "/app/games" },
+    { id: "license", label: "RPL", icon: Award, path: "/app/license" },
     {
       id: "settings",
       label: "Settings",
@@ -65,6 +68,8 @@ const RootLayout = () => {
       return <SettingsSideContent />
     } else if (location.pathname.includes("/games")) {
       return <GamesSideContent />
+    } else if (location.pathname.includes("/license")) {
+      return <LicenseSideContent />
     }
   }
 
@@ -93,7 +98,7 @@ const RootLayout = () => {
 
       <SideBar items={menuItems} topContent={getTopContent()} />
 
-      <main className="flex-1 overflow-y-auto p-6">
+      <main className="flex-1 min-w-0 overflow-y-auto p-4 xl:p-6">
         <Outlet />
       </main>
       <TourController key={tourKey} />

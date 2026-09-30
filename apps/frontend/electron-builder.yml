@@ -1,5 +1,5 @@
 appId: com.codexmerchants.gesturebaseddronecontrol
-productName: GestureBasedDroneControl 
+productName: GestureBasedDroneControl
 
 directories: 
   output: ../../release
@@ -10,11 +10,29 @@ files :
 asarUnpack:
   - "dist/assets/*.mp4"
 
-extraResources:
-  - from: "../../dist"
-    to: "backend"
-
 win:
   target: portable
+  icon: ../../packaging/app-icon.ico
+  extraResources:
+  - from: "../../dist/GestureBasedDroneControl-Backend.exe"
+    to: "backend/GestureBasedDroneControl-Backend.exe"
+  - from: "../../build/sim"
+    to: "sim"
+  - from: "../../build/signalling"
+    to: "signalling"
+  - from: "../../build/signalling/node_modules"
+    to: "signalling/node_modules"
 linux:
   target: AppImage
+  icon: ../../packaging/app-icon.png
+  category: Utility
+  executableName: gesture-based-drone-control
+  extraResources:
+  - from: "../../dist/GestureBasedDroneControl-Backend"
+    to: "backend/GestureBasedDroneControl-Backend"
+  - from: "../../build/sim"
+    to: "sim"
+  - from: "../../build/signalling"
+    to: "signalling"
+  - from: "../../build/signalling/node_modules"
+    to: "signalling/node_modules"

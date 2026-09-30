@@ -13,6 +13,8 @@ const __dirname = path.dirname(__filename)
 // so a clean shutdown wins the race and cv2 gets to release the webcam properly
 const BACKEND_KILL_DEADLINE_MS = 6000
 
+app.commandLine.appendSwitch("disable-features", "WebRtcHideLocalIpsWithMdns")
+
 let backendProcess
 let backendExited = false
 let mainWindow
@@ -26,16 +28,37 @@ function getOrCreateSecret() {
   return secret
 }
 
+function getDbPath() {
+  return path.join(app.getPath("userData"), "app.db")
+}
+
 function startBackend() {
-  const backendName = process.platform === "win32" ? "backend.exe" : "backend"
+  const backendName =
+    process.platform === "win32"
+      ? "GestureBasedDroneControl-Backend.exe"
+      : "GestureBasedDroneControl-Backend"
+
   const backendPath = app.isPackaged
     ? path.join(process.resourcesPath, "backend", backendName)
     : path.join(__dirname, "../../../dist", backendName)
 
+  const simEnv = app.isPackaged
+    ? {
+        PAS_PATH: path.join(process.resourcesPath, "sim"),
+        PAS_SIGNALLING_DIR: path.join(process.resourcesPath, "signalling"),
+        PAS_NODE: process.execPath,
+      }
+    : {}
+
   backendProcess = spawn(backendPath, [], {
     detached: process.platform !== "win32",
     stdio: ["pipe", "inherit", "inherit"],
-    env: { ...process.env, JWT_SECRET_KEY: getOrCreateSecret() },
+    env: {
+      ...process.env,
+      JWT_SECRET_KEY: getOrCreateSecret(),
+      SQLITE_DB_PATH: getDbPath(),
+      ...simEnv,
+    },
   })
 
   backendExited = false
@@ -75,8 +98,9 @@ function signalBackend(signal) {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
+    width: 1920,
+    height: 1080,
+    title: "GestureBasedDroneControl",
     webPreferences: { contextIsolation: true },
   })
 

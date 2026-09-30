@@ -1,4 +1,8 @@
-import { RecognizerToggle, CameraSettingsCard } from "../molecules"
+import {
+  RecognizerToggle,
+  CameraSettingsCard,
+  OverlaySettingsCard,
+} from "../molecules"
 import { useDebug } from "@/context/DebugContext"
 import { Card, Toggle, Label } from "../atoms"
 import { SlidersHorizontal } from "lucide-react"
@@ -40,6 +44,7 @@ const Settings = () => {
       >
         <CameraSettingsCard />
         <RecognizerToggle />
+        <OverlaySettingsCard />
       </SettingsSection>
 
       <SettingsSection
@@ -54,7 +59,11 @@ const Settings = () => {
                 Show live connection status for drone, telemetry and commands.
               </p>
             </div>
-            <Toggle checked={debugMode} onChange={toggle} />
+            <Toggle
+              checked={debugMode}
+              onChange={toggle}
+              aria-label="Debug Mode"
+            />
           </div>
         </Card>
       </SettingsSection>
