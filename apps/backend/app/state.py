@@ -34,6 +34,10 @@ class AppState:
 	# dummy, keyboard, controller, gesture...
 	input_name: str | None = None
 
+	# identifies the current input connection, so a disconnect that was issued
+	# against an earlier one can be recognised as stale and ignored
+	input_session: str | None = None
+
 	# WS clients that are currently connected
 	clients: set[object] = field(default_factory=set)
 
@@ -72,6 +76,7 @@ class AppState:
 		"""
 		self.input = None
 		self.input_name = None
+		self.input_session = None
 
 	async def shutdown(self) -> None:
 		"""

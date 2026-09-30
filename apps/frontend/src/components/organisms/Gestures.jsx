@@ -305,7 +305,7 @@ const GestureControl = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch lg:h-[calc(100vh_-_22rem)] lg:grid-rows-1">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
         <div className="h-full" data-tour="gesture-camera">
           {calibrated === false ? (
             <GestureCalibration
@@ -342,19 +342,18 @@ const GestureControl = () => {
             </Card>
           )}
         </div>
-        <div className="flex flex-col gap-6 lg:min-h-0 lg:h-full lg:overflow-y-auto">
+        <div className="flex flex-col gap-6 h-full">
           <div className="flex-1" data-tour="gesture-guide">
             <GestureGuide
-              className="h-full"
               sendCommand={handleControlAction}
               onKeyboardResp={handleKeyboardResp}
             />
           </div>
           <div className="flex-1 min-h-0" data-tour="sim-viewer">
             <DroneFeedPanel
+              className="h-full"
               droneMode={droneMode}
               connectionStatus={connectionStatus}
-              className="h-full"
             />
           </div>
         </div>
@@ -366,5 +365,4 @@ const GestureControl = () => {
     </div>
   )
 }
-
 export default GestureControl

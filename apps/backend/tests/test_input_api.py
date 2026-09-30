@@ -229,6 +229,108 @@ async def test_disconnect_does_not_touch_drone():
 	assert state.adapter_name == 'dummy'
 
 
+# POST /input/disconnect - session guard
+
+
+@pytest.mark.asyncio
+async def test_disconnect_with_matching_session_disconnects():
+	state = connected_input_state('gesture')
+	state.input_session = 'abc123'
+	adapter = state.input
+	client = TestClient(make_app(state))
+
+	response = client.post('/input/disconnect', params={'session': 'abc123'})
+
+	assert response.json()['success'] is True
+	assert state.input is None
+	adapter.stop.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_stale_disconnect_leaves_the_current_adapter_alone():
+	"""
+	Leaving a page fires its teardown; the next page connects. If the teardown
+	lands second it must not take down the adapter that replaced it, or the
+	camera gets released under the page the user is now looking at.
+	"""
+	state = connected_input_state('gesture')
+	state.input_session = 'new-page'
+	adapter = state.input
+	client = TestClient(make_app(state))
+
+	response = client.post('/input/disconnect', params={'session': 'old-page'})
+
+	assert response.status_code == 200
+	assert response.json()['success'] is False
+	assert state.input is adapter
+	assert state.input_session == 'new-page'
+	adapter.stop.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_disconnect_without_session_is_unconditional():
+	"""the page-unload path cannot name a session and must still tear down"""
+	state = connected_input_state('gesture')
+	state.input_session = 'whatever'
+	adapter = state.input
+	client = TestClient(make_app(state))
+
+	assert client.post('/input/disconnect').json()['success'] is True
+	assert state.input is None
+	adapter.stop.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_connect_echoes_the_requested_session():
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.input._build_input_adapter', return_value=make_mock_input_adapter()
+	):
+		response = client.post('/input/connect', json={'adapter': 'gesture', 'session': 'mine-42'})
+
+	assert response.json()['session'] == 'mine-42'
+	assert state.input_session == 'mine-42'
+
+
+@pytest.mark.asyncio
+async def test_connect_mints_a_session_when_none_is_given():
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.input._build_input_adapter', return_value=make_mock_input_adapter()
+	):
+		response = client.post('/input/connect', json={'adapter': 'gesture'})
+
+	session = response.json()['session']
+	assert session
+	assert state.input_session == session
+
+
+@pytest.mark.asyncio
+async def test_reconnect_invalidates_the_previous_session():
+	"""a page switch in the well-ordered case: connect, then the old teardown"""
+	state = AppState()
+	client = TestClient(make_app(state))
+
+	with patch(
+		'apps.backend.app.api.input._build_input_adapter', return_value=make_mock_input_adapter()
+	):
+		first = client.post('/input/connect', json={'adapter': 'gesture', 'session': 'page-a'})
+		assert first.json()['session'] == 'page-a'
+
+		second = client.post('/input/connect', json={'adapter': 'gesture', 'session': 'page-b'})
+		assert second.json()['session'] == 'page-b'
+
+	late = client.post('/input/disconnect', params={'session': 'page-a'})
+
+	assert late.json()['success'] is False
+	assert state.input is not None
+	assert state.input_session == 'page-b'
+
+
 # GET /input/status
 
 

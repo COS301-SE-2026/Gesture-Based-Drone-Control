@@ -70,7 +70,7 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
 
         <div
           ref={boxRef}
-          className="relative flex-1 min-h-[220px] rounded-lg overflow-hidden bg-black/40 border border-glass"
+          className="relative flex-1 min-h-[220px] min-w-0 rounded-lg overflow-hidden bg-black/40 border border-glass"
         >
           {!isConnected && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-dim">

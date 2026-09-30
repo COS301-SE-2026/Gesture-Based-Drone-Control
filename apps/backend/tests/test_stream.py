@@ -14,6 +14,7 @@ import pytest
 from app.cv.serialization import GestureFramePayload
 from app.cv.stream import GestureStream
 
+from services.cv_pipeline.camera.camera_feed import CameraError
 from services.cv_pipeline.processing.pipeline import PipelineConfig
 
 pytestmark = pytest.mark.asyncio
@@ -342,3 +343,62 @@ class TestIdleBehaviour:
 	async def test_shutdown_without_a_pipeline_is_a_noop(self, stream):
 		await stream.shutdown()
 		assert stream.is_running is False
+
+
+class ExclusiveDevicePipeline(FakeCvPipeline):
+	"""
+	Models the one thing FakeCvPipeline does not: the webcam is exclusive.
+
+	cv2.VideoCapture(0) fails while another handle is still open, and
+	CameraFeed.close() is the tail end of CvPipeline.stop() - so a stop that is
+	still in flight when the next start() runs is exactly the 'camera
+	unavailable' the user sees. stop() is given a real await point to make that
+	overlap deterministic rather than timing-dependent.
+	"""
+
+	device_held = False
+	stop_delay = 0.05
+
+	async def start(self) -> None:
+		await asyncio.sleep(0)
+		if ExclusiveDevicePipeline.device_held:
+			raise CameraError('device is busy or doesnt exist')
+		ExclusiveDevicePipeline.device_held = True
+		self.started = True
+		self._running = True
+
+	async def stop(self) -> None:
+		self._running = False
+		await asyncio.sleep(self.stop_delay)
+		ExclusiveDevicePipeline.device_held = False
+		self.stopped = True
+
+
+@pytest.fixture
+def exclusive_stream(monkeypatch, patch_serialize) -> GestureStream:
+	ExclusiveDevicePipeline.device_held = False
+	monkeypatch.setattr('app.cv.stream.CvPipeline', ExclusiveDevicePipeline)
+	return GestureStream()
+
+
+class TestCameraHandoff:
+	async def test_resubscribe_during_teardown_does_not_hit_a_busy_device(
+		self, exclusive_stream: GestureStream
+	):
+		"""
+		Leaving a page drops the last viewer and arms the linger; coming back
+		re-subscribes. If that lands while the teardown is still releasing the
+		camera, the restart must wait for it rather than racing it.
+		"""
+		queue = await exclusive_stream.subscribe()
+		await exclusive_stream.unsubscribe(queue)
+
+		# let the linger fire and get into _stop_pipeline, but not finish it
+		await asyncio.sleep(0.02)
+
+		await exclusive_stream.subscribe()
+
+		assert exclusive_stream.is_running is True
+		assert ExclusiveDevicePipeline.device_held is True
+
+		await exclusive_stream.shutdown()

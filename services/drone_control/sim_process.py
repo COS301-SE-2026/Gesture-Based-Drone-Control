@@ -103,6 +103,32 @@ else:
 	}
 
 
+# CHILD ENVIRONMENT
+
+
+def _host_env() -> dict[str, str]:
+	"""
+	The environment a child should see, not the one we were handed.
+
+	PyInstaller's onefile bootloader repoints the dynamic loader at sys._MEIPASS
+	so the frozen backend finds its own bundled libs. That is inherited by every
+	child we spawn, and _MEIPASS carries an older libglib/libpcre2 - enough to
+	kill electron-as-node against the system libgobject, and enough to put UE at
+	the mercy of whatever we shipped. The bootloader stashes the real value in
+	*_ORIG when there was one; otherwise the variable was ours, so drop it.
+	"""
+	env = dict(os.environ)
+
+	for var in ('LD_LIBRARY_PATH', 'LD_PRELOAD'):
+		orig = env.pop(f'{var}_ORIG', None)
+		if orig is not None:
+			env[var] = orig
+		elif getattr(sys, 'frozen', False):
+			env.pop(var, None)
+
+	return env
+
+
 # ORPHAN HOUSEKEEPING
 #
 # module level, not inside the platform branch above: each of these has to
@@ -357,7 +383,7 @@ class PixelStreamLauncher:
 				cwd=str(cwd),
 				stdout=sink,
 				stderr=asyncio.subprocess.STDOUT,
-				env={**os.environ, **env} if env else None,
+				env={**_host_env(), **(env or {})},
 				**_SPAWN_KWARGS,
 			)
 

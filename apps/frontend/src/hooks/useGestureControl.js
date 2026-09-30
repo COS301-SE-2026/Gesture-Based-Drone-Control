@@ -22,7 +22,18 @@ const DEFAULT_STATUS = {
  * POST /api/input/connect
  * poll GET /api/input/gesture/status for dashboard info
  * POST /api/input/disconnect on disable
+ *
+ * Each connect carries a session id minted here. Switching pages unmounts this
+ * hook and mounts it again on the next page, and the teardown POST can reach
+ * the backend after the new page's connect - naming the session lets the
+ * backend drop the stale one instead of tearing down the adapter that replaced
+ * it and releasing the camera underneath it.
  */
+
+function newSessionId() {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID()
+  return `s-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
 
 export function useGestureControl(enabled) {
   const [connected, setConnected] = useState(false)
@@ -45,11 +56,12 @@ export function useGestureControl(enabled) {
     if (!active) return
 
     let cancelled = false
+    const session = newSessionId()
 
     fetch(`${API_BASE_URL}/api/input/connect`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ adapter: inputAdapter }),
+      body: JSON.stringify({ adapter: inputAdapter, session }),
     })
       .then((res) => {
         if (!cancelled && res.ok) {
@@ -60,6 +72,8 @@ export function useGestureControl(enabled) {
         console.error("UseGestureControl: failed to connect adapter ", err)
       })
 
+    // the page is going away with us, so nothing can replace our adapter
+    // afterwards: disconnect unconditionally rather than by session
     const onUnload = () => {
       if (navigator.sendBeacon) {
         navigator.sendBeacon(`${API_BASE_URL}/api/input/disconnect`)
@@ -74,15 +88,12 @@ export function useGestureControl(enabled) {
       setConnected(false)
       setStatus(DEFAULT_STATUS)
 
-      // sendBeacon should survive the page unload whereas fetch would be cancelled
-      // fallback to fetch
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(`${API_BASE_URL}/api/input/disconnect`)
-      } else {
-        fetch(`${API_BASE_URL}/api/input/disconnect`, {
-          method: "POST",
-        }).catch(() => {})
-      }
+      // a plain fetch, not sendBeacon: the document survives an unmount, and a
+      // beacon is sent out of band so it can overtake the next page's connect
+      fetch(
+        `${API_BASE_URL}/api/input/disconnect?session=${encodeURIComponent(session)}`,
+        { method: "POST", keepalive: true }
+      ).catch(() => {})
     }
   }, [active, inputAdapter])
 
