@@ -47,21 +47,21 @@ export default function RecognizerToggle({ className = "" }) {
             const isDisabled = loading || pending || !available.includes(m.id)
 
             return (
-            <Button
-              key={m.id}
-              variant={isActive ? "default" : "ghost"}
-              disabled={isDisabled}
-              onClick={() => switchMode(m.id)}
-              aria-pressed={isActive}
-              title={isDisabled && !loading ? "not available" : m.blurb}
-              className={`h-9 flex-1 text-sm transition-colors ${
-                isDisabled ? "opacity-40" : ""
-              }`}
-            >
-              {m.label}
-            </Button>
-           )
-        })}
+              <Button
+                key={m.id}
+                variant={isActive ? "default" : "ghost"}
+                disabled={isDisabled}
+                onClick={() => switchMode(m.id)}
+                aria-pressed={isActive}
+                title={isDisabled && !loading ? "not available" : m.blurb}
+                className={`h-9 flex-1 text-sm transition-colors ${
+                  isDisabled ? "opacity-40" : ""
+                }`}
+              >
+                {m.label}
+              </Button>
+            )
+          })}
         </div>
 
         {notice && debugMode && <p className="text-xs text-error">{notice}</p>}
