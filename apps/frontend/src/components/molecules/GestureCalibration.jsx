@@ -220,7 +220,7 @@ const GestureCalibration = ({ onComplete, onRestart, className = "" }) => {
   }
   return (
     <Card variant="glass" className={className}>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 h-full min-h-0 overflow-y-auto">
         <div className="flex items-center justify-between">
           <Label size="md">Gesture Calibration</Label>
           <div className="flex items-center gap-2 text-xs text-ink/80">

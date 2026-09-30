@@ -111,7 +111,7 @@ test.describe("recognizer selector in settings", () => {
 
         await page
         .getByRole("main")
-        .getByRole("button", {name: "Gestures", exact: true})
+        .getByRole("button", {name: "Motion", exact: true})
         .click()
         await expect
             .poll(
