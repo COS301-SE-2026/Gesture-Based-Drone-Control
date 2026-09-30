@@ -17,32 +17,32 @@ const GPS = () => {
   const { telemetry, status, path } = useTelemetry()
   const headingDeg = telemetry?.heading_deg
 
- //mem direction calculation to prevent rerender
- const direction = useMemo(() => {
-  if (typeof headingDeg === "number") {
-    return headingToCardinal(headingDeg)
-  }
-  return undefined
- }, [headingDeg])
+  //mem direction calculation to prevent rerender
+  const direction = useMemo(() => {
+    if (typeof headingDeg === "number") {
+      return headingToCardinal(headingDeg)
+    }
+    return undefined
+  }, [headingDeg])
 
- const stats = useMemo(
-  () => ({
-    altitude: telemetry?.altitude_m,
-    xDisplacement: telemetry?.x_displacement,
-    yDisplacement: telemetry?.y_displacement,
-    speed: telemetry?.speed_ms,
-    heading: telemetry?.heading_deg
-  }),
-  [
-    telemetry?.altitude_m,
-    telemetry?.x_displacement,
-    telemetry?.y_displacement,
-    telemetry?.speed_ms,
-    telemetry?.heading_deg
-  ]
- )
+  const stats = useMemo(
+    () => ({
+      altitude: telemetry?.altitude_m,
+      xDisplacement: telemetry?.x_displacement,
+      yDisplacement: telemetry?.y_displacement,
+      speed: telemetry?.speed_ms,
+      heading: telemetry?.heading_deg,
+    }),
+    [
+      telemetry?.altitude_m,
+      telemetry?.x_displacement,
+      telemetry?.y_displacement,
+      telemetry?.speed_ms,
+      telemetry?.heading_deg,
+    ]
+  )
 
- const { debugMode } = useDebug()
+  const { debugMode } = useDebug()
 
   return (
     <div className="p-6 space-y-6">

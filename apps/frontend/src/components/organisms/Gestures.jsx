@@ -72,7 +72,7 @@ const GestureControl = () => {
     isConnecting,
     connectionError,
     handleModeChange,
-    handleDisconnect
+    handleDisconnect,
   } = useDroneConnection()
 
   // one entry per gesture change, straight from gesture adapter
@@ -165,7 +165,6 @@ const GestureControl = () => {
     dismissTelemetryAlert(key)
   }
 
-
   //so the way the command history would work is when a backend confirms a command executed, it logs it, not just when a button is pressed
   useEffect(() => {
     if (lastResp?.ok && lastResp.command) {
@@ -187,7 +186,6 @@ const GestureControl = () => {
       }
     }
   }, [lastResp, pushManualCommand, pushEventAlert])
-
 
   return (
     <div className="w-full min-w-0 max-w-[120rem] mx-auto space-y-4 xl:space-y-6">

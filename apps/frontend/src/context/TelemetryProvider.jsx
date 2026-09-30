@@ -35,7 +35,8 @@ export function TelemetryProvider({ children }) {
     const battery = frame.battery_pct
 
     if (Number.isFinite(alt)) setMaxAltitude((p) => Math.max(p, alt))
-    if (Number.isFinite(speed)) setMaxSpeedKmh((p) => Math.max(p, speed * MS_TO_KMH))
+    if (Number.isFinite(speed))
+      setMaxSpeedKmh((p) => Math.max(p, speed * MS_TO_KMH))
 
     if (Number.isFinite(x) && Number.isFinite(y)) {
       const last = lastDistRef.current
@@ -43,29 +44,45 @@ export function TelemetryProvider({ children }) {
         const d = Math.hypot(x - last.x, y - last.y)
         if (d > MIN_STEP_M) setTotalDistanceM((p) => p + d)
       }
-    lastDistRef.current = { x, y }
+      lastDistRef.current = { x, y }
     }
 
     if (
-      Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(alt) &&
+      Number.isFinite(x) &&
+      Number.isFinite(y) &&
+      Number.isFinite(alt) &&
       now - lastPathRef.current >= PATH_MIN_MS
     ) {
       lastPathRef.current = now
       setPath((prev) => {
         const last = prev[prev.length - 1]
-        if (last && last.x_displacement === x && last.y_displacement === y && last.altitude_m === alt) {
+        if (
+          last &&
+          last.x_displacement === x &&
+          last.y_displacement === y &&
+          last.altitude_m === alt
+        ) {
           return prev
         }
-        const next = [...prev, { x_displacement: x, y_displacement: y, altitude_m: alt }]
-        return next.length > MAX_PATH_POINTS ? next.slice(-MAX_PATH_POINTS) : next
+        const next = [
+          ...prev,
+          { x_displacement: x, y_displacement: y, altitude_m: alt },
+        ]
+        return next.length > MAX_PATH_POINTS
+          ? next.slice(-MAX_PATH_POINTS)
+          : next
       })
     }
 
     if (now - lastSeriesRef.current >= SERIES_MIN_MS) {
       lastSeriesRef.current = now
       const label = `${((now - startRef.current) / 1000).toFixed(1)}s`
-      setSpeedSeries((p) => [...p, { time: label, value: speed ?? 0}].slice(-MAX_SERIES_POINTS))
-      setBatterySeries((p) => [...p, { time: label, health: battery ?? 0}].slice(-MAX_SERIES_POINTS))
+      setSpeedSeries((p) =>
+        [...p, { time: label, value: speed ?? 0 }].slice(-MAX_SERIES_POINTS)
+      )
+      setBatterySeries((p) =>
+        [...p, { time: label, health: battery ?? 0 }].slice(-MAX_SERIES_POINTS)
+      )
     }
   }
 
@@ -82,20 +99,38 @@ export function TelemetryProvider({ children }) {
   })
 
   const resetSession = useCallback(() => {
-    setPath([]); setSpeedSeries([]); setBatterySeries([])
-    setMaxAltitude(0); setMaxSpeedKmh(0); setTotalDistanceM(0)
+    setPath([])
+    setSpeedSeries([])
+    setBatterySeries([])
+    setMaxAltitude(0)
+    setMaxSpeedKmh(0)
+    setTotalDistanceM(0)
     startRef.current = null
     lastDistRef.current = null
   }, [])
 
   const value = useMemo(
     () => ({
-      telemetry, status,
-      path, speedSeries, batterySeries,
-      maxAltitude, maxSpeedKmh, totalDistanceM, resetSession
+      telemetry,
+      status,
+      path,
+      speedSeries,
+      batterySeries,
+      maxAltitude,
+      maxSpeedKmh,
+      totalDistanceM,
+      resetSession,
     }),
-    [telemetry, status, path, speedSeries, batterySeries,
-      maxAltitude, maxSpeedKmh, totalDistanceM, resetSession
+    [
+      telemetry,
+      status,
+      path,
+      speedSeries,
+      batterySeries,
+      maxAltitude,
+      maxSpeedKmh,
+      totalDistanceM,
+      resetSession,
     ]
   )
 

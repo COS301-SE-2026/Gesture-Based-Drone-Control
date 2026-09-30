@@ -30,41 +30,41 @@ function App() {
     <ThemeProvider>
       <TelemetryProvider>
         <DroneConnectionProvider>
-        <CommandsProvider>
-          <DebugProvider>
-            <CursorGlow />
-            <CameraConsentProvider>
-              <RecognizerProvider>
-                <OverlayProvider>
-                  <TourProvider>
-                    <AuthProvider>
-                      <Routes>
-                        <Route
-                          path="/"
-                          element={<Navigate to="/login" replace />}
-                        />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/signup" element={<Signup />} />
-                        <Route path="/terms" element={<Terms />} />
-                        <Route path="/app" element={<RootLayout />}>
-                          <Route index element={<Gestures />} />
-                          <Route path="gestures" element={<Gestures />} />
-                          <Route path="analytics" element={<Analytics />} />
-                          <Route path="settings" element={<Settings />} />
-                          <Route path="gps" element={<GPS />} />
-                          <Route path="help" element={<Help />} />
-                          <Route path="tutorial" element={<Tutorial />} />
-                          <Route path="test" element={<TestPage />} />
-                          <Route path="games" element={<Games />} />
-                        </Route>
-                      </Routes>
-                    </AuthProvider>
-                  </TourProvider>
-                </OverlayProvider>
-              </RecognizerProvider>
-            </CameraConsentProvider>
-          </DebugProvider>
-        </CommandsProvider>
+          <CommandsProvider>
+            <DebugProvider>
+              <CursorGlow />
+              <CameraConsentProvider>
+                <RecognizerProvider>
+                  <OverlayProvider>
+                    <TourProvider>
+                      <AuthProvider>
+                        <Routes>
+                          <Route
+                            path="/"
+                            element={<Navigate to="/login" replace />}
+                          />
+                          <Route path="/login" element={<Login />} />
+                          <Route path="/signup" element={<Signup />} />
+                          <Route path="/terms" element={<Terms />} />
+                          <Route path="/app" element={<RootLayout />}>
+                            <Route index element={<Gestures />} />
+                            <Route path="gestures" element={<Gestures />} />
+                            <Route path="analytics" element={<Analytics />} />
+                            <Route path="settings" element={<Settings />} />
+                            <Route path="gps" element={<GPS />} />
+                            <Route path="help" element={<Help />} />
+                            <Route path="tutorial" element={<Tutorial />} />
+                            <Route path="test" element={<TestPage />} />
+                            <Route path="games" element={<Games />} />
+                          </Route>
+                        </Routes>
+                      </AuthProvider>
+                    </TourProvider>
+                  </OverlayProvider>
+                </RecognizerProvider>
+              </CameraConsentProvider>
+            </DebugProvider>
+          </CommandsProvider>
         </DroneConnectionProvider>
       </TelemetryProvider>
     </ThemeProvider>

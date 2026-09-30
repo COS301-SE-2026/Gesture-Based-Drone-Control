@@ -19,8 +19,6 @@ const MS_TO_KMH = 3.6
 const API_BASE = "http://localhost:3001/api/analytics"
 
 const Analytics = () => {
-
-
   //live, in sess charts, built client side from websocket in telemProvider so it survives the switches
   const {
     telemetry,
