@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, memo } from "react"
 import PropTypes from "prop-types"
-import { Card } from "../atoms"
+import { Card, Label, StatusDot } from "../atoms"
 import { Video } from "lucide-react"
 import { API_BASE_URL } from "../../lib/api"
 import { useElementSize } from "../../hooks/useElementSize"
@@ -55,9 +55,22 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
   return (
     <Card variant="glass" className={`animate-rise ${className}`}>
       <div className="flex flex-col gap-4 h-full">
+        <div className="flex items-center justify-between">
+          <Label size="md">{isSim ? "Sim Viewer" : "Live Feed"}</Label>
+          <div className="flex items-center gap-2">
+            <StatusDot
+              variant={isConnected ? "connected" : "disconnected"}
+              size="sm"
+            />
+            <span className="text-xs text-dim font-mono uppercase">
+              {isConnected ? "live" : "offline"}
+            </span>
+          </div>
+        </div>
+
         <div
           ref={boxRef}
-          className="relative flex-1 min-h-[250px] rounded-lg overflow-hidden bg-black/40 border border-glass"
+          className="relative flex-1 min-h-[220px] rounded-lg overflow-hidden bg-black/40 border border-glass"
         >
           {!isConnected && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-dim">
