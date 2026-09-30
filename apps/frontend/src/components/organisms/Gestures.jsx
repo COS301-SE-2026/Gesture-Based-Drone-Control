@@ -240,6 +240,12 @@ const GestureControl = () => {
       )}
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_18rem] gap-4 xl:gap-6 items-stretch">
         <Card variant="glass" data-tour="stats-card" className="min-w-0 h-full">
+          <div className="flex items-center justify-between">
+            <Label size="md" className="shrink-0">
+              {" "}
+              Stats{" "}
+            </Label>
+          </div>
           <div className="flex items-center justify-between gap-4 flex-wrap h-full">
             <div className="flex items-center gap-3">
               <Battery className="w-6 h-6 text-red" />
@@ -339,13 +345,13 @@ const GestureControl = () => {
         <div className="flex flex-col gap-6 h-full">
           <div className="flex-1" data-tour="gesture-guide">
             <GestureGuide
-              className="h-full"
               sendCommand={handleControlAction}
               onKeyboardResp={handleKeyboardResp}
             />
           </div>
-          <div data-tour="sim-viewer">
+          <div className="flex-1 min-h-0" data-tour="sim-viewer">
             <DroneFeedPanel
+              className="h-full"
               droneMode={droneMode}
               connectionStatus={connectionStatus}
             />

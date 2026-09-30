@@ -39,6 +39,8 @@ class GestureStream:
 		self._broadcast_task: Optional[asyncio.Task] = None
 		self._linger_task: Optional[asyncio.Task] = None
 		self._teardown_task: Optional[asyncio.Task] = None
+		# a pipeline.stop() that may outlive the task which began it
+		self._stopping: Optional[asyncio.Future] = None
 		self._clients: set[asyncio.Queue] = set()
 		self._viewers: set[asyncio.Queue] = set()
 		self._lock = asyncio.Lock()
@@ -121,16 +123,41 @@ class GestureStream:
 		task = self._broadcast_task
 		return task is not None and task.done()
 
+	async def _settle_stop(self) -> None:
+		"""
+		Wait for an in-flight teardown to finish releasing the camera.
+
+		_stop_pipeline shields pipeline.stop() so a cancelled linger still
+		frees the device - but shielding also means the release can still be
+		running once the lock is free. The webcam is exclusive, so opening the
+		next handle on top of it is what surfaces as "camera unavailable"
+		when a page is left and re-entered inside the linger window.
+		"""
+		stopping = self._stopping
+		if stopping is None:
+			return
+
+		if not stopping.done():
+			# a stop that raised is _stop_pipeline's problem, not ours - either
+			# way the handle is gone once it settles
+			with contextlib.suppress(Exception):
+				await asyncio.shield(stopping)
+
+		if stopping.done():
+			self._stopping = None
+
 	async def _ensure_started(self) -> None:
 		async with self._lock:
+			await self._settle_stop()
+
 			if self._pipeline is not None and not self._is_orphaned():
 				return
 			if self._pipeline is not None:
 				logger.warning('GestureStream found an oprhaned pipeline, restarting it')
 				stale = self._pipeline
 				self._pipeline = None
-				with contextlib.suppress(Exception):
-					await stale.stop()
+				self._stopping = asyncio.ensure_future(stale.stop())
+				await self._settle_stop()
 			pipeline = CvPipeline(self._config)
 			pipeline.set_recognizer_mode(self._recognizer_mode)
 			try:
@@ -187,7 +214,15 @@ class GestureStream:
 
 			pipeline = self._pipeline
 			self._pipeline = None
-			await asyncio.shield(pipeline.stop())
+			stopping = asyncio.ensure_future(pipeline.stop())
+			self._stopping = stopping
+			try:
+				await asyncio.shield(stopping)
+			finally:
+				# left set when we are cancelled out of the shield: the stop runs
+				# on and the next start has to wait for it
+				if stopping.done():
+					self._stopping = None
 
 	def _fan_out(self, payload: Optional[GestureFramePayload]) -> None:
 		for queue in self._clients:
