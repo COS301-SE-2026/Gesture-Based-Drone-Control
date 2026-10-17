@@ -209,8 +209,15 @@ class GestureStream:
 			self._broadcast_task = None
 			if task is not None and task is not asyncio.current_task():
 				task.cancel()
-				with contextlib.suppress(asyncio.CancelledError):
+				try:
 					await task
+				except asyncio.CancelledError:
+					# only swallow the broadcast task's own cancellation. If *we* (the
+					# linger task) were cancelled here because a client came back,
+					# bail out so the pipeline keeps running instead of restarting
+					current = asyncio.current_task()
+					if current is not None and current.cancelling() > 0:
+						raise
 
 			pipeline = self._pipeline
 			self._pipeline = None

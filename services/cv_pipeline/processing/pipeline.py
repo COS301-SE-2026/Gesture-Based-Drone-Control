@@ -10,6 +10,7 @@ camera (thread) -> bounded queue -> detector -> engine ->events
 """
 
 import asyncio
+import contextlib
 import logging
 import math
 import threading
@@ -195,10 +196,16 @@ class CvPipeline:
 		self._motion = MotionTracker()
 
 		# open cam and detector
+		# cv2.VideoCapture() blocks for seconds on Windows (DSHOW) - keep it off the loop
 		self._camera = CameraFeed(self._config.camera)
-		self._camera.open()
-		self._detector = HandDetectionPipeline(self._config.detector)
-		self._detector.open()
+		try:
+			await asyncio.to_thread(self._camera.open)
+			self._detector = HandDetectionPipeline(self._config.detector)
+			await asyncio.to_thread(self._detector.open)
+		except BaseException:
+			# never leave a half-opened pipeline holding the webcam
+			await self._release_resources()
+			raise
 		self._engine = GestureEngine()
 		self.set_recognizer_mode(self._recognizer_mode)
 
@@ -220,39 +227,43 @@ class CvPipeline:
 
 	async def stop(self) -> None:
 		# Break everything down to cam thread, comsumer task, mediapipe, cv2
-		if not self._running:
+		# NOTE: do NOT gate this on self._running. The camera thread flips
+		# _running to False when the device dies, and that must not turn
+		# stop() into a no-op - otherwise the cv2.VideoCapture handle leaks,
+		# the webcam stays "busy" and every later open() fails.
+		if self._camera is None and self._detector is None and self._camera_thread is None:
 			return
 
 		logger.info('CvPipeline stopping')
 		self._running = False
 
-		# signal cam thread to exit
+		# signal cam thread to exit (join off the loop: read() blocks on win/linux)
 		self._stop_event.set()
 		if self._camera_thread is not None:
-			# join with small timeout so never hang forever
-			self._camera_thread.join(timeout=2.0)
+			await asyncio.to_thread(self._camera_thread.join, 2.0)
 			if self._camera_thread.is_alive():
-				logger.warning('Camera thread didnt exist within 2s')
+				logger.warning('Camera thread didnt exit within 2s')
 
-		# cancel task
+		# cancel task - a consumer that already died with its own exception
+		# must not re-raise here and skip the release below
 		if self._consumer_task is not None:
 			self._consumer_task.cancel()
 			try:
 				await self._consumer_task
 			except asyncio.CancelledError:
-				# if stop() itself was cancelled, propagate. Otherwise the
-				# CancelledError is our own cancel() above coming back to us,
-				# which is expected and should be swallowed
 				current = asyncio.current_task()
 				if current is not None and current.cancelling() > 0:
+					await self._release_resources()
 					raise
+			except Exception:
+				logger.exception('consumer task had died before stop()')
 
-		# close resources
-		if self._detector is not None:
-			self._detector.close()
-		if self._camera is not None:
-			self._camera.close()
+		await self._release_resources()
+		logger.info('CvPipeline stopped')
 
+	async def _release_resources(self) -> None:
+		"""Close mediapipe + cv2 and drop every reference. Safe to call twice."""
+		detector, camera = self._detector, self._camera
 		self._camera = None
 		self._detector = None
 		self._engine = None
@@ -260,8 +271,14 @@ class CvPipeline:
 		self._consumer_task = None
 		self._frame_queue = None
 		self._event_queue = None
-
-		logger.info('CvPipeline stopped')
+		try:
+			if detector is not None:
+				with contextlib.suppress(Exception):
+					await asyncio.to_thread(detector.close)
+		finally:
+			if camera is not None:
+				with contextlib.suppress(Exception):
+					await asyncio.to_thread(camera.close)
 
 	# context manager
 	async def __aenter__(self) -> 'CvPipeline':
@@ -354,7 +371,7 @@ class CvPipeline:
 		while not self._stop_event.is_set():
 			try:
 				frame = self._camera.capture_image()
-			except CameraError:
+			except Exception:  # not only CameraError: cv2.error etc. must not leave a zombie
 				logger.exception('camera died, stopping capture loop')
 				self._running = False
 				break
