@@ -768,7 +768,6 @@ task clean
 
 <img src="docs/assets/readme/header-branching.svg" width="100%" alt="Branching Strategy"/>
 
-
 We use the [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow). `main` automatically builds and deploys an executable Full conventions in the [Git docs](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/GIT/).
 
 ```mermaid
