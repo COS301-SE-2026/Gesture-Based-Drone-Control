@@ -49,6 +49,20 @@ Control a drone with your hands. Our system uses real-time computer vision to re
 
 <br/>
 
+
+Watch us take the app beyond just a simulator and fly a real drone: 
+<p align="center">
+  <a href="https://youtu.be/Zb7i9y775GM">
+    <img src="https://img.youtube.com/vi/Zb7i9y775GM/maxresdefault.jpg" alt="Real-world drone flight demonstration by Codex Merchants" width="800">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://youtu.be/Zb7i9y775GM"><strong>Watch the full flight</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://www.youtube.com/@CodexMerchants">Check out the Codex Merchants YouTube channel</a>
+</p>
+
 <div align="center">
 
 <img src="docs/assets/readme/feature-cards.svg" width="100%" alt="Core intelligence, real-time pipeline, safety first"/>
