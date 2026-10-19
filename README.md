@@ -638,7 +638,7 @@ The repository also contains unit and integration tests, performance testing too
 
 <details>
 
-<summary>Expand to see a breakdown of all use cases. Every use case is associated with a long-lived branch and a slice of the Project Board. A comprehensive breakdown is available in the [SRS](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/).</summary>
+<summary>Expand to see a breakdown of all use cases. Every use case is associated with a long-lived branch and a slice of the Project Board. A comprehensive breakdown is available in the <a href=https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/>SRS</a>.</summary>
 
 <table>
   <tr>
