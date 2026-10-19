@@ -324,12 +324,14 @@ Everything is mounted under the `/api` prefix. Interactive Swagger docs are serv
 | Router | Endpoints |
 |:---|:---|
 | root | `GET /api/health` |
-| `/auth` | `GET /health` · `POST /login` · `POST /signup` · `POST /refresh` · `POST /logout` |
-| `/drone` | `GET /health` · `POST /connect` · `POST /disconnect` · `GET /status` · `WS /ws/telemetry` · `WS /ws/commands` |
-| `/gestures` | `GET /health` · `GET /status` · `WS /stream` |
+| `/auth` | `GET /health` · `POST /login` · `POST /signup` · `POST /refresh` · `POST /logout` · `GET /me` |
+| `/drone` | `GET /health` · `POST /connect` · `POST /disconnect` · `GET /status` · `GET /feed` · `WS /ws/telemetry` · `WS /ws/commands` |
+| `/gestures` | `GET /health` · `GET /status` · `WS /stream` · `GET /recognizer` · `POST /recognizer`|
 | `/calibration` | `GET /status` · `POST /start` · `POST /skip` · `WS /stream` |
-| `/input` | `POST /connect` · `POST /disconnect` · `GET /status` · `WS /ws/keyboard` · `WS /ws/gamepad` |
+| `/input` | `POST /connect` · `POST /disconnect` · `GET /status` · `WS /ws/keyboard` · `WS /ws/gamepad` · `GET /gesture/events` · `POST /gesture/config` · `WS /ws/gesture/status` · `WS /ws/gesture/events`|
 | `/analytics` | `GET /flights` · `GET /summary` |
+| `/game` | `POST /connect` · `POST /disconnect` · `GET /status` · `WS ws/commands`|
+| `/leaderboard` | `POST /scores` · `PATCH /scores/{entry_id}/name` · `GET /scores/{game_id}` |
 
 <br/>
 
