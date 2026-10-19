@@ -133,69 +133,48 @@
 
 <table>
 <tr>
-  <td align="center" width="20%">
-    <a href="https://github.com/Ayush-B99">
-      <img src="https://github.com/Ayush-B99.png?size=120" width="90" style="border-radius:50%" alt="Ayush"/>
-    </a>
-    <br/>
-    <b>Ayush Beekum</b><br/>
-    <sub><code>u23596351</code></sub><br/>
-    <sub>Team Lead, Computer Vision</sub><br/><br/>
-    <a href="https://github.com/Ayush-B99"><img src="https://img.shields.io/badge/-Ayush--B99-161A1D?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <a href="https://www.linkedin.com/in/ayush-beekum-6423862b4/"><img src="https://img.shields.io/badge/-LinkedIn-A4161A?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <a href="docs/cvs/ayush-beekum-cv.pdf"><img src="https://img.shields.io/badge/CV-View-2D6A4F?style=flat-square&logo=adobeacrobatreader&logoColor=white" alt="Ayush's CV"/></a>
-  </td>
-  <td align="center" width="20%">
-    <a href="https://github.com/ShavirV">
-      <img src="https://github.com/ShavirV.png?size=120" width="90" style="border-radius:50%" alt="Shavir"/>
-    </a>
-    <br/>
-    <b>Shavir Vallabh</b><br/>
-    <sub><code>u23718146</code></sub><br/>
-    <sub>Backend, Game Dev, HID integration</sub><br/><br/>
-    <a href="https://github.com/ShavirV"><img src="https://img.shields.io/badge/-ShavirV-161A1D?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <a href="https://www.linkedin.com/in/shavir-vallabh-a0284026a/"><img src="https://img.shields.io/badge/-LinkedIn-A4161A?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <a href="docs/cvs/shavir-vallabh-cv.pdf"><img src="https://img.shields.io/badge/CV-View-2D6A4F?style=flat-square&logo=adobeacrobatreader&logoColor=white" alt="Shavir's CV"/></a>
-  </td>
-  <td align="center" width="20%">
-    <a href="https://github.com/Wave2055">
-      <img src="https://github.com/Wave2055.png?size=120" width="90" style="border-radius:50%" alt="Jaitin"/>
-    </a>
-    <br/>
-    <b>Jaitin Moodally</b><br/>
-    <sub><code>u23621372</code></sub><br/>
-    <sub>Systems, DevOps, Low level</sub><br/><br/>
-    <a href="https://github.com/Wave2055"><img src="https://img.shields.io/badge/-Wave2055-161A1D?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <a href="https://www.linkedin.com/in/jaitin-moodally/"><img src="https://img.shields.io/badge/-LinkedIn-A4161A?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <a href="docs/cvs/jaitin-moodally-cv.pdf"><img src="https://img.shields.io/badge/CV-View-2D6A4F?style=flat-square&logo=adobeacrobatreader&logoColor=white" alt="Jaitin's CV"/></a>
-  </td>
-  <td align="center" width="20%">
-    <a href="https://github.com/deexglitch">
-      <img src="https://github.com/deexglitch.png?size=120" width="90" style="border-radius:50%" alt="Diya"/>
-    </a>
-    <br/>
-    <b>Diya Narotam</b><br/>
-    <sub><code>u23533596</code></sub><br/>
-    <sub>UI/UX, Data Analysis, Game Dev</sub><br/><br/>
-    <a href="https://github.com/deexglitch"><img src="https://img.shields.io/badge/-deexglitch-161A1D?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <a href="https://www.linkedin.com/in/diya-narotam-062222412/"><img src="https://img.shields.io/badge/-LinkedIn-A4161A?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <a href="/docs/cvs/diya-narotam-cv.pdf"><img src="https://img.shields.io/badge/CV-View-2D6A4F?style=flat-square&logo=adobeacrobatreader&logoColor=white" alt="Diya's CV"/></a>
-  </td>
-  <td align="center" width="20%">
-    <a href="https://github.com/ChinmayiSanthosh">
-      <img src="https://github.com/ChinmayiSanthosh.png?size=120" width="90" style="border-radius:50%" alt="Chinmayi"/>
-    </a>
-    <br/>
-    <b>Chinmayi Santhosh</b><br/>
-    <sub><code>u24585671</code></sub><br/>
-    <sub>Frontend, Testing, Training</sub><br/><br/>
-    <a href="https://github.com/ChinmayiSanthosh"><img src="https://img.shields.io/badge/-ChinmayiSanthosh-161A1D?style=flat-square&logo=github&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <a href="https://www.linkedin.com/in/chinmayi-santhosh-b53b09438"><img src="https://img.shields.io/badge/-LinkedIn-A4161A?style=flat-square&logo=linkedin&logoColor=F5F3F4&labelColor=161A1D"/></a>
-    <a href="docs/cvs/chinmayi-santhosh-cv.pdf"><img src="https://img.shields.io/badge/CV-View-2D6A4F?style=flat-square&logo=adobeacrobatreader&logoColor=white" alt="Chinmayi's CV"/></a>
-  </td>
+<td align="center" width="20%" valign="top">
+<a href="https://github.com/Ayush-B99"><img src="https://github.com/Ayush-B99.png?size=96" width="76" height="76" style="border-radius:50%;object-fit:cover" alt="Ayush Beekum"></a><br><br>
+<strong>Ayush Beekum</strong><br>
+<sub><code>u23596351</code></sub><br>
+<sub>Team Lead, Computer Vision</sub><br><br>
+<a href="docs/cvs/ayush-beekum-cv.pdf"><img src="https://img.shields.io/badge/View_CV-2D6A4F?style=flat-square" alt="View CV"></a><br><br>
+<sub><a href="https://github.com/Ayush-B99">GitHub</a> | <a href="https://www.linkedin.com/in/ayush-beekum-6423862b4/">LinkedIn</a></sub>
+</td>
+<td align="center" width="20%" valign="top">
+<a href="https://github.com/ShavirV"><img src="https://github.com/ShavirV.png?size=96" width="76" height="76" style="border-radius:50%;object-fit:cover" alt="Shavir Vallabh"></a><br><br>
+<strong>Shavir Vallabh</strong><br>
+<sub><code>u23718146</code></sub><br>
+<sub>Backend, Game Dev, HID</sub><br><br>
+<a href="docs/cvs/shavir-vallabh-cv.pdf"><img src="https://img.shields.io/badge/View_CV-2D6A4F?style=flat-square" alt="View CV"></a><br><br>
+<sub><a href="https://github.com/ShavirV">GitHub</a> | <a href="https://www.linkedin.com/in/shavir-vallabh-a0284026a/">LinkedIn</a></sub>
+</td>
+<td align="center" width="20%" valign="top">
+<a href="https://github.com/Wave2055"><img src="https://github.com/Wave2055.png?size=96" width="76" height="76" style="border-radius:50%;object-fit:cover" alt="Jaitin Moodally"></a><br><br>
+<strong>Jaitin Moodally</strong><br>
+<sub><code>u23621372</code></sub><br>
+<sub>Systems, DevOps, Low-level</sub><br><br>
+<a href="docs/cvs/jaitin-moodally-cv.pdf"><img src="https://img.shields.io/badge/View_CV-2D6A4F?style=flat-square" alt="View CV"></a><br><br>
+<sub><a href="https://github.com/Wave2055">GitHub</a> | <a href="https://www.linkedin.com/in/jaitin-moodally/">LinkedIn</a></sub>
+</td>
+<td align="center" width="20%" valign="top">
+<a href="https://github.com/deexglitch"><img src="https://github.com/deexglitch.png?size=96" width="76" height="76" style="border-radius:50%;object-fit:cover" alt="Diya Narotam"></a><br><br>
+<strong>Diya Narotam</strong><br>
+<sub><code>u23533596</code></sub><br>
+<sub>UI/UX, Data Analysis, Game Dev</sub><br><br>
+<a href="docs/cvs/diya-narotam-cv.pdf"><img src="https://img.shields.io/badge/View_CV-2D6A4F?style=flat-square" alt="View CV"></a><br><br>
+<sub><a href="https://github.com/deexglitch">GitHub</a> | <a href="https://www.linkedin.com/in/diya-narotam-062222412/">LinkedIn</a></sub>
+</td>
+<td align="center" width="20%" valign="top">
+<a href="https://github.com/ChinmayiSanthosh"><img src="https://github.com/ChinmayiSanthosh.png?size=96" width="76" height="76" style="border-radius:50%;object-fit:cover" alt="Chinmayi Santhosh"></a><br><br>
+<strong>Chinmayi Santhosh</strong><br>
+<sub><code>u24585671</code></sub><br>
+<sub>Frontend, Testing, User Training</sub><br><br>
+<a href="docs/cvs/chinmayi-santhosh-cv.pdf"><img src="https://img.shields.io/badge/View_CV-2D6A4F?style=flat-square" alt="View CV"></a><br><br>
+<sub><a href="https://github.com/ChinmayiSanthosh">GitHub</a> | <a href="https://www.linkedin.com/in/chinmayi-santhosh-b53b09438">LinkedIn</a></sub>
+</td>
 </tr>
 </table>
-
 <br/>
 
 <details>
