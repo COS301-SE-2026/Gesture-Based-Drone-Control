@@ -145,7 +145,7 @@
 <a href="https://github.com/ShavirV"><img src="https://github.com/ShavirV.png?size=96" width="76" height="76" style="border-radius:50%;object-fit:cover" alt="Shavir Vallabh"></a><br><br>
 <strong>Shavir Vallabh</strong><br>
 <sub><code>u23718146</code></sub><br>
-<sub>Backend, Game Dev, HID</sub><br><br>
+<sub>Backend, Game Dev, HID Integration</sub><br><br>
 <a href="docs/cvs/shavir-vallabh-cv.pdf"><img src="https://img.shields.io/badge/View_CV-2D6A4F?style=flat-square" alt="View CV"></a><br><br>
 <sub><a href="https://github.com/ShavirV">GitHub</a> | <a href="https://www.linkedin.com/in/shavir-vallabh-a0284026a/">LinkedIn</a></sub>
 </td>
