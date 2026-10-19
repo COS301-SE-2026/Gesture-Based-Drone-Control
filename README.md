@@ -130,7 +130,6 @@
 </a>
 
 <br/><br/>
-
 <table>
 <tr>
 <td align="center" width="20%" valign="top">
@@ -276,17 +275,7 @@ sequenceDiagram
 
 ### Gesture vocabulary
 
-The rule-based recognizer classifies six gestures from MediaPipe's 21 hand landmarks, plus an `UNKNOWN` failure state for low-confidence or unmatched frames. Raw per-frame classifications pass through `GestureStabilizer`, which applies majority voting over a rolling buffer so a single blurred or badly lit frame cannot fire a command.
-
-| Gesture | Fingers up | Source |
-|:---|:---:|:---|
-| `OPEN_PALM` | 5 | Specific pattern, takes priority over raw count |
-| `FIST` | 0 | Specific pattern, takes priority over raw count |
-| `ONE_FINGER` | 1 | Finger count |
-| `TWO_FINGERS` | 2 | Finger count |
-| `THREE_FINGERS` | 3 | Finger count |
-| `FOUR_FINGERS` | 4 | Finger count |
-| `UNKNOWN` | — | Confidence too low or unrecognised pattern |
+The rule-based recognizer classifies six gestures from MediaPipe's 21 hand landmarks for each finger raised, plus an `UNKNOWN` failure state for low-confidence or unmatched frames. Per-frame classifications pass through the `GestureStabilizer`, which takes the majority vote from a sliding window of frames.
 
 ### Calibration gate
 
@@ -574,75 +563,78 @@ The repository also contains unit and integration tests, performance testing too
 <table>
   <tr>
     <th align="center" width="70">ID</th>
-    <th>Use Case</th>
-    <th align="center" width="110">Priority</th>
-    <th align="center" width="110">Status</th>
+    <th width="220">Use Case</th>
+    <th>Description</th>
   </tr>
   <tr>
     <td align="center"><code>UC1</code></td>
-    <td><b>Hand Tracking and Gesture Recognition.</b> Live camera feed, MediaPipe landmark detection, rule-based classification, stabilizer smoothing, gesture to command mapping</td>
-    <td align="center"><img src="https://img.shields.io/badge/HIGH-E5383B?style=flat-square&labelColor=161A1D"/></td>
-    <td align="center">Implemented</td>
+    <td>Hand Tracking and Gesture Recognition</td>
+    <td>Tracks hand landmarks from the camera feed, recognises gestures and converts them into drone commands.</td>
   </tr>
   <tr>
     <td align="center"><code>UC2</code></td>
-    <td><b>Dashboard and Telemetry.</b> Real time telemetry display, command history, WebSocket feed, Recharts visualisations</td>
-    <td align="center"><img src="https://img.shields.io/badge/HIGH-E5383B?style=flat-square&labelColor=161A1D"/></td>
-    <td align="center">Implemented</td>
+    <td>Dashboard and Telemetry</td>
+    <td>Displays live drone telemetry, recent commands and charts, with updates delivered over WebSockets.</td>
   </tr>
   <tr>
     <td align="center"><code>UC3</code></td>
-    <td><b>Simulator Adapter.</b> Dynamic adapter switching across Project AirSim, legacy AirSim and the dummy drone, with a live swap demo script</td>
-    <td align="center"><img src="https://img.shields.io/badge/HIGH-E5383B?style=flat-square&labelColor=161A1D"/></td>
-    <td align="center">Implemented</td>
+    <td>Simulator Support</td>
+    <td>Switches between Project AirSim, legacy AirSim and a dummy drone through a common adapter interface.</td>
   </tr>
   <tr>
     <td align="center"><code>UC4</code></td>
-    <td><b>Controller Support.</b> Gamepad adapter, dual-stick mapping, controller layout UI, keyboard fallback</td>
-    <td align="center"><img src="https://img.shields.io/badge/MED-BA181B?style=flat-square&labelColor=161A1D"/></td>
-    <td align="center">Implemented</td>
+    <td>Controller Support</td>
+    <td>Supports gamepad input with fully analog dual-stick controls, a controller layout interface and keyboard controls as an alternative.</td>
   </tr>
   <tr>
     <td align="center"><code>UC5</code></td>
-    <td><b>Real Telemetry Logging.</b> Telemetry observer and manager, SQLite and Postgres repositories, flight summary persistence</td>
-    <td align="center"><img src="https://img.shields.io/badge/MED-BA181B?style=flat-square&labelColor=161A1D"/></td>
-    <td align="center">Implemented</td>
+    <td>Telemetry Logging</td>
+    <td>Records flight telemetry and summaries in SQLite for later retrieval and processing.</td>
   </tr>
   <tr>
     <td align="center"><code>UC6</code></td>
-    <td><b>GPS Simulation.</b> Simulated position feed, Leaflet map view, displacement statistics</td>
-    <td align="center"><img src="https://img.shields.io/badge/MED-BA181B?style=flat-square&labelColor=161A1D"/></td>
-    <td align="center">Implemented</td>
+    <td>GPS Simulation</td>
+    <td>Simulates drone position updates and displays movement on a Leaflet map, including displacement statistics.</td>
   </tr>
   <tr>
     <td align="center"><code>UC7</code></td>
-    <td><b>User Tutorial and Help.</b> Gesture guide, onboarding tutorial, in-app help page</td>
-    <td align="center"><img src="https://img.shields.io/badge/MED-BA181B?style=flat-square&labelColor=161A1D"/></td>
-    <td align="center">Implemented</td>
+    <td>Tutorial and Help</td>
+    <td>Provides a gesture reference, an interactive onboarding tutorial and an in-app help page.</td>
   </tr>
   <tr>
     <td align="center"><code>UC8</code></td>
-    <td><b>Gesture Calibration.</b> Guided calibration flow, deterministic backend state machine, REST plus WebSocket endpoints, flight gating</td>
-    <td align="center"><img src="https://img.shields.io/badge/HIGH-E5383B?style=flat-square&labelColor=161A1D"/></td>
-    <td align="center">Implemented</td>
+    <td>Gesture Calibration</td>
+    <td>Guides users through calibration before flight, with backend state management and REST and WebSocket endpoints.</td>
+  </tr>
+  <tr>
+  <td align="center"><code>Wow1</code></td>
+  <td>Gesture-Controlled Minigames</td>
+  <td>Includes three minigames with high-score tracking, support for all existing input methods and persistent leaderboards for project day competitions.</td>
+</tr>
+<tr>
+  <td align="center"><code>Wow2</code></td>
+  <td>Drone Licensing Practice</td>
+  <td>Provides a Three.js environment for practising four challenges based on a real drone licence test, controlled using the existing gesture system.</td>
+</tr>
+<tr>
+  <td align="center"><code>Wow3</code></td>
+  <td>Motion-Based Gestures</td>
+  <td>Offers an alternative to the standard gesture system, recognising dynamic hand movements and changes in distance to support more advanced controls.</td>
+</tr>
+  <tr>
+    <td align="center"><code>Base</code></td>
+    <td>Registration and Login</td>
+    <td>Handles account registration and login using JWT access and refresh tokens stored through HTTP-only cookies. Includes light and dark themes.</td>
   </tr>
   <tr>
     <td align="center"><code>Base</code></td>
-    <td><b>Registration and Login.</b> Signup, login, JWT access and refresh tokens, HTTP-only cookies, light and dark themes</td>
-    <td align="center"><img src="https://img.shields.io/badge/HIGH-E5383B?style=flat-square&labelColor=161A1D"/></td>
-    <td align="center">Implemented</td>
-  </tr>
-  <tr>
-    <td align="center"><code>Base</code></td>
-    <td><b>Landing Page and Docs Hub.</b> Public marketing site with Three.js, MkDocs documentation hub, single Pages deployment</td>
-    <td align="center"><img src="https://img.shields.io/badge/LOW-660708?style=flat-square&labelColor=161A1D"/></td>
-    <td align="center">Implemented</td>
+    <td>Landing Page and Documentation</td>
+    <td>Provides a public landing page built with Three.js and a MkDocs documentation site, deployed through GitHub Pages.</td>
   </tr>
   <tr>
     <td align="center"><code>DevOps</code></td>
-    <td><b>Infrastructure, CI/CD and Packaging.</b> uv workspace, Task runner, Actions pipelines, Codecov, PyInstaller plus Electron release builds</td>
-    <td align="center"><img src="https://img.shields.io/badge/MED-BA181B?style=flat-square&labelColor=161A1D"/></td>
-    <td align="center">Implemented</td>
+    <td>Infrastructure and Release Builds</td>
+    <td>Uses uv and Task to manage development, GitHub Actions for CI/CD, Codecov for coverage reporting, and PyInstaller and Electron for packaging.</td>
   </tr>
 </table>
 
