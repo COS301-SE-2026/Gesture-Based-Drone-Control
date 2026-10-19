@@ -650,23 +650,22 @@ The repository also contains unit and integration tests, performance testing too
 [![Node](https://img.shields.io/badge/Node.js-22-A4161A?style=flat-square&logo=node.js&logoColor=F5F3F4&labelColor=161A1D)](https://nodejs.org)
 [![Yarn](https://img.shields.io/badge/Yarn-1.22+-A4161A?style=flat-square&logo=yarn&logoColor=F5F3F4&labelColor=161A1D)](https://yarnpkg.com)
 
-> **Python must be 3.11.** The workspace pins `>=3.11,<3.12` because MediaPipe and the AirSim clients have no wheels beyond it.
 
-On Windows, `task prereqs` installs Python 3.11, uv and DirectX via winget. Otherwise:
+> This project uses [Taskfile](https://taskfile.dev/) as an OS agnostic alternative to Make. It's a really nice tool.
+
+Note, **Python must be 3.11.** The workspace pins `>=3.11,<3.12` because MediaPipe and the AirSim clients have no wheels beyond it.
+
+If uv is not installed, follow the official installation [instructions](https://docs.astral.sh/uv/getting-started/installation/).
 
 ```bash
-# uv
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Task
-brew install go-task            # macOS
+brew install go-task              # macOS
 sudo snap install task --classic  # Linux
-winget install Task.Task        # Windows
+winget install Task.Task          # Windows
 ```
 
 <br/>
 
-**Clone**
+**Clone the repository**
 
 ```bash
 git clone --recurse-submodules https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control.git
@@ -674,53 +673,46 @@ cd Gesture-Based-Drone-Control
 cp .env.example .env
 ```
 
-> Already cloned without submodules? Run `git submodule update --init --recursive`. Without `vendors/`, the Project AirSim adapter will not import.
+If you already cloned the repository without its submodules, initialise them with:
+
+```
+git submodule update --init --recursive
+```
 
 <br/>
 
-**Install**
+**Install Dependencies and Libraries**
 
 ```bash
 task install
 ```
 
-One command creates the 3.11 virtual environment, seeds the build dependencies AirSim needs, runs `uv sync --all-groups` across the whole workspace, and installs the frontend with Yarn. `make install` is the Unix shorthand for the same thing.
+This creates a Python 3.11 virtual environment, installs the dependencies required by AirSim, synchronises the Python workspace and installs the frontend dependencies with Yarn.
+
+Configure the environment variables in .env before running the application. In particular, set the backend port and any simulator paths required by your setup.
 
 <br/>
 
-**Run locally**
+**Run the application locally**
 
 ```bash
 task dev
 ```
 
-This starts the FastAPI backend on `BACKENDPORT` (default `3001`) with hot reload on both `apps/backend/app` and `services`, and the Vite dev server for the dashboard. Run them separately with `task backend-dev` and `task frontend-dev`. The landing page runs on its own port with `task landing`.
+This starts the FastAPI backend and the Vite frontend development server. The backend uses BACKENDPORT from the environment; the frontend runs from apps/frontend.
 
-<br/>
+To run either component separately:
 
-**Run the CV pipeline standalone**
-
-Useful for debugging the vision layer without the API in the way. Each step adds one stage:
-
-```bash
-task cv-camera      # camera feed only
-task cv-detector    # camera plus MediaPipe hand detection
-task cv-engine      # camera, detector, gesture engine
-task cv-pipeline    # full async pipeline: landmarks, FPS, speed, confidence
+```
+task backend-dev
+task frontend-dev
 ```
 
-<br/>
+The public landing page has its own development server:
 
-**Simulator (Windows)**
-
-Point `AS_PATH` and `PAS_PATH` in `.env` at your simulator executables, then:
-
-```bash
-task sim-pas        # launch Project AirSim (UE5)
-task sim-pas-demo   # launch Project AirSim plus the adapter demo script
-task sim-as         # launch legacy AirSim
 ```
-
+task landing
+```
 <br/>
 
 **Test**
@@ -732,29 +724,20 @@ task test           # everything: unit, integration, end to end
 Or by layer:
 
 ```bash
-task backend-unit-test    # pytest over apps/backend/tests and services/tests, fails under 80%
-task frontend-unit-test   # yarn unit-test  (Playwright, tests/unitTesting)
-task integration-test     # pytest over tests/
-task e2e-test             # yarn e2e-test   (Playwright, tests/end_to_end, single worker)
+task unit-test             # Frontend and backend unit tests
+task backend-unit-test     # Backend and services tests
+task frontend-unit-test    # Frontend unit tests
+task integration-test      # Integration tests
+task e2e-test              # End-to-end tests
 ```
-
-| Suite | Count | Location |
-|:---|:---:|:---|
-| Backend unit | 131 | `apps/backend/tests/` |
-| Services unit | 322 | `services/tests/` |
-| Integration | 30 | `tests/integration/` |
-| Frontend unit (Playwright) | 91 | `apps/frontend/tests/unitTesting/` |
-| End to end (Playwright) | 12 | `apps/frontend/tests/end_to_end/` |
-
-> CI runners have no webcam. `GBDC_E2E_NO_CAMERA=1` is set for the E2E job; keep it when running E2E on a headless machine.
 
 <br/>
 
-**Lint and format**
+**Linting and formatting**
 
 ```bash
-task lint     # ruff check (Python) plus eslint and prettier --check (frontend)
-task fix      # ruff format, ruff check --fix, prettier --write
+task lint    # Python linting, frontend linting and API contract validation
+task fix     # Automatically fix supported Python and frontend formatting issues
 ```
 
 <br/>
@@ -765,7 +748,21 @@ task fix      # ruff format, ruff check --fix, prettier --write
 task build
 ```
 
-PyInstaller bundles the backend into a single binary (collecting MediaPipe, AirSim, Project AirSim, bcrypt, asyncpg and the vendored `sim_config`), then `electron-builder` packages the frontend around it. `task clean` removes `release/`, `dist/` and `apps/frontend/dist/`.
+The build stages the simulator and its Pixel Streaming signalling server, packages the backend with PyInstaller, and builds the Electron desktop application.
+
+Simulator build requirements:
+
+- Set SIM_SRC in .env to the simulator directory or archive used for staging.
+
+- The simulator staging task supports Linux and macOS shell environments, as well as a separate Windows PowerShell script.
+
+- The staged simulator must contain the expected Blocks project and Linux shipping binary where applicable. Check the platform-specific staging requirements before building.
+
+To remove generated build output:
+
+```
+task clean
+```
 
 <br/>
 
