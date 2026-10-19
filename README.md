@@ -215,9 +215,9 @@ Strong background in AI and optimisation: RNNs in PyTorch, Genetic Algorithms, Q
 </td></tr>
 <tr><td>
 
-#### Jaitin Moodally. Systems, DevOps, Low level
+#### Jaitin Moodally. Systems, DevOps, Low Level
 
-Experience across multiple operating systems and environments. Homelab veteran. Runs different applications on resource constrained VMs. Experienced hosting multi user applications and writing low level code. Top stack: Java, C++, C, Python, TypeScript.
+Experience across multiple operating systems and environments. Homelab veteran. Runs different applications on resource constrained VMs. Experienced hosting multi user applications and writing low level code. Top stack: Java, C++, C, Python, TypeScript. Interested in Cyber Security, Machine Learning, Artificial Intelligence and Devops. 
 
 </td></tr>
 <tr><td>
