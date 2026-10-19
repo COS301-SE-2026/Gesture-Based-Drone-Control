@@ -201,35 +201,35 @@
 <table>
 <tr><td>
 
-#### Ayush Beekum. Team Lead
+#### Ayush Beekum - Team Lead
 
 Has delivered production web applications for real clients using React and Python, demonstrating equal strength on both frontend and backend development. Completed several standalone projects from concept to deployment, including a Python system that fetches real-time data from an API and reflects it live in the application. Language proficiency: Python, JavaScript, TypeScript, SQL, C++, Java, PHP. Works across the entire proposed stack. Consistent integration owner and bug fix go-to.
 
 </td></tr>
 <tr><td>
 
-#### Shavir Vallabh. AI, Optimization, HPC
+#### Shavir Vallabh - Backend, HID integration, Systems Architecture
 
-Strong background in AI and optimisation: RNNs in PyTorch, Genetic Algorithms, QAOA (quantum), applied to cybersecurity contexts like hashed password cracking and search space optimisation. Led the Tuks team to the finals of the CHPC Student Cluster Competition (DevOps orchestration, compiler tuning, benchmarking, profiling under strict resource constraints). Currently works part time as TechTeam member in UP's CS department on Linux infrastructure and full stack internal tools.
+Strong Currently works part time in the University of Pretoria's Computer Science department on Linux infrastructure, cluster computing, and full-stack internal tools. Strong background in backend development, and architecting systems; with interests in applied AI, cybersecurity, HPC, and software engineering.
 
 </td></tr>
 <tr><td>
 
-#### Jaitin Moodally. Systems, DevOps, Low Level
+#### Jaitin Moodally - Systems, DevOps, Low Level
 
 Experience across multiple operating systems and environments. Homelab veteran. Runs different applications on resource constrained VMs. Experienced hosting multi user applications and writing low level code. Top stack: Java, C++, C, Python, TypeScript. Interested in Cyber Security, Machine Learning, Artificial Intelligence and Devops. 
 
 </td></tr>
 <tr><td>
 
-#### Diya Narotam. UI/UX and Frontend
+#### Diya Narotam - UI/UX and Frontend
 
 Hands on with Python and NumPy for data manipulation. Strong OOP foundations in C++ and Java, proficient SQL. 1st place in a school website update hackathon. UI/UX contributor with PWA experience. Has built offline capable mobile applications. Testing across Playwright, Vitest and Jest gives solid grounding in both unit and end to end testing.
 
 </td></tr>
 <tr><td>
 
-#### Chinmayi Santhosh. Frontend and Data
+#### Chinmayi Santhosh - Frontend and Data
 
 Considerable statistical and data analysis skills. UI engineering across React and Tailwind CSS. Writes unit and integration tests to ensure frontend reliability and catch regressions early. Consistent frontend contributor across every university project. Delivers clean, functional interfaces and collaborates well across the stack.
 
