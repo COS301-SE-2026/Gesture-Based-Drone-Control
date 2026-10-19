@@ -186,9 +186,15 @@ The **[documentation hub](https://cos301-se-2026.github.io/Gesture-Based-Drone-C
 <a id="the-team-codex-merchants"></a>
 <img src="docs/assets/readme/header-team.svg" width="100%" alt="The Team. Codex Merchants"/>
 
+<p align="center">
+  <img src="docs/assets/readme/group.jpeg" alt="The team" width="750">
+  <br>
+  <em>Left to right: Ayush, Shavir, Jaitin, Cameron (Project Mentor), Chinmayi, Diya</em>
+</p>
+
 <div align="center">
 
-<br/><br/>
+<br/>
 <table>
 <tr>
 <td align="center" width="20%" valign="top">
@@ -363,7 +369,7 @@ Everything is mounted under the `/api` prefix. Interactive Swagger docs are serv
 
 <details>
 
-<summary>Try out each API endpoint in the <a href=https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/api/SWAGGER/#/>Hosted Swagger Docs</a>.</summary> 
+<summary>Expand for a summary, or check out each API endpoint in the <a href=https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/api/SWAGGER/#/>Hosted Swagger Docs</a>.</summary> 
 
 | Router | Endpoints |
 |:---|:---|
@@ -391,7 +397,7 @@ It includes dedicated modules for computer vision, gesture recognition, drone co
 The repository also contains unit and integration tests, performance testing tools, project documentation, packaging configurations, and the library for Project AirSim, maintained as a submodule.
 
 <details>
-<summary><b> Click to see the actual project structure, at a tree depth of 3 </b></summary>
+<summary><b> Click to see the actual project structure, as a tree of depth 3 </b></summary>
 
 ```
 .
@@ -630,7 +636,9 @@ The repository also contains unit and integration tests, performance testing too
 
 <img src="docs/assets/readme/header-usecases.svg" width="100%" alt="Use Cases"/>
 
-Every use case is associated with a long-lived branch and a slice of the Project Board. A comprehensive breakdown is available in the [SRS](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/).
+<details>
+
+<summary>Expand to see a breakdown of all use cases. Every use case is associated with a long-lived branch and a slice of the Project Board. A comprehensive breakdown is available in the [SRS](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/).</summary>
 
 <table>
   <tr>
@@ -710,6 +718,8 @@ Every use case is associated with a long-lived branch and a slice of the Project
   </tr>
 </table>
 
+</details>
+
 <br/>
 
 <img src="docs/assets/readme/header-start.svg" width="100%" alt="Getting Started"/>
@@ -722,6 +732,8 @@ Every use case is associated with a long-lived branch and a slice of the Project
 [![Node](https://img.shields.io/badge/Node.js-22-A4161A?style=flat-square&logo=node.js&logoColor=F5F3F4&labelColor=161A1D)](https://nodejs.org)
 [![Yarn](https://img.shields.io/badge/Yarn-1.22+-A4161A?style=flat-square&logo=yarn&logoColor=F5F3F4&labelColor=161A1D)](https://yarnpkg.com)
 
+<details>
+<summary>Expand for comprehensive instructions to start developing</summary>
 
 > This project uses [Taskfile](https://taskfile.dev/) as an OS agnostic alternative to Make. It's a really nice tool.
 
@@ -835,6 +847,8 @@ To remove generated build output:
 ```
 task clean
 ```
+
+</details>
 
 <br/>
 
