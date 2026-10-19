@@ -45,7 +45,7 @@
 
 <br/>
 
-> **Codex Merchants. Gesture Based Drone Control.** A real-time computer-vision system that eliminates the physical drone controller entirely. Hand gestures are detected through a live camera feed, classified by a landmark-driven recognition engine, and translated directly into drone flight commands, with a mandatory calibration gate and safety fail-safes built in from the ground up. A drone simulator ships alongside the app so every feature can be flown in a virtual environment, and keyboard, gamepad and on-screen inputs remain available as accessible alternatives to gestures.
+Control a drone with your hands. Our system uses real-time computer vision to recognise gestures and translate them into flight commands, with calibration and safety checks built in. Fly in a simulator, compete in gesture-controlled minigames, challenge yourself in testing environments, or switch to a keyboard, gamepad or on-screen controls. From learning the controls to practising flight, the project brings drone interaction into a more intuitive, accessible and interactive experience for pilots of all skill levels.
 
 <br/>
 
@@ -59,62 +59,111 @@
 
 <img src="docs/assets/readme/header-docs.svg" width="100%" alt="Website and Documentation"/>
 
-> The project ships a live site: the **[landing page](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/)** introduces the product, and the **[documentation hub](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/)** hosts every deliverable. All documents also live in the repo under [`docs/`](docs/) as Markdown or PDF. Both are built and deployed together by the `docs.yml` workflow.
+A live landing page **[landing page](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/)** serves as an easy place to get acquainted with the system and download the latest release.
+
+The **[documentation hub](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/)** hosts every deliverable. All documents also live in the repo under [`docs/`](docs/) as Markdown or PDF. 
+
+### **Introduction**
 
 <table>
   <tr>
-    <th width="40">#</th><th>Document</th><th>Purpose</th><th width="120">Link</th>
+    <th>Document</th>
+    <th>Purpose</th>
   </tr>
   <tr>
-    <td align="center">01</td><td><b>Demo Videos</b></td><td>Recorded demo walkthroughs on the Codex Merchants channel</td><td><a href="https://www.youtube.com/@CodexMerchants">Watch</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/MANUAL/"><b>User Manual</b></a></td>
+    <td>Installation, calibration and introduction to gesture-based flight controls.</td>
   </tr>
   <tr>
-    <td align="center">02</td><td><b>User Manual</b></td><td>Set up, sign in, calibrate, and fly the drone with your hand</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/MANUAL/">Manual</a></td>
+    <td><a href="https://www.youtube.com/@CodexMerchants"><b>Demo Videos</b></a></td>
+    <td>Recorded walkthroughs on the Codex Merchants YouTube channel.</td>
   </tr>
   <tr>
-    <td align="center">03</td><td><b>Software Requirements Specification</b></td><td>Functional requirements, use cases, domain model, quality requirements</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/">SRS</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/BRAND/"><b>Brand and Design System</b></a></td>
+    <td>Visual identity, wireframes, colours and typography.</td>
+  </tr>
+</table>
+
+### **Requirements and Design**
+
+<table>
+  <tr>
+    <th>Document</th>
+    <th>Purpose</th>
   </tr>
   <tr>
-    <td align="center">04</td><td><b>Software Architecture Specification</b></td><td>Architectural patterns, services, design decisions, diagrams</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SAS/">SAS</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/"><b>SRS</b></a></td>
+    <td>Functional requirements, use cases, domain model and quality requirements.</td>
   </tr>
   <tr>
-    <td align="center">05</td><td><b>Brand and Design System</b></td><td>Style guide, wireframes, colour palette, typography</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/BRAND/">Brand</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SAS/"><b>SAS</b></a></td>
+    <td>Architectural patterns, services, design decisions and diagrams.</td>
   </tr>
   <tr>
-    <td align="center">06</td><td><b>Coding Standards</b></td><td>Conventions, Ruff and ESLint rules, review requirements</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/CODING/">Coding</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/frontend/atoms/"><b>Component Reference</b></a></td>
+    <td>Frontend components, routing and service adapters.</td>
   </tr>
   <tr>
-    <td align="center">07</td><td><b>Testing Policy</b></td><td>Testing types, coverage targets, acceptance criteria</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/POLICY/">Policy</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/API_REFERENCE/"><b>API Reference</b></a></td>
+    <td>REST and WebSocket contracts, schemas and examples.</td>
+  </tr>
+</table>
+
+### **Development and Quality**
+
+<table>
+  <tr>
+    <th>Document</th>
+    <th>Purpose</th>
   </tr>
   <tr>
-    <td align="center">08</td><td><b>Testing Manual</b></td><td>How to run the suites and what they cover</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/testing/TESTING/">Testing</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/CODING/"><b>Coding Standards</b></a></td>
+    <td>Code conventions, linting rules and review requirements.</td>
   </tr>
   <tr>
-    <td align="center">8a</td><td><b>NFR Verification</b></td><td>Evidence-backed non-functional requirement tests and traceability matrix</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/nfr/NFR/">NFR</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/POLICY/"><b>Testing Policy</b></a></td>
+    <td>Testing types, coverage targets and acceptance criteria.</td>
   </tr>
   <tr>
-    <td align="center">09</td><td><b>API Reference</b></td><td>REST and WebSocket contracts, schemas, examples</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/api/API_REFERENCE/">API</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/testing/TESTING/"><b>Testing Manual</b></a></td>
+    <td>How to run the test suites and what they cover.</td>
   </tr>
   <tr>
-    <td align="center">10</td><td><b>Project Plan</b></td><td>Roadmap, milestones, demo deliverables</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/PLAN/">Plan</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/nfr/NFR/"><b>NFR Verification</b></a></td>
+    <td>Non-functional requirement evidence and traceability matrix.</td>
   </tr>
   <tr>
-    <td align="center">11</td><td><b>Git Conventions</b></td><td>Branching, commits, PR rules</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/GIT/">Git</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/GIT/"><b>Git Conventions</b></a></td>
+    <td>Branching, commit messages and pull request rules.</td>
   </tr>
   <tr>
-    <td align="center">12</td><td><b>CI/CD Pipeline</b></td><td>GitHub Actions workflows and quality gates</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/CICD/">CI/CD</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/CICD/"><b>CI/CD Pipeline</b></a></td>
+    <td>GitHub Actions workflows and quality gates.</td>
+  </tr>
+</table>
+
+### **Planning and Project Archives**
+
+<table>
+  <tr>
+    <th>Document</th>
+    <th>Purpose</th>
   </tr>
   <tr>
-    <td align="center">13</td><td><b>Component Reference</b></td><td>Frontend atoms, molecules, organisms, routing, service adapters</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/frontend/atoms/">Reference</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/PLAN/"><b>Project Plan</b></a></td>
+    <td>Roadmap, milestones and demo deliverables.</td>
   </tr>
   <tr>
-    <td align="center">14</td><td><b>Demo 1 Archive</b></td><td>Frozen snapshot of every Demo 1 deliverable</td><td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/demo/demo_one_documentation/">Archive</a></td>
+    <td><a href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/demo/demo_one_documentation/"><b>Demo 1 Archive</b></a></td>
+    <td>Archived deliverables from the first demonstration.</td>
   </tr>
   <tr>
-    <td align="center">15</td><td><b>Tender Document</b></td><td>Original proposal submitted to client</td><td><a href="docs/reports/tender.pdf">Tender</a></td>
+    <td><a href="docs/reports/tender.pdf"><b>Tender Document</b></a></td>
+    <td>Original proposal submitted to the client.</td>
   </tr>
   <tr>
-    <td align="center">16</td><td><b>GitHub Project Board</b></td><td>Live sprint board, backlog, in progress</td><td><a href="https://github.com/orgs/COS301-SE-2026/projects/70">Board</a></td>
+    <td><a href="https://github.com/orgs/COS301-SE-2026/projects/70"><b>GitHub Project Board</b></a></td>
+    <td>Live sprint board, backlog and work in progress.</td>
   </tr>
 </table>
 
@@ -124,10 +173,6 @@
 <img src="docs/assets/readme/header-team.svg" width="100%" alt="The Team. Codex Merchants"/>
 
 <div align="center">
-
-<a href="#the-team-codex-merchants">
-  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=500&size=14&pause=1000&color=B1A7A6&center=true&vCenter=true&width=700&lines=Five+engineers+%C2%B7+One+stack+%C2%B7+Zero+compromises" alt="Team tagline"/>
-</a>
 
 <br/><br/>
 <table>
@@ -231,10 +276,12 @@ Considerable statistical and data analysis skills. UI engineering across React a
 
 <img src="docs/assets/readme/header-architecture.svg" width="100%" alt="System Architecture"/>
 
-> The full architecture, from raw camera input through to packaged desktop application and CI/CD automation, with all diagrams, lives in the **[Software Architecture Specification](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SAS/)**.
+The full architecture, from raw camera input through to packaged desktop application and CI/CD automation, with all diagrams, lives in the **[Software Architecture Specification](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SAS/)**.
 
 <details>
 <summary><b>Gesture to Command sequence diagram. Click to expand.</b></summary>
+
+<br/>
 
 ```mermaid
 %%{init: {'theme':'dark', 'themeVariables': {
@@ -271,6 +318,13 @@ sequenceDiagram
 
 </details>
 
+<details>
+<summary><b>System architecture diagram. Click to expand.</b></summary>
+
+<img src="docs/diagrams/Architecture-Diagram.drawio.svg" width="100%" alt="System Architecture"/>
+
+</details>
+
 <br/>
 
 ### Gesture vocabulary
@@ -279,20 +333,23 @@ The rule-based recognizer classifies six gestures from MediaPipe's 21 hand landm
 
 ### Calibration gate
 
-Before any flight command is accepted, the user walks the calibration sequence once. This is a safety net that proves the pipeline can read *this* user's hand under *this* lighting. `CalibrationManager` holds app-wide status and owns at most one `CalibrationSession`.
+Before any flight command is accepted, the user walks the calibration sequence once. This is a safety net that proves the pipeline can read *this* user's hand under *this* lighting. 
 
-| Parameter | Value | Meaning |
-|:---|:---:|:---|
-| `WINDOW_SECONDS` | `3.0` | Rolling evaluation window per gesture |
-| `PASS_RATIO` | `0.8` | Fraction of frames in the window that must match the target |
-| `MIN_FRAMES` | `45` | Guards against passing on a handful of lucky frames |
-| `SUCCESS_DISPLAY_SECONDS` | `2.0` | Green-skeleton confirmation before the next gesture |
+The sequence runs through each gesture, proceeding once the system is confident that a gesture is sufficiently recognised
 
-The sequence runs `OPEN_PALM → FIST → ONE_FINGER → TWO_FINGERS → THREE_FINGERS → FOUR_FINGERS`. A completed run reports `COMPLETED`; the REST skip endpoint reports `SKIPPED`. Both satisfy the flight-command gate.
+### Hardware Communication
 
-### API surface
+The system allows for seamless integration of more HIDs (Human-Interface Devices) and drones through the use of a unique two-way adapter. Each HID inherits from an abstract `InputAdapter` class, and each drone inherits from an abstract `DroneAdapter` class. 
+
+This means that adding a new input method or drone implementation requires only one new file; and every existing implementation on the other side of the adapter is automatically guaranteed to work with no further configuration.
+
+### API interface
 
 Everything is mounted under the `/api` prefix. Interactive Swagger docs are served at `/docs` when the backend is running.
+
+<details>
+
+<summary>Try out each API endpoint in the <a href=https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/api/SWAGGER/#/>Hosted Swagger Docs</a>.</summary> 
 
 | Router | Endpoints |
 |:---|:---|
@@ -306,11 +363,12 @@ Everything is mounted under the `/api` prefix. Interactive Swagger docs are serv
 | `/game` | `POST /connect` · `POST /disconnect` · `GET /status` · `WS ws/commands`|
 | `/leaderboard` | `POST /scores` · `PATCH /scores/{entry_id}/name` · `GET /scores/{game_id}` |
 
+</details>
+
 <br/>
 
 <img src="docs/assets/readme/header-repo.svg" width="100%" alt="Repository Structure"/>
 
->
 
 The project uses a monorepo structure that separates the frontend, backend, shared packages, and supporting services. 
 
@@ -558,7 +616,7 @@ The repository also contains unit and integration tests, performance testing too
 
 <img src="docs/assets/readme/header-usecases.svg" width="100%" alt="Use Cases"/>
 
-> Every use case owns a long-lived branch and a slice of the Project Board. The full catalogue with actors, flows and diagrams lives in the [SRS](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/).
+Every use case is associated with a long-lived branch and a slice of the Project Board. A comprehensive breakdown is available in the [SRS](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/SRS/).
 
 <table>
   <tr>
@@ -799,7 +857,9 @@ flowchart LR
 
 <img src="docs/assets/readme/header-cicd.svg" width="100%" alt="CI/CD and Code Quality"/>
 
-> Test and lint run on every pull request, docs deploys on pushes that touch the site, and release builds the packaged app on every push to `main`.
+Testing and lintling run on every pull request, and release builds the packaged app on every push to `main`.
+
+<br/>
 
 <table>
   <tr>

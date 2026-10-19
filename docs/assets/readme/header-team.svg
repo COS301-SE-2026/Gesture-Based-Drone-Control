@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 100" width="900" height="100" role="img" aria-labelledby="title">
-  <title id="title">Team Codex Merchants</title>
+  <title id="title">The Team: Codex Merchants</title>
 
   <defs>
     <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
@@ -19,7 +19,7 @@
         font-size="29"
         font-weight="700"
         letter-spacing="0.3"
-        fill="#F5F3F4">Team Codex Merchants</text>
+        fill="#F5F3F4">The Team: Codex Merchants</text>
 
   <rect x="44" y="80" width="812" height="1" fill="#303030"/>
   <rect x="44" y="80" width="56" height="2" fill="#E5383B"/>
