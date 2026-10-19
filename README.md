@@ -342,79 +342,124 @@ Everything is mounted under the `/api` prefix. Interactive Swagger docs are serv
 
 <img src="docs/assets/readme/header-repo.svg" width="100%" alt="Repository Structure"/>
 
-> Monorepo, single `uv` workspace at the root, trunk based. Below is the actual tree (depth 3).
+>
+
+The project uses a monorepo structure that separates the frontend, backend, shared packages, and supporting services. 
+
+It includes dedicated modules for computer vision, gesture recognition, drone control, input handling, telemetry, authentication, and database management. 
+
+The repository also contains unit and integration tests, performance testing tools, project documentation, packaging configurations, and the library for Project AirSim, maintained as a submodule.
+
+<details>
+<summary><b> Click to see the actual project structure, at a tree depth of 3 </b></summary>
 
 ```
-Gesture-Based-Drone-Control/
-├── .github/workflows/         # CI: test.yml, lint.yml, docs.yml, release.yml
-├── apps/
-│   ├── backend/               # FastAPI application layer
-│   │   ├── app/
-│   │   │   ├── api/           # analytics, auth, calibration, drone, gestures, input
-│   │   │   ├── cv/            # calibration state machine, frame serialization, stream
-│   │   │   ├── main.py        # App factory, lifespan, CORS, router mount
-│   │   │   └── state.py       # AppState shared across routes
-│   │   └── tests/             # Pytest unit tests
-│   ├── frontend/              # React 18 dashboard (JSX, Vite, Tailwind, shadcn/ui)
-│   │   ├── electron/          # Electron main + preload for the packaged app
-│   │   ├── src/
-│   │   │   ├── components/    # atoms, molecules, organisms, layouts, ui
-│   │   │   ├── context/       # Commands, Telemetry, Theme providers
-│   │   │   ├── hooks/         # useGestureStream, useCalibrationStream, useTelemetry, ...
-│   │   │   └── lib/           # api client, hand skeleton renderer
-│   │   └── tests/             # Playwright: unitTesting/ and end_to_end/
-│   ├── desktop/               # Legacy Electron shell (superseded by frontend/electron)
-│   └── mobile/                # Capacitor scaffold (iOS, Android)
-│
-├── landing_page/              # Public site (React, TypeScript, Vite, Three.js)
-│   └── src/                   # Atomic design: atoms, molecules, organisms
-│
-├── services/                  # Core Python service layer
-│   ├── auth/                  # Auth manager, password service, tokens, cookies, schemas
-│   ├── commands/              # Command model and dispatch
-│   ├── cv_pipeline/
-│   │   ├── camera/            # OpenCV camera feed
-│   │   ├── hand_detection/    # MediaPipe landmark detector
-│   │   ├── gestures/          # gesture_engine, stabilizer, recognizers/
-│   │   └── processing/        # Async bounded-queue pipeline
-│   ├── database_manager/      # SQLAlchemy models/ and managers/
-│   ├── drone_control/adapters/# drone_adapter (ABC), airsim, project_airsim, dummy, xfly
-│   ├── input/sources/         # input_adapter (ABC), keyboard, gamepad, gesture, dummy
-│   ├── telemetry/             # observer, manager, storage/ (sqlite, postgres)
-│   └── tests/                 # adapter, auth, cv_pipeline, database_manager suites
-│
-├── packages/                  # Shared across apps and services
-│   ├── api-contracts/
-│   ├── contracts/             # python (Pydantic) and typescript types
-│   ├── domain/models/         # Domain models
-│   └── utils/                 # Shared helpers
-│
-├── infrastructure/
-│   ├── docker/                # not used
-│   └── scripts/               # Setup utilities
-│
-├── docs/                      # Documentation hub source (MkDocs Material)
-│   ├── SRS.md, SAS.md, BRAND.md, CODING.md, POLICY.md
-│   ├── MANUAL.md, PLAN.md, GIT.md, CICD.md
-│   ├── api/API_REFERENCE.md, testing/TESTING.md
-│   ├── frontend/              # atoms, molecules, organisms, routing
-│   ├── services/             # Adapter and service reference
-│   ├── demo/demo_one_documentation/   # Frozen Demo 1 archive
-│   └── reports/tender.pdf
-│
-├── init-db/                   # Postgres bootstrap SQL (extensions, users, drone, telemetry)
-├── vendors/                   # Git submodule: ProjectAirSim fork + sim_config
-├── sandbox/                   # Throwaway scripts (not shipped)
-├── tests/integration/         # Cross service integration tests
-│
-├── Taskfile.yml               # Primary task runner (cross platform)
-├── makefile                   # Unix shorthand for the same targets
-├── pyproject.toml             # Root uv workspace, Ruff, Pytest, coverage config
-├── docker-compose.yml         # not used
-├── codecov.yml
-├── mkdocs.yml
-└── README.md
+.
+├── apps
+│   ├── backend
+│   │   ├── app
+│   │   └── tests
+│   └── frontend
+│       ├── electron
+│       ├── node_modules
+│       ├── playwright-report
+│       ├── public
+│       ├── src
+│       ├── test-results
+│       └── tests
+├── backend.egg-info
+├── build
+│   ├── GestureBasedDroneControl-Backend
+│   ├── signalling
+│   │   ├── Public
+│   │   ├── modules
+│   │   ├── node_modules
+│   │   ├── platform_scripts
+│   │   └── tps
+│   └── sim
+│       ├── Blocks
+│       └── Engine
+├── dist
+├── docs
+│   ├── api
+│   ├── assets
+│   │   └── readme
+│   ├── contracts
+│   ├── cvs
+│   ├── demo
+│   │   └── demo_one_documentation
+│   ├── diagrams
+│   ├── frontend
+│   ├── hooks
+│   ├── includes
+│   ├── javascripts
+│   ├── nfr
+│   │   └── evidence
+│   ├── reports
+│   ├── services
+│   ├── stylesheets
+│   └── testing
+├── init-db
+├── landing_page
+│   └── src
+│       ├── assets
+│       ├── components
+│       ├── constants
+│       ├── context
+│       ├── hooks
+│       └── lib
+├── packages
+│   ├── api-contracts
+│   ├── contracts
+│   │   ├── python
+│   │   └── typescript
+│   ├── domain
+│   │   └── models
+│   └── utils
+├── packaging
+├── services
+│   ├── auth
+│   ├── commands
+│   ├── cv_pipeline
+│   │   ├── camera
+│   │   ├── gestures
+│   │   ├── hand-detection
+│   │   ├── hand_detection
+│   │   └── processing
+│   ├── database_manager
+│   │   ├── managers
+│   │   └── models
+│   ├── drone_control
+│   │   └── adapters
+│   ├── drone_services.egg-info
+│   ├── input
+│   │   └── sources
+│   ├── telemetry
+│   │   └── storage
+│   └── tests
+│       ├── adapter_testing
+│       ├── auth_testing
+│       ├── cv_pipeline_testing
+│       └── database_manager_testing
+├── tests
+│   ├── integration
+│   │   ├── auth_testing
+│   │   ├── db_manager_tests
+│   │   └── gestures
+│   └── nfr
+│       ├── jmeter
+│       └── lighthouse
+└── vendors
+    ├── projectairsim
+    │   ├── build
+    │   ├── docs
+    │   ├── src
+    │   └── tests
+    └── sim_config
+
+112 directories
 ```
+</details>
 
 <br/>
 
