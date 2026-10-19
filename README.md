@@ -45,7 +45,7 @@
 
 <br/>
 
-Control a drone with your hands. Our system uses real-time computer vision to recognise gestures and translate them into flight commands, with calibration and safety checks built in. Fly in a simulator, compete in gesture-controlled minigames, challenge yourself in testing environments, or switch to a keyboard, gamepad or on-screen controls. From learning the controls to practising flight, the project brings drone interaction into a more intuitive, accessible and interactive experience for pilots of all skill levels.
+Control a drone with your hands. Our system uses real-time computer vision to recognize gestures and translate them into flight commands, with calibration and safety checks built in. Fly in a simulator, compete in gesture-controlled minigames, challenge yourself in testing environments, or switch to a keyboard, gamepad or on-screen controls. From learning the controls to practising flight, the project brings drone interaction into a more intuitive, accessible and interactive experience for pilots of all skill levels.
 
 <br/>
 
@@ -596,7 +596,7 @@ The repository also contains unit and integration tests, performance testing too
 | ![Tailwind](https://img.shields.io/badge/-Tailwind-A4161A?style=flat-square&logo=tailwindcss&logoColor=F5F3F4&labelColor=161A1D) | Utility first styling, light and dark themes | `3.x` |
 | shadcn/ui plus lucide-react | Component primitives and icon set | `latest` |
 | React Router | Client routing under `RootLayout` | `7.x` |
-| Recharts | Real time telemetry and analytics visualisation | `3.x` |
+| Recharts | Real time telemetry and analytics visualization | `3.x` |
 | Leaflet plus react-leaflet | GPS map view for simulated flight paths | `1.9 / 4.2` |
 | ![TypeScript](https://img.shields.io/badge/-TypeScript-A4161A?style=flat-square&logo=typescript&logoColor=F5F3F4&labelColor=161A1D) | Landing page, Playwright specs, shared contracts | `5.x+` |
 | ![Playwright](https://img.shields.io/badge/-Playwright-A4161A?style=flat-square&logo=playwright&logoColor=F5F3F4&labelColor=161A1D) | Both component-level unit tests and end to end tests | `1.60+` |
@@ -649,7 +649,7 @@ The repository also contains unit and integration tests, performance testing too
   <tr>
     <td align="center"><code>UC1</code></td>
     <td>Hand Tracking and Gesture Recognition</td>
-    <td>Tracks hand landmarks from the camera feed, recognises gestures and converts them into drone commands.</td>
+    <td>Tracks hand landmarks from the camera feed, recognizes gestures and converts them into drone commands.</td>
   </tr>
   <tr>
     <td align="center"><code>UC2</code></td>
@@ -771,7 +771,7 @@ git submodule update --init --recursive
 task install
 ```
 
-This creates a Python 3.11 virtual environment, installs the dependencies required by AirSim, synchronises the Python workspace and installs the frontend dependencies with Yarn.
+This creates a Python 3.11 virtual environment, installs the dependencies required by AirSim, synchronizes the Python workspace and installs the frontend dependencies with Yarn.
 
 Configure the environment variables in .env before running the application. In particular, set the backend port and any simulator paths required by your setup.
 
