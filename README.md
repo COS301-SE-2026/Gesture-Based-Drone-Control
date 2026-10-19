@@ -768,7 +768,8 @@ task clean
 
 <img src="docs/assets/readme/header-branching.svg" width="100%" alt="Branching Strategy"/>
 
-> Four tier model. `main` must always be in a deployable state. All merges happen before each demo. Every commit is attributed via the Git CLI with `user.name` matching the GitHub username. No GUI Git clients. Full conventions in the [Git docs](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/GIT/).
+
+We use the [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow). `main` automatically builds and deploys an executable Full conventions in the [Git docs](https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/GIT/).
 
 ```mermaid
 %%{init: {'theme':'dark', 'themeVariables': {
@@ -793,48 +794,40 @@ flowchart LR
     classDef feat fill:#E5383B,color:#0B090A,stroke:none
 ```
 
-| Branch | Purpose |
-|:---|:---|
-| `main` | Production. Protected. Merged into before every demo. Triggers the release build. |
-| `dev` | Integration. All Use Case branches merge here when ready. |
-| `Use-Case-<Word>/<Topic>` | One long-lived branch per Use Case, for example `Use-Case-Eight/Calibration`. Regularly synced with `dev`. |
-| `feature/UC<N>/<name>` | Short lived. One per feature or fix, branched from its Use Case branch. Merged back via PR after review. |
-| `documentation/*`, `devops/*`, `hotfix/*` | Cross-cutting work that does not belong to a single Use Case. |
-
 > **Keep your Use Case branch current.** Regularly merge `dev` into it to stay aligned and avoid large conflicts. Resolve all conflicts locally before opening a PR.
 
 <br/>
 
 <img src="docs/assets/readme/header-cicd.svg" width="100%" alt="CI/CD and Code Quality"/>
 
-> Four workflows guard the repo. Test and lint run on every pull request, docs deploys on pushes that touch the site, and release builds the packaged app on every push to `main`.
+> Test and lint run on every pull request, docs deploys on pushes that touch the site, and release builds the packaged app on every push to `main`.
 
 <table>
   <tr>
     <th width="160">Workflow</th><th width="150">Status</th><th>Trigger and jobs</th>
   </tr>
   <tr>
-    <td><b>Test</b><br/><sub><code>test.yml</code></sub></td>
+    <td><b>Testing</b><br/></td>
     <td><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/test.yml?style=flat-square&logo=github-actions&logoColor=F5F3F4&color=A4161A&labelColor=161A1D"/></a></td>
     <td>PRs into <code>dev</code>, <code>main</code>, <code>Use-Case**</code>. Backend unit, frontend unit, then integration, then E2E. Coverage uploaded to Codecov under <code>backend</code> and <code>services</code> flags</td>
   </tr>
   <tr>
-    <td><b>Lint</b><br/><sub><code>lint.yml</code></sub></td>
+    <td><b>Linting</b><br/></td>
     <td><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/lint.yml"><img src="https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/lint.yml?style=flat-square&logo=github-actions&logoColor=F5F3F4&label=lint&color=BA181B&labelColor=161A1D"/></a></td>
     <td>Every PR. Ruff over Python, ESLint plus Prettier over the frontend. No style drift</td>
   </tr>
   <tr>
-    <td><b>Docs</b><br/><sub><code>docs.yml</code></sub></td>
+    <td><b>Docs</b><br/></td>
     <td><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/docs.yml?style=flat-square&logo=github-actions&logoColor=F5F3F4&label=site&color=A4161A&labelColor=161A1D"/></a></td>
     <td>Pushes to <code>main</code> or <code>dev</code> touching <code>docs/</code>, <code>landing_page/</code> or <code>mkdocs.yml</code>. Builds both, deploys landing page at <code>/</code> and MkDocs at <code>/docs</code></td>
   </tr>
   <tr>
-    <td><b>Release</b><br/><sub><code>release.yml</code></sub></td>
+    <td><b>Release</b><br/></td>
     <td><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/release.yml"><img src="https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/release.yml?style=flat-square&logo=github-actions&logoColor=F5F3F4&label=release&color=BA181B&labelColor=161A1D"/></a></td>
     <td>Pushes to <code>main</code>. Matrix build on Windows and Ubuntu, produces <code>.exe</code> and <code>.AppImage</code>, publishes a GitHub Release</td>
   </tr>
   <tr>
-    <td><b>Coverage</b><br/><sub><code>codecov.yml</code></sub></td>
+    <td><b>Coverage</b><br/></td>
     <td><a href="https://codecov.io/gh/COS301-SE-2026/Gesture-Based-Drone-Control"><img src="https://img.shields.io/codecov/c/github/COS301-SE-2026/Gesture-Based-Drone-Control?style=flat-square&logo=codecov&logoColor=F5F3F4&color=BA181B&labelColor=161A1D"/></a></td>
     <td>80% project and patch target, 1% threshold. Tests, <code>__init__.py</code>, <code>sandbox/</code> and <code>vendors/</code> excluded</td>
   </tr>
@@ -846,18 +839,6 @@ flowchart LR
 </table>
 
 <br/>
-
-<img src="docs/assets/readme/header-constraints.svg" width="100%" alt="Project Constraints"/>
-
-| Constraint | Detail |
-|:---|:---|
-| Single User Operation | One operator tracked at a time. Reduces tracking complexity |
-| Fixed Gesture Set | Six classifiable gestures, all derived from finger state |
-| Calibration Required | No flight command is accepted until calibration completes or is explicitly skipped |
-| CPU Bound Inference | No GPU assumed. Must run on developer grade laptops |
-| Python 3.11 Only | MediaPipe and the AirSim clients have no wheels past 3.11 |
-| Simulator First | Physical drone integration is scoped behind the simulator adapters |
-
 
 <img src="docs/assets/readme/header-contact.svg" width="100%" alt="Contact"/>
 
