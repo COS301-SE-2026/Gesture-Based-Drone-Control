@@ -92,7 +92,7 @@ class GestureStream:
 		self._clients.add(queue)
 		if viewer:
 			self._viewers.add(queue)
-		self._cancel_linger()
+			self._cancel_linger()
 
 		try:
 			await self._ensure_started()
