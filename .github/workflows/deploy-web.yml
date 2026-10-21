@@ -16,7 +16,7 @@ name: Deploy Web Demo
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
     paths:
       - 'apps/frontend/**'
       - 'apps/web_backend/**'
