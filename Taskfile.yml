@@ -224,31 +224,6 @@ tasks:
     cmds:
       - yarn dev
 
-  sim-as:
-    desc: Runs the old pain in the ass sim
-    cmds:
-      - cmd: powershell -Command "Start-Process '{{.AS_PATH}}'"
-        platforms: [windows]
-
-  sim-pas:
-    desc: Launches PAS, the UE5 version
-    cmds:
-      - cmd: powershell -Command "Start-Process '{{.PAS_PATH}}'"
-        platforms: [windows]
-
-  sim-pas-demo:
-    desc: Launches PAS, and the drone adapter demo
-    cmds:
-      - cmd: powershell -Command "Start-Process '{{.PAS_PATH}}'"
-        platforms: [windows]
-      - cmd: uv run adapter_demo.py
-
-  sim-beeg-demo:
-    desc: Test your laptop out
-    deps:
-      - sim-pas-demo
-      - sim-as
-
   prereqs:
     desc: install all prereqs (add more as identified)
     cmds:
