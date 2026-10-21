@@ -97,9 +97,11 @@ class BoundedFrameQueue(Generic[T]):
 
 	async def get_with_timeout(self, timeout: float) -> Optional[T]:
 		# returns None after timeout with no item
+		# asyncio.timeout, not wait_for: see CvPipeline.events() (3.11 cancel bug)
 		try:
-			return await asyncio.wait_for(self._queue.get(), timeout=timeout)
-		except asyncio.TimeoutError:
+			async with asyncio.timeout(timeout):
+				return await self._queue.get()
+		except TimeoutError:
 			return None
 
 	# helpers

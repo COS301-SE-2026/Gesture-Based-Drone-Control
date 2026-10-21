@@ -19,7 +19,6 @@ from typing import AsyncIterator, Optional
 
 from services.cv_pipeline.camera.camera_feed import (
 	CameraConfig,
-	CameraError,
 	CameraFeed,
 	CapturedFrame,
 )
@@ -148,6 +147,27 @@ class PipelineEvent:
 		return self.frame.frame_index
 
 
+async def cancel_and_wait(task: Optional[asyncio.Task], what: str, limit: float = 5.0) -> None:
+	"""
+	Cancel a task and wait for it to actually finish, re-sending the cancel if
+	it gets swallowed (asyncio.wait_for on 3.11 can eat one). Never raises the
+	task's own CancelledError and never waits longer than `limit` seconds, so a
+	teardown can't hang forever on a task that refuses to die
+	"""
+	if task is None or task is asyncio.current_task():
+		return
+	loop = asyncio.get_running_loop()
+	deadline = loop.time() + limit
+	while not task.done():
+		task.cancel()
+		await asyncio.wait({task}, timeout=0.25)
+		if not task.done() and loop.time() >= deadline:
+			logger.error('%s did not stop within %.1fs, abandoning it', what, limit)
+			return
+	if not task.cancelled() and task.exception() is not None:
+		logger.error('%s had died with an error: %r', what, task.exception())
+
+
 class CvPipeline:
 	"""
 	Wires cam and hand detection and gesture engine to one
@@ -246,17 +266,7 @@ class CvPipeline:
 
 		# cancel task - a consumer that already died with its own exception
 		# must not re-raise here and skip the release below
-		if self._consumer_task is not None:
-			self._consumer_task.cancel()
-			try:
-				await self._consumer_task
-			except asyncio.CancelledError:
-				current = asyncio.current_task()
-				if current is not None and current.cancelling() > 0:
-					await self._release_resources()
-					raise
-			except Exception:
-				logger.exception('consumer task had died before stop()')
+		await cancel_and_wait(self._consumer_task, 'cv consumer task')
 
 		await self._release_resources()
 		logger.info('CvPipeline stopped')
@@ -301,12 +311,18 @@ class CvPipeline:
 			raise RuntimeError('event() called before start()')
 
 		while self._running:
+			# NOT asyncio.wait_for: on Python 3.11 (what this project pins) wait_for
+			# swallows a cancel that lands just as the get() completes, so
+			# cancelling the task iterating this generator silently fails and the
+			# GestureStream teardown waits on it forever while holding its lock.
+			# asyncio.timeout() does not have that bug
 			try:
-				event = await asyncio.wait_for(self._event_queue.get(), timeout=0.5)
-				yield event
-			except asyncio.TimeoutError:
+				async with asyncio.timeout(0.5):
+					event = await self._event_queue.get()
+			except TimeoutError:
 				# loop around to recheck self._running -> lets stop() unstick
 				continue
+			yield event
 
 	@property
 	def recognizer_mode(self) -> str:
