@@ -1,3 +1,4 @@
+/* Mudra landing experience — styles for <MudraExperience />. Tokens follow src/index.css. */
 .mx{
   color-scheme: dark;
   --void:#0b090a;
@@ -19,12 +20,16 @@
 }
 .mx[data-theme="light"]{
   color-scheme: light;
-  --void:#f5f3f4; --steel:#ffffff; --haze:rgba(11,9,10,.55); --frost:#3a3738; --white:#0b090a;
-  --red:#ba181b; --red-deep:#a4161a; --red-shadow:#e5383b; --line:rgba(11,9,10,.14);
+  --void:#f6f0f0; --steel:#ffffff; --haze:rgba(74,22,24,.62); --frost:#3b2426; --white:#140a0b;
+  --red:#ba181b; --red-deep:#a4161a; --red-shadow:#e5383b; --line:rgba(186,24,27,.2);
 }
 .mx[data-theme="light"] .btn{ color:#f5f3f4; }
 .mx[data-theme="light"] .btn.ghost{ color:var(--frost); }
 .mx[data-theme="light"] .btn.ghost:hover{ color:var(--white); }
+.mx[data-theme="light"] .uses .card{ border-top:2px solid var(--red); }
+.mx[data-theme="light"] .footer .links a{ color:#7a2628; }
+.mx[data-theme="light"] .hero h1 em{ -webkit-text-stroke:2.5px var(--red); }
+.mx[data-theme="light"] .venture h2, .mx[data-theme="light"] .detail h2, .mx[data-theme="light"] .uses .head h2, .mx[data-theme="light"] .footer .fhead{ color:#5c1214; }
 
 html{ scroll-padding-top:env(safe-area-inset-top,0px); }
 .mx, .mx *, .mx *::before, .mx *::after{ box-sizing:border-box; }
@@ -103,7 +108,7 @@ body.locked{ overflow:hidden; height:100%; }
   will-change:transform,filter;
 }
 .mx{ --pillbg:rgba(22,26,29,.58); }
-.mx[data-theme="light"]{ --pillbg:rgba(255,255,255,.62); }
+.mx[data-theme="light"]{ --pillbg:rgba(255,246,246,.72); }
 .pill.on{ opacity:1; }
 .pill button, .pill a{
   font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--haze);

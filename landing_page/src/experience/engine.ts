@@ -1,5 +1,9 @@
 /* eslint-disable */
 // @ts-nocheck
+/* Mudra landing experience: the three.js engine behind <MudraExperience />.
+   Ported from the single-file prototype to three ^0.160 (ES modules, colour management on).
+   createMudraExperience({ root, assets, initialTheme, onThemeChange }) returns { setTheme, scrollTo, destroy }.
+   Arm model: "robot arm" (rigid joint hierarchy, fingers pivot on local Y) — see prepArm(). */
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import gsap from 'gsap'
@@ -18,7 +22,7 @@ const $ = id => root.querySelector('#'+id);
   const W=(ev,fn,o)=>window.addEventListener(ev,fn,Object.assign({},o||{},{signal:ac.signal}));
   const D=(ev,fn,o)=>document.addEventListener(ev,fn,Object.assign({},o||{},{signal:ac.signal}));
 
-/*  content */
+/* ---------------------------------------------------------------- content */
 const NCH = VENTURES.length;
 
 /* hand skeleton: forward kinematics ported from landing_page/src/lib/hand.ts (21 MediaPipe-style landmarks) */
@@ -58,7 +62,7 @@ function handModel(poseIdx){
   return {pts,bones};
 }
 
-/*  scramble */
+/* ---------------------------------------------------------------- scramble */
 const GLYPHS = '—/\\|_<>#%&@*+=:;0123456789';
 function scramble(el, text, dur=0.9){
   if(el._tw) el._tw.kill();
@@ -79,7 +83,7 @@ function scramble(el, text, dur=0.9){
   cancelAnimationFrame(el._raf); tick();
 }
 
-/*  audio */
+/* ---------------------------------------------------------------- audio */
 let audio=null, audioOn=false;
 function buildAudio(){
   const ctx = new (window.AudioContext||window.webkitAudioContext)();
@@ -118,7 +122,7 @@ soundBtn.addEventListener('click', ()=>{
   $('soundLabel').textContent = audioOn?'Sound on':'Sound off';
 });
 
-/*  three: setup */
+/* ---------------------------------------------------------------- three: setup */
 const canvas=$('gl');
 let renderer;
 try{ renderer = new THREE.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'}); }
@@ -141,7 +145,7 @@ const rim = new THREE.DirectionalLight(0xe5383b, 1.5); rim.position.set(-5,2,-6)
 const fill = new THREE.PointLight(0xba181b, 0.9, 14); fill.position.set(-2,1.2,2); scene.add(fill);
 const head = new THREE.PointLight(0xf5f3f4, 1.5, 26, 1.4); camera.add(head); head.position.set(1.5,1.2,0.5); scene.add(camera);
 
-/*  environment: a small studio painted onto a cube map for reflections */
+/* ---------------------------------------------------------------- environment: a small studio painted onto a cube map for reflections */
 (function(){
   const S=128, faces=[];
   // order: +x, -x, +y, -y, +z, -z
@@ -162,7 +166,7 @@ const head = new THREE.PointLight(0xf5f3f4, 1.5, 26, 1.4); camera.add(head); hea
   scene.environment=cube;
 })();
 
-/*  post (chromatic aberration / glitch) */
+/* ---------------------------------------------------------------- post (chromatic aberration / glitch) */
 const rt = new THREE.WebGLRenderTarget(2,2,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
 
 const postScene = new THREE.Scene();
@@ -212,7 +216,7 @@ const postMat = new THREE.ShaderMaterial({
 });
 postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), postMat));
 
-/*  ground: open empty plane */
+/* ---------------------------------------------------------------- ground: open empty plane */
 const groundU = { uFade:{value:1}, uA:{value:new THREE.Color(C.void)}, uB:{value:new THREE.Color(0x2a2f33)}, uC:{value:new THREE.Color(C.redShadow)} };
 const groundMat = new THREE.ShaderMaterial({
   uniforms:groundU, transparent:true, depthWrite:false,
@@ -238,7 +242,7 @@ ground.rotation.x=-Math.PI/2; ground.position.y=-0.62; scene.add(ground);
 const horizon = new THREE.Mesh(new THREE.RingGeometry(40,120,64), new THREE.MeshBasicMaterial({color:0x151314, transparent:true, opacity:0.9, side:THREE.DoubleSide}));
 horizon.rotation.x=-Math.PI/2; horizon.position.y=-0.61; scene.add(horizon);
 
-/*  the drone: a small white quad in the Tello class, built in code */
+/* ---------------------------------------------------------------- the drone: a small white quad in the Tello class, built in code */
 const matShell = new THREE.MeshPhysicalMaterial({color:0xeceef0, metalness:0.0, roughness:0.32, clearcoat:0.55, clearcoatRoughness:0.25});
 const matShell2= new THREE.MeshPhysicalMaterial({color:0xd4d7db, metalness:0.0, roughness:0.4, clearcoat:0.3, clearcoatRoughness:0.3});
 const matDark  = new THREE.MeshStandardMaterial({color:0x26282c, metalness:0.2, roughness:0.55});
@@ -320,7 +324,7 @@ function setRigState(rig,{explode=0, solid=1, skel=0, scanY=null}){
     p.disc.material.opacity = s*(1-skel)*0.1*(1-explode*0.7);
   });
 }
-/*  real models: the drone and the arm (GLB, embedded) */
+/* ---------------------------------------------------------------- real models: the drone and the arm (GLB, embedded) */
 renderer.localClippingEnabled = true;
 const drone=new THREE.Group(); drone.position.set(0,0.28,0); scene.add(drone);
 const armPivot=new THREE.Group(); scene.add(armPivot); armPivot.visible=false;
@@ -398,7 +402,7 @@ function prepArm(gltf){
 }
 const qHero=new THREE.Quaternion(), qVert=new THREE.Quaternion();   // filled in by prepArm from the measured arm axis and palm normal
 const _q=new THREE.Quaternion(), _up=new THREE.Vector3(0,1,0);
-function poseFingers(k){ M.armBones.forEach(f=>{ f.b.quaternion.copy(f.q0).multiply(_q.setFromAxisAngle(f.axis, f.ang*k)); }); }
+function poseFingers(k, t=0, amp=0){ M.armBones.forEach((f,i)=>{ const kk = k + amp*(Math.sin(t*1.1 + i*0.9) * 0.6 + Math.sin(t*1.7 + i*1.7) * 0.4); f.b.quaternion.copy(f.q0).multiply(_q.setFromAxisAngle(f.axis, f.ang*kk)); }); }
 function prepDrone(gltf){
   const o=gltf.scene; o.scale.setScalar(DS); drone.add(o);
   M.droneScene=o; M.mixer=new THREE.AnimationMixer(o);
@@ -425,7 +429,7 @@ const modelsReady = (async ()=>{
 })();
 const setDroneState=(o)=>{ if(M.ok) setModelState(o); else if(rig) setRigState(rig,o); };
 
-/*  capsules (ventures) */
+/* ---------------------------------------------------------------- capsules (ventures) */
 const capsules=[];
 const matGlass = new THREE.MeshPhysicalMaterial({
   color:0xd3d3d3, metalness:0.05, roughness:0.08, transparent:true, opacity:0.16, clearcoat:1, clearcoatRoughness:0.1,
@@ -491,7 +495,7 @@ CAP_POS.forEach((p,i)=>{
   capsules.push({g, shell, edges, inner, i, spin:0.12+i*0.03, userData:g.userData});
 });
 
-/*  particles (footer) */
+/* ---------------------------------------------------------------- particles (footer) */
 const N = isTouch ? 3200 : 7200;
 const pPos = new Float32Array(N*3), pVel = new Float32Array(N*3), pSpd = new Float32Array(N);
 const shapes = {};
@@ -604,7 +608,7 @@ linkEls.forEach(a=>{
 });
 $('links').addEventListener('mouseleave',()=>setShape(restShape()));
 
-/*  shards: thin plates drifting in a helix around the arm */
+/* ---------------------------------------------------------------- shards: thin plates drifting in a helix around the arm */
 const spine=new THREE.Group(); scene.add(spine); spine.visible=false;
 const vertebrae=[];
 (function(){
@@ -626,7 +630,7 @@ function updateSpine(t, on, open){
   vertebrae.forEach(v=>{ const m=v.shard; m.position.y = m.userData.y + Math.sin(t*0.5+m.userData.ph)*0.18; m.rotation.x += 0.0015; });
 }
 
-/*  living background: slow nebula grain in the brand colours */
+/* ---------------------------------------------------------------- living background: slow nebula grain in the brand colours */
 const bgU={ uTime:{value:0}, uBase:{value:new THREE.Color(0x0b090a)}, uTint:{value:new THREE.Color(0x3a0c0e)}, uTint2:{value:new THREE.Color(0x1b1b22)}, uDark:{value:1} };
 const bgMat=new THREE.ShaderMaterial({ uniforms:bgU, side:THREE.BackSide, depthWrite:false, depthTest:false, fog:false,
   vertexShader:'varying vec3 vP; void main(){ vP=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
@@ -642,7 +646,7 @@ const bgMat=new THREE.ShaderMaterial({ uniforms:bgU, side:THREE.BackSide, depthW
       float cloud=pow(a*0.65+b*0.5, 2.6);
       vec3 c=uBase;
       if(uDark>0.5){ c += uTint*cloud*1.6*smoothstep(-0.9,0.4,d.y+0.3); c += uTint2*pow(b,3.0)*0.9; }
-      else { c -= vec3(0.07,0.08,0.085)*cloud*1.2; c -= vec3(0.0,0.05,0.05)*pow(b,3.0)*0.5; }
+      else { c -= vec3(0.02,0.12,0.13)*cloud*1.3; c -= vec3(0.0,0.09,0.09)*pow(b,3.0)*0.6; }
       // fine horizontal scan texture
       float scan=step(0.992, fract(d.y*140.0+uTime*0.01));
       c += (uDark>0.5?1.0:-1.0)*scan*0.025;
@@ -652,7 +656,7 @@ const bgMat=new THREE.ShaderMaterial({ uniforms:bgU, side:THREE.BackSide, depthW
 const bgDome=new THREE.Mesh(new THREE.SphereGeometry(180,48,24), bgMat); bgDome.renderOrder=-10; bgDome.frustumCulled=false; scene.add(bgDome);
 scene.background=null;
 
-/*  nano swarm: a field of tiny bots that reverberates when a chapter opens */
+/* ---------------------------------------------------------------- nano swarm: a field of tiny bots that reverberates when a chapter opens */
 const N2 = isTouch ? 1400 : 2600;
 const sPos=new Float32Array(N2*3), sSeed=new Float32Array(N2);
 for(let i=0;i<N2;i++){
@@ -718,7 +722,7 @@ function updateRings(dt){
 }
 let heartbeat=0;
 
-/*  drag to orbit (hero) and drag to spin (open chapter) */
+/* ---------------------------------------------------------------- drag to orbit (hero) and drag to spin (open chapter) */
 let dragX=0, dragY=0, dragT=0;
 W('pointerdown',e=>{
   if(isTouch || (e.target.closest && e.target.closest('.ui, .pill, .nav'))) return;
@@ -733,7 +737,7 @@ W('pointermove',e=>{
 const endDrag=()=>{ if(state.drag){ state.drag=false; canvas.classList.remove('grabbing'); } };
 W('pointerup',endDrag); W('pointercancel',endDrag); W('blur',endDrag);
 
-/*  kinetic type: letters that answer scroll and cursor */
+/* ---------------------------------------------------------------- kinetic type: letters that answer scroll and cursor */
 function splitLetters(el){
   const walk=(node)=>{ [...node.childNodes].forEach(n=>{ if(n.nodeType===3){ const frag=document.createDocumentFragment(); [...n.textContent].forEach(ch=>{ const sp=document.createElement('span'); sp.className='k'; sp.textContent=ch===' '?'\u00a0':ch; frag.appendChild(sp); }); n.replaceWith(frag); } else if(n.nodeType===1 && n.tagName!=='BR') walk(n); }); };
   walk(el); return [...el.querySelectorAll('.k')];
@@ -751,7 +755,7 @@ function kinetic(letters, t, vS, mx, my, active){
   });
 }
 
-/*  pill nav: squashes and stretches with scroll velocity */
+/* ---------------------------------------------------------------- pill nav: squashes and stretches with scroll velocity */
 const pillEl=$('pill');
 function pillReact(vS){
   const v=THREE.MathUtils.clamp(vS*60, -1, 1), a=Math.abs(v);
@@ -759,7 +763,7 @@ function pillReact(vS){
   pillEl.style.filter = a>0.05 ? `blur(${(a*1.6).toFixed(2)}px)` : '';
 }
 
-/*  scroll + interaction state */
+/* ---------------------------------------------------------------- scroll + interaction state */
 const state = { p:0, pTarget:0, mx:0, my:0, mxs:0, mys:0, glitch:0, aberr:0, explode:0, skel:0, hover:false, ready:false, venture:-1, flat:1, orbHover:-1, armK:0, lift:0, scanning:false, spiral:0, yaw:0, yawT:0, pitch:0, pitchT:0, drag:false, dragDist:0, mspeed:0, prevP:0, vS:0, spin:0 };
 const raycaster = new THREE.Raycaster(); const ndc = new THREE.Vector2();
 const track=$('track');
@@ -783,7 +787,7 @@ function resize(){
 }
 W('resize', resize); resize();
 
-/*  UI stage helpers */
+/* ---------------------------------------------------------------- UI stage helpers */
 const heroEl=$('hero'), cueEl=$('cue'), ventureEl=$('venture'), footerEl=$('footer'), indexBtns=[...root.querySelectorAll('#pill button')];
 let heroOn=false, footOn=false, usesOn=false; const usesEl=$('uses');
 function showVenture(i){
@@ -801,10 +805,11 @@ function showVenture(i){
   if(audioOn&&audio){ audio.tick(); setTimeout(()=>audio.blip(520),90); }
 }
 
-/*  camera choreography */
+/* ---------------------------------------------------------------- camera choreography */
 const camPos=new THREE.Vector3(), camLook=new THREE.Vector3(), lookS=new THREE.Vector3(0,0.3,0), tmpV=new THREE.Vector3();
 const ease=(a,b,t)=>THREE.MathUtils.lerp(a,b,THREE.MathUtils.smoothstep(t,0,1));
 const palmW=new THREE.Vector3(), tipW=new THREE.Vector3(), droneTarget=new THREE.Vector3(), takeoffFrom=new THREE.Vector3();
+const openDir=new THREE.Vector3(0,0,1), openRight=new THREE.Vector3(1,0,0);
 let lastFrameT=0;
 function choreo(p, t){
   const S1=0.14, S2=0.23, S3=0.7, S4=0.77, U2=0.9;
@@ -868,7 +873,7 @@ function choreo(p, t){
     armPivot.rotation.x += (ak<0.5 ? state.mys*0.03 : 0); 
     armPivot.position.y += Math.sin(t*0.9)*0.05*(1-ak);
     // fingers: cradling the drone (slight curl) → flat open palm (slight extension)
-    poseFingers(THREE.MathUtils.lerp(-0.35, -0.9, ak));
+    poseFingers(THREE.MathUtils.lerp(-0.35, -0.9, ak), t, 0.09 + (1-ak)*0.05);   // idle flex: a little more while it holds the drone
     armPivot.updateMatrixWorld(true);
     palmW.copy(M.palmLocal); armPivot.localToWorld(palmW);
   } else { armPivot.visible=false; palmW.set(0,0.28,0); }
@@ -917,10 +922,15 @@ function choreo(p, t){
   const ov = openIdx>=0 ? THREE.MathUtils.smoothstep(openO.v,0,1) : 0;
   if(ov>0){
     const c=capsules[openIdx], cp=c.g.position;
-    tmpV.set(cp.x+(narrow?0:1.0), cp.y+(narrow?1.0:0.05), cp.z+4.4); camPos.lerp(tmpV, ov);
-    tmpV.set(cp.x+(narrow?0:1.0), cp.y+(narrow?0.5:0), cp.z); camLook.lerp(tmpV, ov);
+    tmpV.copy(cp).addScaledVector(openRight, narrow?0:1.0); tmpV.y += narrow?0.5:0;        // look a little to the right of the orb so it sits left of the panel
+    camLook.lerp(tmpV, ov);
+    tmpV.addScaledVector(openDir, 4.4); tmpV.y += narrow?0.5:0.05; camPos.lerp(tmpV, ov);
     camera.position.lerp(camPos, 0.12); lookS.lerp(camLook, 0.12); camera.lookAt(lookS);
   }
+  // orbit the orbs around the arm with the spiral; orb i sits at its home angle exactly when the descent dwells on it
+  (function(){ const R = narrow?2.9:3.7, home = narrow?Math.PI/2:Math.PI; const n=capsules.length-1;
+    capsules.forEach(c=>{ const i=c.i, ki=i/n, atDwell = ki*Math.PI*2.4 + ki*0.3; const a = home - atDwell + state.spiral;
+      c.g.position.x = Math.cos(a)*R; c.g.position.z = Math.sin(a)*R; }); })();
   capsules.forEach(c=>{
     c.g.visible = capOn>0.001;
     const rel = c.g.position.y - camera.position.y;  // negative when the orb is below the camera
@@ -942,7 +952,7 @@ function choreo(p, t){
     if(c.inner.userData.mini) c.inner.userData.mini.props.forEach((pr,k)=>pr.g.rotation.y += 0.5*(k%2?1:-1));
     c.inner.rotation.y = Math.sin(t*0.6+c.i)*0.5 + state.mxs*0.3; c.inner.rotation.x = Math.sin(t*0.45+c.i)*0.12;
     const sc=(narrow?0.55:0.92)+focus*0.1; c.g.scale.setScalar(sc);
-    c.g.position.y = CAP_POS[c.i][1] + Math.sin(t*0.9+c.i*1.7)*0.08;
+    c.g.position.y = CAP_POS[c.i][1] + Math.sin(t*0.9+c.i*1.7)*0.08;   // x/z come from the spiral above
   });
   const inVentures = p>=S2-0.02 && p<S3+0.02 && nd<5;
   if(openIdx<0) showVenture(inVentures?nearest:-1);
@@ -978,7 +988,7 @@ function choreo(p, t){
   indexBtns.forEach((b,i)=>b.classList.toggle('active',i===sec));
 }
 
-/*  orb detail: open / close */
+/* ---------------------------------------------------------------- orb detail: open / close */
 let openIdx=-1; const openO={v:0}; const detailEl=$('detail');
 function fillDetail(i){
   const v=VENTURES[i];
@@ -990,6 +1000,7 @@ function fillDetail(i){
 function openOrb(i){
   if(openIdx>=0 || i<0) return;
   openIdx=i; fillDetail(i); showVenture(-1); cueEl.classList.remove('on');
+  openDir.copy(camera.position).sub(capsules[i].g.position); openDir.y=0; openDir.normalize(); openRight.set(-openDir.z,0,openDir.x).negate();
   detailEl.classList.add('on'); requestAnimationFrame(()=>requestAnimationFrame(()=>detailEl.classList.add('in')));
   document.documentElement.classList.add('noscroll');
   state.glitch=Math.max(state.glitch,0.9); state.aberr=Math.max(state.aberr,1.1);
@@ -1026,7 +1037,7 @@ W('touchend',e=>{
 },{passive:true});
 root.querySelectorAll('#pill button').forEach(b=>b.addEventListener('click',()=>{ if(openIdx>=0) closeOrb(); }));
 
-/*  menu overlay with parallax */
+/* ---------------------------------------------------------------- menu overlay with parallax */
 let menuOpen=false; const menuEl=$('menu');
 function openMenu(){ if(menuOpen) return; menuOpen=true; menuEl.classList.add('on'); menuEl.setAttribute('aria-hidden','false'); requestAnimationFrame(()=>requestAnimationFrame(()=>menuEl.classList.add('in'))); document.documentElement.classList.add('noscroll'); state.glitch=Math.max(state.glitch,0.8); state.aberr=Math.max(state.aberr,0.8); if(audioOn&&audio) audio.tick(); }
 function closeMenu(){ if(!menuOpen) return; menuOpen=false; menuEl.classList.remove('in'); state.glitch=Math.max(state.glitch,0.5); setTimeout(()=>{ if(!menuOpen){ menuEl.classList.remove('on'); menuEl.setAttribute('aria-hidden','true'); if(openIdx<0) document.documentElement.classList.remove('noscroll'); } },650); }
@@ -1041,23 +1052,23 @@ root.querySelectorAll('#mbig button').forEach(b=>b.addEventListener('click',()=>
 root.querySelectorAll('#mbig button').forEach(b=>{ const tn=b.lastChild; const sp=document.createElement('span'); sp.textContent=tn.textContent; tn.replaceWith(sp); const txt=sp.textContent; b.addEventListener('mouseenter',()=>scramble(sp, txt, 0.5)); });
 function menuParallax(){ if(!menuOpen) return; $('mbig').style.transform=`translate(${(state.mxs*-18).toFixed(1)}px, ${(state.mys*-12).toFixed(1)}px)`; $('mside').style.transform=`translate(${(state.mxs*-8).toFixed(1)}px, ${(state.mys*-6).toFixed(1)}px)`; }
 
-/*  theme (mirrors DroneScene.tsx colour swaps) */
+/* ---------------------------------------------------------------- theme (mirrors DroneScene.tsx colour swaps) */
 const themeBtn=$('theme');
 function applyTheme(dark){
   root.dataset.theme = dark?'dark':'light';
   themeBtn.setAttribute('aria-label','Switch to '+(dark?'light':'dark')+' mode');
-  const bg = dark?0x0b090a:0xf5f3f4;
-  scene.fog.color.setHex(bg); bgU.uBase.value.setHex(dark?0x0b090a:0xf5f3f4); bgU.uDark.value=dark?1:0;
+  const bg = dark?0x0b090a:0xf6f0f0;
+  scene.fog.color.setHex(bg); bgU.uBase.value.setHex(dark?0x0b090a:0xf6f0f0); bgU.uDark.value=dark?1:0;
   wireDrone.color.setHex(dark?0xd3d3d3:0x161a1d); wireArm.color.setHex(dark?0xe5383b:0xba181b);
   spine.traverse(o=>{ if(o.isLineSegments) o.material.color.setHex(o.material.color.getHex()===0xe5383b||o.material.color.getHex()===0xba181b ? (dark?0xe5383b:0xba181b) : (dark?0xb1a7a6:0x3a3738)); });
-  groundU.uA.value.setHex(bg); groundU.uB.value.setHex(dark?0x2a2f33:0xc9c3c4); groundU.uC.value.setHex(dark?0x660708:0xe5383b);
+  groundU.uA.value.setHex(bg); groundU.uB.value.setHex(dark?0x2a2f33:0xd8a9ab); groundU.uC.value.setHex(dark?0x660708:0xe5383b);
   horizon.material.color.setHex(dark?0x151314:0xebe7e8);
   parts.forEach(p=>{ const accent=p.wire.userData.accent; p.wire.material.color.setHex(accent ? (dark?0xe5383b:0xba181b) : (dark?0xd3d3d3:0x161a1d)); });
   props.forEach(p=>p.wires.forEach(w=>w.material.color.setHex(dark?0xd3d3d3:0x161a1d)));
-  capsules.forEach(c=>{ c.shell.material.color.setHex(dark?0xd3d3d3:0x0b090a); c.edges.material.color.setHex(dark?0xb1a7a6:0x3a3738); });
-  pMat.uniforms.uHaze.value.setHex(dark?0xe0585b:0x2a2426); pMat.uniforms.uFrost.value.setHex(dark?0xe5383b:0xba181b); pMat.uniforms.uWhite.value.setHex(dark?0xf5f3f4:0x0b090a);
+  capsules.forEach(c=>{ c.shell.material.color.setHex(dark?0xd3d3d3:0x3b1a1b); c.edges.material.color.setHex(dark?0xb1a7a6:0x8a2a2d); });
+  pMat.uniforms.uHaze.value.setHex(dark?0xe0585b:0x9c2e31); pMat.uniforms.uFrost.value.setHex(dark?0xe5383b:0xba181b); pMat.uniforms.uWhite.value.setHex(dark?0xf5f3f4:0x0b090a);
   pMat.blending = dark?THREE.AdditiveBlending:THREE.NormalBlending; pMat.needsUpdate=true;
-  swarmMat.uniforms.uDim.value.setHex(dark?0xb1a7a6:0x6b6263); swarmMat.uniforms.uHot.value.setHex(dark?0xe5383b:0xba181b); swarmMat.uniforms.uWhite.value.setHex(dark?0xf5f3f4:0x0b090a);
+  swarmMat.uniforms.uDim.value.setHex(dark?0xb1a7a6:0xa8484a); swarmMat.uniforms.uHot.value.setHex(dark?0xe5383b:0xba181b); swarmMat.uniforms.uWhite.value.setHex(dark?0xf5f3f4:0x0b090a);
   swarmMat.blending = dark?THREE.AdditiveBlending:THREE.NormalBlending; swarmMat.needsUpdate=true;
   rings.forEach(r=>r.m.material.color.setHex(dark?0xe5383b:0xba181b));
 
@@ -1068,7 +1079,7 @@ function applyTheme(dark){
 let darkMode = opts.initialTheme ? opts.initialTheme!=='light' : true;
 themeBtn.addEventListener('click',()=>{ darkMode=!darkMode; applyTheme(darkMode); state.aberr=Math.max(state.aberr,0.6); if(onThemeChange) onThemeChange(darkMode?'dark':'light'); });
 
-/*  loop */
+/* ---------------------------------------------------------------- loop */
 const clock=new THREE.Clock();
 let last=0;
 applyTheme(darkMode);
@@ -1094,7 +1105,7 @@ function frame(){
 }
 frame();
 
-/*  boot sequence */
+/* ---------------------------------------------------------------- boot sequence */
 
 (function boot(){
   const pct=$('pct'), bar=$('bar'), spans=[...root.querySelectorAll('#status span')];
@@ -1117,7 +1128,7 @@ frame();
     onComplete(){ const wait=()=>{ if(loaded) finish(); else setTimeout(wait,100); }; wait(); }});
 })();
 
-  /*  lifecycle */
+  /* ---------------------------------------------------------------- lifecycle */
   function setTheme(dark){ darkMode=!!dark; applyTheme(darkMode); }
   function destroy(){
     running=false; ac.abort();
