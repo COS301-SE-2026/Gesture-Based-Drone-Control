@@ -1,0 +1,37 @@
+# systemd unit for the GBDC web demo backend 
+#
+# keep --workers 1
+# more workers would split one browser's requests across processes
+
+[Unit]
+Description=GBDC web demo backend (game + keyboard/gamepad only)
+After=network.target
+
+[Service]
+User=gbdc
+Group=gbdc
+WorkingDirectory=/opt/gbdc/app
+Environment=PYTHONPATH=/opt/gbdc/app
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=GBDC_WEB_MAX_SESSIONS=40
+Environment=GBDC_WEB_IDLE_TIMEOUT_S=600
+ExecStart=/opt/gbdc/venv/bin/uvicorn apps.web_backend.main:app \
+	--host 127.0.0.1 --port 3001 --workers 1 \
+	--ws-max-size 65536 --no-server-header --log-level warning
+Restart=always
+RestartSec=2
+
+# keep a runaway process from taking the whole (small) instance down
+MemoryMax=300M
+CPUQuota=150%
+
+# hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadOnlyPaths=/opt/gbdc
+
+[Install]
+WantedBy=multi-user.target
