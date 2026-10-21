@@ -22,7 +22,7 @@ const $ = id => root.querySelector('#'+id);
   const W=(ev,fn,o)=>window.addEventListener(ev,fn,Object.assign({},o||{},{signal:ac.signal}));
   const D=(ev,fn,o)=>document.addEventListener(ev,fn,Object.assign({},o||{},{signal:ac.signal}));
 
-/* ---------------------------------------------------------------- content */
+/*  content */
 const NCH = VENTURES.length;
 
 /* hand skeleton: forward kinematics ported from landing_page/src/lib/hand.ts (21 MediaPipe-style landmarks) */
@@ -62,7 +62,7 @@ function handModel(poseIdx){
   return {pts,bones};
 }
 
-/* ---------------------------------------------------------------- scramble */
+/*  scramble */
 const GLYPHS = '—/\\|_<>#%&@*+=:;0123456789';
 function scramble(el, text, dur=0.9){
   if(el._tw) el._tw.kill();
@@ -83,7 +83,7 @@ function scramble(el, text, dur=0.9){
   cancelAnimationFrame(el._raf); tick();
 }
 
-/* ---------------------------------------------------------------- audio */
+/*  audio */
 let audio=null, audioOn=false;
 function buildAudio(){
   const ctx = new (window.AudioContext||window.webkitAudioContext)();
@@ -122,7 +122,7 @@ soundBtn.addEventListener('click', ()=>{
   $('soundLabel').textContent = audioOn?'Sound on':'Sound off';
 });
 
-/* ---------------------------------------------------------------- three: setup */
+/*  three: setup */
 const canvas=$('gl');
 let renderer;
 try{ renderer = new THREE.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'}); }
@@ -145,7 +145,7 @@ const rim = new THREE.DirectionalLight(0xe5383b, 1.5); rim.position.set(-5,2,-6)
 const fill = new THREE.PointLight(0xba181b, 0.9, 14); fill.position.set(-2,1.2,2); scene.add(fill);
 const head = new THREE.PointLight(0xf5f3f4, 1.5, 26, 1.4); camera.add(head); head.position.set(1.5,1.2,0.5); scene.add(camera);
 
-/* ---------------------------------------------------------------- environment: a small studio painted onto a cube map for reflections */
+/*  environment: a small studio painted onto a cube map for reflections */
 (function(){
   const S=128, faces=[];
   // order: +x, -x, +y, -y, +z, -z
@@ -166,7 +166,7 @@ const head = new THREE.PointLight(0xf5f3f4, 1.5, 26, 1.4); camera.add(head); hea
   scene.environment=cube;
 })();
 
-/* ---------------------------------------------------------------- post (chromatic aberration / glitch) */
+/*  post (chromatic aberration / glitch) */
 const rt = new THREE.WebGLRenderTarget(2,2,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
 
 const postScene = new THREE.Scene();
@@ -216,7 +216,7 @@ const postMat = new THREE.ShaderMaterial({
 });
 postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), postMat));
 
-/* ---------------------------------------------------------------- ground: open empty plane */
+/*  ground: open empty plane */
 const groundU = { uFade:{value:1}, uA:{value:new THREE.Color(C.void)}, uB:{value:new THREE.Color(0x2a2f33)}, uC:{value:new THREE.Color(C.redShadow)} };
 const groundMat = new THREE.ShaderMaterial({
   uniforms:groundU, transparent:true, depthWrite:false,
@@ -242,7 +242,7 @@ ground.rotation.x=-Math.PI/2; ground.position.y=-0.62; scene.add(ground);
 const horizon = new THREE.Mesh(new THREE.RingGeometry(40,120,64), new THREE.MeshBasicMaterial({color:0x151314, transparent:true, opacity:0.9, side:THREE.DoubleSide}));
 horizon.rotation.x=-Math.PI/2; horizon.position.y=-0.61; scene.add(horizon);
 
-/* ---------------------------------------------------------------- the drone: a small white quad in the Tello class, built in code */
+/*  the drone: a small white quad in the Tello class, built in code */
 const matShell = new THREE.MeshPhysicalMaterial({color:0xeceef0, metalness:0.0, roughness:0.32, clearcoat:0.55, clearcoatRoughness:0.25});
 const matShell2= new THREE.MeshPhysicalMaterial({color:0xd4d7db, metalness:0.0, roughness:0.4, clearcoat:0.3, clearcoatRoughness:0.3});
 const matDark  = new THREE.MeshStandardMaterial({color:0x26282c, metalness:0.2, roughness:0.55});
@@ -324,7 +324,7 @@ function setRigState(rig,{explode=0, solid=1, skel=0, scanY=null}){
     p.disc.material.opacity = s*(1-skel)*0.1*(1-explode*0.7);
   });
 }
-/* ---------------------------------------------------------------- real models: the drone and the arm (GLB, embedded) */
+/*  real models: the drone and the arm (GLB, embedded) */
 renderer.localClippingEnabled = true;
 const drone=new THREE.Group(); drone.position.set(0,0.28,0); scene.add(drone);
 const armPivot=new THREE.Group(); scene.add(armPivot); armPivot.visible=false;
@@ -429,7 +429,7 @@ const modelsReady = (async ()=>{
 })();
 const setDroneState=(o)=>{ if(M.ok) setModelState(o); else if(rig) setRigState(rig,o); };
 
-/* ---------------------------------------------------------------- capsules (ventures) */
+/*  capsules (ventures) */
 const capsules=[];
 const matGlass = new THREE.MeshPhysicalMaterial({
   color:0xd3d3d3, metalness:0.05, roughness:0.08, transparent:true, opacity:0.16, clearcoat:1, clearcoatRoughness:0.1,
@@ -495,7 +495,7 @@ CAP_POS.forEach((p,i)=>{
   capsules.push({g, shell, edges, inner, i, spin:0.12+i*0.03, userData:g.userData});
 });
 
-/* ---------------------------------------------------------------- particles (footer) */
+/*  particles (footer) */
 const N = isTouch ? 3200 : 7200;
 const pPos = new Float32Array(N*3), pVel = new Float32Array(N*3), pSpd = new Float32Array(N);
 const shapes = {};
@@ -608,7 +608,7 @@ linkEls.forEach(a=>{
 });
 $('links').addEventListener('mouseleave',()=>setShape(restShape()));
 
-/* ---------------------------------------------------------------- shards: thin plates drifting in a helix around the arm */
+/*  shards: thin plates drifting in a helix around the arm */
 const spine=new THREE.Group(); scene.add(spine); spine.visible=false;
 const vertebrae=[];
 (function(){
@@ -630,7 +630,7 @@ function updateSpine(t, on, open){
   vertebrae.forEach(v=>{ const m=v.shard; m.position.y = m.userData.y + Math.sin(t*0.5+m.userData.ph)*0.18; m.rotation.x += 0.0015; });
 }
 
-/* ---------------------------------------------------------------- living background: slow nebula grain in the brand colours */
+/*  living background: slow nebula grain in the brand colours */
 const bgU={ uTime:{value:0}, uBase:{value:new THREE.Color(0x0b090a)}, uTint:{value:new THREE.Color(0x3a0c0e)}, uTint2:{value:new THREE.Color(0x1b1b22)}, uDark:{value:1} };
 const bgMat=new THREE.ShaderMaterial({ uniforms:bgU, side:THREE.BackSide, depthWrite:false, depthTest:false, fog:false,
   vertexShader:'varying vec3 vP; void main(){ vP=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
@@ -656,7 +656,7 @@ const bgMat=new THREE.ShaderMaterial({ uniforms:bgU, side:THREE.BackSide, depthW
 const bgDome=new THREE.Mesh(new THREE.SphereGeometry(180,48,24), bgMat); bgDome.renderOrder=-10; bgDome.frustumCulled=false; scene.add(bgDome);
 scene.background=null;
 
-/* ---------------------------------------------------------------- nano swarm: a field of tiny bots that reverberates when a chapter opens */
+/*  nano swarm: a field of tiny bots that reverberates when a chapter opens */
 const N2 = isTouch ? 1400 : 2600;
 const sPos=new Float32Array(N2*3), sSeed=new Float32Array(N2);
 for(let i=0;i<N2;i++){
@@ -722,7 +722,7 @@ function updateRings(dt){
 }
 let heartbeat=0;
 
-/* ---------------------------------------------------------------- drag to orbit (hero) and drag to spin (open chapter) */
+/*  drag to orbit (hero) and drag to spin (open chapter) */
 let dragX=0, dragY=0, dragT=0;
 W('pointerdown',e=>{
   if(isTouch || (e.target.closest && e.target.closest('.ui, .pill, .nav'))) return;
@@ -737,7 +737,7 @@ W('pointermove',e=>{
 const endDrag=()=>{ if(state.drag){ state.drag=false; canvas.classList.remove('grabbing'); } };
 W('pointerup',endDrag); W('pointercancel',endDrag); W('blur',endDrag);
 
-/* ---------------------------------------------------------------- kinetic type: letters that answer scroll and cursor */
+/*  kinetic type: letters that answer scroll and cursor */
 function splitLetters(el){
   const walk=(node)=>{ [...node.childNodes].forEach(n=>{ if(n.nodeType===3){ const frag=document.createDocumentFragment(); [...n.textContent].forEach(ch=>{ const sp=document.createElement('span'); sp.className='k'; sp.textContent=ch===' '?'\u00a0':ch; frag.appendChild(sp); }); n.replaceWith(frag); } else if(n.nodeType===1 && n.tagName!=='BR') walk(n); }); };
   walk(el); return [...el.querySelectorAll('.k')];
@@ -755,7 +755,7 @@ function kinetic(letters, t, vS, mx, my, active){
   });
 }
 
-/* ---------------------------------------------------------------- pill nav: squashes and stretches with scroll velocity */
+/*  pill nav: squashes and stretches with scroll velocity */
 const pillEl=$('pill');
 function pillReact(vS){
   const v=THREE.MathUtils.clamp(vS*60, -1, 1), a=Math.abs(v);
@@ -763,7 +763,7 @@ function pillReact(vS){
   pillEl.style.filter = a>0.05 ? `blur(${(a*1.6).toFixed(2)}px)` : '';
 }
 
-/* ---------------------------------------------------------------- scroll + interaction state */
+/*  scroll + interaction state */
 const state = { p:0, pTarget:0, mx:0, my:0, mxs:0, mys:0, glitch:0, aberr:0, explode:0, skel:0, hover:false, ready:false, venture:-1, flat:1, orbHover:-1, armK:0, lift:0, scanning:false, spiral:0, yaw:0, yawT:0, pitch:0, pitchT:0, drag:false, dragDist:0, mspeed:0, prevP:0, vS:0, spin:0 };
 const raycaster = new THREE.Raycaster(); const ndc = new THREE.Vector2();
 const track=$('track');
@@ -787,7 +787,7 @@ function resize(){
 }
 W('resize', resize); resize();
 
-/* ---------------------------------------------------------------- UI stage helpers */
+/*  UI stage helpers */
 const heroEl=$('hero'), cueEl=$('cue'), ventureEl=$('venture'), footerEl=$('footer'), indexBtns=[...root.querySelectorAll('#pill button')];
 let heroOn=false, footOn=false, usesOn=false; const usesEl=$('uses');
 function showVenture(i){
@@ -805,7 +805,7 @@ function showVenture(i){
   if(audioOn&&audio){ audio.tick(); setTimeout(()=>audio.blip(520),90); }
 }
 
-/* ---------------------------------------------------------------- camera choreography */
+/*  camera choreography */
 const camPos=new THREE.Vector3(), camLook=new THREE.Vector3(), lookS=new THREE.Vector3(0,0.3,0), tmpV=new THREE.Vector3();
 const ease=(a,b,t)=>THREE.MathUtils.lerp(a,b,THREE.MathUtils.smoothstep(t,0,1));
 const palmW=new THREE.Vector3(), tipW=new THREE.Vector3(), droneTarget=new THREE.Vector3(), takeoffFrom=new THREE.Vector3();
@@ -988,7 +988,7 @@ function choreo(p, t){
   indexBtns.forEach((b,i)=>b.classList.toggle('active',i===sec));
 }
 
-/* ---------------------------------------------------------------- orb detail: open / close */
+/*  orb detail: open / close */
 let openIdx=-1; const openO={v:0}; const detailEl=$('detail');
 function fillDetail(i){
   const v=VENTURES[i];
@@ -1037,7 +1037,7 @@ W('touchend',e=>{
 },{passive:true});
 root.querySelectorAll('#pill button').forEach(b=>b.addEventListener('click',()=>{ if(openIdx>=0) closeOrb(); }));
 
-/* ---------------------------------------------------------------- menu overlay with parallax */
+/*  menu overlay with parallax */
 let menuOpen=false; const menuEl=$('menu');
 function openMenu(){ if(menuOpen) return; menuOpen=true; menuEl.classList.add('on'); menuEl.setAttribute('aria-hidden','false'); requestAnimationFrame(()=>requestAnimationFrame(()=>menuEl.classList.add('in'))); document.documentElement.classList.add('noscroll'); state.glitch=Math.max(state.glitch,0.8); state.aberr=Math.max(state.aberr,0.8); if(audioOn&&audio) audio.tick(); }
 function closeMenu(){ if(!menuOpen) return; menuOpen=false; menuEl.classList.remove('in'); state.glitch=Math.max(state.glitch,0.5); setTimeout(()=>{ if(!menuOpen){ menuEl.classList.remove('on'); menuEl.setAttribute('aria-hidden','true'); if(openIdx<0) document.documentElement.classList.remove('noscroll'); } },650); }
@@ -1052,7 +1052,7 @@ root.querySelectorAll('#mbig button').forEach(b=>b.addEventListener('click',()=>
 root.querySelectorAll('#mbig button').forEach(b=>{ const tn=b.lastChild; const sp=document.createElement('span'); sp.textContent=tn.textContent; tn.replaceWith(sp); const txt=sp.textContent; b.addEventListener('mouseenter',()=>scramble(sp, txt, 0.5)); });
 function menuParallax(){ if(!menuOpen) return; $('mbig').style.transform=`translate(${(state.mxs*-18).toFixed(1)}px, ${(state.mys*-12).toFixed(1)}px)`; $('mside').style.transform=`translate(${(state.mxs*-8).toFixed(1)}px, ${(state.mys*-6).toFixed(1)}px)`; }
 
-/* ---------------------------------------------------------------- theme (mirrors DroneScene.tsx colour swaps) */
+/*  theme (mirrors DroneScene.tsx colour swaps) */
 const themeBtn=$('theme');
 function applyTheme(dark){
   root.dataset.theme = dark?'dark':'light';
@@ -1079,7 +1079,7 @@ function applyTheme(dark){
 let darkMode = opts.initialTheme ? opts.initialTheme!=='light' : true;
 themeBtn.addEventListener('click',()=>{ darkMode=!darkMode; applyTheme(darkMode); state.aberr=Math.max(state.aberr,0.6); if(onThemeChange) onThemeChange(darkMode?'dark':'light'); });
 
-/* ---------------------------------------------------------------- loop */
+/*  loop */
 const clock=new THREE.Clock();
 let last=0;
 applyTheme(darkMode);
@@ -1105,7 +1105,7 @@ function frame(){
 }
 frame();
 
-/* ---------------------------------------------------------------- boot sequence */
+/*  boot sequence */
 
 (function boot(){
   const pct=$('pct'), bar=$('bar'), spans=[...root.querySelectorAll('#status span')];
@@ -1128,7 +1128,7 @@ frame();
     onComplete(){ const wait=()=>{ if(loaded) finish(); else setTimeout(wait,100); }; wait(); }});
 })();
 
-  /* ---------------------------------------------------------------- lifecycle */
+  /*  lifecycle */
   function setTheme(dark){ darkMode=!!dark; applyTheme(darkMode); }
   function destroy(){
     running=false; ac.abort();
