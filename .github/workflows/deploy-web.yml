@@ -136,5 +136,5 @@ jobs:
         env:
           WEB_URL: ${{ vars.WEB_URL || format('https://{0}', secrets.WEB_HOST) }}
         run: |
-          curl -fsS "https://${WEB_HOST}/api/health"
-          curl -fsS -o /dev/null "https://${WEB_HOST}/"
+          curl -fsS "${WEB_URL}/api/health"
+          curl -fsS -o /dev/null "${WEB_URL}/"
