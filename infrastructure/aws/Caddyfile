@@ -1,0 +1,51 @@
+# Caddy config for the GBDC web demo (installed to /etc/caddy/Caddyfile by setup.sh).
+# __DOMAIN__ is replaced with your domain by setup.sh.
+#
+# One origin serves both the static frontend and the API, so there is no CORS
+# and a single automatically-renewed HTTPS certificate covers everything.
+{
+	# don't expose the admin API beyond localhost
+	admin localhost:2019
+}
+
+__DOMAIN__ {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	# Backend (REST + WebSockets). Only the demo routes exist on it.
+	handle /api/* {
+		request_body {
+			max_size 64KB
+		}
+		reverse_proxy 127.0.0.1:3001
+	}
+
+	# Frontend
+	handle {
+		root * /opt/gbdc/web
+
+		# hashed build assets never change -> let browsers cache them for a year,
+		# so each laptop downloads the ~7 MB of game assets only once
+		@hashed path /assets/*
+		header @hashed Cache-Control "public, max-age=31536000, immutable"
+
+		@html path / /index.html
+		header @html Cache-Control "no-cache"
+
+		try_files {path} /index.html
+		file_server
+	}
+
+	log {
+		output file /var/log/caddy/gbdc-access.log {
+			roll_size 10MiB
+			roll_keep 3
+		}
+	}
+}
