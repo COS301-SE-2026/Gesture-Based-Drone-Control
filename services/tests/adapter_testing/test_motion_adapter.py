@@ -56,6 +56,17 @@ def adapter():
 	return make_adapter()
 
 
+@pytest.fixture
+def analog_adapter():
+	"""
+	Analog is switched off by default (MotionAdapter.ENABLE_ANALOG), these
+	tests cover the joystick path for when it is turned back on
+	"""
+	a = make_adapter()
+	a.ENABLE_ANALOG = True
+	return a
+
+
 @pytest.mark.parametrize(
 	('gesture', 'expected'),
 	[
@@ -77,13 +88,23 @@ def test_single_hands_motions_resolve(adapter, gesture, expected):
 @pytest.mark.parametrize(
 	('gesture', 'expected'),
 	[
-		('SWIPE_UP', CommandType.TAKEOFF),
-		('SWIPE_DOWN', CommandType.LAND),
-		('PULL', CommandType.EMERGENCY_STOP),
+		('TWO_FINGERS', CommandType.TAKEOFF),
+		('FIST', CommandType.LAND),
+		('ONE_FINGER', CommandType.EMERGENCY_STOP),
 	],
 )
 def test_both_hands_together_resolve(adapter, gesture, expected):
+	"""Safety commands are held poses, never motions, so a swipe cannot land the drone"""
 	assert adapter._resolve({'RIGHT': gesture, 'LEFT': gesture}) is expected
+
+
+@pytest.mark.parametrize('gesture', ['SWIPE_UP', 'SWIPE_DOWN', 'PULL'])
+def test_two_handed_motions_are_not_safety_commands(adapter, gesture):
+	assert adapter._resolve({'RIGHT': gesture, 'LEFT': gesture}) not in {
+		CommandType.TAKEOFF,
+		CommandType.LAND,
+		CommandType.EMERGENCY_STOP,
+	}
 
 
 def test_the_two_adapters_do_not_understand_each_other(adapter):
@@ -93,7 +114,7 @@ def test_the_two_adapters_do_not_understand_each_other(adapter):
 	pose = GestureAdapter(min_stable_frames=2)
 
 	assert adapter._resolve({'RIGHT': 'OPEN_PALM'}) is None
-	assert adapter._resolve({'RIGHT': 'FIST', 'LEFT': 'FIST'}) is None
+	assert adapter._resolve({'RIGHT': 'OPEN_PALM', 'LEFT': 'OPEN_PALM'}) is None
 	assert pose._resolve({'RIGHT': 'SWIPE_LEFT'}) is None
 	assert pose._resolve({'RIGHT': 'OPEN_PALM'}) is CommandType.HOVER
 	assert pose._resolve({'RIGHT': 'FIST', 'LEFT': 'FIST'}) is CommandType.LAND
@@ -119,11 +140,17 @@ def test_nothing_is_emitted_for(adapter, payload):
 	assert emitted(adapter) == []
 
 
-def test_axes_follow_the_drone_adapter_contract(adapter):
-	adapter._process_payload(
+def test_analog_is_off_by_default(adapter):
+	run(adapter, frame(hand('RIGHT', 'UNKNOWN', hand_motion=motion(x=0.6))))
+
+	assert analog(adapter) == []
+
+
+def test_axes_follow_the_drone_adapter_contract(analog_adapter):
+	analog_adapter._process_payload(
 		frame(hand('RIGHT', 'UNKNOWN', hand_motion=motion(x=0.6, y=-0.3, depth=0.5)))
 	)
-	one_hand = analog(adapter)[0]
+	one_hand = analog(analog_adapter)[0]
 
 	assert one_hand.left_x == pytest.approx(0.6)
 	assert one_hand.left_y == pytest.approx(-0.5)
@@ -131,6 +158,7 @@ def test_axes_follow_the_drone_adapter_contract(adapter):
 	assert one_hand.right_x == 0.0
 
 	two_handed = make_adapter()
+	two_handed.ENABLE_ANALOG = True
 	two_handed._process_payload(
 		frame(
 			hand('RIGHT', 'UNKNOWN', hand_motion=motion(x=0.4)),
@@ -141,10 +169,10 @@ def test_axes_follow_the_drone_adapter_contract(adapter):
 	assert analog(two_handed)[0].right_x == pytest.approx(-0.8)
 
 
-def test_left_hand_alone_still_flies(adapter):
-	adapter._process_payload(frame(hand('LEFT', 'UNKNOWN', hand_motion=motion(x=0.6))))
+def test_left_hand_alone_still_flies(analog_adapter):
+	analog_adapter._process_payload(frame(hand('LEFT', 'UNKNOWN', hand_motion=motion(x=0.6))))
 
-	assert analog(adapter)[0].left_x == pytest.approx(0.6)
+	assert analog(analog_adapter)[0].left_x == pytest.approx(0.6)
 
 
 def test_pose_frames_never_produce_analog(adapter):
@@ -153,20 +181,31 @@ def test_pose_frames_never_produce_analog(adapter):
 	assert CommandType.ANALOG not in emitted(adapter)
 
 
-def test_analog_and_discrete_coexist_on_one_frame(adapter):
-	run(adapter, frame(hand('RIGHT', 'SWIPE_LEFT', hand_motion=motion(x=-0.7))))
+def test_discrete_gesture_takes_priority_over_analog(analog_adapter):
+	"""
+	A swipe also deflects the joystick, so emitting both would double up the move.
+	Analog only runs on frames where no discrete gesture resolved
+	"""
+	run(analog_adapter, frame(hand('RIGHT', 'SWIPE_LEFT', hand_motion=motion(x=-0.7))))
 
-	assert CommandType.ANALOG in emitted(adapter)
-	assert CommandType.MOVE_LEFT in emitted(adapter)
+	assert CommandType.MOVE_LEFT in emitted(analog_adapter)
+	assert CommandType.ANALOG not in emitted(analog_adapter)
 
 
-def test_analog_holds_off_the_idle_hover(adapter):
-	adapter._last_gesture_ts = time.monotonic() - 60.0
+def test_analog_holds_off_the_idle_hover(analog_adapter):
+	analog_adapter._last_gesture_ts = time.monotonic() - 60.0
 
-	adapter._process_payload(frame(hand('RIGHT', 'UNKNOWN', hand_motion=motion(x=0.6))))
-	adapter._check_idle()
+	analog_adapter._process_payload(frame(hand('RIGHT', 'UNKNOWN', hand_motion=motion(x=0.6))))
+	analog_adapter._check_idle()
 
-	assert CommandType.HOVER not in emitted(adapter)
+	assert CommandType.HOVER not in emitted(analog_adapter)
+
+
+def test_repeat_of_the_active_command_is_suppressed(adapter):
+	"""One swipe is one move, however many stable frames it latches for"""
+	run(adapter, frame(hand('RIGHT', 'SWIPE_LEFT')), frames=10)
+
+	assert emitted(adapter).count(CommandType.MOVE_LEFT) == 1
 
 
 def test_idle_timeout_is_longer_than_the_pose_default():

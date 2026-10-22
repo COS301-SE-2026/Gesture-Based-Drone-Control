@@ -11,6 +11,7 @@ sys.path.insert(0, _services_dir)
 
 from cv_pipeline.gestures.recognizers.gesture_recognizer import Gesture  # noqa: E402
 from cv_pipeline.gestures.recognizers.motion_based import (  # noqa: E402
+	CLUTCH_RELEASE_FRAMES,
 	LATCH_SECONDS,
 	REFACTORY_SECONDS,
 	STALE_SECONDS,
@@ -40,12 +41,33 @@ class FakeClock:
 		self.now += seconds
 
 
-def make_hand(cx=0.5, cy=0.5, palm=PALM, handedness=Handedness.RIGHT, confidence=0.95):
+FINGER_CHAINS = {
+	# mcp: (pip, tip)
+	5: (6, 8),
+	9: (10, 12),
+	13: (14, 16),
+	17: (18, 20),
+}
+
+
+def make_hand(
+	cx=0.5,
+	cy=0.5,
+	palm=PALM,
+	handedness=Handedness.RIGHT,
+	confidence=0.95,
+	fingers_up=5,
+):
 	"""
 	Synthetic hand centred on (cx, cy) with a given palm span
 
-	Only the palm landmarks and the wrist -> middle MPC span matter here
+	The palm landmarks and the wrist -> middle MCP span drive the trajectory,
 	Push/Pull reads from palm
+
+	Fingers are built too, because the recognizer clutches (stops tracking)
+	whenever fewer than CLUTCH_MIN_FINGERS are up. fingers_up=5 is an open
+	palm, fingers_up=0 a fist. Fingers are raised thumb first, then index,
+	middle, ring, pinky; curled fingers fold back towards the wrist
 	"""
 	lm = [HandLandmark(cx, cy, 0.0) for _ in range(21)]
 	lm[0] = HandLandmark(cx, cy + palm / 2, 0.0)
@@ -53,6 +75,26 @@ def make_hand(cx=0.5, cy=0.5, palm=PALM, handedness=Handedness.RIGHT, confidence
 	lm[5] = HandLandmark(cx - 0.02, cy - palm / 2, 0.0)
 	lm[13] = HandLandmark(cx + 0.02, cy - palm / 2, 0.0)
 	lm[17] = HandLandmark(cx + 0.03, cy - palm / 4, 0.0)
+
+	# thumb: extended = tip further from index MCP than the IP joint
+	thumb_up = fingers_up >= 1
+	lm[2] = HandLandmark(cx - 0.04, cy, 0.0)
+	lm[3] = HandLandmark(cx - 0.06, cy - 0.01, 0.0)
+	lm[4] = (
+		HandLandmark(cx - 0.09, cy - 0.02, 0.0)
+		if thumb_up
+		else HandLandmark(cx - 0.02, cy - palm / 2 + 0.005, 0.0)
+	)
+
+	# index, middle, ring, pinky: straight = mcp -> pip -> tip in a line
+	for n, (mcp, (pip, tip)) in enumerate(FINGER_CHAINS.items(), start=2):
+		base = lm[mcp]
+		lm[pip] = HandLandmark(base.x, base.y - 0.03, 0.0)
+		if fingers_up >= n:
+			lm[tip] = HandLandmark(base.x, base.y - 0.06, 0.0)
+		else:
+			lm[tip] = HandLandmark(base.x, base.y + 0.01, 0.0)
+
 	return DetectedHand(handedness=handedness, landmarks=lm, confidence=confidence)
 
 
@@ -68,8 +110,16 @@ def gestures(results):
 	return [r.gesture for r in results]
 
 
-def line(x, y, dx, dy, frames=11):
-	return [(x + dx * i, y + dy * i) for i in range(frames)]
+def line(x, y, dx, dy, frames=11, settle=6):
+	"""
+	Straight stroke followed by `settle` frames held at the end point
+
+	The recognizer only accepts a swipe once the hand comes to rest
+	(SWIPE_SETTLE_SECONDS), which is what separates it from the opening
+	quarter of a circle, so a realistic swipe has to stop
+	"""
+	path = [(x + dx * i, y + dy * i) for i in range(frames)]
+	return path + [path[-1]] * settle
 
 
 def circle(frames=16, radius=0.06, clockwise=True):
@@ -253,3 +303,49 @@ def test_invert_x_flips_lateral_swipes(clock):
 	rec = MotionBasedRecognizer(time_source=clock, invert_x=True)
 
 	assert Gesture.SWIPE_LEFT in gestures(feed(rec, clock, line(0.30, 0.5, 0.045, 0.0)))
+
+
+def hold(rec, clock, fingers_up, seconds, handedness=Handedness.RIGHT):
+	"""Hold a still pose for `seconds` and return every result"""
+	results = []
+	for _ in range(int(seconds / FRAME_DT)):
+		clock.tick()
+		results.append(
+			rec.interpret_gesture(make_hand(fingers_up=fingers_up, handedness=handedness))
+		)
+	return results
+
+
+def test_closed_hand_clutches_and_blocks_swipes(rec, clock):
+	"""A fist moving across the frame is repositioning, not flying"""
+	results = []
+	for cx, cy in line(0.30, 0.5, 0.045, 0.0):
+		clock.tick()
+		results.append(rec.interpret_gesture(make_hand(cx, cy, fingers_up=0)))
+
+	assert not SWIPES.intersection(gestures(results))
+	# the first few closed frames are debounce, after that the joystick is dead
+	assert all(r.motion.is_neutral for r in results[CLUTCH_RELEASE_FRAMES:])
+
+
+@pytest.mark.parametrize(
+	('fingers_up', 'expected', 'needed'),
+	[
+		(0, Gesture.FIST, 1.5),
+		(1, Gesture.ONE_FINGER, 0.6),
+		(2, Gesture.TWO_FINGERS, 1.5),
+	],
+)
+def test_safety_pose_fires_only_after_being_held(rec, clock, fingers_up, expected, needed):
+	early = hold(rec, clock, fingers_up, needed * 0.5)
+	assert expected not in gestures(early)
+
+	late = hold(rec, clock, fingers_up, needed)
+	assert expected in gestures(late)
+
+
+def test_opening_the_hand_cancels_a_pose_hold(rec, clock):
+	hold(rec, clock, 0, 1.0)
+	hold(rec, clock, 5, 0.2)
+
+	assert Gesture.FIST not in gestures(hold(rec, clock, 0, 1.0))
