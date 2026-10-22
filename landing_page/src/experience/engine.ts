@@ -697,11 +697,11 @@ const bgMat=new THREE.ShaderMaterial({ uniforms:bgU, side:THREE.BackSide, depthW
       vec2 uv=vec2(atan(d.z,d.x)*0.9, d.y*1.6);
       vec3 c=uBase; bool dk=uDark>0.5;
       vec2 st=uv+uMouse*vec2(0.12,-0.08)*uStir;
-      vec2 q=vec2(fbm(st*1.8+uTime*0.015), fbm(st*1.8+vec2(5.2,1.3)-uTime*0.01));
-      vec2 r=vec2(fbm(st*1.8+4.0*q+vec2(1.7,9.2)+uTime*(0.02+uStir*0.08)), fbm(st*1.8+4.0*q+vec2(8.3,2.8)-uTime*(0.015+uStir*0.06)));
+      vec2 q=vec2(fbm(st*1.8+uTime*0.00375), fbm(st*1.8+vec2(5.2,1.3)-uTime*0.0025));
+      vec2 r=vec2(fbm(st*1.8+4.0*q+vec2(1.7,9.2)+uTime*(0.005+uStir*0.02)), fbm(st*1.8+4.0*q+vec2(8.3,2.8)-uTime*(0.00375+uStir*0.015)));
       float f=fbm(st*1.8+4.0*r);
       float ink=smoothstep(0.4,0.8,f);
-      float tendril=pow(fbm(st*6.5+7.0*r+vec2(uTime*0.025,-uTime*0.015)),2.6)*0.55;
+      float tendril=pow(fbm(st*6.5+7.0*r+vec2(uTime*0.00625,-uTime*0.00375)),2.6)*0.55;
       float drop=uBurst*exp(-length(vec2(d.x,d.y*1.6)+vec2(-uMouse.x*0.3,uMouse.y*0.3))*1.4)*smoothstep(0.2,0.7,f);
       float sheen=pow(max(0.0,1.0-abs(d.y-0.15)*3.0),3.0)*0.08;   // a faint light on the surface of the water, far away
       if(dk){ c += uTint*(ink*1.45+tendril*0.9+drop*1.2) + vec3(0.05)*pow(length(r),2.0) + vec3(0.25,0.08,0.09)*sheen; }
@@ -720,7 +720,7 @@ function glossFloor({y=-0.62, base=0x0a0809, blur=1.2, ripple=1.0, strength=0.9,
       float h21(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
       float n2(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f); return mix(mix(h21(i),h21(i+vec2(1,0)),f.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x),f.y); }
       // a slow water surface: two gentle swells plus fine wind texture, as a height field → normal
-      float hgt(vec2 p){ return sin(p.x*0.9+p.y*0.4+uTime*0.09)*0.5 + sin(p.y*1.3-p.x*0.3-uTime*0.07)*0.35 + (n2(p*2.2+uTime*0.04)-0.5)*0.5; }
+      float hgt(vec2 p){ return sin(p.x*0.9+p.y*0.4+uTime*0.05)*0.5 + sin(p.y*1.3-p.x*0.3-uTime*0.04)*0.35 + (n2(p*2.2+uTime*0.02)-0.5)*0.5; }
       void main(){
         vec2 uv=vUv.xy/vUv.w;
         float d=length(vW.xz);
@@ -747,11 +747,11 @@ function glossFloor({y=-0.62, base=0x0a0809, blur=1.2, ripple=1.0, strength=0.9,
   r.rotation.x=-Math.PI/2; r.position.y=y; r.userData.u=u; scene.add(r); return r;
 }
 
-const bgFloor=glossFloor({y:-0.62, base:0x0d0a0b, blur:1.3, ripple:0.8, strength:0.9, fade:0.04});
+const bgFloor=glossFloor({y:-1.62, base:0x0d0a0b, blur:1.3, ripple:0.8, strength:0.9, fade:0.04});
 ANAMORPHIC=2.2;
 let floorDark=true;
-function bgExtraTheme(dark){ floorDark=dark; if(bgFloor){ const u=bgFloor.userData.u; u.uBase.value.setHex(dark?0x0d0a0b:0xf1eaea); u.uDeep.value.setHex(dark?0x050304:0xe4d9d9); u.uBlur.value=dark?1.3:0.5; u.uStrength.value=dark?0.9:1.0; u.uSpec.value=dark?1.0:0.0; u.uFade.value=dark?0.04:0.02; } scene.fog.color.setHex(dark?0x0b090a:0xf6f2f2); }   // light mode: a still mirror, not water
-function bgExtraUpdate(p,t){ if(bgFloor){ bgFloor.visible = p<0.23; bgFloor.userData.u.uTime.value=t; bgFloor.userData.u.uRipple.value = floorDark ? 0.7+Math.min(0.3,state.mspeed*0.3)+bgU.uBurst.value*0.4 : 0.0; } }
+function bgExtraTheme(dark){ floorDark=dark; if(bgFloor){ const u=bgFloor.userData.u; u.uBase.value.setHex(dark?0x0d0a0b:0xf1eaea); u.uDeep.value.setHex(dark?0x050304:0xe4d9d9); u.uBlur.value=dark?1.3:0.5; u.uStrength.value=dark?0.9:1.0; u.uSpec.value=dark?2.0:0.0; u.uFade.value=dark?0.04:0.02; } scene.fog.color.setHex(dark?0x0b090a:0xf6f2f2); }   // light mode: a still mirror, not water
+function bgExtraUpdate(p,t){ if(bgFloor){ bgFloor.visible = p<0.23; bgFloor.userData.u.uTime.value=t; bgFloor.userData.u.uRipple.value = floorDark ? 0.45+Math.min(0.1,state.mspeed*0.1)+bgU.uBurst.value*0.25 : 0.0; } }
 
 
 /*  nano swarm: a field of tiny bots that reverberates when a chapter opens */
