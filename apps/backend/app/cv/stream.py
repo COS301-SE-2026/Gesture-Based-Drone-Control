@@ -17,12 +17,21 @@ from typing import Optional
 
 from app.cv.serialization import GestureFramePayload, serialize_event
 
-from services.cv_pipeline.processing.pipeline import RECOGNIZER_MODES, CvPipeline, PipelineConfig
+from services.cv_pipeline.processing.pipeline import (
+	RECOGNIZER_MODES,
+	CvPipeline,
+	PipelineConfig,
+	cancel_and_wait,
+)
 
 logger = logging.getLogger(__name__)
 
 # how long camera stas open after last client disconnects
 LINGER_SECONDS = 3.0
+
+# longest a new subscriber waits for the previous camera release before trying
+# anyway. a hung release should show 'camera unavailable', not spin forever
+SETTLE_TIMEOUT_SECONDS = 8.0
 
 # client queue carries payloads or none (none=stream done close socket)
 ClientQueue = 'asyncio.Queue[Optional[GestureFramePayload]]'
@@ -139,9 +148,14 @@ class GestureStream:
 
 		if not stopping.done():
 			# a stop that raised is _stop_pipeline's problem, not ours - either
-			# way the handle is gone once it settles
-			with contextlib.suppress(Exception):
-				await asyncio.shield(stopping)
+			# way the handle is gone once it settles. Bounded: asyncio.wait never
+			# cancels `stopping` and never raises its exception
+			await asyncio.wait({stopping}, timeout=SETTLE_TIMEOUT_SECONDS)
+			if not stopping.done():
+				logger.error(
+					'previous camera release still running after %.0fs, opening anyway',
+					SETTLE_TIMEOUT_SECONDS,
+				)
 
 		if stopping.done():
 			self._stopping = None
@@ -204,25 +218,26 @@ class GestureStream:
 		async with self._lock:
 			if self._pipeline is None:
 				return
-
-			task = self._broadcast_task
-			self._broadcast_task = None
-			if task is not None and task is not asyncio.current_task():
-				task.cancel()
-				with contextlib.suppress(asyncio.CancelledError):
-					await task
-
-			pipeline = self._pipeline
-			self._pipeline = None
-			stopping = asyncio.ensure_future(pipeline.stop())
+			task, self._broadcast_task = self._broadcast_task, None
+			pipeline, self._pipeline = self._pipeline, None
+			# the whole teardown runs as one shielded unit: a caller cancelled
+			# halfway (linger cancelled because a client came back) must not leave
+			# a pipeline with its broadcast task gone, which looks healthy to
+			# _is_orphaned() but never sends a frame
+			stopping = asyncio.ensure_future(self._teardown(task, pipeline))
 			self._stopping = stopping
 			try:
 				await asyncio.shield(stopping)
 			finally:
 				# left set when we are cancelled out of the shield: the stop runs
-				# on and the next start has to wait for it
+				# on and the next start has to wait for it (_settle_stop)
 				if stopping.done():
 					self._stopping = None
+
+	@staticmethod
+	async def _teardown(task: Optional[asyncio.Task], pipeline: CvPipeline) -> None:
+		await cancel_and_wait(task, 'gesture broadcast task')
+		await pipeline.stop()
 
 	def _fan_out(self, payload: Optional[GestureFramePayload]) -> None:
 		for queue in self._clients:
