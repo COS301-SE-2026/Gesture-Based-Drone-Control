@@ -1,0 +1,6336 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Real-time gesture-to-flight-command pipeline using MediaPipe Hands, rule-based + TFLite recognition, FastAPI WebSocket backend, and a React/TypeScript telemetry dashboard.">
+      
+      
+      
+        <link rel="canonical" href="https://cos301-se-2026.github.io/Gesture-Based-Drone-Control/docs/nfr/EVIDENCE/">
+      
+      
+        <link rel="prev" href="../NFR/">
+      
+      
+        <link rel="next" href="../../api/API_REFERENCE/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/reticle.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Evidence - Gesture-Based Drone Control</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../../css/timeago.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nfr-evidence" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Gesture-Based Drone Control" class="md-header__button md-logo" aria-label="Gesture-Based Drone Control" data-md-component="logo">
+      
+  <img src="../../assets/drone.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Gesture-Based Drone Control
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Evidence
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    COS301-SE-2026/Gesture-Based-Drone-Control
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../SRS/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Demo 3 Deliverables
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../GIT/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/API_REFERENCE/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../frontend/atoms/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../demo/demo_one_documentation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Demo 1 Archive
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Gesture-Based Drone Control" class="md-nav__button md-logo" aria-label="Gesture-Based Drone Control" data-md-component="logo">
+      
+  <img src="../../assets/drone.svg" alt="logo">
+
+    </a>
+    Gesture-Based Drone Control
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    COS301-SE-2026/Gesture-Based-Drone-Control
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demo 3 Deliverables
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Demo 3 Deliverables
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SRS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Requirements (SRS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SAS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Architecture (SAS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BRAND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brand & Design System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../POLICY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MANUAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Conventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CICD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NFR Verification
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    NFR Verification
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview & Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#where-these-numbers-were-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where these numbers were measured
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr1-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR1 Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR1 Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-03
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-25
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-26
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-27
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-28
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-29
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-30
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-35" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-35
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-37" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-37
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-38" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-38
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-40" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-40
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-41
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-51
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-52
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-18
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-32
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-33
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-42" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-42
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-34
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-36" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-36
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-39" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-39
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-50" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-50
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr2-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR2 Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR2 Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-07
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-12
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-08
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-09
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-10
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr3-reliability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR3 Reliability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR3 Reliability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-01
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-02
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-01-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-01-rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-06
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-19
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-04
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-05
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-13
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-14
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr5-usability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR5 Usability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR5 Usability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-44" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-44
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-45" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-45
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-56" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-56
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-46" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-46
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-55" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-55
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-49" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-49
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-48" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-48
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-53" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-53
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-54" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-54
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr6-maintainability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR6 Maintainability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR6 Maintainability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-20
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-21
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-22
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr7-availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR7 Availability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR7 Availability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-23
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-24
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usability/PROTOCOL.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usability Study Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/SWAGGER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST (Swagger UI)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/ASYNCAPI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WebSockets (AsyncAPI)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contracts/CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Service Contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/atoms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atoms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/organisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Organisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../frontend/routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Services & Adapters
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Services & Adapters
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/command/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Drone Adapter (ABC)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/project_airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/dummy_drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input Adapter (ABC)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/keyboard_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboard Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/dummy_input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/ML/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ML engine model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../demo/demo_one_documentation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demo 1 Archive
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Demo 1 Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/SRS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SRS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/DESIGN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design & Wireframes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plan & Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/GIT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Conventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/CICD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/demo/Deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/api/API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/testing/TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_10" id="__nav_6_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/frontend/atoms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atoms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/frontend/molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/frontend/organisms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Organisms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/frontend/routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_11" id="__nav_6_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Services
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Services
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/services/airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/services/command/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/services/drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/services/dummy_drone_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Drone Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/services/dummy_input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dummy Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/services/input_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/services/keyboard_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Keyboard Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demo/demo_one_documentation/services/project_airsim_adapter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project AirSim Adapter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#where-these-numbers-were-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where these numbers were measured
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr1-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR1 Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR1 Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-03
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-25
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-26
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-27
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-28
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-29
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-30
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-35" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-35
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-37" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-37
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-38" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-38
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-40" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-40
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-41
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-51
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-52
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-18
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-32
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-33
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-42" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-42
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-34
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-36" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-36
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-39" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-39
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-50" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-50
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr2-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR2 Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR2 Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-07
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-12
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-08
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-09
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-10
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr3-reliability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR3 Reliability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR3 Reliability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-01
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-02
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-01-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-01-rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-06
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-19
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-04
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-05
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-13
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-14
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr5-usability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR5 Usability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR5 Usability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-44" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-44
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-45" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-45
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-56" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-56
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-46" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-46
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-55" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-55
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-49" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-49
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-48" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-48
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-53" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-53
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-54" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-54
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr6-maintainability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR6 Maintainability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR6 Maintainability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-20
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-21
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-22
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nfr7-availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NFR7 Availability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NFR7 Availability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qr-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-23
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qr-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QR-24
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../../GIT/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Development
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../NFR/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    NFR Verification
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/edit/main/docs/nfr/EVIDENCE.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/raw/main/docs/nfr/EVIDENCE.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="nfr-evidence">NFR Evidence<a class="headerlink" href="#nfr-evidence" title="Permanent link">&para;</a></h1>
+<div class="tx-badges">
+  <span class="tx-status"><span class="tx-status__dot"></span>Generated from test runs</span>
+  <span class="tx-status">Performance · Usability · Security · Reliability</span>
+</div>
+
+<div class="admonition abstract">
+<p class="admonition-title">How to read this page</p>
+<p>Every section below was written by <code>tests/nfr/report.py</code> from the <abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr> a test produced. Nothing here is typed by hand. Each section shows <strong>what was measured and how</strong>, the <strong>result against the target</strong>, the <strong>distribution</strong> of the raw samples, a <strong>chart</strong> drawn from those samples, any <strong>screenshots</strong>, and links to the <strong>test source</strong> and the <strong>raw data files</strong>, so every number can be traced back to code without cloning the repository.</p>
+</div>
+<p><strong>Totals:</strong> 46 pass · 0 fail · 2 pending (awaiting usability-study participants) · 1 informational · 1 not measured.</p>
+<h2 id="where-these-numbers-were-measured">Where these numbers were measured<a class="headerlink" href="#where-these-numbers-were-measured" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Machine</th>
+<th>Commit</th>
+<th>Runner</th>
+<th>Requirements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Darwin arm64, 8 cores</td>
+<td><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/commit/a088db842f"><code>a088db842f</code></a></td>
+<td>local</td>
+<td>42</td>
+</tr>
+<tr>
+<td>Darwin arm64, 8 cores</td>
+<td><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/commit/f63bc74b70"><code>f63bc74b70</code></a></td>
+<td>local</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<p>Measurements recorded between <strong>2026-09-29T01:35:42+00:00</strong> and <strong>2026-09-29T22:17:55+00:00</strong> (UTC).</p>
+<div class="admonition note">
+<p class="admonition-title">Reference machine</p>
+<p><abbr title="Software Requirements Specification">SRS</abbr> NFR1.1 sets the reference machine as a 4-core x86_64 laptop with 8 GB RAM. Numbers measured on a slower machine than that are conservative; numbers from a faster machine should be re-confirmed on the reference laptop before a demo.</p>
+</div>
+<hr />
+<h2 id="nfr1-performance">NFR1 Performance<a class="headerlink" href="#nfr1-performance" title="Permanent link">&para;</a></h2>
+<h3 id="qr-03">QR-03<a class="headerlink" href="#qr-03" title="Permanent link">&para;</a></h3>
+<p><strong>Recognition p95 &lt; 50 ms (rule)</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: Pure-geometry classifier · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p95 single-frame recognition latency (ms)</td>
+<td>&lt; 50.0</td>
+<td><strong>0.0038</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> RuleBaedRecognizer.intepret_gesture timed on every sample of the labelled dataset</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5837</td>
+<td>0.0025</td>
+<td>0.003</td>
+<td>0.0029</td>
+<td>0.0038</td>
+<td>0.0041</td>
+<td>0.2941</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-03 chart" src="../evidence/charts/QR-03.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>frames</code></td>
+<td>5837</td>
+</tr>
+<tr>
+<td><code>mean_ms</code></td>
+<td>0.003</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:53+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-03.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-03.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_latency.py">test source</a></small></p>
+<h3 id="qr-25">QR-25<a class="headerlink" href="#qr-25" title="Permanent link">&para;</a></h3>
+<p><strong>Recognition p95 &lt; 50 ms (<abbr title="Machine Learning">ML</abbr>)</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: 63-feature MLP · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p95 single-frame recognition latency, <abbr title="Machine Learning">ML</abbr> engine (ms)</td>
+<td>&lt; 50.0</td>
+<td><strong>0.1009</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> MLBasedRecognizer.interpret_gesture (feature extraction + MLP predict_proba + finger-state helper) timed on every sample of the labelled dataset.</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5837</td>
+<td>0.0704</td>
+<td>0.0822</td>
+<td>0.0756</td>
+<td>0.1009</td>
+<td>0.1566</td>
+<td>2.2528</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-25 chart" src="../evidence/charts/QR-25.svg" /></p>
+<p><small>Recorded 2026-09-29T22:16:53+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-25.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-25.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_latency.py">test source</a></small></p>
+<h3 id="qr-26">QR-26<a class="headerlink" href="#qr-26" title="Permanent link">&para;</a></h3>
+<p><strong>Hand detection p95 &lt;= 100 ms, live</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: <abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> lite model · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p95 <abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> hand-detection time per frame, live at 30 fps (ms)</td>
+<td>&lt;= 100.0</td>
+<td><strong>14.393</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> <abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> Hands (model_complexity=0) timed on every 640x480 frame of real footage while the full pipeline, broadcast and 11 clients run. No hand is in the footage, so the palm detector runs on every frame (its slowest path).</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>900</td>
+<td>11.766</td>
+<td>13.831</td>
+<td>13.821</td>
+<td>14.393</td>
+<td>14.644</td>
+<td>19.712</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-26 chart" src="../evidence/charts/QR-26.svg" /></p>
+<p><small>Recorded 2026-09-29T22:17:33+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-26.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-26.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_realtime_performance.py">test source</a></small></p>
+<h3 id="qr-27">QR-27<a class="headerlink" href="#qr-27" title="Permanent link">&para;</a></h3>
+<p><strong>Frame serialization p95 &lt;= 20 ms</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: Encode once, fan out · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p95 frame serialization for broadcast (JPEG + landmarks) (ms)</td>
+<td>&lt;= 20.0</td>
+<td><strong>1.129</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> serialize_event(include_frame=True) on real 640x480 frames with 1-2 hands: JPEG q60 encode, base64 and the pydantic model the WebSocket sends.</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>580</td>
+<td>0.707</td>
+<td>0.889</td>
+<td>0.846</td>
+<td>1.129</td>
+<td>1.738</td>
+<td>2.695</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-27 chart" src="../evidence/charts/QR-27.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mean_payload_kb</code></td>
+<td>55.3</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:55+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-27.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-27.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_latency.py">test source</a></small></p>
+<h3 id="qr-28">QR-28<a class="headerlink" href="#qr-28" title="Permanent link">&para;</a></h3>
+<p><strong>Resolve + dispatch p95 &lt;= 30 ms</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: Dict command maps · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p95 gesture payload -&gt; command resolved and executed (ms)</td>
+<td>&lt;= 30.0</td>
+<td><strong>0.0103</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> GestureAdapter confidence gate, two-hand/one-hand resolution, stability hold and history log, then DroneAdapter.execute() on the dummy drone.</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2900</td>
+<td>0.0029</td>
+<td>0.0053</td>
+<td>0.0041</td>
+<td>0.0103</td>
+<td>0.0342</td>
+<td>0.186</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-28 chart" src="../evidence/charts/QR-28.svg" /></p>
+<p><small>Recorded 2026-09-29T22:16:55+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-28.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-28.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_latency.py">test source</a></small></p>
+<h3 id="qr-29">QR-29<a class="headerlink" href="#qr-29" title="Permanent link">&para;</a></h3>
+<p><strong>Frame -&gt; drone command p95 &lt;= 200 ms</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: Bounded queue, one consumer · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p95 frame timestamp -&gt; command dispatched to drone (ms)</td>
+<td>&lt;= 200.0</td>
+<td><strong>15.925</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Latency from CapturedFrame.timestamp to DroneAdapter.execute() returning, for every command the GestureAdapter emitted in a 30 s window at 30 fps. Includes queue wait, detection, <abbr title="Machine Learning">ML</abbr> recognition, stabilizer, JPEG encode, fan-out, adapter resolution and dispatch.</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>858</td>
+<td>13.308</td>
+<td>15.347</td>
+<td>15.326</td>
+<td>15.925</td>
+<td>16.343</td>
+<td>21.136</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-29 chart" src="../evidence/charts/QR-29.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>commands_dispatched</code></td>
+<td>858</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:33+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-29.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-29.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_realtime_performance.py">test source</a></small></p>
+<h3 id="qr-30">QR-30<a class="headerlink" href="#qr-30" title="Permanent link">&para;</a></h3>
+<p><strong>Gesture onset -&gt; command p95 &lt;= 200 ms</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: 3-of-5 vote + 2-frame hold · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p95 new gesture shown -&gt; its command dispatched (ms)</td>
+<td>&lt;= 200.0, no missed gestures</td>
+<td><strong>115.728</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> What the operator feels: time from the first frame showing a new gesture to its command reaching the drone. Includes the deliberate 3-of-5 stabilizer vote and the 2-frame adapter hold that suppress false positives (NFR3.2).</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30</td>
+<td>114.838</td>
+<td>115.35</td>
+<td>115.295</td>
+<td>115.728</td>
+<td>117.024</td>
+<td>117.024</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-30 chart" src="../evidence/charts/QR-30.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>transitions</code></td>
+<td>30</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:33+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-30.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-30.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_realtime_performance.py">test source</a></small></p>
+<h3 id="qr-35">QR-35<a class="headerlink" href="#qr-35" title="Permanent link">&para;</a></h3>
+<p><strong><abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr> p95 &lt;= 100 ms, 10 clients</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: Async <abbr title="Python async web framework used for the WebSocket backend">FastAPI</abbr> · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><abbr title="Representational State Transfer. used for config, logs, and system fault endpoints">REST</abbr> p95 latency, 10 concurrent clients (ms)</td>
+<td>&lt;= 100.0, 0 errors</td>
+<td><strong>12.033</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> 10 simulated clients (several dashboard tabs polling at once) each fire 20 requests back to back at random read endpoints through the real ASGI app and sqlite database. Repeated at 50 clients as an ungated stress run.</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>0.115</td>
+<td>2.87</td>
+<td>0.206</td>
+<td>12.033</td>
+<td>17.936</td>
+<td>22.892</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-35 chart" src="../evidence/charts/QR-35.svg" /></p>
+<div class="admonition warning">
+<p class="admonition-title">Finding</p>
+<p>At 50 simultaneous clients (stress, not gated) the analytics endpoints dominate the tail: every request queues for the single sqlite connection. A single-operator desktop app never generates that load, but a short-lived cache on /analytics/summary would remove it.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>requests</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td><code>throughput_rps</code></td>
+<td>3038.5</td>
+</tr>
+<tr>
+<td><code>error_count</code></td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>per_endpoint_p95_ms</code></td>
+<td>{"/api/health": 0.134, "/api/drone/status": 3.457, "/api/input/status": 3.365, "/api/gestures/status": 0.214, "/api/gestures/recognizer": 0.181, "/api/calibration/status": 0.222, "/api/input/gesture/events": 0.214, "/api/analytics/flights": 14.278, "/api/analytics/summary": 19.214}</td>
+</tr>
+<tr>
+<td><code>stress_test</code></td>
+<td>{"clients": 50, "gated": false, "stats": {"n": 1000, "min": 0.114, "mean": 11.315, "p50": 0.189, "p95": 62.99, "p99": 101.527, "max": 153.081}, "throughput_rps": 3367.6, "errors": 0, "per_endpoint_p95_ms": {"/api/health": 0.14, "/api/drone/status": 15.935, "/api/input/status": 16.487, "/api/gestures/status": 0.163, "/api/gestures/recognizer": 0.171, "/api/calibration/status": 0.204, "/api/input/ge…</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:27+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-35.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-35.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_backend_performance.py">test source</a></small></p>
+<h3 id="qr-37">QR-37<a class="headerlink" href="#qr-37" title="Permanent link">&para;</a></h3>
+<p><strong>Command round trip p95 &lt;= 100 ms</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: Persistent WebSocket · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p95 command round trip over /api/drone/ws/commands (ms)</td>
+<td>&lt;= 100.0</td>
+<td><strong>1.016</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Send a command the way the on-screen pad does, wait for the backend ack after DroneAdapter.execute(). TAKEOFF and LAND also open/close a flight row in sqlite.</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>202</td>
+<td>0.136</td>
+<td>0.301</td>
+<td>0.176</td>
+<td>1.016</td>
+<td>1.681</td>
+<td>3.511</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-37 chart" src="../evidence/charts/QR-37.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>commands</code></td>
+<td>202</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:43+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-37.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-37.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_backend_performance.py">test source</a></small></p>
+<h3 id="qr-38">QR-38<a class="headerlink" href="#qr-38" title="Permanent link">&para;</a></h3>
+<p><strong>Login p95 &lt;= 1 s</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: bcrypt cost 13 · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p95 login response time (ms)</td>
+<td>&lt;= 1000.0</td>
+<td><strong>516.477</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> POST /api/auth/login with a registered user, 8 sequential logins timed end to end.</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td>469.225</td>
+<td>493.042</td>
+<td>493.669</td>
+<td>516.477</td>
+<td>516.477</td>
+<td>516.477</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-38 chart" src="../evidence/charts/QR-38.svg" /></p>
+<div class="admonition warning">
+<p class="admonition-title">Finding</p>
+<p>bcrypt.checkpw runs directly on the asyncio event loop, so while a login is verified every other request, telemetry tick and gesture broadcast waits. event_loop_stall_ms is the longest the loop was frozen during a login. Moving the hash into a worker thread (asyncio.to_thread) would remove it.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>event_loop_stall_ms</code></td>
+<td>522.7</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:49+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-38.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-38.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_backend_performance.py">test source</a></small></p>
+<h3 id="qr-40">QR-40<a class="headerlink" href="#qr-40" title="Permanent link">&para;</a></h3>
+<p><strong>Analytics query p95 &lt;= 250 ms</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: Aggregates in SQL · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>slowest analytics query p95 over 200 flights / 20000 rows (ms)</td>
+<td>&lt;= 250.0</td>
+<td><strong>3.545</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> The queries behind the Analytics page (summary stats, recent flights) and the aggregate run when a flight ends, against a seeded history.</p>
+<p><img alt="QR-40 chart" src="../evidence/charts/QR-40.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>per_query</code></td>
+<td>{"summary": {"n": 20, "min": 0.629, "mean": 0.724, "p50": 0.666, "p95": 0.736, "p99": 1.765, "max": 1.765}, "recent flights": {"n": 20, "min": 0.272, "mean": 0.314, "p50": 0.296, "p95": 0.38, "p99": 0.553, "max": 0.553}, "end flight": {"n": 5, "min": 2.453, "mean": 2.705, "p50": 2.483, "p95": 3.545, "p99": 3.545, "max": 3.545}}</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:52+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-40.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-40.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_backend_performance.py">test source</a></small></p>
+<h3 id="qr-41">QR-41<a class="headerlink" href="#qr-41" title="Permanent link">&para;</a></h3>
+<p><strong>Cold start &lt;= 10 s, first frame &lt;= 3 s</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: Lazy camera start · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>slowest backend cold start: process launch -&gt; /api/health OK (s)</td>
+<td>&lt;= 10.0 s; first gesture frame &lt;= 3.0 s</td>
+<td><strong>1.33</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> uvicorn started as a new process (imports, DB create, seed) and polled every 50 ms, exactly what Electron waits for before opening the window. First gesture frame: GestureStream.subscribe() until the first payload arrives (<abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr> init + first frame; physical webcam open time excluded).</p>
+<p><img alt="QR-41 chart" src="../evidence/charts/QR-41.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cold_starts_s</code></td>
+<td>[1.33, 0.89, 0.91]</td>
+</tr>
+<tr>
+<td><code>first_gesture_frame_s</code></td>
+<td>0.05</td>
+</tr>
+<tr>
+<td><code>ml_model_load_s</code></td>
+<td>0.004</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:37+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-41.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-41.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_resources.py">test source</a></small></p>
+<h3 id="qr-51">QR-51<a class="headerlink" href="#qr-51" title="Permanent link">&para;</a></h3>
+<p><strong>Every screen LCP &lt;= 2.5 s</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: Static production bundle · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>slowest screen: largest contentful paint, cold start (ms)</td>
+<td>LCP &lt;= 2500, FCP &lt;= 1800 on every screen</td>
+<td><strong>812</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Each screen opened in a vrand new browser process from the production build, as when the desktop app launches. FCP and LCP are read from the browsers own Paint timing and largest contentful paint apis</p>
+<p><img alt="QR-51 chart" src="../evidence/charts/QR-51.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>worst_fcp_ms</code></td>
+<td>792</td>
+</tr>
+<tr>
+<td><code>per_screen</code></td>
+<td>[{"route": "login", "fcp": 792, "lcp": 812, "dcl": 720, "kb": 1589}, {"route": "signup", "fcp": 584, "lcp": 600, "dcl": 538, "kb": 1589}, {"route": "dashboard", "fcp": 740, "lcp": 740, "dcl": 611, "kb": 383}, {"route": "analytics", "fcp": 736, "lcp": 736, "dcl": 630, "kb": 383}, {"route": "gps", "fcp": 668, "lcp": 668, "dcl": 569, "kb": 383}, {"route": "games", "fcp": 744, "lcp": 744, "dcl": 642, …</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T01:36:06+00:00 on Darwin arm64, 8 cores, Chromium 149.0.7827.55 · commit <code>f63bc74b70</code> (local) · <a href="../evidence/QR-51.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-51.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/apps/frontend/tests/nfr/performance.nfr.spec.ts">test source</a></small></p>
+<h3 id="qr-52">QR-52<a class="headerlink" href="#qr-52" title="Permanent link">&para;</a></h3>
+<p><strong>Click -&gt; command confirmed &lt;= 200 ms</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.1</code> · tactic: <abbr title="WebSocket. used for real-time communications such as gesture and telemetry streaming">WS</abbr> ack + history · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p95 click -&gt; command shown in Command History (ms)</td>
+<td>&lt;= 200, every click confirmed</td>
+<td><strong>53.7</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Clocks the on screen take off,D pad and land buttons. Time from the click event to the command appearing in Command History, i.e. UI -&gt;. command WebSocket -&gt; re-render</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>22</td>
+<td>52</td>
+<td>53.28</td>
+<td>53.3</td>
+<td>53.7</td>
+<td>54.6</td>
+<td>54.6</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-52 chart" src="../evidence/charts/QR-52.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clicks</code></td>
+<td>22</td>
+</tr>
+<tr>
+<td><code>unconfirmed_clicks</code></td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T01:36:15+00:00 on Darwin arm64, 8 cores, Chromium 149.0.7827.55 · commit <code>f63bc74b70</code> (local) · <a href="../evidence/QR-52.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-52.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/apps/frontend/tests/nfr/performance.nfr.spec.ts">test source</a></small></p>
+<h3 id="qr-18">QR-18<a class="headerlink" href="#qr-18" title="Permanent link">&para;</a></h3>
+<p><strong>Pipeline stays bounded under load</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.2</code> · tactic: Drop-oldest frame queue · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>max queue depth under sustained load</td>
+<td>&lt;= 2</td>
+<td><strong>2</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pushes</code></td>
+<td>100</td>
+</tr>
+<tr>
+<td><code>drop_count</code></td>
+<td>98</td>
+</tr>
+<tr>
+<td><code>expected_drops</code></td>
+<td>98</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:33+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-18.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_realtime_robustness.py">test source</a></small></p>
+<h3 id="qr-32">QR-32<a class="headerlink" href="#qr-32" title="Permanent link">&para;</a></h3>
+<p><strong>CPU &lt;= 70 % at 30 fps</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.2</code> · tactic: Lite model, JPEG once · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>whole-process CPU at 30 fps with 11 clients (% of machine)</td>
+<td>&lt;= 70.0</td>
+<td><strong>6.7</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> time.process_time() over the steady-state window: every thread of the backend process (camera, <abbr title="Google's ML framework for hand landmark detection">MediaPipe</abbr>, event loop). Divided by wall time and core count.</p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>single_core_equivalent_pct</code></td>
+<td>53.4</td>
+</tr>
+<tr>
+<td><code>window_s</code></td>
+<td>30.0</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:33+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-32.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_realtime_performance.py">test source</a></small></p>
+<h3 id="qr-33">QR-33<a class="headerlink" href="#qr-33" title="Permanent link">&para;</a></h3>
+<p><strong>Frames dropped &lt;= 1 % at 30 fps</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.2</code> · tactic: Consumer keeps pace · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>frames dropped by the bounded queue at 30 fps (%)</td>
+<td>&lt;= 1.0</td>
+<td><strong>0.0</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Frames the camera delivered vs frames the consumer processed in the window. The queue drops the oldest frame when the consumer falls behind (QR-18), so any shortfall here is lost frames.</p>
+<p><img alt="QR-33 chart" src="../evidence/charts/QR-33.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>captured</code></td>
+<td>900</td>
+</tr>
+<tr>
+<td><code>processed</code></td>
+<td>900</td>
+</tr>
+<tr>
+<td><code>effective_fps</code></td>
+<td>30.0</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:33+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-33.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-33.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_realtime_performance.py">test source</a></small></p>
+<h3 id="qr-42">QR-42<a class="headerlink" href="#qr-42" title="Permanent link">&para;</a></h3>
+<p><strong>No per-frame memory growth</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.2</code> · tactic: Bounded buffers · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python heap growth over 4000 frames after warm-up (KB)</td>
+<td>&lt;= 1024</td>
+<td><strong>27.6</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> tracemalloc over the per-frame path: <abbr title="Machine Learning">ML</abbr> recognition, stabilizer, JPEG serialization, GestureAdapter and the gesture history log. A leak of even one small object per frame would show as steady growth.</p>
+<p><img alt="QR-42 chart" src="../evidence/charts/QR-42.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>heap_kb</code></td>
+<td>{"n": 17, "min": 1839.7, "mean": 1864.5, "p50": 1866.1, "p95": 1870.7, "p99": 1871.7, "max": 1871.7}</td>
+</tr>
+<tr>
+<td><code>commands_emitted</code></td>
+<td>4291</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:53+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-42.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-42.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_resources.py">test source</a></small></p>
+<h3 id="qr-34">QR-34<a class="headerlink" href="#qr-34" title="Permanent link">&para;</a></h3>
+<p><strong>Every client &gt;= 24 fps (+1 stalled)</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.3</code> · tactic: Per-client 1-slot queues · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lowest frame rate received by any of 10 clients, 1 stalled client present</td>
+<td>&gt;= 24.0</td>
+<td><strong>30.0</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Ten subscribers read the live GestureStream while an eleventh never reads. Each client has its own 1-slot drop-oldest queue, so the stalled one must not slow the others. The browser-side render rate is QR-48.</p>
+<p><img alt="QR-34 chart" src="../evidence/charts/QR-34.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>per_client_fps</code></td>
+<td>{"client 0": 30.0, "client 1": 30.0, "client 2": 30.0, "client 3": 30.0, "client 4": 30.0, "client 5": 30.0, "client 6": 30.0, "client 7": 30.0, "client 8": 30.0, "client 9": 30.0}</td>
+</tr>
+<tr>
+<td><code>capture_to_client_ms</code></td>
+<td>{"n": 9000, "min": 13.254, "mean": 15.306, "p50": 15.291, "p95": 15.874, "p99": 16.303, "max": 21.117}</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:33+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-34.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-34.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_realtime_performance.py">test source</a></small></p>
+<h3 id="qr-36">QR-36<a class="headerlink" href="#qr-36" title="Permanent link">&para;</a></h3>
+<p><strong>Telemetry &gt;= 9 Hz</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.3</code> · tactic: 100 ms push loop · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>telemetry updates pushed per second during a recorded flight (Hz)</td>
+<td>&gt;= 9.0 Hz, p95 gap &lt;= 150.0 ms</td>
+<td><strong>9.79</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Dummy drone connected, TAKEOFF sent so a flight is being recorded (every 10<sup>th</sup> tick also writes a telemetry row to sqlite), then 150 consecutive telemetry messages timed on the client side. Design rate is 10 Hz.</p>
+<p><img alt="QR-36 chart" src="../evidence/charts/QR-36.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gap_stats_ms</code></td>
+<td>{"n": 149, "min": 100.076, "mean": 102.142, "p50": 101.585, "p95": 105.68, "p99": 106.637, "max": 107.497}</td>
+</tr>
+<tr>
+<td><code>messages</code></td>
+<td>150</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:43+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-36.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-36.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_backend_performance.py">test source</a></small></p>
+<h3 id="qr-39">QR-39<a class="headerlink" href="#qr-39" title="Permanent link">&para;</a></h3>
+<p><strong>Telemetry write p95 &lt;= 50 ms</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.3</code> · tactic: Write every 10<sup>th</sup> tick · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p95 telemetry row write, with 20k rows of history (ms)</td>
+<td>&lt;= 50.0</td>
+<td><strong>0.861</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> FlightManager.record_telemetry (new session, insert, commit) on the real sqlite file, the call the telemetry WebSocket makes every 10<sup>th</sup> 100 ms tick. Must stay far below 100 ms or the live telemetry stream stutters.</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>min</th>
+<th>mean</th>
+<th>p50</th>
+<th>p95</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>0.631</td>
+<td>0.732</td>
+<td>0.691</td>
+<td>0.861</td>
+<td>1.936</td>
+<td>2.453</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="QR-39 chart" src="../evidence/charts/QR-39.svg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>history_rows</code></td>
+<td>20000</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:52+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-39.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-39.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_backend_performance.py">test source</a></small></p>
+<h3 id="qr-50">QR-50<a class="headerlink" href="#qr-50" title="Permanent link">&para;</a></h3>
+<p><strong>Dashboard renders &gt;= 24 fps</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR1.3</code> · tactic: Canvas + ImageBitmap · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dashboard live-feed frames painted per second (fps)</td>
+<td>&gt;= 24 fps and &gt;= 99% of received frames painted</td>
+<td><strong>30</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> The real dashboard receives 30 fps GestureFramePayload messages (real 640x480 JPEG frames + hand landmarks) over the gesture WebSocket. Every canvas drawImage of a frame is counted, and every message is timestamped as it reaches page. Painted $ = frames painted / frames recieved in the same window. </p>
+<p><img alt="QR-50 chart" src="../evidence/charts/QR-50.svg" /></p>
+<p><img alt="QR-50 screenshot" loading="lazy" src="../evidence/screenshots/QR-50-dashboard-live-feed.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>window_s</code></td>
+<td>30</td>
+</tr>
+<tr>
+<td><code>frames_sent</code></td>
+<td>901</td>
+</tr>
+<tr>
+<td><code>frames_received</code></td>
+<td>901</td>
+</tr>
+<tr>
+<td><code>arrival_gap_ms</code></td>
+<td>{"n": 900, "min": 3.8, "mean": 33.33, "p50": 33.3, "p95": 35.4, "p99": 36.6, "max": 63.7}</td>
+</tr>
+<tr>
+<td><code>back_to_back_arrivals</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>frames_painted</code></td>
+<td>900</td>
+</tr>
+<tr>
+<td><code>painted_pct</code></td>
+<td>99.89</td>
+</tr>
+<tr>
+<td><code>frame_gap_ms</code></td>
+<td>{"n": 899, "min": 3.2, "mean": 33.33, "p50": 33.3, "p95": 35.6, "p99": 37.1, "max": 65.5}</td>
+</tr>
+<tr>
+<td><code>long_tasks</code></td>
+<td>{"count": 1, "worst_ms": 67}</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T01:35:42+00:00 on Darwin arm64, 8 cores, Chromium 149.0.7827.55 · commit <code>f63bc74b70</code> (local) · <a href="../evidence/QR-50.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-50.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/apps/frontend/tests/nfr/performance.nfr.spec.ts">test source</a></small></p>
+<hr />
+<h2 id="nfr2-security">NFR2 Security<a class="headerlink" href="#nfr2-security" title="Permanent link">&para;</a></h2>
+<h3 id="qr-07">QR-07<a class="headerlink" href="#qr-07" title="Permanent link">&para;</a></h3>
+<p><strong>Session token &lt;= 30 min</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR2.1</code> · tactic: Short-lived JWT · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>access-token lifetime (minutes)</td>
+<td>&lt;= 30</td>
+<td><strong>15</strong></td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:54+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-07.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_security.py">test source</a></small></p>
+<h3 id="qr-12">QR-12<a class="headerlink" href="#qr-12" title="Permanent link">&para;</a></h3>
+<p><strong>Invalid tokens rejected</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR2.1</code> · tactic: JWT exp/aud/iss/sig checks · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>invalid access tokens rejected</td>
+<td>all rejected</td>
+<td><strong>5/5</strong></td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:54+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-12.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_token_validation.py">test source</a></small></p>
+<h3 id="qr-08">QR-08<a class="headerlink" href="#qr-08" title="Permanent link">&para;</a></h3>
+<p><strong>Password hash cost &gt;= 12 rounds</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR2.2</code> · tactic: Configurable bcrypt rounds · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bcrypt cost factor (rounds)</td>
+<td>&gt;= 12</td>
+<td><strong>13</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hash_time_ms</code></td>
+<td>491.79</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:56+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-08.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_password_security.py">test source</a></small></p>
+<h3 id="qr-09">QR-09<a class="headerlink" href="#qr-09" title="Permanent link">&para;</a></h3>
+<p><strong>Weak passwords rejected</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR2.2</code> · tactic: Strength policy regexes · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>weak password rejected by strength policy</td>
+<td>all rejected</td>
+<td><strong>5/5</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>strong_password_accepted</code></td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:57+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-09.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_password_security.py">test source</a></small></p>
+<h3 id="qr-10">QR-10<a class="headerlink" href="#qr-10" title="Permanent link">&para;</a></h3>
+<p><strong>Password hashes salted</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR2.2</code> · tactic: bcrypt gensalt · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>identical passwords produce distinct digests</td>
+<td>distinct</td>
+<td><strong>distinct</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>both_verify</code></td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:59+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-10.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_password_security.py">test source</a></small></p>
+<hr />
+<h2 id="nfr3-reliability">NFR3 Reliability<a class="headerlink" href="#nfr3-reliability" title="Permanent link">&para;</a></h2>
+<h3 id="qr-01">QR-01<a class="headerlink" href="#qr-01" title="Permanent link">&para;</a></h3>
+<p><strong>Gesture accuracy &gt;= 95% (<abbr title="Machine Learning">ML</abbr>)</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR3.1</code> · tactic: <abbr title="Machine Learning">ML</abbr> recognizer (MLP) · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gesture classification accuracy (%)</td>
+<td>&gt;= 95.0</td>
+<td><strong>99.71</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>engine</code></td>
+<td>ml</td>
+</tr>
+<tr>
+<td><code>samples</code></td>
+<td>5837</td>
+</tr>
+<tr>
+<td><code>top_confusions</code></td>
+<td>[["TWO_FINGERS-&gt;THREE_FINGERS", 3], ["FIST-&gt;ONE_FINGER", 2], ["TWO_FINGERS-&gt;ONE_FINGER", 2], ["THREE_FINGERS-&gt;TWO_FINGERS", 2], ["FIST-&gt;TWO_FINGERS", 1]]</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:26+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-01.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_accuracy.py">test source</a></small></p>
+<h3 id="qr-02">QR-02<a class="headerlink" href="#qr-02" title="Permanent link">&para;</a></h3>
+<p><strong>Every gesture &gt;= 95% (<abbr title="Machine Learning">ML</abbr>)</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR3.1</code> · tactic: <abbr title="Machine Learning">ML</abbr> recognizer (MLP) · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lowest per-gesture accuracy (%)</td>
+<td>&gt;= 95.0</td>
+<td><strong>99.0</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>engine</code></td>
+<td>ml</td>
+</tr>
+<tr>
+<td><code>per_gesture</code></td>
+<td>{"FIST": 99.0, "OPEN_PALM": 100.0, "ONE_FINGER": 99.9, "TWO_FINGERS": 99.5, "THREE_FINGERS": 99.7, "FOUR_FINGERS": 99.8}</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:26+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-02.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_accuracy.py">test source</a></small></p>
+<h3 id="qr-01-rule">QR-01-rule<a class="headerlink" href="#qr-01-rule" title="Permanent link">&para;</a></h3>
+<p><strong>Rule-based accuracy (informational)</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR3.1</code> · tactic: Rule-based ceiling · <strong>INFO</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rule-based accuracy, informational (%)</td>
+<td>informational (<abbr title="Machine Learning">ML</abbr> is the gated engine)</td>
+<td><strong>55.9</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>engine</code></td>
+<td>rule</td>
+</tr>
+<tr>
+<td><code>lowest_per_gesture</code></td>
+<td>37.5</td>
+</tr>
+<tr>
+<td><code>per_gesture</code></td>
+<td>{"FIST": 56.4, "OPEN_PALM": 98.3, "ONE_FINGER": 37.5, "TWO_FINGERS": 52.3, "THREE_FINGERS": 65.8, "FOUR_FINGERS": 61.5}</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:26+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-01-rule.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_accuracy.py">test source</a></small></p>
+<h3 id="qr-06">QR-06<a class="headerlink" href="#qr-06" title="Permanent link">&para;</a></h3>
+<p><strong>Confidence gate &gt;= 0.85</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR3.2</code> · tactic: MIN_CONFIDENCE filter · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>minimum confidence threshold for command emission</td>
+<td>&gt;= 0.85</td>
+<td><strong>0.85</strong></td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:52+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-06.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_command_mapping.py">test source</a></small></p>
+<h3 id="qr-19">QR-19<a class="headerlink" href="#qr-19" title="Permanent link">&para;</a></h3>
+<p><strong>Single-frame noise suppressed</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR3.2</code> · tactic: GestureStabilizer voting · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>single-frame noise suppressed by stabilizer</td>
+<td>rejected</td>
+<td><strong>rejected</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>switches_on_sustained_hold</code></td>
+<td>True</td>
+</tr>
+<tr>
+<td><code>window</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>min_agreement</code></td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:33+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-19.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_realtime_robustness.py">test source</a></small></p>
+<h3 id="qr-04">QR-04<a class="headerlink" href="#qr-04" title="Permanent link">&para;</a></h3>
+<p><strong>All single-hand gestures mapped</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR3.2</code> · tactic: SINGLE_HAND_MAP · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>single-hand gestures resloving to command</td>
+<td>all mapped</td>
+<td><strong>3/3</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mapped</code></td>
+<td>{"OPEN_PALM": "HOVER", "ONE_FINGER": "MOVE_UP", "TWO_FINGERS": "MOVE_DOWN"}</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:52+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-04.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_command_mapping.py">test source</a></small></p>
+<h3 id="qr-05">QR-05<a class="headerlink" href="#qr-05" title="Permanent link">&para;</a></h3>
+<p><strong>All two-hand combos resolve</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR3.2</code> · tactic: Two-hand maps + _resolve · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>two-hand combinations resolving correctly</td>
+<td>all resolve</td>
+<td><strong>9/9</strong></td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:52+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-05.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_command_mapping.py">test source</a></small></p>
+<h3 id="qr-13">QR-13<a class="headerlink" href="#qr-13" title="Permanent link">&para;</a></h3>
+<p><strong>E-stop always critical priority</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR3.3</code> · tactic: Command priority elevation · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EMERGENCY_STOP priority after contruction</td>
+<td>== 999</td>
+<td><strong>999</strong></td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:54+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-13.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_safety.py">test source</a></small></p>
+<h3 id="qr-14">QR-14<a class="headerlink" href="#qr-14" title="Permanent link">&para;</a></h3>
+<p><strong>E-stop grounds the drone</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR3.3</code> · tactic: Adapter emergency_stop · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>is_flying after emergency stop</td>
+<td>grounded</td>
+<td><strong>grounded</strong></td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:54+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-14.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_safety.py">test source</a></small></p>
+<hr />
+<h2 id="nfr5-usability">NFR5 Usability<a class="headerlink" href="#nfr5-usability" title="Permanent link">&para;</a></h2>
+<h3 id="qr-44">QR-44<a class="headerlink" href="#qr-44" title="Permanent link">&para;</a></h3>
+<p><strong>Predicted first flight &lt;= 5 min (KLM)</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR5.1</code> · tactic: Keystroke-Level Model · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KLM-predicted time from opening the app to completing the basic flight (s)</td>
+<td>&lt;= 300.0</td>
+<td><strong>219.8</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Keystroke-Level Model (Card, Moran &amp; Newell): K=0.28, P=1.10, B=0.10, H=0.40, M=1.35 s. Form fields, tutorial clip lengths, calibration sequence and window are read from the product itself; system response times come from this run. An error-free prediction: a feasibility check, confirmed or refuted by QR-45.</p>
+<p><img alt="QR-44 chart" src="../evidence/charts/QR-44.svg" /></p>
+<div class="admonition warning">
+<p class="admonition-title">Finding</p>
+<p>Feasible, but tight: 203.9 s of the 300 s budget goes on sign-up, log-in, the full tutorial and calibration before the first take-off. With a x2 allowance for a first-time user the estimate is 439.6 s, over the limit, so the real-participant timing (QR-45) is the deciding evidence. Shortening the path (skippable tutorial steps, calibration offered after the first flight) would add margin.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>phases_s</code></td>
+<td>{"open app": 1.3, "sign up": 35.5, "log in": 17.9, "tutorial": 104.9, "calibration": 40.6, "connect drone": 3.6, "fly: take-off, hover, move, land": 15.9}</td>
+</tr>
+<tr>
+<td><code>onboarding_before_takeoff_s</code></td>
+<td>203.9</td>
+</tr>
+<tr>
+<td><code>with_x2_novice_allowance_s</code></td>
+<td>439.6</td>
+</tr>
+<tr>
+<td><code>tutorial_steps</code></td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>tutorial_video_s</code></td>
+<td>55.6</td>
+</tr>
+<tr>
+<td><code>calibration_gestures</code></td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>inputs</code></td>
+<td>{"login": "QR-38 measured", "gesture onset": "QR-30 measured", "cold start": "QR-41 measured"}</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:55+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-44.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-44.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_usability.py">test source</a></small></p>
+<h3 id="qr-45">QR-45<a class="headerlink" href="#qr-45" title="Permanent link">&para;</a></h3>
+<p><strong>&gt;= 80% fly within 5 min (study)</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR5.1</code> · tactic: Moderated usability study · <strong>PENDING</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>participants completing the basic flight within 5 minutes (%)</td>
+<td>&gt;= 80.0% of &gt;= 5 external participants</td>
+<td><strong>0/5 participants logged</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Awaiting the usability study; see docs/nfr/usability/PROTOCOL.md.</p>
+<p><small>Recorded 2026-09-29T22:17:55+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-45.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_usability.py">test source</a></small></p>
+<h3 id="qr-56">QR-56<a class="headerlink" href="#qr-56" title="Permanent link">&para;</a></h3>
+<p><strong>Basic flight &lt;= 6 confirmed clicks</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR5.1</code> · tactic: On-screen flight pad · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clicks to complete take-off, hover, move, land on screen</td>
+<td>&lt;= 6 clicks, each confirmed within 1 s, drone landed</td>
+<td><strong>5</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Scripted walk-through of the basic flight on the on-screen pad. Counts interactions and checks each one is confirmed on screen (Command History) within 1 s. The human time for the same task comes from the usability study (QR-45).</p>
+<p><img alt="QR-56 screenshot" loading="lazy" src="../evidence/screenshots/QR-56-after-basic-flight.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>steps</code></td>
+<td>[{"action": "choose drone mode", "confirmed": true}, {"action": "take off", "confirmed": true}, {"action": "hover", "confirmed": true}, {"action": "move forward", "confirmed": true}, {"action": "land", "confirmed": true}]</td>
+</tr>
+<tr>
+<td><code>automated_run_s</code></td>
+<td>1.1</td>
+</tr>
+<tr>
+<td><code>drone_landed</code></td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T01:36:48+00:00 on Darwin arm64, 8 cores, Chromium 149.0.7827.55 · commit <code>f63bc74b70</code> (local) · <a href="../evidence/QR-56.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/apps/frontend/tests/nfr/usability.nfr.spec.ts">test source</a></small></p>
+<h3 id="qr-46">QR-46<a class="headerlink" href="#qr-46" title="Permanent link">&para;</a></h3>
+<p><strong>Mean SUS &gt;= 85, &gt;= 5 external users</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR5.2</code> · tactic: System Usability Scale · <strong>PENDING</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mean System Usability Scale score (0-100)</td>
+<td>&gt;= 85.0 with &gt;= 5 external participants</td>
+<td><strong>0/5 participants logged</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Awaiting the usability study; see docs/nfr/usability/PROTOCOL.md.</p>
+<p><small>Recorded 2026-09-29T22:17:55+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-46.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_usability.py">test source</a></small></p>
+<h3 id="qr-55">QR-55<a class="headerlink" href="#qr-55" title="Permanent link">&para;</a></h3>
+<p><strong>Gesture + command visible, no scrolling</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>R1.1.2</code> · tactic: Dashboard layout · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>screen sizes showing gesture AND mapped command without scrolling</td>
+<td>3/3, no sideways scrolling at 1024 px</td>
+<td><strong>3/3</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Dashboard rendered at common laptop resolutions with a live gesture stream. The gesture overlay (camera feed) must be at least half on screen and the Command History heading, where the mapped command appears, fully on screen, with no scrolling. Every screen is also checked for horizontal overflow at 1024x768.</p>
+<p><img alt="QR-55 screenshot" loading="lazy" src="../evidence/screenshots/QR-55-dashboard-1366x768.jpg" /></p>
+<p><img alt="QR-55 screenshot" loading="lazy" src="../evidence/screenshots/QR-55-dashboard-1280x720.jpg" /></p>
+<p><img alt="QR-55 screenshot" loading="lazy" src="../evidence/screenshots/QR-55-dashboard-1920x1080.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>per_viewport</code></td>
+<td>{"1366x768": {"gesture_feed_visible": 1, "command_history_top_px": 638, "command_history_visible": true, "emergency_stop_visible": true, "viewport_height": 768}, "1280x720": {"gesture_feed_visible": 1, "command_history_top_px": 590, "command_history_visible": true, "emergency_stop_visible": true, "viewport_height": 720}, "1920x1080": {"gesture_feed_visible": 1, "command_history_top_px": 924, "comm…</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T01:36:45+00:00 on Darwin arm64, 8 cores, Chromium 149.0.7827.55 · commit <code>f63bc74b70</code> (local) · <a href="../evidence/QR-55.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/apps/frontend/tests/nfr/usability.nfr.spec.ts">test source</a></small></p>
+<h3 id="qr-49">QR-49<a class="headerlink" href="#qr-49" title="Permanent link">&para;</a></h3>
+<p><strong>One history entry per held gesture</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>R1.1.2</code> · tactic: Transition-only event log · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>command-history entries for 2 holds (10 s + 3 s, with a dropout)</td>
+<td>2 (one per hold)</td>
+<td><strong>2</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Feeds 392 frames through the real GestureAdapter: the drone still receives a command every frame, but the operator-facing history must show one row per hold.</p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>history</code></td>
+<td>["MOVE_UP", "HOVER"]</td>
+</tr>
+<tr>
+<td><code>frames</code></td>
+<td>392</td>
+</tr>
+<tr>
+<td><code>commands_sent_to_drone</code></td>
+<td>387</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:55+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-49.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_usability.py">test source</a></small></p>
+<h3 id="qr-48">QR-48<a class="headerlink" href="#qr-48" title="Permanent link">&para;</a></h3>
+<p><strong>Keyboard + gamepad reach every command</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>R7 / US-A-02</code> · tactic: Shared Command vocabulary · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gesture commands also reachable from keyboard and gamepad</td>
+<td>all, including EMERGENCY_STOP</td>
+<td><strong>keyboard 12/12, gamepad 12/12</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Compares the real mapping tables of GestureAdapter, KeyboardAdapter and GamepadAdapter.</p>
+<div class="admonition warning">
+<p class="admonition-title">Finding</p>
+<p>Only 3 of 12 commands work with a single hand (HOVER, MOVE_DOWN, MOVE_UP); take-off and land need both hands. US-A-01 and the U3 description in <abbr title="Software Requirements Specification">SRS</abbr> 3.1.2.4 expect full one-handed gesture control, so a one-handed operator relies on keyboard or gamepad (which this row confirms).</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>missing</code></td>
+<td>{"keyboard": [], "gamepad": []}</td>
+</tr>
+<tr>
+<td><code>one_handed_gesture_commands</code></td>
+<td>["HOVER", "MOVE_DOWN", "MOVE_UP"]</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:17:55+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-48.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_usability.py">test source</a></small></p>
+<h3 id="qr-53">QR-53<a class="headerlink" href="#qr-53" title="Permanent link">&para;</a></h3>
+<p><strong>Every control has an accessible name</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>U3 / WCAG 4.1.2</code> · tactic: Labelled controls · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>controls and images with an accessible name (%)</td>
+<td>100</td>
+<td><strong>100</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Reads Chromium's own accessibility tree (what a screen reader or voice-control user gets) on every screen and counts buttons, links, inputs, tabs and images with no name.</p>
+<p><img alt="QR-53 chart" src="../evidence/charts/QR-53.svg" /></p>
+<p><img alt="QR-53 screenshot" loading="lazy" src="../evidence/screenshots/QR-53-dashboard-icon-only-controls.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>controls</code></td>
+<td>147</td>
+</tr>
+<tr>
+<td><code>unnamed_controls</code></td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>per_screen</code></td>
+<td>{"login": {"total": 8, "unnamed": 0, "examples": []}, "signup": {"total": 11, "unnamed": 0, "examples": []}, "dashboard": {"total": 31, "unnamed": 0, "examples": []}, "analytics": {"total": 11, "unnamed": 0, "examples": []}, "gps": {"total": 15, "unnamed": 0, "examples": []}, "games": {"total": 18, "unnamed": 0, "examples": []}, "settings": {"total": 14, "unnamed": 0, "examples": []}, "help": {"to…</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T01:36:28+00:00 on Darwin arm64, 8 cores, Chromium 149.0.7827.55 · commit <code>f63bc74b70</code> (local) · <a href="../evidence/QR-53.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="../evidence/raw/QR-53.csv">raw samples CSV</a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/apps/frontend/tests/nfr/usability.nfr.spec.ts">test source</a></small></p>
+<h3 id="qr-54">QR-54<a class="headerlink" href="#qr-54" title="Permanent link">&para;</a></h3>
+<p><strong>Keyboard focus always visible</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>U3 / WCAG 2.4.7</code> · tactic: Focus styles · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>keyboard tab stops with a visible focus indicator (%)</td>
+<td>100</td>
+<td><strong>100</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How it was measured.</strong> Presses Tab through the login screen and the dashboard. At each stop the element's outline, box-shadow, border, background and text colour are compared focused vs unfocused; no difference means a keyboard user cannot see where they are.</p>
+<p><img alt="QR-54 screenshot" loading="lazy" src="../evidence/screenshots/QR-54-login-first-tab-stop.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tab_stops</code></td>
+<td>28</td>
+</tr>
+<tr>
+<td><code>per_screen</code></td>
+<td>{"login": {"stops": 8, "invisible": []}, "dashboard": {"stops": 20, "invisible": []}}</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T01:36:32+00:00 on Darwin arm64, 8 cores, Chromium 149.0.7827.55 · commit <code>f63bc74b70</code> (local) · <a href="../evidence/QR-54.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/f63bc74b70/apps/frontend/tests/nfr/usability.nfr.spec.ts">test source</a></small></p>
+<hr />
+<h2 id="nfr6-maintainability">NFR6 Maintainability<a class="headerlink" href="#nfr6-maintainability" title="Permanent link">&para;</a></h2>
+<h3 id="qr-20">QR-20<a class="headerlink" href="#qr-20" title="Permanent link">&para;</a></h3>
+<p><strong>Drone adapters implement interface</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR6.1</code> · tactic: DroneAdapter ABC · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DroneAdapter adapters fully implementing the interface</td>
+<td>all loaded adapters complete</td>
+<td><strong>4/4 loaded</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>interface_methods</code></td>
+<td>["analog", "connect", "disconnect", "emergency_stop", "get_telemetry", "hover", "land", "move", "takeoff"]</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:56+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-20.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_maintainabiility.py">test source</a></small></p>
+<h3 id="qr-21">QR-21<a class="headerlink" href="#qr-21" title="Permanent link">&para;</a></h3>
+<p><strong>Input adapters implement interface</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR6.1</code> · tactic: InputAdapter ABC · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>InputAdapter adapters fully implementing the interface</td>
+<td>all loaded adapters complete</td>
+<td><strong>4/4 loaded</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>interface_methods</code></td>
+<td>["handle_message", "start"]</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:56+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-21.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_maintainabiility.py">test source</a></small></p>
+<h3 id="qr-22">QR-22<a class="headerlink" href="#qr-22" title="Permanent link">&para;</a></h3>
+<p><strong>No function above complexity 15</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR6.2</code> · tactic: Small functions · <strong>MISSING</strong></p>
+<p>Not measured in the committed run. Test: <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/HEAD/tests/nfr/test_maintainabiility.py"><code>test_maintainabiility.py</code></a>.</p>
+<hr />
+<h2 id="nfr7-availability">NFR7 Availability<a class="headerlink" href="#nfr7-availability" title="Permanent link">&para;</a></h2>
+<h3 id="qr-23">QR-23<a class="headerlink" href="#qr-23" title="Permanent link">&para;</a></h3>
+<p><strong>Every subsystem has a liveness probe</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR7.1</code> · tactic: /health per router · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>subsystems exposing a liveness probe</td>
+<td>all present</td>
+<td><strong>4/4</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>health_routes</code></td>
+<td>["/api/auth/health", "/api/drone/health", "/api/gestures/health", "/api/health"]</td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:27+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-23.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_availability.py">test source</a></small></p>
+<h3 id="qr-24">QR-24<a class="headerlink" href="#qr-24" title="Permanent link">&para;</a></h3>
+<p><strong>Health probes need no auth</strong> · <abbr title="Software Requirements Specification">SRS</abbr> <code>NFR7.2</code> · tactic: Open health routes · <strong>PASS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>health probes reachable without authentication</td>
+<td>all unauthenticated</td>
+<td><strong>4/4</strong></td>
+</tr>
+</tbody>
+</table>
+<p><small>Recorded 2026-09-29T22:16:27+00:00 on Darwin arm64, 8 cores · commit <code>a088db842f</code> (local) · <a href="../evidence/QR-24.json"><abbr title="JavaScript Object Notation. the data serialisation format used for WebSocket messages and REST payloads">JSON</abbr></a> · <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/blob/a088db842f/tests/nfr/test_availability.py">test source</a></small></p>
+<!-- Global abbreviations. auto-appended to every page via mkdocs.yml snippets config -->
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="September 29, 2026 22:21:59 UTC"><span class="timeago" datetime="2026-09-29T22:21:59+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="September 29, 2026 22:21:59 UTC">2026-09-29</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="September 29, 2026 01:46:51 UTC"><span class="timeago" datetime="2026-09-29T01:46:51+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="September 29, 2026 01:46:51 UTC">2026-09-29</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../NFR/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview &amp; Matrix">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Overview & Matrix
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../api/API_REFERENCE/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2026 Codex Merchants &mdash; COS 301 Software Engineering &middot; University of Pretoria &middot; EPI-USE Labs
+
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control" target="_blank" rel="noopener" title="GitHub Repository" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="mailto:codexmerchants@gmail.com" target="_blank" rel="noopener" title="Team Email" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4l208 156a48 48 0 0 0 57.6 0l208-156c12.1-9.1 19.2-23.3 19.2-38.4 0-26.5-21.5-48-48-48zM0 196v188c0 35.3 28.7 64 64 64h384c35.3 0 64-28.7 64-64V196L313.6 344.8c-34.1 25.6-81.1 25.6-115.2 0z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "search.highlight", "search.suggest", "search.share", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../js/timeago.min.js"></script>
+      
+        <script src="../../js/timeago_mkdocs_material.js"></script>
+      
+        <script src="../../javascripts/extra.js"></script>
+      
+        <script src="../../javascripts/api-viewers.js"></script>
+      
+    
+  </body>
+</html>

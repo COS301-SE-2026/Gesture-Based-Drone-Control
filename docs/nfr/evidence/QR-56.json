@@ -1,0 +1,42 @@
+{
+  "id": "QR-56",
+  "requirement": "NFR5.1",
+  "metric": "clicks to complete take-off, hover, move, land on screen",
+  "actual": 5,
+  "target": "<= 6 clicks, each confirmed within 1 s, drone landed",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:36:48+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "browser": "Chromium 149.0.7827.55",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "suite": "frontend (Playwright)",
+  "steps": [
+    {
+      "action": "choose drone mode",
+      "confirmed": true
+    },
+    {
+      "action": "take off",
+      "confirmed": true
+    },
+    {
+      "action": "hover",
+      "confirmed": true
+    },
+    {
+      "action": "move forward",
+      "confirmed": true
+    },
+    {
+      "action": "land",
+      "confirmed": true
+    }
+  ],
+  "unconfirmed": [],
+  "automated_run_s": 1.1,
+  "drone_landed": true,
+  "screenshot": "screenshots/QR-56-after-basic-flight.jpg",
+  "method": "Scripted walk-through of the basic flight on the on-screen pad. Counts interactions and checks each one is confirmed on screen (Command History) within 1 s. The human time for the same task comes from the usability study (QR-45)."
+}

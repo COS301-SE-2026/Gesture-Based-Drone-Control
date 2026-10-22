@@ -1,0 +1,89 @@
+{
+  "id": "QR-51",
+  "requirement": "NFR1.1",
+  "metric": "slowest screen: largest contentful paint, cold start (ms)",
+  "actual": 812,
+  "target": "LCP <= 2500, FCP <= 1800 on every screen",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:36:06+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "browser": "Chromium 149.0.7827.55",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "suite": "frontend (Playwright)",
+  "worst_fcp_ms": 792,
+  "per_screen": [
+    {
+      "route": "login",
+      "fcp": 792,
+      "lcp": 812,
+      "dcl": 720,
+      "kb": 1589
+    },
+    {
+      "route": "signup",
+      "fcp": 584,
+      "lcp": 600,
+      "dcl": 538,
+      "kb": 1589
+    },
+    {
+      "route": "dashboard",
+      "fcp": 740,
+      "lcp": 740,
+      "dcl": 611,
+      "kb": 383
+    },
+    {
+      "route": "analytics",
+      "fcp": 736,
+      "lcp": 736,
+      "dcl": 630,
+      "kb": 383
+    },
+    {
+      "route": "gps",
+      "fcp": 668,
+      "lcp": 668,
+      "dcl": 569,
+      "kb": 383
+    },
+    {
+      "route": "games",
+      "fcp": 744,
+      "lcp": 744,
+      "dcl": 642,
+      "kb": 2393
+    },
+    {
+      "route": "settings",
+      "fcp": 644,
+      "lcp": 644,
+      "dcl": 554,
+      "kb": 383
+    },
+    {
+      "route": "help",
+      "fcp": 560,
+      "lcp": 560,
+      "dcl": 468,
+      "kb": 383
+    },
+    {
+      "route": "tutorial",
+      "fcp": 584,
+      "lcp": 584,
+      "dcl": 469,
+      "kb": 10361
+    }
+  ],
+  "method": "Each screen opened in a vrand new browser process from the production build, as when the desktop app launches. FCP and LCP are read from the browsers own Paint timing and largest contentful paint apis",
+  "chart": {
+    "kind": "bars",
+    "column": "lcp_ms",
+    "label": "screen",
+    "unit": "ms",
+    "threshold": 2500
+  }
+}

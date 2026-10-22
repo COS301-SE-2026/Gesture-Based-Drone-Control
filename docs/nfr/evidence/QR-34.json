@@ -1,0 +1,43 @@
+{
+  "id": "QR-34",
+  "requirement": "NFR1.3",
+  "metric": "lowest frame rate received by any of 10 clients, 1 stalled client present",
+  "actual": 30.0,
+  "target": ">= 24.0",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:17:33+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "per_client_fps": {
+    "client 0": 30.0,
+    "client 1": 30.0,
+    "client 2": 30.0,
+    "client 3": 30.0,
+    "client 4": 30.0,
+    "client 5": 30.0,
+    "client 6": 30.0,
+    "client 7": 30.0,
+    "client 8": 30.0,
+    "client 9": 30.0
+  },
+  "capture_to_client_ms": {
+    "n": 9000,
+    "min": 13.254,
+    "mean": 15.306,
+    "p50": 15.291,
+    "p95": 15.874,
+    "p99": 16.303,
+    "max": 21.117
+  },
+  "method": "Ten subscribers read the live GestureStream while an eleventh never reads. Each client has its own 1-slot drop-oldest queue, so the stalled one must not slow the others. The browser-side render rate is QR-48.",
+  "chart": {
+    "kind": "bars",
+    "column": "fps",
+    "label": "client",
+    "unit": "fps",
+    "threshold": 24
+  }
+}

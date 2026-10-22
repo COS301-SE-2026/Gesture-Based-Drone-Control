@@ -1,0 +1,28 @@
+{
+  "id": "QR-54",
+  "requirement": "U3 / WCAG 2.4.7",
+  "metric": "keyboard tab stops with a visible focus indicator (%)",
+  "actual": 100,
+  "target": "100",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:36:32+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "browser": "Chromium 149.0.7827.55",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "suite": "frontend (Playwright)",
+  "tab_stops": 28,
+  "per_screen": {
+    "login": {
+      "stops": 8,
+      "invisible": []
+    },
+    "dashboard": {
+      "stops": 20,
+      "invisible": []
+    }
+  },
+  "screenshot": "screenshots/QR-54-login-first-tab-stop.jpg",
+  "method": "Presses Tab through the login screen and the dashboard. At each stop the element's outline, box-shadow, border, background and text colour are compared focused vs unfocused; no difference means a keyboard user cannot see where they are."
+}

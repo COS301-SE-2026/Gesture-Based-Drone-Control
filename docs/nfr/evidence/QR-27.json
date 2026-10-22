@@ -1,0 +1,30 @@
+{
+  "id": "QR-27",
+  "requirement": "NFR1.1",
+  "metric": "p95 frame serialization for broadcast (JPEG + landmarks) (ms)",
+  "actual": 1.129,
+  "target": "<= 20.0",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:16:55+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "stats": {
+    "n": 580,
+    "min": 0.707,
+    "mean": 0.889,
+    "p50": 0.846,
+    "p95": 1.129,
+    "p99": 1.738,
+    "max": 2.695
+  },
+  "mean_payload_kb": 55.3,
+  "method": "serialize_event(include_frame=True) on real 640x480 frames with 1-2 hands: JPEG q60 encode, base64 and the pydantic model the WebSocket sends.",
+  "chart": {
+    "kind": "histogram",
+    "column": "serialize_ms",
+    "unit": "ms"
+  }
+}

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 100" width="900" height="100" role="img" aria-labelledby="title">
+  <title id="title">Methodology</title>
+
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#191315"/>
+      <stop offset="100%" stop-color="#0B090A"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="900" height="100" rx="10" fill="url(#background)"/>
+  <rect x="0.5" y="0.5" width="899" height="99" rx="9.5"
+        fill="none" stroke="#484848"/>
+
+  <rect x="24" y="28" width="4" height="44" rx="2" fill="#E5383B"/>
+
+  <text x="44" y="61"
+        font-family="'Proto Mono', 'Consolas', sans-serif"
+        font-size="29"
+        font-weight="700"
+        letter-spacing="0.3"
+        fill="#F5F3F4">Methodology</text>
+
+  <rect x="44" y="80" width="812" height="1" fill="#303030"/>
+  <rect x="44" y="80" width="56" height="2" fill="#E5383B"/>
+</svg>

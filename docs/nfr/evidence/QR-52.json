@@ -1,0 +1,33 @@
+{
+  "id": "QR-52",
+  "requirement": "NFR1.1",
+  "metric": "p95 click -> command shown in Command History (ms)",
+  "actual": 53.7,
+  "target": "<= 200, every click confirmed",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:36:15+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "browser": "Chromium 149.0.7827.55",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "suite": "frontend (Playwright)",
+  "stats": {
+    "n": 22,
+    "min": 52,
+    "mean": 53.28,
+    "p50": 53.3,
+    "p95": 53.7,
+    "p99": 54.6,
+    "max": 54.6
+  },
+  "clicks": 22,
+  "unconfirmed_clicks": 0,
+  "method": "Clocks the on screen take off,D pad and land buttons. Time from the click event to the command appearing in Command History, i.e. UI ->. command WebSocket -> re-render",
+  "chart": {
+    "kind": "histogram",
+    "column": "feedback_ms",
+    "unit": "ms",
+    "threshold": 200
+  }
+}
