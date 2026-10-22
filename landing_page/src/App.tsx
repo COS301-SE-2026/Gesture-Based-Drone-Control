@@ -5,6 +5,12 @@ import SecretGame from "./components/organisms/SecretGame"
 
 const WARP_MS = 620
 
+/**
+ * The landing page is now the full-page WebGL experience in
+ * components/organisms/MudraExperience.tsx. The previous section components
+ * (Hero, StatsStrip, WhySection, ...) are still in the repo if you want to bring
+ * any of them back below the experience.
+ */
 export default function App() {
   const [warped, setWarped] = useState(false)
   const [game, setGame] = useState(false)

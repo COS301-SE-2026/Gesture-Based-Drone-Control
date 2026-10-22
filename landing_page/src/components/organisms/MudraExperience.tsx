@@ -20,7 +20,15 @@ import {
 import "../../experience/mudra.css"
 
 const BASE = import.meta.env.BASE_URL
-const ASSETS = { drone: `${BASE}models/drone.glb`, arm: `${BASE}models/arm.glb` }
+const ASSETS = {
+  drone: `${BASE}models/drone.glb`,
+  arm: `${BASE}models/arm.glb`,
+  lock: `${BASE}models/lock.glb`,
+  pad: `${BASE}models/pad.glb`,
+  badge: `${BASE}models/badge.glb`,
+  room: `${BASE}models/room.glb`,
+  hdr: `${BASE}models/studio.hdr`,
+}
 
 type Delayed = CSSProperties & { "--d": string }
 const delay = (s: number): Delayed => ({ "--d": `${s}s` })
@@ -32,6 +40,11 @@ const Close = () => (
   </svg>
 )
 
+/**
+ * The full-page WebGL landing experience: drone on the hand, take-off, the spiral
+ * descent down the arm with six chapters, the use-case grid and the swarm footer.
+ * All behaviour lives in src/experience/engine.ts; this component owns the markup.
+ */
 export default function MudraExperience() {
   const { theme, setTheme } = useTheme()
   const rootRef = useRef<HTMLDivElement>(null)
@@ -72,15 +85,10 @@ export default function MudraExperience() {
       </div>
 
       <div id="loader" aria-live="polite">
-        <div className="box">
-          <div className="mark">
-            Mudra<small>by codex merchants</small>
-          </div>
-          <div className="pct" id="pct">00</div>
-          <div className="status" id="status"><span /><span /><span /></div>
-          <div className="bar"><b id="bar" /></div>
-          <div className="scan" />
-        </div>
+        <div className="veil" />
+        <div className="mark">Mudra</div>
+        <div className="pct"><span id="pct">00</span> %</div>
+        <div className="status" id="status"><span /><span /><span /></div>
       </div>
 
       <header className="ui nav" id="nav">
@@ -243,7 +251,7 @@ export default function MudraExperience() {
         <div className="bottom">
           <span>© 2026 Codex Merchants · Mudra (Sanskrit: मुद्रा, “hand gesture”)</span>
           <span>
-            <span>COS301 · University of Pretoria · EPI-USE Africa</span>
+            <span>COS301 · University of Pretoria · EPI-USE Labs</span>
             <a href="#top" id="toTop">Back to top</a>
           </span>
         </div>
