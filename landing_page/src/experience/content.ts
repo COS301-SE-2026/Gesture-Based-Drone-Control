@@ -1,3 +1,5 @@
+/* Mudra landing copy. Edit text here; the engine and <MudraExperience /> read from this file. */
+
 export type Chapter = {
   tag: string
   name: string
@@ -14,7 +16,7 @@ export const RELEASES = `${REPO}/releases`
 export const YOUTUBE = "https://www.youtube.com/@CodexMerchants"
 export const EMAIL = "mailto:codexmerchants@gmail.com"
 
-/** The six chapters that sit beside the arm */
+/** The six chapters that sit beside the arm as you scroll down. */
 export const VENTURES: Chapter[] = [
   { tag:'Motion-based control', name:'Your hand is the controller', pitch:'Nothing to hold, nothing to charge. The webcam watches your hand and the drone follows.',
     lead:'MediaPipe finds 21 keypoints in every frame of a plain webcam feed. A rule-based recognizer reads the angles between them, a stabilizer smooths them, and each gesture maps straight to a flight command: open palm hovers, index up climbs, a V sign orbits, a fist lands.',
@@ -42,12 +44,12 @@ export const VENTURES: Chapter[] = [
     stat:['< 1','frame from camera to command'], link:DOCS },
 ]
 
-/** Scroll progress */
+/** Scroll progress (0..1) at which each chapter is in focus; keep in sync with the stage constants in engine.ts. */
 export const CHAP_P = [0.23, 0.324, 0.418, 0.512, 0.606, 0.7]
 export const USES_P = 0.835
 export const LINKS_P = 0.97
 
-/** Loading-screen status */
+/** Loading-screen status lines. */
 export const STATUS = ["Opening webcam", "Finding 21 landmarks", "Calibrating OPEN_PALM", "Gate open. Link stable"]
 
 export const HERO = {
@@ -71,7 +73,7 @@ export const USE_CASES: { id: string; title: string; body: string }[] = [
   { id: "UC7", title: "Tutorial & help", body: "A gesture guide, an onboarding tour and an in-app help page, plus games and licence training to practise with." },
 ]
 
-/** Footer links */
+/** Footer links. `shape` is the particle icon the swarm forms on hover/select. */
 export const FOOTER_LINKS: { label: string; href: string; shape: "git" | "doc" | "download" | "play" | "mail"; desc: string }[] = [
   { label: "GitHub", href: REPO, shape: "git", desc: "Source, issues and the project board." },
   { label: "Docs", href: DOCS, shape: "doc", desc: "SRS, architecture, user manual, API reference." },
