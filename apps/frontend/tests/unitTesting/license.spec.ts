@@ -22,7 +22,7 @@ test.describe('License Page', () => {
                 page.getByText(/what is an rpl\?/i)
             ).toBeVisible()
             await expect(
-                page.getByText(/is the south african civil aviation authority/i)
+                page.getByText(/qualification issued by the south african civil aviation authority/i)
             ).toBeVisible()
         })
 
@@ -31,7 +31,7 @@ test.describe('License Page', () => {
                 page.getByText(/18 years of age or older/i)
             ).toBeVisible()
             await expect(
-                page.getByText(/class 3\(or class 5 self declaration\) aviation medical certificate/i)
+                page.getByText(/class 3\s*\(or class 5 self declaration\) aviation medical certificate/i)
             ).toBeVisible()
             await expect(
                 page.getByText('Restricted Radiotelephony Certificate',{exact:true})
@@ -78,6 +78,18 @@ test.describe('License Page', () => {
             page,
             context,
         }) => {
+            // Stub the ATO site so the test does not depend on the real one being
+            // reachable. Without this the popup lands on a browser error page
+            // (chrome-error://chromewebdata/ or an empty url in firefox) whenever
+            // there is no outbound network, and the url assertion fails.
+            await context.route(/drone-x\.co\.za/, (route) =>
+                route.fulfill({
+                    status: 200,
+                    contentType: 'text/html',
+                    body: '<html><body>ATO</body></html>',
+                })
+            )
+
             const newP = context.waitForEvent('page')
             await  page
                 .getByRole('button', {name :/start theory training/i })

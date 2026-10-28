@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron"
+import { app, BrowserWindow, shell } from "electron"
 import { spawn, execFileSync } from "child_process"
 import path from "path"
 import fs from "fs"
@@ -96,6 +96,16 @@ function signalBackend(signal) {
   }
 }
 
+const EXTERNAL_PROTOCOLS = new Set(["https:", "http:", "mailto:"])
+
+function openExternal(url) {
+  try {
+    if (EXTERNAL_PROTOCOLS.has(new URL(url).protocol)) shell.openExternal(url)
+  } catch {
+    //malformed urlss
+  }
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1920,
@@ -107,6 +117,17 @@ function createWindow() {
   const indexPath = path.join(__dirname, "../dist/index.html")
 
   mainWindow.loadFile(indexPath)
+
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    openExternal(url)
+    return { action: "deny" }
+  })
+
+  mainWindow.webContents.on("will-navigate", (event, url) => {
+    if (url.startsWith("file://")) return
+    event.preventDefault()
+    openExternal(url)
+  })
 }
 
 async function waitForBackend() {
