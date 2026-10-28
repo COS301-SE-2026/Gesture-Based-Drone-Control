@@ -133,8 +133,6 @@ export default function Help() {
     <>
       <HelpTopBg
         suggestion={SUGGESTIONS}
-        onSelect={(item) => console.log("selected", item)}
-        onSearch={(q) => console.log("searching", q)}
       />
 
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 flex flex-col gap-14">

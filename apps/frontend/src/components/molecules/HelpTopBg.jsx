@@ -73,7 +73,7 @@ export default function HelpTopBg() {
           How can we Help?
         </h1>
         <p className="text-OffBlack dark:text-OffWhite text-base md:text-lg max-w-xl">
-          Search by topic, browse user manual, or reach the support team for any
+          Browse user manual, or reach the support team for any
           questions to get you back in the air.
         </p>
 

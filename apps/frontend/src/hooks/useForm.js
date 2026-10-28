@@ -20,7 +20,6 @@ export function useForm(initialState, onSuccess) {
   const handleSubmit = async (e, validateFn) => {
     e.preventDefault()
     const newErr = validateFn()
-    console.log("validation errors:", newErr)
     if (Object.keys(newErr).length > 0) {
       setErrors(newErr)
       return
