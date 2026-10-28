@@ -18,7 +18,7 @@ export default function LoginPage() {
   return (
     <AuthLayout
       panelTitle="Welcome Back"
-      panelSubtitle="Continue your Drone jouney with Codex Merchants"
+      panelSubtitle="Continue your Drone journey with Codex Merchants"
     >
       <LoginForm
         formData={formData}

@@ -22,8 +22,8 @@ const ACTIONS = [
   { icon: ArrowRight, label: "Right" },
   { icon: ChevronUp, label: "Up" },
   { icon: ChevronDown, label: "Down" },
-  { icon: RotateCw, label: "Clock wise" },
-  { icon: RotateCcw, label: "Counter Clock wise" },
+  { icon: RotateCw, label: "Clockwise" },
+  { icon: RotateCcw, label: "Counter-clockwise" },
 ]
 
 const METHODS = [

@@ -31,7 +31,7 @@ const LoginForm = ({
       })
     ) {
       newErr.password =
-        "The password must be atleast 8 characters long and must include an uppercase and lowercase letter,a number and a special character."
+        "The password must be at least 8 characters long and must include an uppercase and lowercase letter, a number and a special character."
     }
     return newErr
   }

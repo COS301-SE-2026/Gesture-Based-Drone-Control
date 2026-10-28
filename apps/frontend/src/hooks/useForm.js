@@ -51,7 +51,7 @@ export function useForm(initialState, onSuccess) {
       }
 
       if (response.status === 401) {
-        setErrors({ general: "Invalid email or password " })
+        setErrors({ general: "Invalid email or password" })
         setIsLoading(false)
         return
       }
@@ -64,8 +64,8 @@ export function useForm(initialState, onSuccess) {
       setIsLoading(false)
       onSuccess(data)
     } catch (err) {
-      console.log("fetch failed with:", err)
-      setErrors({ general: "Couldn't reach the server, retry man " + err })
+      console.error("fetch failed with:", err)
+      setErrors({ general: "Couldn't reach the server, please try again." })
       setIsLoading(false)
     }
   }

@@ -6,7 +6,7 @@ const OFFERINGS = [
     icon: Rocket,
     title: "Progressive simulator modules",
     description:
-      "Work through maneuvers,obstacles and a figure-8 course that gets harder as you go.",
+      "Work through maneuvers, obstacles and a figure-8 course that gets harder as you go.",
   },
 
   {
@@ -20,7 +20,7 @@ const OFFERINGS = [
     icon: Trophy,
     title: "A mock skills test",
     description:
-      "Run through a times assessment that mirrors what your ATO's practice test will look like.",
+      "Run through a timed assessment that mirrors what your ATO's practice test will look like.",
   },
 ]
 
@@ -28,12 +28,11 @@ export default function LicenseOffering() {
   return (
     <Card variant="glass" className="flex flex-col gap-5 flex-1">
       <p className="text-dim">
-        Gesture-Based Drone Control does not issue the license itself as it can
-        only be done by the South African Civil Aviation Authority(SACAA) and
-        your Approved Training Organizations(ATO)'s call but that's where you
-        would get the practcal side sorted. Pair your ATO's theory course with
-        our simulator so that you are already commfortable with the stick before
-        your actual skills test.
+        Gesture-Based Drone Control does not issue the license itself, as that 
+        can only be done by the South African Civil Aviation Authority (SACAA) and
+        your Approved Training Organization (ATO). What we do is the practical
+        side: pair your ATO's theory course with our simulator so that you are
+        already comfortable with the stick before your actual skills test.
       </p>
 
       <div className="grid gap-4 sm:grid-cols-3">
