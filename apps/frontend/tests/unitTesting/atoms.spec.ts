@@ -230,20 +230,28 @@ test.describe('Atom components', () => {
             }).first();
             const slider = label.locator('span.inline-block.h-4.w-4');
 
-            if (await toggle.isChecked()) {
-                await label.click({ force: true });
-                await page.waitForTimeout(100);
-            }
+            // Repeated clicks on the same spot of a label that wraps a checkbox
+            // are sometimes read as a double click and swallowed (firefox
+            // especially), which used to leave this test one toggle out of step.
+            // Drive the checkbox to the state we want and retry if a click is
+            // dropped, instead of assuming every click lands.
+            const setChecked = async (want: boolean) => {
+                if (await toggle.isChecked() === want) return;
+                await expect(async () => {
+                    await label.click({ force: true });
+                    await expect(toggle).toBeChecked({ checked: want, timeout: 1000 });
+                }).toPass({ timeout: 10000 });
+            };
+
+            await setChecked(false);
             await expect(slider).toHaveClass(/translate-x-1/);
-            await label.click( {force: true});
-            await page.waitForTimeout(100);
+
+            await setChecked(true);
             await expect(toggle).toBeChecked();
             await expect(slider).toHaveClass(/translate-x-6/);
 
-            await label.click({ force: true });
-            await page.waitForTimeout(100);
+            await setChecked(false);
             await expect(toggle).not.toBeChecked();
-
             await expect(slider).toHaveClass(/translate-x-1/);
 
         });

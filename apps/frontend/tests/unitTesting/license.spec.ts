@@ -78,6 +78,18 @@ test.describe('License Page', () => {
             page,
             context,
         }) => {
+            // Stub the ATO site so the test does not depend on the real one being
+            // reachable. Without this the popup lands on a browser error page
+            // (chrome-error://chromewebdata/ or an empty url in firefox) whenever
+            // there is no outbound network, and the url assertion fails.
+            await context.route(/drone-x\.co\.za/, (route) =>
+                route.fulfill({
+                    status: 200,
+                    contentType: 'text/html',
+                    body: '<html><body>ATO</body></html>',
+                })
+            )
+
             const newP = context.waitForEvent('page')
             await  page
                 .getByRole('button', {name :/start theory training/i })
