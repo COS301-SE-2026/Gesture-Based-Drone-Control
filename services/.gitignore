@@ -12,3 +12,4 @@ __pycache__
 
 projectairsim_client.log
 .log
+.DS_Store

@@ -531,8 +531,8 @@ The repository also contains unit and integration tests, performance testing too
 | ![NumPy](https://img.shields.io/badge/-NumPy-A4161A?style=flat-square&logo=numpy&logoColor=F5F3F4&labelColor=161A1D) | Vector math. Angles, distances, finger state | `1.26+` |
 | Rule Based Recognizer | Deterministic, zero latency gesture classification | `custom` |
 | Gesture Stabilizer | Majority voting over a rolling buffer, kills single-frame noise | `custom` |
-| ML Recognizer | Second engine behind the same `GestureRecognizer` ABC | `planned` |
-| Asyncio plus Bounded Queue | Non blocking real time pipeline, drops stale frames | `built-in` |
+| ML Recognizer | Second engine behind the same `GestureRecognizer` ABC | `custom` |
+| Asyncio & Bounded Queue | Non blocking real time pipeline, drops stale frames | `built-in` |
 
 </details>
 
@@ -540,14 +540,14 @@ The repository also contains unit and integration tests, performance testing too
 <summary><b>Drone Integration and Simulation</b></summary>
 <br/>
 
-| Adapter | Purpose | Status |
-|:---|:---|:---:|
-| `DroneAdapter` (ABC) | Common contract. Every backend talks the same interface | `stable` |
-| `ProjectAirSimAdapter` | Unreal Engine 5 Project AirSim. Async native (pynng), body-frame velocity | `primary` |
-| `AirSimAdapter` | Legacy AirSim via msgpack-rpc. NED conversions handled in-adapter | `supported` |
-| `DummyDroneAdapter` | In-memory drone for tests and CI. No simulator required | `stable` |
-| `XFlyAdapter` | Physical drone communication | `stubbed` |
-| Gazebo plus ArduPilot | High fidelity physics simulation | `not wired up` |
+| Adapter | Purpose | 
+|:---|:---|
+| `DroneAdapter` (ABC) | Common contract. Every backend talks the same interface | 
+| `ProjectAirSimAdapter` | Unreal Engine 5 Project AirSim. Async native (pynng), body-frame velocity |
+| `AirSimAdapter` | Legacy AirSim built in Unreal Engine 4. NED conversions handled in-adapter | 
+| `DummyDroneAdapter` | In-memory drone for tests and CI. No simulator required | 
+| `TelloAdapter` | Physical drone communication | 
+| `GameAdapter` | Used for minigames and training | 
 
 > Project AirSim is vendored as a git submodule (`vendors/`) so the client and `sim_config` stay pinned and reproducible. Clone with `--recurse-submodules`.
 
@@ -561,11 +561,10 @@ The repository also contains unit and integration tests, performance testing too
 |:---|:---|
 | `InputAdapter` (ABC) | Common contract for every control surface |
 | `GestureAdapter` | Hand gestures from the CV pipeline |
-| `KeyboardAdapter` | Arrow keys, WASD, T, Space, L, Esc. Streamed over `WS /api/input/ws/keyboard` |
-| `GamepadAdapter` | Dual-stick and face buttons. Streamed over `WS /api/input/ws/gamepad` |
+| `KeyboardAdapter` | Arrow keys, WASD, controls just like a PC game  |
+| `GamepadAdapter` | Dual-stick support, triggers and face buttons; with full analog support |
 | `DummyInputAdapter` | Deterministic input for tests |
 
-> On-screen buttons in the dashboard drive the same command set, so gestures, keyboard, gamepad and UI are fully interchangeable. This is the project's accessibility story.
 
 </details>
 
@@ -575,12 +574,11 @@ The repository also contains unit and integration tests, performance testing too
 
 | Technology | Purpose | Version |
 |:---|:---|:---:|
-| ![FastAPI](https://img.shields.io/badge/-FastAPI-A4161A?style=flat-square&logo=fastapi&logoColor=F5F3F4&labelColor=161A1D) | REST plus WebSocket API (ASGI), Swagger at `/docs` | `0.136+` |
+| ![FastAPI](https://img.shields.io/badge/-FastAPI-A4161A?style=flat-square&logo=fastapi&logoColor=F5F3F4&labelColor=161A1D) | REST & WebSocket API (ASGI), Swagger at `/docs` | `0.136+` |
 | ![SQLAlchemy](https://img.shields.io/badge/-SQLAlchemy-A4161A?style=flat-square&logo=sqlalchemy&logoColor=F5F3F4&labelColor=161A1D) | Async ORM. Models and managers in `services/database_manager` | `2.0+` |
-| ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-A4161A?style=flat-square&logo=postgresql&logoColor=F5F3F4&labelColor=161A1D) | Primary database via `asyncpg`. Bootstrapped by `init-db/` | `16` |
-| ![SQLite](https://img.shields.io/badge/-SQLite-A4161A?style=flat-square&logo=sqlite&logoColor=F5F3F4&labelColor=161A1D) | Local and test database via `aiosqlite` | `3.x` |
+| ![SQLite](https://img.shields.io/badge/-SQLite-A4161A?style=flat-square&logo=sqlite&logoColor=F5F3F4&labelColor=161A1D) | Local database for users, telemetry and preferences using `aiosqlite` | `3.x` |
 | ![Pydantic](https://img.shields.io/badge/-Pydantic-A4161A?style=flat-square&logo=pydantic&logoColor=F5F3F4&labelColor=161A1D) | Schemas, validation, settings (`pydantic-settings`) | `2.13+` |
-| PyJWT plus bcrypt | Access and refresh tokens, password hashing, HTTP-only cookies | `latest` |
+| PyJWT & bcrypt | Access and refresh tokens, password hashing, HTTP-only cookies | `latest` |
 | ![Pytest](https://img.shields.io/badge/-Pytest-A4161A?style=flat-square&logo=pytest&logoColor=F5F3F4&labelColor=161A1D) | Unit, integration and API testing. `pytest-asyncio` in auto mode | `9.x` |
 
 </details>
@@ -594,10 +592,10 @@ The repository also contains unit and integration tests, performance testing too
 | ![React](https://img.shields.io/badge/-React-A4161A?style=flat-square&logo=react&logoColor=F5F3F4&labelColor=161A1D) | Dashboard UI. Atomic design, JSX | `18` |
 | ![Vite](https://img.shields.io/badge/-Vite-A4161A?style=flat-square&logo=vite&logoColor=F5F3F4&labelColor=161A1D) | Dev server and bundler | `8.x` |
 | ![Tailwind](https://img.shields.io/badge/-Tailwind-A4161A?style=flat-square&logo=tailwindcss&logoColor=F5F3F4&labelColor=161A1D) | Utility first styling, light and dark themes | `3.x` |
-| shadcn/ui plus lucide-react | Component primitives and icon set | `latest` |
+| shadcn/ui & lucide-react | Component primitives and icon set | `latest` |
 | React Router | Client routing under `RootLayout` | `7.x` |
 | Recharts | Real time telemetry and analytics visualization | `3.x` |
-| Leaflet plus react-leaflet | GPS map view for simulated flight paths | `1.9 / 4.2` |
+| Leaflet & react-leaflet | GPS map view for simulated flight paths | `1.9 / 4.2` |
 | ![TypeScript](https://img.shields.io/badge/-TypeScript-A4161A?style=flat-square&logo=typescript&logoColor=F5F3F4&labelColor=161A1D) | Landing page, Playwright specs, shared contracts | `5.x+` |
 | ![Playwright](https://img.shields.io/badge/-Playwright-A4161A?style=flat-square&logo=playwright&logoColor=F5F3F4&labelColor=161A1D) | Both component-level unit tests and end to end tests | `1.60+` |
 
@@ -624,7 +622,7 @@ The repository also contains unit and integration tests, performance testing too
 | ![uv](https://img.shields.io/badge/-uv-A4161A?style=flat-square&logo=astral&logoColor=F5F3F4&labelColor=161A1D) | Single root workspace resolves backend, services and vendored packages together |
 | ![Task](https://img.shields.io/badge/-Task-A4161A?style=flat-square&logo=task&logoColor=F5F3F4&labelColor=161A1D) | Cross platform task runner. Same commands on Windows, macOS, Linux |
 | ![Ruff](https://img.shields.io/badge/-Ruff-A4161A?style=flat-square&logo=ruff&logoColor=F5F3F4&labelColor=161A1D) | Python lint and format. Single quotes, tab indent, 100 col, `E/F/I/N` rules |
-| ESLint plus Prettier | TypeScript and JSX linting and formatting. `format:check` gates CI |
+| ESLint & Prettier | TypeScript and JSX linting and formatting. `format:check` gates CI |
 | ![GitHub Actions](https://img.shields.io/badge/-GitHub_Actions-A4161A?style=flat-square&logo=github-actions&logoColor=F5F3F4&labelColor=161A1D) | Test, lint, docs deploy and release build pipelines |
 | ![Codecov](https://img.shields.io/badge/-Codecov-A4161A?style=flat-square&logo=codecov&logoColor=F5F3F4&labelColor=161A1D) | Coverage reporting. Separate `backend` and `services` flags, 80% target |
 | ![Git](https://img.shields.io/badge/-Git-A4161A?style=flat-square&logo=git&logoColor=F5F3F4&labelColor=161A1D) | Version control. Trunk based, Use Case branches, submodule for vendors |
@@ -901,7 +899,7 @@ Testing and lintling run on every pull request, and release builds the packaged 
   <tr>
     <td><b>Linting</b><br/></td>
     <td><a href="https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control/actions/workflows/lint.yml"><img src="https://img.shields.io/github/actions/workflow/status/COS301-SE-2026/Gesture-Based-Drone-Control/lint.yml?style=flat-square&logo=github-actions&logoColor=F5F3F4&label=lint&color=BA181B&labelColor=161A1D"/></a></td>
-    <td>Every PR. Ruff over Python, ESLint plus Prettier over the frontend. No style drift</td>
+    <td>Every PR. Ruff over Python, ESLint & Prettier over the frontend. No style drift</td>
   </tr>
   <tr>
     <td><b>Docs</b><br/></td>
