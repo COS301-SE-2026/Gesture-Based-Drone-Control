@@ -88,12 +88,6 @@ const LoginForm = ({
             />
             <span className="text-sm text-dim">Remember Me</span>
           </label>
-          <Link
-            to="/forgot-password"
-            className="text-sm text-red hover:text-redDeep transition-colors"
-          >
-            Forgot password?
-          </Link>
         </div>
         <button
           type="submit"

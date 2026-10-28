@@ -28,11 +28,12 @@ export default function LicenseOffering() {
   return (
     <Card variant="glass" className="flex flex-col gap-5 flex-1">
       <p className="text-dim">
-        Gesture-Based Drone Control does not issue the license itself, as that 
-        can only be done by the South African Civil Aviation Authority (SACAA) and
-        your Approved Training Organization (ATO). What we do is the practical
-        side: pair your ATO's theory course with our simulator so that you are
-        already comfortable with the stick before your actual skills test.
+        Gesture-Based Drone Control does not issue the license itself, as that
+        can only be done by the South African Civil Aviation Authority (SACAA)
+        and your Approved Training Organization (ATO). What we do is the
+        practical side: pair your ATO's theory course with our simulator so that
+        you are already comfortable with the stick before your actual skills
+        test.
       </p>
 
       <div className="grid gap-4 sm:grid-cols-3">
