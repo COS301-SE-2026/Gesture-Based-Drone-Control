@@ -513,7 +513,7 @@ The repository also contains unit and integration tests, performance testing too
 
 <div align="center">
 
-<img src="https://skillicons.dev/icons?i=python,fastapi,opencv,postgres,sqlite,react,vite,tailwind,typescript,nodejs,electron,github,githubactions,git,vscode&perline=16" alt="Tech stack"/>
+<img src="https://skillicons.dev/icons?i=python,opencv,fastapi,sqlite,react,vite,tailwind,typescript,electron,github,githubactions,git&perline=16" alt="Tech stack"/>
 
 </div>
 
@@ -529,6 +529,7 @@ The repository also contains unit and integration tests, performance testing too
 | ![OpenCV](https://img.shields.io/badge/-OpenCV-A4161A?style=flat-square&logo=opencv&logoColor=F5F3F4&labelColor=161A1D) | Live camera feed and image preprocessing | `4.8+` |
 | ![MediaPipe](https://img.shields.io/badge/-MediaPipe-A4161A?style=flat-square&logo=google&logoColor=F5F3F4&labelColor=161A1D) | Real time 21-point hand landmark detection and tracking | `0.10.21` |
 | ![NumPy](https://img.shields.io/badge/-NumPy-A4161A?style=flat-square&logo=numpy&logoColor=F5F3F4&labelColor=161A1D) | Vector math. Angles, distances, finger state | `1.26+` |
+| ![scikit-learn](https://img.shields.io/badge/-scikit--learn-A4161A?style=flat-square&logo=scikitlearn&logoColor=F5F3F4&labelColor=161A1D) | Machine learning model training, gesture classification, and evaluation | `1.5+` |
 | Rule Based Recognizer | Deterministic, zero latency gesture classification | `custom` |
 | Gesture Stabilizer | Majority voting over a rolling buffer, kills single-frame noise | `custom` |
 | ML Recognizer | Second engine behind the same `GestureRecognizer` ABC | `custom` |
@@ -627,6 +628,7 @@ The repository also contains unit and integration tests, performance testing too
 | ![Codecov](https://img.shields.io/badge/-Codecov-A4161A?style=flat-square&logo=codecov&logoColor=F5F3F4&labelColor=161A1D) | Coverage reporting. Separate `backend` and `services` flags, 80% target |
 | ![Git](https://img.shields.io/badge/-Git-A4161A?style=flat-square&logo=git&logoColor=F5F3F4&labelColor=161A1D) | Version control. Trunk based, Use Case branches, submodule for vendors |
 | MkDocs Material | Documentation hub (`mkdocs.yml`), deployed alongside the landing page |
+| ![Apache JMeter](https://img.shields.io/badge/-Apache_JMeter-A4161A?style=flat-square&logo=apachejmeter&logoColor=F5F3F4&labelColor=161A1D) | Performance and load testing for backend APIs and services. Simulates concurrent users and measures response times and throughput |
 
 </details>
 
@@ -914,7 +916,7 @@ Testing and lintling run on every pull request, and release builds the packaged 
   <tr>
     <td><b>Coverage</b><br/></td>
     <td><a href="https://codecov.io/gh/COS301-SE-2026/Gesture-Based-Drone-Control"><img src="https://img.shields.io/codecov/c/github/COS301-SE-2026/Gesture-Based-Drone-Control?style=flat-square&logo=codecov&logoColor=F5F3F4&color=BA181B&labelColor=161A1D"/></a></td>
-    <td>80% project and patch target, 1% threshold. Tests, <code>__init__.py</code>, <code>sandbox/</code> and <code>vendors/</code> excluded</td>
+    <td>80% project and patch target, 1% threshold. Tests, <code>__init__.py</code>,  <code>vendors/</code> excluded</td>
   </tr>
   <tr>
     <td><b>Issues</b></td>
