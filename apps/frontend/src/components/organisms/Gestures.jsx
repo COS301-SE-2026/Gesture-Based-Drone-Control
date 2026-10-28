@@ -300,56 +300,58 @@ const GestureControl = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-  {/* LEFT: gesture detection + live feed */}
-  <div className="flex flex-col gap-6 h-full">
-    <div className="flex-1 min-h-0" data-tour="gesture-camera">
-      {calibrated === false ? (
-        <GestureCalibration
-          key={calRunKey}
-          className="h-full"
-          onComplete={() => setCalibrated(true)}
-          onRestart={handleRecalibrate}
-        />
-      ) : (
-        <Card variant="glass" className="h-full flex flex-col">
-          <div className="flex flex-col gap-4 flex-1">
-            <div className="flex items-center justify-between">
-              <Label className="text-lg font-semibold">Gesture Detection</Label>
+        {/* LEFT: gesture detection + live feed */}
+        <div className="flex flex-col gap-6 h-full">
+          <div className="flex-1 min-h-0" data-tour="gesture-camera">
+            {calibrated === false ? (
+              <GestureCalibration
+                key={calRunKey}
+                className="h-full"
+                onComplete={() => setCalibrated(true)}
+                onRestart={handleRecalibrate}
+              />
+            ) : (
+              <Card variant="glass" className="h-full flex flex-col">
+                <div className="flex flex-col gap-4 flex-1">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-lg font-semibold">
+                      Gesture Detection
+                    </Label>
 
-              {calibrated && (
-                <button
-                  type="button"
-                  onClick={handleRecalibrate}
-                  className="text-xs text-dim hover:text-red underline underline-offset-2 transition-colors"
-                >
-                  Recalibrate
-                </button>
-              )}
-            </div>
+                    {calibrated && (
+                      <button
+                        type="button"
+                        onClick={handleRecalibrate}
+                        className="text-xs text-dim hover:text-red underline underline-offset-2 transition-colors"
+                      >
+                        Recalibrate
+                      </button>
+                    )}
+                  </div>
 
-            <GestureCameraFeed className="flex-1" />
+                  <GestureCameraFeed className="flex-1" />
+                </div>
+              </Card>
+            )}
           </div>
-        </Card>
-      )}
-    </div>
 
-    {/* live feed: natural size, never stretched or squeezed */}
-    <div className="shrink-0" data-tour="sim-viewer">
-      <DroneFeedPanel
-        droneMode={droneMode}
-        connectionStatus={connectionStatus}
-      />
-    </div>
-  </div>
+          {/* live feed: natural size, never stretched or squeezed */}
+          <div className="shrink-0" data-tour="sim-viewer">
+            <DroneFeedPanel
+              droneMode={droneMode}
+              connectionStatus={connectionStatus}
+            />
+          </div>
+        </div>
 
-  {/* RIGHT: control guide stretches to match the left column's height */}
-  <div className="h-full" data-tour="gesture-guide">
-    <GestureGuide
-      sendCommand={handleControlAction}
-      onKeyboardResp={handleKeyboardResp}
-    />
-  </div>
-</div>
+        {/* RIGHT: control guide stretches to match the left column's height */}
+        <div className="h-full" data-tour="gesture-guide">
+          <GestureGuide
+            sendCommand={handleControlAction}
+            onKeyboardResp={handleKeyboardResp}
+          />
+        </div>
+      </div>
 
       <div data-tour="command-history">
         <CommandHistory commands={commandHistory} />
