@@ -1,0 +1,17 @@
+{
+  "id": "QR-32",
+  "requirement": "NFR1.2",
+  "metric": "whole-process CPU at 30 fps with 11 clients (% of machine)",
+  "actual": 6.7,
+  "target": "<= 70.0",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:17:33+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "single_core_equivalent_pct": 53.4,
+  "window_s": 30.0,
+  "method": "time.process_time() over the steady-state window: every thread of the backend process (camera, MediaPipe, event loop). Divided by wall time and core count."
+}

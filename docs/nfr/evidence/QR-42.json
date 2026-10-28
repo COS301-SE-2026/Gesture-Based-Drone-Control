@@ -1,0 +1,30 @@
+{
+  "id": "QR-42",
+  "requirement": "NFR1.2",
+  "metric": "Python heap growth over 4000 frames after warm-up (KB)",
+  "actual": 27.6,
+  "target": "<= 1024",
+  "pass": true,
+  "recorded_at": "2026-09-29T22:17:53+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "python": "3.11.15",
+  "commit": "a088db842f",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "heap_kb": {
+    "n": 17,
+    "min": 1839.7,
+    "mean": 1864.5,
+    "p50": 1866.1,
+    "p95": 1870.7,
+    "p99": 1871.7,
+    "max": 1871.7
+  },
+  "commands_emitted": 4291,
+  "method": "tracemalloc over the per-frame path: ML recognition, stabilizer, JPEG serialization, GestureAdapter and the gesture history log. A leak of even one small object per frame would show as steady growth.",
+  "chart": {
+    "kind": "series",
+    "column": "heap_kb",
+    "unit": "KB"
+  }
+}

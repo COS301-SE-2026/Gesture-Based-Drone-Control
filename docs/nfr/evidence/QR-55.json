@@ -1,0 +1,45 @@
+{
+  "id": "QR-55",
+  "requirement": "R1.1.2",
+  "metric": "screen sizes showing gesture AND mapped command without scrolling",
+  "actual": "3/3",
+  "target": "3/3, no sideways scrolling at 1024 px",
+  "pass": true,
+  "recorded_at": "2026-09-29T01:36:45+00:00",
+  "machine": "Darwin arm64, 8 cores",
+  "browser": "Chromium 149.0.7827.55",
+  "commit": "f63bc74b70",
+  "branch": "testing/NFRPerformance",
+  "runner": "local",
+  "suite": "frontend (Playwright)",
+  "per_viewport": {
+    "1366x768": {
+      "gesture_feed_visible": 1,
+      "command_history_top_px": 638,
+      "command_history_visible": true,
+      "emergency_stop_visible": true,
+      "viewport_height": 768
+    },
+    "1280x720": {
+      "gesture_feed_visible": 1,
+      "command_history_top_px": 590,
+      "command_history_visible": true,
+      "emergency_stop_visible": true,
+      "viewport_height": 720
+    },
+    "1920x1080": {
+      "gesture_feed_visible": 1,
+      "command_history_top_px": 924,
+      "command_history_visible": true,
+      "emergency_stop_visible": true,
+      "viewport_height": 1080
+    }
+  },
+  "sideways_scroll_at_1024": [],
+  "screenshots": [
+    "screenshots/QR-55-dashboard-1366x768.jpg",
+    "screenshots/QR-55-dashboard-1280x720.jpg",
+    "screenshots/QR-55-dashboard-1920x1080.jpg"
+  ],
+  "method": "Dashboard rendered at common laptop resolutions with a live gesture stream. The gesture overlay (camera feed) must be at least half on screen and the Command History heading, where the mapped command appears, fully on screen, with no scrolling. Every screen is also checked for horizontal overflow at 1024x768."
+}

@@ -1,0 +1,886 @@
+
+# WebSocket service contract for the backend
+
+# FastAPI does not emit WebSocket message types into OpenAPI, so the streams are
+# specified here instead. Every message schema below mirrors a Pydantic model or a
+# documented dict shape in the backend; the REST contract lives in openapi.yaml
+
+# Perspective: this document describes the backend application `action: send` means
+# the backend pushes to the browser; `action: receive` means the browser pushes to
+# the backend
+
+asyncapi: 3.1.0
+
+info:
+  title: Gesture-Based Drone Control WebSocket API
+  version: '1.0.0'
+  description: |
+    Real-time streams between the React dashboard and the FastAPI backend.
+
+    Four of the six channels are server push only: the client connects, sends nothing,
+    and receives one message per event. The command and input channels are the
+    exceptions and are driven by the browser.
+
+    A note that applies to every channel: error conditions do NOT close the socket.
+    The backend replies with an error object and keeps the connection open, so a
+    client is never forced to reconnect because of a single bad message.
+  contact:
+    name: Codex Merchants
+    email: codexmerchants@gmail.com
+    url: https://github.com/COS301-SE-2026/Gesture-Based-Drone-Control
+
+servers:
+  local:
+    host: '127.0.0.1:3001'
+    protocol: ws
+    description: Local development server (BACKENDPORT, default 3001).
+
+channels:
+  gestureStream:
+    address: /api/gestures/stream
+    title: Live gesture recognition stream
+    description: |
+      The camera opens lazily when the first client subscribes and closes when the
+      last one disconnects. One message per processed frame. The client sends nothing.
+
+      Close code 1001 means the pipeline ended normally. Close code 1011 means the
+      camera could not be opened; read `last_error` from GET /api/gestures/status for
+      the reason.
+    servers:
+      - $ref: '#/servers/local'
+    messages:
+      gestureFrame:
+        $ref: '#/components/messages/GestureFrame'
+
+  calibrationStream:
+    address: /api/calibration/stream
+    title: Live calibration progress stream
+    description: |
+      Connecting STARTS A FRESH RUN and discards any previous progress or result.
+      Only one calibration client should be connected at a time (one webcam, one
+      operator); a second connection restarts the shared run.
+
+      The client sends nothing. When `phase` reaches `done`, that frame is the last
+      one and the backend closes the connection.
+    servers:
+      - $ref: '#/servers/local'
+    messages:
+      calibrationFrame:
+        $ref: '#/components/messages/CalibrationFrame'
+
+  droneTelemetry:
+    address: /api/drone/ws/telemetry
+    title: Live drone telemetry stream
+    description: |
+      Emits one TelemetryData message every 0.1 seconds. If no adapter is connected
+      the socket stays open and idles silently rather than closing, so the dashboard
+      can subscribe before a drone is connected and start receiving data the moment
+      POST /api/drone/connect succeeds.
+
+      Every tenth tick is persisted to the telemetry table for the active flight,
+      which is what populates the analytics endpoints.
+    servers:
+      - $ref: '#/servers/local'
+    messages:
+      telemetry:
+        $ref: '#/components/messages/Telemetry'
+
+  droneCommands:
+    address: /api/drone/ws/commands
+    title: Direct command channel
+    description: |
+      A deliberate bypass of the input-adapter layer so on-screen dashboard buttons
+      can drive the drone directly. Mirrors DummyInputAdapter.
+
+      Side effects that are part of the contract: TAKEOFF with no active flight opens
+      a flight record; LAND or EMERGENCY_STOP closes it.
+    servers:
+      - $ref: '#/servers/local'
+    messages:
+      commandRequest:
+        $ref: '#/components/messages/CommandRequest'
+      commandAck:
+        $ref: '#/components/messages/CommandAck'
+      commandError:
+        $ref: '#/components/messages/CommandError'
+
+  keyboardInput:
+    address: /api/input/ws/keyboard
+    title: Keyboard event channel
+    description: |
+      Forwards browser key events to the KeyboardAdapter. Messages are silently
+      dropped when the active input adapter is not `keyboard`, so the socket can stay
+      open across adapter switches.
+    servers:
+      - $ref: '#/servers/local'
+    messages:
+      keyEvent:
+        $ref: '#/components/messages/KeyEvent'
+      keyAck:
+        $ref: '#/components/messages/KeyAck'
+
+  gamepadInput:
+    address: /api/input/ws/gamepad
+    title: Gamepad state channel
+    description: |
+      Forwards controller state snapshots to the GamepadAdapter, expected at roughly
+      display rate (60 per second). The browser is responsible for deadzone handling
+      and normalisation before sending.
+
+      This channel is fire-and-forget: the backend sends no acknowledgement. Messages
+      are silently dropped when the active input adapter is not `gamepad`.
+    servers:
+      - $ref: '#/servers/local'
+    messages:
+      gamepadState:
+        $ref: '#/components/messages/GamepadState'
+
+  gestureAdapterStatus:
+    address: /api/input/ws/gesture/status
+    title: Gesture adapter status channel
+    description: |
+      Debug channel. Polls the adapter every 0.5 seconds and pushes a snapshot only
+      when it differs from the last one sent, so an idle adapter produces no traffic.
+    servers:
+      - $ref: '#/servers/local'
+    messages:
+      adapterStatus:
+        $ref: '#/components/messages/GestureAdapterStatus'
+
+  gestureEvents:
+    address: /api/input/ws/gesture/events
+    title: Gesture command history channel
+    description: |
+      One message per gesture TRANSITION, not per frame. A gesture held for five
+      seconds at 30fps produces one event, not 150.
+
+      On connect the backend first sends a single backfill message carrying the
+      recent history (bounded at 50 events), then pushes each new transition as it
+      happens. Clients must therefore handle two message types on this channel and
+      switch on `type`.
+    servers:
+      - $ref: '#/servers/local'
+    messages:
+      gestureEventHistory:
+        $ref: '#/components/messages/GestureEventHistory'
+      gestureEvent:
+        $ref: '#/components/messages/GestureEvent'
+
+operations:
+  pushGestureFrame:
+    action: send
+    channel:
+      $ref: '#/channels/gestureStream'
+    summary: Push one recognised camera frame to every subscriber.
+    messages:
+      - $ref: '#/channels/gestureStream/messages/gestureFrame'
+
+  pushCalibrationFrame:
+    action: send
+    channel:
+      $ref: '#/channels/calibrationStream'
+    summary: Push one calibration frame to the connected operator.
+    messages:
+      - $ref: '#/channels/calibrationStream/messages/calibrationFrame'
+
+  pushTelemetry:
+    action: send
+    channel:
+      $ref: '#/channels/droneTelemetry'
+    summary: Push a telemetry snapshot every 0.1 seconds.
+    messages:
+      - $ref: '#/channels/droneTelemetry/messages/telemetry'
+
+  receiveCommand:
+    action: receive
+    channel:
+      $ref: '#/channels/droneCommands'
+    summary: Accept a command from the dashboard and execute it on the active adapter.
+    messages:
+      - $ref: '#/channels/droneCommands/messages/commandRequest'
+
+  acknowledgeCommand:
+    action: send
+    channel:
+      $ref: '#/channels/droneCommands'
+    summary: Confirm execution, or report why the command was rejected.
+    messages:
+      - $ref: '#/channels/droneCommands/messages/commandAck'
+      - $ref: '#/channels/droneCommands/messages/commandError'
+
+  receiveKeyEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/keyboardInput'
+    summary: Accept a browser key event and forward it to the KeyboardAdapter.
+    messages:
+      - $ref: '#/channels/keyboardInput/messages/keyEvent'
+
+  acknowledgeKeyEvent:
+    action: send
+    channel:
+      $ref: '#/channels/keyboardInput'
+    summary: Echo the handled key event back to the browser.
+    messages:
+      - $ref: '#/channels/keyboardInput/messages/keyAck'
+
+  receiveGamepadState:
+    action: receive
+    channel:
+      $ref: '#/channels/gamepadInput'
+    summary: Accept a controller state snapshot and forward it to the GamepadAdapter.
+    messages:
+      - $ref: '#/channels/gamepadInput/messages/gamepadState'
+
+  pushAdapterStatus:
+    action: send
+    channel:
+      $ref: '#/channels/gestureAdapterStatus'
+    summary: Push a gesture adapter snapshot whenever it changes.
+    messages:
+      - $ref: '#/channels/gestureAdapterStatus/messages/adapterStatus'
+
+  pushGestureEvent:
+    action: send
+    channel:
+      $ref: '#/channels/gestureEvents'
+    summary: Backfill recent history on connect, then push each new transition.
+    messages:
+      - $ref: '#/channels/gestureEvents/messages/gestureEventHistory'
+      - $ref: '#/channels/gestureEvents/messages/gestureEvent'
+
+components:
+  messages:
+    GestureFrame:
+      name: gestureFrame
+      title: Gesture frame
+      summary: One processed camera frame with landmarks and classification.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/GestureFramePayload'
+
+    CalibrationFrame:
+      name: calibrationFrame
+      title: Calibration frame
+      summary: One calibration frame with rolling-window statistics and progress.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/CalibrationFramePayload'
+
+    Telemetry:
+      name: telemetry
+      title: Telemetry snapshot
+      summary: Current drone state, emitted at 10 Hz.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TelemetryData'
+
+    CommandRequest:
+      name: commandRequest
+      title: Command request
+      summary: A command for the active drone adapter.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/CommandRequest'
+
+    CommandAck:
+      name: commandAck
+      title: Command acknowledgement
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/CommandAck'
+
+    CommandError:
+      name: commandError
+      title: Command error
+      summary: The command was rejected. The socket remains open.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/CommandError'
+
+    KeyEvent:
+      name: keyEvent
+      title: Key event
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/KeyEvent'
+
+    KeyAck:
+      name: keyAck
+      title: Key event acknowledgement
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/KeyAck'
+
+    GamepadState:
+      name: gamepadState
+      title: Gamepad state snapshot
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/GamepadState'
+
+    GestureAdapterStatus:
+      name: gestureAdapterStatus
+      title: Gesture adapter status
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/GestureAdapterStatus'
+
+    GestureEventHistory:
+      name: gestureEventHistory
+      title: Gesture event backfill
+      summary: Sent once on connect, carrying recent transitions oldest-first.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/GestureEventHistory'
+
+    GestureEvent:
+      name: gestureEvent
+      title: Gesture transition
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/GestureEvent'
+
+  schemas:
+    Landmark:
+      type: object
+      required: [x, y, z]
+      properties:
+        x:
+          type: number
+          description: Horizontal position. 0 is the left edge, 1 the right.
+        y:
+          type: number
+          description: Vertical position. 0 is the top edge, 1 the bottom.
+        z:
+          type: number
+          description: Depth relative to the wrist; negative is closer to the camera.
+
+    Hand:
+      type: object
+      required: [handedness, gesture, fingers, confidence, speed, landmarks]
+      properties:
+        handedness:
+          type: string
+          enum: [LEFT, RIGHT]
+        gesture:
+          type: string
+          enum:
+            - OPEN_PALM
+            - FIST
+            - ONE_FINGER
+            - TWO_FINGERS
+            - THREE_FINGERS
+            - FOUR_FINGERS
+            - UNKNOWN
+        fingers:
+          type: integer
+          minimum: 0
+          maximum: 5
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: MediaPipe handedness confidence.
+        gesture_confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          default: 0
+          description: |
+            Recognizer confidence in the gesture LABEL: class probability under the ML
+            recognizer, MediaPipe score under the rule-based one. Not interchangeable
+            with `confidence`, which is always handedness.
+        speed:
+          type: number
+          minimum: 0
+          description: Wrist speed in normalised units per second, resolution-independent.
+        landmarks:
+          type: array
+          minItems: 21
+          maxItems: 21
+          items:
+            $ref: '#/components/schemas/Landmark'
+
+    GestureFramePayload:
+      type: object
+      required: [type, frame_index, timestamp, fps, hands]
+      properties:
+        type:
+          type: string
+          const: gesture_frame
+          description: Discriminator. Switch on this so new message kinds do not break clients.
+        frame_index:
+          type: integer
+          description: Monotonic frame counter since pipeline start.
+        timestamp:
+          type: number
+          description: Frame capture time, monotonic clock, seconds.
+        fps:
+          type: number
+          minimum: 0
+          description: Smoothed pipeline throughput.
+        frame_jpeg:
+          type: [string, 'null']
+          description: |
+            Base64 JPEG of the processed frame, already mirrored and resized into the
+            same coordinate space as the landmarks. Render this instead of opening the
+            webcam again in the browser; that is what removes getUserMedia contention
+            on Windows and Linux. Null when the server is configured landmarks-only.
+        frame_width:
+          type: [integer, 'null']
+        frame_height:
+          type: [integer, 'null']
+        hands:
+          type: array
+          maxItems: 2
+          items:
+            $ref: '#/components/schemas/Hand'
+      examples:
+        - type: gesture_frame
+          frame_index: 142
+          timestamp: 1719831600.123
+          fps: 28.7
+          frame_jpeg: /9j/4AAQSkZJRgABAQAA...
+          frame_width: 640
+          frame_height: 480
+          hands:
+            - handedness: RIGHT
+              gesture: OPEN_PALM
+              fingers: 5
+              confidence: 0.95
+              gesture_confidence: 0.91
+              speed: 0.12
+              landmarks:
+                - x: 0.5
+                  y: 0.5
+                  z: 0.0
+
+    CalibrationWindow:
+      type: object
+      required: [frames, matches, ratio, required_ratio, min_frames]
+      properties:
+        frames:
+          type: integer
+          minimum: 0
+          description: Frames currently inside the 3.0 second rolling window.
+        matches:
+          type: integer
+          minimum: 0
+        ratio:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: matches / frames. 0.0 when the window is empty.
+        required_ratio:
+          type: number
+          description: Fraction of the window that must match. Default 0.8.
+        min_frames:
+          type: integer
+          description: |
+            Minimum frames in the window before a pass can be awarded. Default 45, so
+            a handful of lucky frames cannot clear a gesture.
+
+    CalibrationProgress:
+      type: object
+      required: [index, total, completed]
+      properties:
+        index:
+          type: integer
+          minimum: 0
+          description: Zero-based index of the current target gesture.
+        total:
+          type: integer
+        completed:
+          type: array
+          items:
+            type: string
+
+    CalibrationFramePayload:
+      type: object
+      required: [type, frame_index, timestamp, phase, matched, window, progress, hands]
+      properties:
+        type:
+          type: string
+          const: calibration_frame
+        frame_index:
+          type: integer
+        timestamp:
+          type: number
+        phase:
+          type: string
+          enum: [awaiting_gesture, success_display, done]
+          description: |
+            `success_display` lasts 2.0 seconds and is the green confirmation between
+            gestures. `done` marks the final frame before the backend closes the socket.
+        frame_jpeg:
+          type: [string, 'null']
+        frame_width:
+          type: [integer, 'null']
+        frame_height:
+          type: [integer, 'null']
+        target_gesture:
+          type: [string, 'null']
+          description: The gesture the operator is being asked to hold.
+        detected_gesture:
+          type: [string, 'null']
+          description: |
+            What the recognizer actually saw this frame. Null when no hand is visible;
+            frames with no visible hand count as unmatched.
+        matched:
+          type: boolean
+          description: |
+            Whether this frame counted towards the target. Drives the green/red
+            skeleton colour.
+        window:
+          $ref: '#/components/schemas/CalibrationWindow'
+        progress:
+          $ref: '#/components/schemas/CalibrationProgress'
+        hands:
+          type: array
+          maxItems: 2
+          items:
+            $ref: '#/components/schemas/Hand'
+      examples:
+        - type: calibration_frame
+          frame_index: 87
+          timestamp: 1719831600.123
+          phase: awaiting_gesture
+          target_gesture: FIST
+          detected_gesture: FIST
+          matched: true
+          window:
+            frames: 62
+            matches: 55
+            ratio: 0.887
+            required_ratio: 0.8
+            min_frames: 45
+          progress:
+            index: 1
+            total: 6
+            completed: [OPEN_PALM]
+          hands:
+            - handedness: RIGHT
+              gesture: FIST
+              fingers: 0
+              confidence: 0.97
+              speed: 0.03
+              landmarks:
+                - x: 0.5
+                  y: 0.5
+                  z: 0.0
+
+    TelemetryData:
+      type: object
+      description: |
+        The single shape every DroneAdapter returns from get_telemetry(). Adapters
+        that cannot supply a value return a sentinel rather than omitting the field.
+      required:
+        - altitude_m
+        - speed_ms
+        - battery_pct
+        - heading_deg
+        - is_flying
+        - x_displacement
+        - y_displacement
+        - source
+      properties:
+        altitude_m:
+          type: number
+        speed_ms:
+          type: number
+        battery_pct:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Legacy AirSim reports a fixed 100.0; it has no battery model.
+        heading_deg:
+          type: number
+        is_flying:
+          type: boolean
+        x_displacement:
+          type: number
+          description: Metres from the takeoff origin along the forward/north axis.
+        y_displacement:
+          type: number
+          description: Metres from the takeoff origin along the right/east axis.
+        source:
+          type: string
+        extra:
+          type: object
+          additionalProperties: true
+          description: |
+            Adapter-specific escape hatch. Consumers MUST NOT depend on any key inside
+            this object being present.
+      examples:
+        - altitude_m: 3.42
+          speed_ms: 1.15
+          battery_pct: 87.0
+          heading_deg: 271.4
+          is_flying: true
+          x_displacement: 2.1
+          y_displacement: -0.6
+          source: projectairsim
+          extra: {}
+
+    CommandType:
+      type: string
+      description: |
+        The command vocabulary shared by every InputAdapter and every DroneAdapter.
+        Each member maps to exactly one method on DroneAdapter.
+      enum:
+        - TAKEOFF
+        - LAND
+        - MOVE_UP
+        - MOVE_DOWN
+        - MOVE_LEFT
+        - MOVE_RIGHT
+        - MOVE_FORWARD
+        - MOVE_BACKWARD
+        - ROTATE_CW
+        - ROTATE_CCW
+        - HOVER
+        - EMERGENCY_STOP
+        - ANALOG
+
+    CommandRequest:
+      type: object
+      required: [command]
+      properties:
+        command:
+          type: string
+          description: |
+            Upper-cased server-side, then resolved against CommandType. An unresolvable
+            name produces a CommandError rather than closing the socket.
+        source:
+          type: string
+          default: ws_commands
+          description: Logging tag identifying the origin. Does not affect execution.
+      examples:
+        - command: TAKEOFF
+          source: dashboard
+        - command: EMERGENCY_STOP
+
+    CommandAck:
+      type: object
+      required: [ok, command]
+      properties:
+        ok:
+          type: boolean
+          const: true
+        command:
+          $ref: '#/components/schemas/CommandType'
+      examples:
+        - ok: true
+          command: TAKEOFF
+
+    CommandError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+        valid:
+          type: array
+          description: Present only for an unrecognised command name.
+          items:
+            $ref: '#/components/schemas/CommandType'
+      examples:
+        - error: No drone connected. POST /drone/connect first
+        - error: "unknown command: 'FLIP'"
+          valid: [TAKEOFF, LAND, HOVER]
+
+    KeyEvent:
+      type: object
+      required: [key, event]
+      properties:
+        key:
+          type: string
+          description: |
+            The browser KeyboardEvent.key value. The KeyboardAdapter maps arrow keys,
+            WASD, T, Space, L and Escape; anything else is ignored.
+        event:
+          type: string
+          enum: [keydown, keyup]
+      examples:
+        - key: ArrowUp
+          event: keydown
+        - key: ArrowUp
+          event: keyup
+
+    KeyAck:
+      type: object
+      required: [ok]
+      properties:
+        ok:
+          type: boolean
+        key:
+          type: [string, 'null']
+        event:
+          type: [string, 'null']
+      examples:
+        - ok: true
+          key: ArrowUp
+          event: keydown
+
+    GamepadState:
+      type: object
+      description: |
+        Full controller snapshot. Axes are bounded to [-1, 1] with right and down
+        positive, matching the AnalogInput dataclass the adapter builds from this.
+      properties:
+        left_x:
+          type: number
+          minimum: -1
+          maximum: 1
+        left_y:
+          type: number
+          minimum: -1
+          maximum: 1
+        right_x:
+          type: number
+          minimum: -1
+          maximum: 1
+        right_y:
+          type: number
+          minimum: -1
+          maximum: 1
+        ltrigger:
+          type: number
+          minimum: 0
+          maximum: 1
+        rtrigger:
+          type: number
+          minimum: 0
+          maximum: 1
+        a:
+          type: boolean
+        b:
+          type: boolean
+        x:
+          type: boolean
+        y:
+          type: boolean
+        lb:
+          type: boolean
+        rb:
+          type: boolean
+        up:
+          type: boolean
+        down:
+          type: boolean
+        left:
+          type: boolean
+        right:
+          type: boolean
+        start:
+          type: boolean
+        back:
+          type: boolean
+        lclick:
+          type: boolean
+        rclick:
+          type: boolean
+      examples:
+        - left_x: 0.73
+          left_y: -0.41
+          right_x: 0.0
+          right_y: 0.0
+          ltrigger: 0.0
+          rtrigger: 0.0
+          a: false
+          b: false
+          x: false
+          y: false
+          lb: false
+          rb: false
+          up: false
+          down: false
+          left: false
+          right: false
+          start: false
+          back: false
+          lclick: false
+          rclick: false
+
+    GestureAdapterStatus:
+      type: object
+      required: [active]
+      properties:
+        active:
+          type: boolean
+          description: False whenever the gesture adapter is not the active input source.
+        last_gesture:
+          type: [string, 'null']
+        last_confidence:
+          type: [number, 'null']
+        idle_timeout_s:
+          type: number
+        min_confidence:
+          type: number
+      examples:
+        - active: false
+        - active: true
+          last_gesture: TAKEOFF
+          last_confidence: 0.93
+          idle_timeout_s: 3.0
+          min_confidence: 0.85
+
+    GestureEvent:
+      type: object
+      description: |
+        One gesture TRANSITION. The GestureAdapter re-emits a command every frame while
+        a gesture is held; this log records only the change, so a five second hold is
+        one row in the command history rather than 150.
+      required: [type, id, command, confidence, source, timestamp]
+      properties:
+        type:
+          type: string
+          const: gesture_event
+        id:
+          type: integer
+          description: Monotonic sequence number within the log.
+        command:
+          $ref: '#/components/schemas/CommandType'
+        hands:
+          type: object
+          additionalProperties: true
+          description: Snapshot of the hand state that resolved the command.
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Lowest per-hand confidence in the frame that resolved the command.
+        source:
+          type: string
+          enum: [gesture, gesture_idling]
+          description: |
+            `gesture_idling` marks the safety hover that fires after idle_timeout_s with
+            no recognised gesture. This is the failsafe surfacing in the history.
+        timestamp:
+          type: number
+          description: Wall-clock seconds since the epoch.
+      examples:
+        - type: gesture_event
+          id: 7
+          command: MOVE_FORWARD
+          hands:
+            RIGHT: TWO_FINGERS
+          confidence: 0.94
+          source: gesture
+          timestamp: 1719831600.123
+
+    GestureEventHistory:
+      type: object
+      description: Backfill sent once, immediately after the client connects.
+      required: [type, events]
+      properties:
+        type:
+          type: string
+          const: gesture_event_history
+        events:
+          type: array
+          maxItems: 50
+          description: Oldest first. The dashboard reverses this for newest-first display.
+          items:
+            $ref: '#/components/schemas/GestureEvent'
