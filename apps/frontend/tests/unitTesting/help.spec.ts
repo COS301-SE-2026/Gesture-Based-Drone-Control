@@ -14,7 +14,7 @@ test.describe('Help Page', () => {
         await expect(page.getByText(/set up & sign in/i)).toBeVisible()
         await expect(page.getByText(/fly with hand gestures/i)).toBeVisible()
         await expect(page.getByText(/telemetry & live status/i)).toBeVisible()
-        await expect(page.getByText(/practice in airsim/i)).toBeVisible()
+        await expect(page.getByText(/practice in dronesim/i)).toBeVisible()
         await expect(page.getByText(/gesture vocabulary/i)).toBeVisible()
         await expect(page.getByText(/troubleshooting/i)).toBeVisible()
     })
@@ -53,7 +53,7 @@ test.describe('Help Page', () => {
                 { title: /set up & sign in/i, id: '2-set-up-sign-in' },
                 { title: /fly with hand gestures/i, id: '3-fly-the-drone-with-your-hand-uc-1' },
                 { title: /telemetry & live status/i, id: '4-watch-what-the-drone-is-doing-uc-2' },
-                { title: /practice in airsim/i, id: '5-practise-with-the-airsim-simulator-uc-3' },
+                { title: /practice in dronesim/i, id: '5-practise-with-the-airsim-simulator-uc-3' },
                 { title: /gesture vocabulary/i, id: '7-the-gesture-vocabulary' },
                 { title: /troubleshooting/i, id: '10-troubleshooting' }
             ]
