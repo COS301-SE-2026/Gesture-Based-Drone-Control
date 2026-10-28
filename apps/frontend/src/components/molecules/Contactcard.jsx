@@ -41,7 +41,7 @@ export default function Contactcard({
           className="inline-flex items-center gap-1 text-sm font-medium text-red hover:text-redDeep transition-all duration-200 group/link text-left"
         >
           {actionLabel}
-          <span className="transition-tranform duration-200 group-hover/link:translate-x-1">
+          <span className="transition-transform duration-200 group-hover/link:translate-x-1">
             &rarr;
           </span>
         </button>

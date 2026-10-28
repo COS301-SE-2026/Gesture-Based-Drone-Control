@@ -20,7 +20,6 @@ export function useForm(initialState, onSuccess) {
   const handleSubmit = async (e, validateFn) => {
     e.preventDefault()
     const newErr = validateFn()
-    console.log("validation errors:", newErr)
     if (Object.keys(newErr).length > 0) {
       setErrors(newErr)
       return
@@ -51,7 +50,7 @@ export function useForm(initialState, onSuccess) {
       }
 
       if (response.status === 401) {
-        setErrors({ general: "Invalid email or password " })
+        setErrors({ general: "Invalid email or password" })
         setIsLoading(false)
         return
       }
@@ -64,8 +63,8 @@ export function useForm(initialState, onSuccess) {
       setIsLoading(false)
       onSuccess(data)
     } catch (err) {
-      console.log("fetch failed with:", err)
-      setErrors({ general: "Couldn't reach the server, retry man " + err })
+      console.error("fetch failed with:", err)
+      setErrors({ general: "Couldn't reach the server, please try again." })
       setIsLoading(false)
     }
   }

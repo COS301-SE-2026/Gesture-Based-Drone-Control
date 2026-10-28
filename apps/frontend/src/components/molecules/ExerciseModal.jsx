@@ -74,7 +74,7 @@ export default function ExerciseModal({ open, onClose, module, onComplete }) {
             ) : (
               <div className="flex-1 min-h-0 rounded-lg border border-dashed border-glassBrd bg-surface flex flex-col items-center justify-center gap-3">
                 <p className="text-sm font-semibold text-ink">
-                  AirSim environment in progress
+                  DroneSim environment in progress
                 </p>
                 <p className="text-xs text-dim text-center max-w-xs">
                   lets hope we can get this simulation wired up....faaah

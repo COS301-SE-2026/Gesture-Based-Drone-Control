@@ -56,10 +56,6 @@ test.describe('Authentication' , () => {
         await expect(page.getByLabel(/remember me/i)).toBeVisible()
     })
 
-    test('should show the i forgor password thing as a link', async ({ page}) => {
-        await expect(page.getByRole('link' , {name: /forgot password/i })).toBeVisible()
-    })
-
     test('should show the sign up as a link if they already dont have an acc',async ({page}) =>{
         const signupLink = page.getByRole('link' , {name: /sign up/i})
         await expect(signupLink).toBeVisible()

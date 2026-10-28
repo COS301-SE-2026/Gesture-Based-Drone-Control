@@ -30,7 +30,7 @@ const MODULES = [
     id: "mock-test",
     title: "Mock test",
     description:
-      "A timed run combining everything above - the closest thing to youur real skills test.",
+      "A timed run combining everything above - the closest thing to your real skills test.",
     difficulty: "Assessment",
     assessment: true,
   },

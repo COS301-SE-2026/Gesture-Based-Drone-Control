@@ -38,7 +38,7 @@ const TOPICS = [
   {
     id: "5-practise-with-the-airsim-simulator-uc-3",
     icon: MonitorPlay,
-    title: "Practice in AirSim",
+    title: "Practice in DroneSim",
     description: "Fly a simulated drone before you risk a real one.",
   },
   {
@@ -131,11 +131,7 @@ export default function Help() {
 
   return (
     <>
-      <HelpTopBg
-        suggestion={SUGGESTIONS}
-        onSelect={(item) => console.log("selected", item)}
-        onSearch={(q) => console.log("searching", q)}
-      />
+      <HelpTopBg suggestion={SUGGESTIONS} />
 
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 flex flex-col gap-14">
         <HelpResource

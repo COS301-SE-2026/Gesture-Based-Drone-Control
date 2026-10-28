@@ -14,7 +14,7 @@ export default function RecognizerToggle({ className = "" }) {
     {
       id: "rule",
       label: "Rule",
-      blurb: "counts finger using fixed landmark rules. always available",
+      blurb: "Counts fingers using fixed landmark rules. Always available.",
     },
     {
       id: "ml",

@@ -1,0 +1,140 @@
+# Deploys the hosted WEB DEMO (games + keyboard/gamepad only) to EC2.
+#
+# Runs alongside release.yml on pushes to main and is fully independent of it:
+# release.yml still builds and publishes the full desktop executable exactly
+# as before. This workflow only builds the web entry (vite.web.config.js) and
+# the lean web backend (apps/web_backend).
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   WEB_HOST              your domain or Elastic IP, e.g. demo.yourdomain.co.za
+#   WEB_SSH_KEY           private key matching the public key given to setup.sh
+#   WEB_SSH_KNOWN_HOSTS   output of: ssh-keyscan -t ed25519 <WEB_HOST>
+#
+# Until WEB_HOST is set, the deploy job is skipped (tests and build still run).
+
+name: Deploy Web Demo
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - 'apps/frontend/**'
+      - 'apps/web_backend/**'
+      - 'services/commands/**'
+      - 'services/input/**'
+      - 'services/drone_control/**'
+      - 'infrastructure/aws/**'
+      - '.github/workflows/deploy-web.yml'
+  workflow_dispatch:
+
+# never run two deploys at once; let a running one finish
+concurrency:
+  group: deploy-web
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install web backend deps
+        run: pip install -r apps/web_backend/requirements-dev.txt
+
+      - name: Web backend tests
+        run: python -m pytest apps/web_backend/tests -q -p no:cacheprovider
+
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.0'
+          cache: 'yarn'
+          cache-dependency-path: 'apps/frontend/yarn.lock'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --ignore-scripts
+
+      - name: Build web demo frontend
+        run: npx vite build --config vite.web.config.js
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-frontend
+          path: build/web-demo
+          retention-days: 7
+
+  deploy:
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    env:
+      WEB_HOST: ${{ secrets.WEB_HOST }}
+    steps:
+      - name: Skip if the server is not configured yet
+        if: env.WEB_HOST == ''
+        run: echo "::notice::WEB_HOST secret not set - skipping deploy (see infrastructure/aws/README.md)"
+
+      - uses: actions/checkout@v4
+        if: env.WEB_HOST != ''
+
+      - uses: actions/download-artifact@v4
+        if: env.WEB_HOST != ''
+        with:
+          name: web-frontend
+          path: dist-web
+
+      - name: Configure SSH
+        if: env.WEB_HOST != ''
+        env:
+          SSH_KEY: ${{ secrets.WEB_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.WEB_SSH_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf 'Host gbdc\n  HostName %s\n  User gbdc\n  IdentityFile ~/.ssh/deploy_key\n  StrictHostKeyChecking yes\n' "$WEB_HOST" > ~/.ssh/config
+
+      - name: Upload backend code
+        if: env.WEB_HOST != ''
+        # only the files the web backend actually imports
+        run: |
+          rsync -az --delete --relative \
+            --exclude '__pycache__' --exclude 'tests' \
+            ./apps/web_backend \
+            ./services/__init__.py \
+            ./services/commands \
+            ./services/input \
+            ./services/drone_control \
+            ./infrastructure/aws/deploy.sh \
+            gbdc:/opt/gbdc/app/
+
+      - name: Install deps and restart backend
+        if: env.WEB_HOST != ''
+        run: ssh gbdc 'bash /opt/gbdc/app/infrastructure/aws/deploy.sh'
+
+      - name: Upload frontend
+        if: env.WEB_HOST != ''
+        # after the backend is healthy, so the new UI never talks to an old API
+        run: rsync -az --delete dist-web/ gbdc:/opt/gbdc/web/
+
+      - name: Smoke test
+        if: env.WEB_HOST != ''
+        env:
+          WEB_URL: ${{ vars.WEB_URL || format('https://{0}', secrets.WEB_HOST) }}
+        run: |
+          curl -fsS "${WEB_URL}/api/health"
+          curl -fsS -o /dev/null "${WEB_URL}/"

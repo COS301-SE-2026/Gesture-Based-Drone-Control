@@ -1,6 +1,9 @@
 import { useState, memo, useEffect } from "react"
 import PropTypes from "prop-types"
 import { Card, Label, Button, StatusDot } from "../atoms"
+import HandSkeleton from "./HandSkeleton"
+import { POSES } from "../../lib/hand"
+
 import {
   Monitor,
   Keyboard,
@@ -18,8 +21,10 @@ import {
   PlaneLanding,
   PlaneTakeoff,
   CircleDot,
+  PlayCircle,
   OctagonX,
 } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { useDroneControls } from "../../hooks/useDroneControls"
 import { useKeyboardControl } from "@/hooks/useKeyboardControl"
 import { useGamepadControl } from "@/hooks/useGamepadControl"
@@ -151,10 +156,10 @@ const inputMapping = {
     "Swipe down",
     "Circle anticlockwise",
     "Circle clockwise",
-    "Swipe up + Swipe up",
-    "Hands still",
-    "Swipe down + Swipe down",
-    "Pull + Pull",
+    "Hold 2 fingers + 2 fingers",
+    "Automatic after each move",
+    "Hold fist + fist",
+    "Hold 1 finger + 1 finger",
   ],
   gestures: [
     "1 finger + 1 finger",
@@ -195,11 +200,33 @@ const controls = {
   })),
 }
 
+const OPEN = POSES[0]
+const ONE = POSES[1]
+const TWO = POSES[2]
+const FIST = POSES[3]
+const THREE = POSES[4]
+
+const gesturePoses = {
+  moveForward: [ONE, ONE],
+  moveBackward: [TWO, TWO],
+  moveLeft: [OPEN, TWO],
+  moveRight: [TWO, OPEN],
+  goUp: [ONE],
+  goDown: [TWO],
+  rotateLeft: [OPEN, ONE],
+  rotateRight: [ONE, OPEN],
+  takeoff: [THREE, THREE],
+  hover: [OPEN],
+  land: [FIST, FIST],
+  emergencyStop: [OPEN, OPEN],
+}
+
 const GestureGuide = memo(function GestureGuide({
   className = "",
   sendCommand,
   onKeyboardResp,
 }) {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("onscreen")
   const { handleControlPress, isControlActive } = useDroneControls(sendCommand)
   const [isFlying, setIsFlying] = useState(false)
@@ -424,11 +451,54 @@ const GestureGuide = memo(function GestureGuide({
     </div>
   )
 
+  const gestureControls = () => (
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-3">
+      {controls.gestures.map(({ icon: Icon, label, input, action }) => {
+        const poses = gesturePoses[action] ?? []
+        return (
+          <div
+            key={label}
+            className="flex items-center justify-between gap-3 min-w-0 bg-glass backdrop-blur-sm rounded-lg px-3 py-2 border border-glass"
+          >
+            <div className="flex flex-col gap-1.5 min-w-0">
+              <div className="flex items-center gap-2">
+                <Icon className="w-4 h-4 text-red shrink-0" />
+                <span className="text-xs text-ink/70 text-left">{label}</span>
+              </div>
+              <span className="text-xs font-mono font-semibold text-ink bg-dim/20 px-2 py-0.5 rounded w-fit">
+                {input || "Not Mapped"}
+              </span>
+            </div>
+
+            <div className="flex items-center shrink-0">
+              {poses.map((pose, i) => (
+                <div key={i} className="w-12 h-14">
+                  <HandSkeleton pose={pose} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+
   return (
     <Card variant="glass" className={`min-w-0 ${className}`}>
       <div className="flex flex-col xl:gap-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <Label size="md">Control Guide</Label>
+          <div className="flex items-center gap-3">
+            <Label size="md">Control Guide</Label>
+            <Button
+              variant="default"
+              size="md"
+              icon={PlayCircle}
+              onClick={() => navigate("/app/tutorial")}
+              aria-label="Open the tutorial"
+            >
+              Tutorial
+            </Button>
+          </div>
           {adapterInfo && (
             <div className="flex items-center gap-2 text-xs">
               <span className="text-ink/70">{adapterInfo.name}</span>
@@ -488,6 +558,8 @@ const GestureGuide = memo(function GestureGuide({
           onScreenControls()
         ) : activeTab === "controller" ? (
           <ControllerLayout />
+        ) : activeTab === "gestures" ? (
+          gestureControls()
         ) : (
           otherControls()
         )}

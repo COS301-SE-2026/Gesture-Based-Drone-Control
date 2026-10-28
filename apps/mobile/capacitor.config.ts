@@ -1,1 +1,0 @@
-// apps/mobile/capacitor.config.ts

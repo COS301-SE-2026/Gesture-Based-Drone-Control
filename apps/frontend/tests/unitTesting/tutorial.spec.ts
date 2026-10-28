@@ -12,7 +12,7 @@ test.describe('Tutorial Page' ,() =>{
         await page.goto('/#/app/tutorial')
         await page.waitForLoadState('domcontentloaded')
         await expect(page.getByText('Tutorial Videos')).toBeVisible()
-        await expect(page.getByText(/flying with theh gesture adapter/i)).toBeVisible()
+        await expect(page.getByText(/flying with the gesture adapter/i)).toBeVisible()
         await expect(page.getByText(/same flight, controlled entirely by hand gestures/i)).toBeVisible()
     })
 })

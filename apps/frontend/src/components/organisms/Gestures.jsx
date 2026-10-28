@@ -240,12 +240,6 @@ const GestureControl = () => {
       )}
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_18rem] gap-4 xl:gap-6 items-stretch">
         <Card variant="glass" data-tour="stats-card" className="min-w-0 h-full">
-          <div className="flex items-center justify-between">
-            <Label size="md" className="shrink-0">
-              {" "}
-              Stats{" "}
-            </Label>
-          </div>
           <div className="flex items-center justify-between gap-4 flex-wrap h-full">
             <div className="flex items-center gap-3">
               <Battery className="w-6 h-6 text-red" />
@@ -306,56 +300,56 @@ const GestureControl = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        <div className="h-full" data-tour="gesture-camera">
-          {calibrated === false ? (
-            <GestureCalibration
-              key={calRunKey}
-              className="h-full"
-              onComplete={() => setCalibrated(true)}
-              onRestart={handleRecalibrate}
-            />
-          ) : (
-            <Card
-              variant="glass"
-              className="h-full flex flex-col"
-              data-tour="gesture-camera"
-            >
-              <div className="flex flex-col gap-4 flex-1">
-                <div className="flex items-center justify-between">
-                  <Label className="text-lg font-semibold">
-                    Gesture Detection
-                  </Label>
-
-                  {calibrated && (
-                    <button
-                      type="button"
-                      onClick={handleRecalibrate}
-                      className="text-xs text-dim hover:text-red underline underline-offset-2 transition-colors"
-                    >
-                      Recalibrate
-                    </button>
-                  )}
-                </div>
-
-                <GestureCameraFeed className="flex-1" />
-              </div>
-            </Card>
-          )}
-        </div>
+        {/* LEFT: gesture detection + live feed */}
         <div className="flex flex-col gap-6 h-full">
-          <div className="flex-1" data-tour="gesture-guide">
-            <GestureGuide
-              sendCommand={handleControlAction}
-              onKeyboardResp={handleKeyboardResp}
-            />
+          <div className="flex-1 min-h-0" data-tour="gesture-camera">
+            {calibrated === false ? (
+              <GestureCalibration
+                key={calRunKey}
+                className="h-full"
+                onComplete={() => setCalibrated(true)}
+                onRestart={handleRecalibrate}
+              />
+            ) : (
+              <Card variant="glass" className="h-full flex flex-col">
+                <div className="flex flex-col gap-4 flex-1">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-lg font-semibold">
+                      Gesture Detection
+                    </Label>
+
+                    {calibrated && (
+                      <button
+                        type="button"
+                        onClick={handleRecalibrate}
+                        className="text-xs text-dim hover:text-red underline underline-offset-2 transition-colors"
+                      >
+                        Recalibrate
+                      </button>
+                    )}
+                  </div>
+
+                  <GestureCameraFeed className="flex-1" />
+                </div>
+              </Card>
+            )}
           </div>
-          <div className="flex-1 min-h-0" data-tour="sim-viewer">
+
+          {/* live feed: natural size, never stretched or squeezed */}
+          <div className="shrink-0" data-tour="sim-viewer">
             <DroneFeedPanel
-              className="h-full"
               droneMode={droneMode}
               connectionStatus={connectionStatus}
             />
           </div>
+        </div>
+
+        {/* RIGHT: control guide stretches to match the left column's height */}
+        <div className="h-full" data-tour="gesture-guide">
+          <GestureGuide
+            sendCommand={handleControlAction}
+            onKeyboardResp={handleKeyboardResp}
+          />
         </div>
       </div>
 
