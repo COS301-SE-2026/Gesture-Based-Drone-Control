@@ -131,9 +131,7 @@ export default function Help() {
 
   return (
     <>
-      <HelpTopBg
-        suggestion={SUGGESTIONS}
-      />
+      <HelpTopBg suggestion={SUGGESTIONS} />
 
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 flex flex-col gap-14">
         <HelpResource
