@@ -92,7 +92,7 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
               title="drone-sim-viewer"
               src={droneSimUrl}
               onLoad={() => setLoadedKey(sourceKey)}
-              className={`w-full h-full transition-opacity duration-500 ${
+              className={`absolute inset-0 w-full h-full border-0 transition-opacity duration-500 ${
                 loaded ? "opacity-100" : "opacity-0"
               }`}
               allow="autoplay; fullscreen"
@@ -104,7 +104,7 @@ const DroneFeedPanel = memo(function DroneFeedPanel({
               src={hardwareUrl}
               alt="drone live feed"
               onLoad={() => setLoadedKey(sourceKey)}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${
+              className={` absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
                 loaded ? "opacity-100" : "opacity-0" //NOSONAR
               }`}
             />
